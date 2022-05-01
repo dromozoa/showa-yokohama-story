@@ -3,11 +3,22 @@
 
 @clearstack
 @bg storage ="title.png" time=100
-@playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 
 @wait time = 200
 
 *start
+
+[position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
+[position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
+
+@layopt layer=message0 visible=true
+
+; [font face="BIZ UDPMincho"]
+昭和横濱物語。[l][r]
+PRESS ENTER KEY[l][r]
+; [resetfont]
+@playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+BGM再生開始。
 
 ; [button x=135 y=230 graphic="title/button_start.png" enterimg="title/button_start2.png"  target="gamestart"]
 ; [button x=135 y=320 graphic="title/button_load.png" enterimg="title/button_load2.png" role="load" ]
