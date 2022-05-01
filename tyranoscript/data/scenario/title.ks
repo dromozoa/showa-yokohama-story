@@ -8,8 +8,12 @@
 
 *start
 
-[position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
-[position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
+[start_keyconfig]
+
+; [position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
+; [position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
+
+[position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
 
 @layopt layer=message0 visible=true
 
@@ -18,7 +22,15 @@
 PRESS ENTER KEY[l][r]
 ; [resetfont]
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
-BGM再生開始。
+BGM再生開始。[l][r]
+
+@bg2 storage=sound_only.jpg time=1000 method=vanishIn
+
+BG変更。[p]
+
+「[ruby text="バチ"]本[ruby text="カン"]山からの郵便だ」[p]
+
+「なんと？」[p]
 
 ; [button x=135 y=230 graphic="title/button_start.png" enterimg="title/button_start2.png"  target="gamestart"]
 ; [button x=135 y=320 graphic="title/button_load.png" enterimg="title/button_load2.png" role="load" ]
