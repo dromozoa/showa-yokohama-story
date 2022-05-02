@@ -19,8 +19,10 @@
 
 ; [font face="BIZ UDPMincho"]
 
-H.H.C OS VER 1.3 [l][r]
-ALICE SYSTEM 3.x [l][r]
+[font face=VT323 size=32 color=0x029D93]
+H.H.C OS VER 1.3 [r]
+ALICE SYSTEM 3.5 [r]
+[resetfont]
 
 ; [resetfont]
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
