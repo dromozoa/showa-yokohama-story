@@ -1,3 +1,5 @@
+[plugin name=custom_ruby]
+
 ;一番最初に呼び出されるファイル
 
 ;[title name="ティラノスクリプト解説"]
