@@ -18,6 +18,21 @@
 @layopt layer=message0 visible=true
 
 ; [font face="BIZ UDPMincho"]
+
+H.H.C OS VER 1.3 [l][r]
+ALICE SYSTEM 3.x [l][r]
+
+; [resetfont]
+@playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+BGM再生開始。[l][r]
+
+LOADING OD KERNEL[l][r]
+LOADING N2 KERNEL[l][r]
+LOADING PU KERNEL[p]
+
+昭和七十四年七月、ボクはキミに出逢った。[l][r]
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
+
 昭和横濱物語。[l][r]
 PRESS ENTER KEY[l][r]
 ; [resetfont]
