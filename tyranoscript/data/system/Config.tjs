@@ -276,8 +276,8 @@
 // す。
 ;ml = 16;  // 左端位置
 ;mt = 16;  // 上端位置
-;mw = 960-32;   // 幅
-;mh = 640-32;   // 高さ
+;mw = 1280-32;   // 幅
+;mh = 720-32;   // 高さ
 
 
 // ◆ 「デバッグ」
@@ -319,7 +319,7 @@
 
 // ◆ 行間
 // 行間を pixel 単位で指定します。
-;defaultLineSpacing = 8; // defstyle タグの linespacing 属性に相当
+;defaultLineSpacing = 28; // defstyle タグの linespacing 属性に相当
 
 // ◆ 字間
 // 字間を pixel 単位で指定します。

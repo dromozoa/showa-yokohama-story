@@ -2,9 +2,9 @@
 [cm]
 
 @clearstack
-@bg storage ="title.png" time=100
+; @bg storage ="title.png" time=100
 
-@wait time = 200
+; @wait time = 200
 
 *start
 
@@ -13,28 +13,45 @@
 ; [position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
 ; [position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
 
-[position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
+; [position layer=message0 left=160 top=400 width=1000 height=400 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
+; 1280-32*2
+; 720-32*2-32(c)
+[position layer=message0 left=32 top=64 width=1216 height=624 page=fore visible=true]
+[position layer=message0 opacity=255 border_color=0xFFFFFF border_size=2 radius=16]
 
 @layopt layer=message0 visible=true
 
+[ptext name=chara_name_area layer=message0 color=white size=28 x=32 y=32]
+[chara_config ptext=chara_name_area]
+
+; 昭和七十四年七月、ボクはキミに出逢った。[r]
+; 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[r]
+; あなたはここでアリスと死ぬのよ。[r]
+; 今宵もアリスと地獄につきあってもらう。[p]
+
+# アリス
+[ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
+[ruby text=ヒュ]人[ruby text=ーマン]類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
+あんたはここで[ruby text=あ]ア[ruby text=り]リ[ruby text=す]スと死ぬのよ。[l][r]
+[ruby text=こ]今[ruby text=よい]宵もアリスと地獄につきあってもらう。[p]
+
 ; [font face="BIZ UDPMincho"]
 
+# VT323
 [font face=VT323 size=32 color=0x029D93]
 H.H.C OS VER 1.3 [r]
-ALICE SYSTEM 3.5 [r]
-[resetfont]
+ALICE SYSTEM 3.5 [l][r]
 
 ; [resetfont]
-@playbgm storage=sessions_diana_track33.ogg loop=true volume=50
-BGM再生開始。[l][r]
+; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+; BGM再生開始。[l][r]
 
 LOADING OD KERNEL[l][r]
 LOADING N2 KERNEL[l][r]
 LOADING PU KERNEL[p]
+[resetfont]
 
-昭和七十四年七月、ボクはキミに出逢った。[l][r]
-人類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
-
+#
 昭和横濱物語。[l][r]
 PRESS ENTER KEY[l][r]
 ; [resetfont]
