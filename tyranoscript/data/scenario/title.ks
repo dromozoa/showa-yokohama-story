@@ -2,7 +2,7 @@
 [cm]
 
 @clearstack
-@bg storage ="map.png" time=100
+; @bg storage ="map.png" time=100
 
 ; @wait time = 200
 
@@ -27,11 +27,24 @@ tf.gothic = "BIZ UDGothic"
 [ptext layer=message0 x=64 y=426 size=32 face=&tf.gothic color=white name=chara_name_area]
 [chara_config ptext=chara_name_area]
 
+#
+[font face=VT323 size=48 color=0x029D93]
+H.H.C MONITOR VER 1.3[r]
+EVANGELIUM SECUNDUM STEPHANUS[p]
+; SHOWA YOKOHAMA STORY[r]
+; LAST LOGIN: Sat Jan  7 06:33 1989 [p]
+[resetfont]
+
+@bg2 storage=title.png time=1000 method=vanishIn
+@playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+
 # アリス
-昭和七十四年七月、ボクはキミに出逢った。[r]
+昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[r]
 あなたはここでアリスと死ぬのよ。[r]
 今宵もアリスと地獄につきあってもらう。[p]
+
+@bg2 storage=map.png time=1000 method=vanishIn
 
 # アリス
 [ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
@@ -41,19 +54,9 @@ tf.gothic = "BIZ UDGothic"
 
 ; [font face="BIZ UDPMincho"]
 
-#
-[font face=VT323 size=48 color=0x029D93]
-H.H.C MONITOR VER 1.3[r]
-EVANGELIUM SECUNDUM STEPHANUS[r]
-SHOWA YOKOHAMA STORY[r]
-LAST LOGIN: Sat Jan  7 06:33 1989 [p]
-[p]
-
 ; [resetfont]
 ; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 ; BGM再生開始。[l][r]
-
-[resetfont]
 
 #
 昭和横濱物語。[l][r]
@@ -61,8 +64,6 @@ PRESS ENTER KEY[l][r]
 ; [resetfont]
 ; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 ; BGM再生開始。[l][r]
-
-@bg2 storage=sound_only.jpg time=1000 method=vanishIn
 
 BG変更。[p]
 
