@@ -15,14 +15,16 @@
 
 ; [position layer=message0 left=160 top=400 width=1000 height=400 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
 
-[position layer=message0 page=fore left=32 top=400 width=1216 height=288]
-; [position layer=message0 color=0x000000 border_color=0xFFFFFF border_size=2 opacity=127]
+[position layer=message0 page=fore left=32 top=368 width=1216 height=352]
 [position layer=message0 color=0x000000 border_color=0xFFFFFF]
 [position layer=message0 marginl=192 margint=0 marginr=160 marginb=0]
 
 @layopt layer=message0 visible=true
 
-[ptext name=chara_name_area layer=message0 color=white size=28 x=32 y=32]
+[iscript]
+tf.gothic = "BIZ UDGothic"
+[endscript]
+[ptext layer=message0 x=64 y=426 size=32 face=&tf.gothic color=white name=chara_name_area]
 [chara_config ptext=chara_name_area]
 
 # アリス
@@ -39,7 +41,7 @@
 
 ; [font face="BIZ UDPMincho"]
 
-# VT323
+# Ｋ９
 [font face=VT323 size=32 color=0x029D93]
 H.H.C OS VER 1.3 [r]
 ALICE SYSTEM 3.5 [l][r]
