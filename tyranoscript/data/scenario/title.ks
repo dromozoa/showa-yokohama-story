@@ -38,19 +38,33 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 @bg2 storage=title.png time=1000 method=vanishIn
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 
+[voconfig name=アリス vostorage=alice_{number}.ogg number=0]
+[voconfig name=ダヌー vostorage=danu_{number}.ogg number=0]
+[vostart]
+
 # アリス
-昭和七十四年七月、ボクはキミに出逢った。
-人類が滅亡するまでの、最期のひとつきの、これは物語だ。[r]
-あなたはここでアリスと死ぬのよ。[r]
-今宵もアリスと地獄につきあってもらう。[p]
+昭和七十四年七月、ボクはキミに出逢った。[l][r]
+
+# アリス
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+; あなたはここでアリスと死ぬのよ。[r]
+; 今宵もアリスと地獄につきあってもらう。[p]
 
 @bg2 storage=map.png time=1000 method=vanishIn
 
-# アリス
-[ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
-[ruby text=ヒュ]人[ruby text=ーマン]類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
-あんたはここで[ruby text=あ]ア[ruby text=り]リ[ruby text=す]スと死ぬのよ。[l][r]
-[ruby text=こ]今[ruby text=よい]宵もアリスと地獄につきあってもらう。[p]
+# ダヌー
+あんたはここでダヌーと死ぬのよ。[l][r]
+
+# ダヌー
+安心して。あんたのことは、ダヌーがちゃんと終わらせてあげるから。[p]
+
+
+[vostop]
+
+; [ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
+; [ruby text=ヒュ]人[ruby text=ーマン]類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
+; あんたはここで[ruby text=あ]ア[ruby text=り]リ[ruby text=す]スと死ぬのよ。[l][r]
+; [ruby text=こ]今[ruby text=よい]宵もアリスと地獄につきあってもらう。[p]
 
 ; [font face="BIZ UDPMincho"]
 
