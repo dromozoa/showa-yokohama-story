@@ -2,7 +2,7 @@
 [cm]
 
 @clearstack
-; @bg storage ="title.png" time=100
+@bg storage ="map.png" time=100
 
 ; @wait time = 200
 
@@ -17,7 +17,7 @@
 ; 1280-32*2
 ; 720-32*2-32(c)
 [position layer=message0 left=32 top=64 width=1216 height=624 page=fore visible=true]
-[position layer=message0 opacity=255 border_color=0xFFFFFF border_size=2 radius=16]
+[position layer=message0 opacity=127 border_color=0xFFFFFF border_size=2 radius=16]
 
 @layopt layer=message0 visible=true
 
