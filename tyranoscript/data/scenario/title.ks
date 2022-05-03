@@ -2,9 +2,9 @@
 [cm]
 
 @clearstack
-@bg storage ="title.png" time=100
+; @bg storage ="map.png" time=100
 
-@wait time = 200
+; @wait time = 200
 
 *start
 
@@ -13,35 +13,71 @@
 ; [position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
 ; [position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
 
-[position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
+; [position layer=message0 left=160 top=400 width=1000 height=400 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
+
+[position layer=message0 page=fore left=0 top=368 width=1280 height=352]
+[position layer=message0 color=0x000000 border_color=0xFFFFFF opacity=204]
+[position layer=message0 marginl=192 margint=0 marginr=160 marginb=0]
 
 @layopt layer=message0 visible=true
 
-; [font face="BIZ UDPMincho"]
+[iscript]
+tf.gothic = "BIZ UDGothic"
+[endscript]
+[ptext layer=message0 x=64 y=426 size=32 face=&tf.gothic color=white name=chara_name_area]
+[chara_config ptext=chara_name_area]
 
-[font face=VT323 size=32 color=0x029D93]
-H.H.C OS VER 1.3 [r]
-ALICE SYSTEM 3.5 [r]
+#
+[font face=VT323 size=48 color=0x029D93]
+H.H.C MONITOR VER 1.3[r]
+EVANGELIUM SECUNDUM STEPHANUS[p]
+; SHOWA YOKOHAMA STORY[r]
+; LAST LOGIN: Sat Jan  7 06:33 1989 [p]
 [resetfont]
 
-; [resetfont]
+@bg2 storage=title.png time=1000 method=vanishIn
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
-BGM再生開始。[l][r]
 
-LOADING OD KERNEL[l][r]
-LOADING N2 KERNEL[l][r]
-LOADING PU KERNEL[p]
+[voconfig name=アリス vostorage=alice_{number}.ogg number=0]
+[voconfig name=ダヌー vostorage=danu_{number}.ogg number=0]
+[vostart]
 
+# アリス
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
-人類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
 
+# アリス
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+; あなたはここでアリスと死ぬのよ。[r]
+; 今宵もアリスと地獄につきあってもらう。[p]
+
+@bg2 storage=map.png time=1000 method=vanishIn
+
+# ダヌー
+あんたはここでダヌーと死ぬのよ。[l][r]
+
+# ダヌー
+安心して。あんたのことは、ダヌーがちゃんと終わらせてあげるから。[p]
+
+
+[vostop]
+
+; [ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
+; [ruby text=ヒュ]人[ruby text=ーマン]類が滅亡するまでの、最期のひとつきの、これは物語だ。[l][r]
+; あんたはここで[ruby text=あ]ア[ruby text=り]リ[ruby text=す]スと死ぬのよ。[l][r]
+; [ruby text=こ]今[ruby text=よい]宵もアリスと地獄につきあってもらう。[p]
+
+; [font face="BIZ UDPMincho"]
+
+; [resetfont]
+; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+; BGM再生開始。[l][r]
+
+#
 昭和横濱物語。[l][r]
 PRESS ENTER KEY[l][r]
 ; [resetfont]
 ; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 ; BGM再生開始。[l][r]
-
-@bg2 storage=sound_only.jpg time=1000 method=vanishIn
 
 BG変更。[p]
 

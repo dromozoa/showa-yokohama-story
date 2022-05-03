@@ -276,15 +276,15 @@
 // す。
 ;ml = 16;  // 左端位置
 ;mt = 16;  // 上端位置
-;mw = 960-32;   // 幅
-;mh = 640-32;   // 高さ
+;mw = 1280-32;   // 幅
+;mh = 720-32;   // 高さ
 
 
 // ◆ 「デバッグ」
 // ここをtrueにしておくことでブラウザのコンソールログに各種値が出力されるようになります
 //　ゲームリリース時は必ずfalseにしておきましょう
 
-;debugMenu.visible = false;
+;debugMenu.visible = true;
 
 
 //-------------------------------------------- メッセージレイヤの設定 -----
@@ -314,12 +314,12 @@
 
 // ◆ 文字の大きさ
 // デフォルトの文字の大きさ ( 高さ ) を pixel 単位で指定します。
-;defaultFontSize = 28;  // deffont タグの size 属性に相当
+;defaultFontSize = 32;  // deffont タグの size 属性に相当
 
 
 // ◆ 行間
 // 行間を pixel 単位で指定します。
-;defaultLineSpacing = 8; // defstyle タグの linespacing 属性に相当
+;defaultLineSpacing = 32; // defstyle タグの linespacing 属性に相当
 
 // ◆ 字間
 // 字間を pixel 単位で指定します。
@@ -351,12 +351,12 @@
 
 // ◆ ルビサイズ　（未実装）
 // ルビサイズを pixel 単位で指定します。
-;defaultRubySize = 10; // deffont タグの rubysize に相当
+;defaultRubySize = 16; // deffont タグの rubysize に相当
 
 
 // ◆ ルビ の表示オフセット（未実装）
 // 負の数を指定するとその pixel 数分、本文に近い位置に表示されます。
-;defaultRubyOffset = -2; // deffont タグの rubyoffset に相当
+;defaultRubyOffset = 0; // deffont タグの rubyoffset に相当
 
 
 // ◆ 文字のアンチエイリアス効果をするか（なめらかな文字表現）

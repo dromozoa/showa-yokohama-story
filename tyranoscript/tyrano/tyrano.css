@@ -289,6 +289,9 @@ body{
 
 .img_next{
     padding-left:3px;
+    vertical-align: -4px;
+    width: 32px;
+    height: 32px;
 }
 
 /*テキストボックスの共通スタイル*/
