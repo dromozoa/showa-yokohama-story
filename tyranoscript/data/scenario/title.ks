@@ -14,20 +14,22 @@
 ; [position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
 
 ; [position layer=message0 left=160 top=400 width=1000 height=400 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
-; 1280-32*2
-; 720-32*2-32(c)
-[position layer=message0 left=32 top=64 width=1216 height=624 page=fore visible=true]
-[position layer=message0 opacity=127 border_color=0xFFFFFF border_size=2 radius=16]
+
+[position layer=message0 page=fore left=32 top=400 width=1216 height=288]
+; [position layer=message0 color=0x000000 border_color=0xFFFFFF border_size=2 opacity=127]
+[position layer=message0 color=0x000000 border_color=0xFFFFFF]
+[position layer=message0 marginl=192 margint=0 marginr=160 marginb=0]
 
 @layopt layer=message0 visible=true
 
 [ptext name=chara_name_area layer=message0 color=white size=28 x=32 y=32]
 [chara_config ptext=chara_name_area]
 
-; 昭和七十四年七月、ボクはキミに出逢った。[r]
-; 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[r]
-; あなたはここでアリスと死ぬのよ。[r]
-; 今宵もアリスと地獄につきあってもらう。[p]
+# アリス
+昭和七十四年七月、ボクはキミに出逢った。[r]
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。[r]
+あなたはここでアリスと死ぬのよ。[r]
+今宵もアリスと地獄につきあってもらう。[p]
 
 # アリス
 [ruby text=ショ]昭[ruby text=ウワ]和七十四年七月、ボクはキミに出逢った。[l][r]
