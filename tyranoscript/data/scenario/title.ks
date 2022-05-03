@@ -15,8 +15,8 @@
 
 ; [position layer=message0 left=160 top=400 width=1000 height=400 page=fore visible=true border_color=0xFF0000 border_size=4 radius=20]
 
-[position layer=message0 page=fore left=32 top=368 width=1216 height=352]
-[position layer=message0 color=0x000000 border_color=0xFFFFFF]
+[position layer=message0 page=fore left=0 top=368 width=1280 height=352]
+[position layer=message0 color=0x000000 border_color=0xFFFFFF opacity=204]
 [position layer=message0 marginl=192 margint=0 marginr=160 marginb=0]
 
 @layopt layer=message0 visible=true
@@ -41,18 +41,18 @@ tf.gothic = "BIZ UDGothic"
 
 ; [font face="BIZ UDPMincho"]
 
-# Ｋ９
-[font face=VT323 size=32 color=0x029D93]
-H.H.C OS VER 1.3 [r]
-ALICE SYSTEM 3.5 [l][r]
+#
+[font face=VT323 size=48 color=0x029D93]
+H.H.C MONITOR VER 1.3[r]
+EVANGELIUM SECUNDUM STEPHANUS[r]
+SHOWA YOKOHAMA STORY[r]
+LAST LOGIN: Sat Jan  7 06:33 1989 [p]
+[p]
 
 ; [resetfont]
 ; @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 ; BGM再生開始。[l][r]
 
-LOADING OD KERNEL[l][r]
-LOADING N2 KERNEL[l][r]
-LOADING PU KERNEL[p]
 [resetfont]
 
 #
