@@ -101,3 +101,4 @@
 調[ruby x=-16 text=チョ spacing=32]子づいてんじゃねぇぞ。[p]
 [vostop]
 
+[return]

@@ -32,6 +32,8 @@ tf.gothic = "BIZ UDPGothic"
 
 ; ==========================================================
 
+*title
+
 [font face=VT323 size=48 color=0x029D93]
 #
 H.H.C MONITOR VER 1.3[r]
@@ -73,6 +75,9 @@ INSERT 30 PIECES OF SILVER TO CONTINUE
 [glink color=btn_10_black x=1088 y=576 face=VT323 size=32 width=160 text=AUTO role=auto]
 [glink color=btn_10_black x=1088 y=640 face=VT323 size=32 width=160 text=SKIP role=skip]
 
-@jump storage="scenario.ks"
+[call storage=scenario.ks]
+[iscript]
+location.href = "./index.html";
+[endscript]
 
 ; ==========================================================
