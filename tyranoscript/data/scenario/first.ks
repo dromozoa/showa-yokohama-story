@@ -1,4 +1,5 @@
 [plugin name=custom_ruby]
+[plugin name=glink_ex]
 
 ;一番最初に呼び出されるファイル
 
