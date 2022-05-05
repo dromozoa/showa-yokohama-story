@@ -1,4 +1,4 @@
-@# vim: filetype=showa-yokohama-story-scenario:
+@# vim: filetype=showa-yokohama-story-scenario tw=0:
 @# @#はコメント
 
 @# @=でセクションを定義する
@@ -15,10 +15,9 @@
 #alice
 強制はしない。
 熱望か希望か拒否か、ひとつを択べ。
-@choice
-@when{熱望} 熱望する
-@when{希望} 希望する
-@when{拒否} 拒否する
+@case{熱望} 熱望する
+@case{希望} 希望する
+@case{拒否} 拒否する
 
 @=熱望
 
@@ -41,7 +40,7 @@
 @=デモ
 
 #narrator
-壊れかけの鉱石ラジオが布哇陥落を伝えている。
+壊れかけの鉱石ラジオが@{ruby}布哇@{/ruby ハワイ}陥落を伝えている。
 @{ruby}終末論的絶望症候群@{/ruby アポカリプティック・ディスアペア・シンドローム}による死者数が全世界で増加傾向にある。
 
 #alice
@@ -54,4 +53,8 @@
 
 #alice
 今宵もアリスと地獄につきあってもらう。
+
+#danu
+@{ruby}調子@{/ruby チョ}づいてんじゃねぇぞ。
+
 
