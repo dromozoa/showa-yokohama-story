@@ -3165,12 +3165,12 @@
 .btn_10_black {
   position: relative;
   display: inline-block;
-  padding: .75em .6em;
-  background-color: #333;
-  color: #fefefe;
+  padding: .25em .25em;
+  background-color: #000;
+  color: #029D93;
   text-shadow: none;
   border-radius: 1.5em 0 1.5em 0;
-  border: 4px solid #fefefe;
+  border: 4px solid #029D93;
   box-shadow: none;
   box-sizing: border-box;
   transition: .2s ease-in;
@@ -3182,9 +3182,9 @@
 }
 
 .btn_10_black:active {
-  background-color: #fefefe;
-  color: #333;
-  border: 4px solid #333;
+  background-color: #029D93;
+  color: #000;
+  border: 4px solid #000;
 }
 
 
