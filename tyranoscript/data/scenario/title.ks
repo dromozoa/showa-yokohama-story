@@ -10,6 +10,10 @@
 
 [start_keyconfig]
 
+[iscript]
+TG.kag.stat.skip_link = "false"
+[endscript]
+
 ; [position layer=message0 left=160 top=500 width=1000 height=200 page=fore visible=true]
 ; [position layer=message0 page=fore margint=45 marginl=50 marginr=70 marginb=60]
 
@@ -32,19 +36,39 @@ tf.gothic = "BIZ UDPGothic"
 #
 [font face=VT323 size=48 color=0x029D93]
 H.H.C MONITOR VER 1.3[r]
-EVANGELIUM SECUNDUM STEPHANUS[p]
-; SHOWA YOKOHAMA STORY[r]
-; LAST LOGIN: Sat Jan  7 06:33 1989 [p]
+EVANGELIUM SECUNDUM STEPHANUS[l][r]
 [resetfont]
 
 @bg2 storage=title.png time=1000 method=vanishIn
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+
+[if exp="sf.system.autosave == true"]
+[font face=VT323 size=48 color=0x029D93]
+CONTINUE? [link target=*yes]YES[endlink] / [link target=*no]NO[endlink][r]
+[s]
+[resetfont]
+
+*yes
+[autoload]
+
+*no
+[cm]
+@jump target=*opening
+
+[endif]
+
+; SHOWA YOKOHAMA STORY[r]
+; LAST LOGIN: Sat Jan  7 06:33 1989 [p]
+
+*opening
 
 [glink color=btn_10_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
 [glink color=btn_10_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
 ; [glink color=btn_06_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
 ; [glink color=btn_06_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
 
+[autosave]
+#
 昭和七十四年七月、ボクはキミに出逢った。
 昭和七十四年七月、ボクはキミに出逢った。
 昭和七十四年七月、ボクはキミに出逢った。
@@ -57,6 +81,7 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 [voconfig name=ダヌー vostorage=danu_{number}.ogg number=0]
 [vostart]
 
+[autosave]
 # narrator
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 
@@ -65,9 +90,11 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 
 @bg2 storage=map.png time=1000 method=vanishIn
 
+[autosave]
 # ダヌー
 アンタはここでダヌーと死ぬのよ。[p]
 
+[autosave]
 # アリス
 強制はしない。[l][r]
 
@@ -86,12 +113,14 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 * 002
 * 003
 
+[autosave]
 # narrator
 壊れかけの鉱石ラジオが布哇陥落を伝えている。[l][r]
 
 # narrator
 終末論的絶望症候群による死者数が全世界で増加傾向にある。[p]
 
+[autosave]
 # アリス
 今日からキミは特殊検索群少尉だ。[l][r]
 
@@ -127,6 +156,4 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 *gamestart
 ; 一番最初のシナリオファイルへジャンプする
 @jump storage="scene1.ks"
-
-
 
