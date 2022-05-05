@@ -1,6 +1,6 @@
 #! /usr/bin/env lua
 
-local ffmpeg = ...
+local ffmpeg, map_filename, out_directory = ...
 
 local function narrator_map(narrator, i)
   if narrator == "女性1" then
@@ -26,37 +26,20 @@ local function exec_ffmpeg(source, target)
   os.execute(command)
 end
 
+local map = {}
+for line in io.lines(map_filename) do
+  local line_index, speaker, index = assert(line:match "^(%d+)\t(.-)\t(%d+)$")
+  local line_index = tonumber(line_index)
+  map[tonumber(line_index)] = { speaker = speaker, index = tonumber(index) }
+end
+
 local data = {}
 
-for i = 2, #arg do
+for i = 4, #arg do
   local source = arg[i]
-  local narrator, index, scene = assert(source:match "([^/%-]+)%-(%d+)%-([^%-]+)%.wav$")
-  -- print(narrator, index, scene)
-  data[#data + 1] = {
-    source = source;
-    narrator = narrator;
-    index = tonumber(index);
-    scene = scene;
-  }
+  local line_index = assert(source:match "(%d+)%-.-%.wav$")
+  local item = assert(map[tonumber(line_index)])
+
+  local target = ("%s/%s%d"):format(out_directory, item.speaker, item.index)
+  exec_ffmpeg(source, target)
 end
-
-table.sort(data, function (a, b) return a.index < b.index end)
-
-local map = {}
-for i = 1, #data do
-  local item = data[i]
-  local name = assert(narrator_map(item.narrator, i))
-  map[name] = 0
-end
-
-for i = 1, #data do
-  local item = data[i]
-  local name = assert(narrator_map(item.narrator, i))
-  local index = map[name]
-
-  local target = ("%s_%d"):format(name, index)
-  exec_ffmpeg(item.source, target)
-
-  map[name] = index + 1
-end
-

@@ -77,6 +77,7 @@ INSERT 30 PIECES OF SILVER TO CONTINUE
 [vostart]
 
 [autosave]
+
 # narrator
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 
