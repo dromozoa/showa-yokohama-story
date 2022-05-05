@@ -71,15 +71,6 @@ INSERT 30 PIECES OF SILVER TO CONTINUE
 [glink color=btn_10_black x=1088 y=576 face=VT323 size=32 width=160 text=AUTO role=auto]
 [glink color=btn_10_black x=1088 y=640 face=VT323 size=32 width=160 text=SKIP role=skip]
 
-[autosave]
-#
-昭和七十四年七月、ボクはキミに出逢った。
-昭和七十四年七月、ボクはキミに出逢った。
-昭和七十四年七月、ボクはキミに出逢った。
-昭和七十四年七月、ボクはキミに出逢った。
-昭和七十四年七月、ボクはキミに出逢った。
-昭和七十四年七月、ボクはキミに出逢った。[p]
-
 [voconfig name=narrator vostorage=narrator_{number}.ogg number=0]
 [voconfig name=アリス vostorage=alice_{number}.ogg number=0]
 [voconfig name=ダヌー vostorage=danu_{number}.ogg number=0]
