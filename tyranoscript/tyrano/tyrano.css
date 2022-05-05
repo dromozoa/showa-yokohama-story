@@ -90,8 +90,12 @@ abbr,acronym{
 	padding: 20px;
 	border: 1px solid #798993;
 	border-radius: 0;
+        /*
 	color: #798993;
 	background: rgba(251, 250, 249, .5);
+        */
+	color: #fff;
+	background: #333;
 	font-weight: normal;
 	text-align: left;
 	line-height: 1.6em;

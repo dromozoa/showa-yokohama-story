@@ -43,10 +43,14 @@ EVANGELIUM SECUNDUM STEPHANUS[l][r]
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
 
 [if exp="sf.system.autosave == true"]
+
 [font face=VT323 size=48 color=0x029D93]
-CONTINUE? [link target=*yes]YES[endlink] / [link target=*no]NO[endlink][r]
-[s]
+INSERT 30 PIECES OF SILVER TO CONTINUE
 [resetfont]
+
+[glink color=btn_10_black x=1088 y=576 face=VT323 size=32 width=160 text=START target=*no]
+[glink color=btn_10_black x=1088 y=640 face=VT323 size=32 width=160 text=CONTINUE target=*yes]
+[s]
 
 *yes
 [autoload]
@@ -62,10 +66,10 @@ CONTINUE? [link target=*yes]YES[endlink] / [link target=*no]NO[endlink][r]
 
 *opening
 
-[glink color=btn_10_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
-[glink color=btn_10_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
-; [glink color=btn_06_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
-; [glink color=btn_06_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
+[glink color=btn_10_black x=1088 y=448 face=VT323 size=32 width=160 text=TITLE role=title-without-confirmation]
+[glink color=btn_10_black x=1088 y=512 face=VT323 size=32 width=160 text=LOG role=backlog]
+[glink color=btn_10_black x=1088 y=576 face=VT323 size=32 width=160 text=AUTO role=auto]
+[glink color=btn_10_black x=1088 y=640 face=VT323 size=32 width=160 text=SKIP role=skip]
 
 [autosave]
 #

@@ -191,6 +191,9 @@ TYRANO.kag.tag.glink = {
                         case "title":
                             that.kag.backTitle();
                             break;
+                        case "title-without-confirmation":
+                            location.href = "./index.html";
+                            break;
                         case "menu":
                             that.kag.menu.showMenu();
                             break;
