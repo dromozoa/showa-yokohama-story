@@ -57,7 +57,6 @@ INSERT 30 PIECES OF SILVER TO CONTINUE
 
 *最初から
 
-[cm]
 [jump target=*start]
 
 *続きから
@@ -69,6 +68,8 @@ INSERT 30 PIECES OF SILVER TO CONTINUE
 ; ==========================================================
 
 *start
+
+[cm]
 
 [glink color=btn_10_black x=1088 y=448 face=VT323 size=32 width=160 text=TITLE role=title-without-confirmation]
 [glink color=btn_10_black x=1088 y=512 face=VT323 size=32 width=160 text=LOG role=backlog]
