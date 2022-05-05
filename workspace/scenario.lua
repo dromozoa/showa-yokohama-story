@@ -251,6 +251,8 @@ for i = 1, #sections do
     out:write "\n"
   end
 end
+
+out:write "[return]\n"
 out:close()
 map:close()
 

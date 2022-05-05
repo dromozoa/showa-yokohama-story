@@ -1,4 +1,4 @@
-*開始
+*プロローグ
 
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
@@ -10,6 +10,14 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+
+[autosave]
+#narrator
+《災[ruby x=-16 text=カタストロフ]害》から十年。[l][r]
+#narrator
+世界人口は五億人を下まわったと推定されている。[l][r]
+#narrator
+人類の九割が屍[ruby x=-16 text=ゾンビ spacing=8]者に変容した。[p]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -31,7 +39,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=2]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=2]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
 [vostart]
 
 [autosave]
@@ -44,7 +52,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=3]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=2]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
 [vostart]
 
 [autosave]
@@ -57,7 +65,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=2]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
 [vostart]
 
 [autosave]
@@ -70,7 +78,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=5]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=2]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
 [vostart]
 
 [autosave]
@@ -101,3 +109,4 @@
 調[ruby x=-16 text=チョ spacing=32]子づいてんじゃねぇぞ。[p]
 [vostop]
 
+[return]
