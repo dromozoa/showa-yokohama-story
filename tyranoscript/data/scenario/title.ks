@@ -17,7 +17,7 @@
 
 [position layer=message0 page=fore left=0 top=368 width=1280 height=352]
 [position layer=message0 color=0x000000 border_color=0xFFFFFF opacity=204]
-[position layer=message0 marginl=192 margint=0 marginr=160 marginb=0]
+[position layer=message0 marginl=192 margint=0 marginr=192 marginb=0]
 
 @layopt layer=message0 visible=true
 
@@ -39,6 +39,18 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 
 @bg2 storage=title.png time=1000 method=vanishIn
 @playbgm storage=sessions_diana_track33.ogg loop=true volume=50
+
+[glink color=btn_10_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
+[glink color=btn_10_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
+; [glink color=btn_06_black x=1088 y=544 face=VT323 size=28 width=160 text=AUTO role=auto]
+; [glink color=btn_06_black x=1088 y=640 face=VT323 size=28 width=160 text=SKIP role=skip]
+
+昭和七十四年七月、ボクはキミに出逢った。
+昭和七十四年七月、ボクはキミに出逢った。
+昭和七十四年七月、ボクはキミに出逢った。
+昭和七十四年七月、ボクはキミに出逢った。
+昭和七十四年七月、ボクはキミに出逢った。
+昭和七十四年七月、ボクはキミに出逢った。[p]
 
 [voconfig name=narrator vostorage=narrator_{number}.ogg number=0]
 [voconfig name=アリス vostorage=alice_{number}.ogg number=0]
@@ -62,9 +74,12 @@ EVANGELIUM SECUNDUM STEPHANUS[p]
 # アリス
 熱望か希望か拒否か、ひとつを択べ。[p]
 
-[glink color=btn_06_black target=*001 x=48 y=32 text=熱望]
-[glink color=btn_06_black target=*002 x=48 y=128 text=希望]
-[glink color=btn_06_black target=*003 x=48 y=224 text=拒否]
+[glink color=btn_06_black target=*001 x=48 y=32 text=熱望 size=32]
+[glink color=btn_06_black target=*002 x=48 y=128 text=希望 size=32]
+[glink color=btn_06_black target=*003 x=48 y=224 text=拒否 size=32]
+; [glink color=btn_10_black target=*001 x=48 y=32 text=熱望 size=32]
+; [glink color=btn_10_black target=*002 x=48 y=128 text=希望 size=32]
+; [glink color=btn_10_black target=*003 x=48 y=224 text=拒否 size=32]
 [s]
 
 * 001
