@@ -56,6 +56,19 @@ local speaker_map = {
     angry = "0.0";
     sad = "1.0";
   };
+
+  yukio = {
+    speaker = "Speaker/m3";
+    speed = "1.0";
+    pitch = "-1.5";
+    pause = "0.5";
+    volume = "2.0";
+    happy = "0.0";
+    fun = "0.0";
+    angry = "0.0";
+    sad = "0.0";
+  };
+
 }
 local speakers = {}
 for k, v in pairs(speaker_map) do
