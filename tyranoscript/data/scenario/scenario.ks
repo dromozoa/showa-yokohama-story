@@ -16,7 +16,7 @@
 #narrator
 破[ruby x=-16 text=カタストロフ]局から十年。[l][r]
 #narrator
-現在の世界人口は二十億人と推定される。[l][r]
+現在の世界人口は約二十億人と推定される。[l][r]
 #narrator
 人類の生存圏は三十パーセントを下まわった。[p]
 
@@ -24,26 +24,26 @@
 #narrator
 人類の大半は寒冷地に押しこめられた。[l][r]
 #narrator
-凍てつく冬が屍[ruby x=-16 text=ゾンビ spacing=8]人を不活性化するから。[l][r]
+冬が屍[ruby x=-16 text=ゾンビ spacing=8]人の脳髄を凍りつかせるから。[l][r]
 #narrator
 封鎖と検疫に成功した島嶼部もある。[l][r]
 #narrator
-それでも人類は、南極以外の五大陸を喪いつつあった。[p]
+人類は、南極以外の五大陸を喪いつつあった。[p]
 
 [autosave]
 #narrator
 日本国は国体を北海道以北に疎開した。[l][r]
 #narrator
-総力戦体制下、一千万を切った人口の過半は農業生産と石炭採掘に従事している。[l][r]
+一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。[l][r]
 #narrator
-本州の生存者は数十万人内外と見られる。[p]
+本州の生存者は四十万人内外と見られる。[p]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
 #narrator
 一万人超の住民を抱える関東最大の根拠地、本牧[ruby x=-16 text=ホンモク・ディビジョン]地区。[l][r]
 #narrator
-資源調達師団隷下、胡狼[ruby x=-16 text=スカベンジャーズ]大隊は京浜工業地帯からの資源回収を専門とする。[p]
+資源調達師団隷下、胡狼[ruby x=-16 text=スカベンジャーズ]大隊は京浜工業地帯の資源回収に従事する。[p]
 
 [autosave]
 #narrator
@@ -51,13 +51,13 @@
 #narrator
 キミのその日の相棒は訓[ruby text=ハンドラー spacing=4]練士のユキヲだ。[l][r]
 #narrator
-カレの犬は屍[ruby x=-16 text=ゾンビ spacing=8]人ウイルスを嗅ぐ。[p]
+ユキヲの犬は屍[ruby x=-16 text=ゾンビ spacing=8]人ウイルスを嗅ぐ。[p]
 
 [autosave]
 #yukio
 決戦の噂、聞いたか？[l][r]
 #yukio
-南本牧埠頭に大量の物資が陸揚げされた。[l][r]
+南本牧埠頭に大量の物資が陸揚げされてる。[l][r]
 #yukio
 猿島には重砲まで持ちこんでるんだとさ。[l][r]
 #yukio
@@ -67,7 +67,7 @@
 #narrator
 その日は屍[ruby x=-16 text=ゾンビ spacing=8]人にも不審者にも遭遇しなかった。[l][r]
 #narrator
-本部が置かれた小学校に戻り、下番したキミに大隊幕僚が声をかける。[l][r]
+本部が置かれた小学校に戻り、下番したキミに大隊幕僚が声をかけた。[l][r]
 #narrator
 キミを訪ねてきた者がいるという。[p]
 
@@ -85,16 +85,7 @@
 #narrator
 透きとおるように白い肌の少女。[l][r]
 #narrator
-カノジョに従う十二人の情報兵。[p]
-[vostop]
-
-*アリス登場
-
-[voconfig name=alice vostorage=alice{number}.ogg number=0]
-[voconfig name=danu vostorage=danu{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
-[vostart]
+フードを目深にかぶった十二人の兵が背後に従う。[p]
 
 [autosave]
 #alice
@@ -108,7 +99,21 @@
 
 [autosave]
 #alice
-今後ともよろしく。[p]
+今後ともよろしく。[l][r]
+#alice
+そうだ。[l][r]
+#alice
+キミの拳銃を見せてほしい。[p]
+
+[autosave]
+#alice
+年季のはいったコルト・ガ[ruby x=-16 text=ナインティーン・イレブン spacing=11.636363636363637]ヴァメントだね。[l][r]
+#alice
+刻印がある。[l][r]
+#alice
+そうか、そういうことなんだ。[l][r]
+#alice
+それの持ちぬしの名前をキミは憶えているか。[p]
 
 [autosave]
 #danu
@@ -127,7 +132,7 @@
 
 *熱望
 
-[voconfig name=alice vostorage=alice{number}.ogg number=7]
+[voconfig name=alice vostorage=alice{number}.ogg number=13]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=22]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=8]
@@ -141,7 +146,7 @@
 
 *希望
 
-[voconfig name=alice vostorage=alice{number}.ogg number=8]
+[voconfig name=alice vostorage=alice{number}.ogg number=14]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=22]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=8]
@@ -155,7 +160,7 @@
 
 *拒否
 
-[voconfig name=alice vostorage=alice{number}.ogg number=9]
+[voconfig name=alice vostorage=alice{number}.ogg number=15]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=22]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=8]
@@ -169,7 +174,7 @@
 
 *デモ
 
-[voconfig name=alice vostorage=alice{number}.ogg number=10]
+[voconfig name=alice vostorage=alice{number}.ogg number=16]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=22]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=8]
