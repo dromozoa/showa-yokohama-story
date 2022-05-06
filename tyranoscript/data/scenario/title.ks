@@ -14,7 +14,7 @@ TG.kag.stat.skip_link = "false"
 ; メッセージウィンドウを設定する
 [position layer=message0 page=fore left=0 top=368 width=1280 height=352]
 [position layer=message0 color=0x000000 border_color=0xFFFFFF opacity=204]
-[position layer=message0 marginl=192 margint=0 marginr=192 marginb=0]
+[position layer=message0 marginl=192 margint=0 marginr=224 marginb=0]
 [layopt layer=message0 visible=true]
 
 ; キャラクター名の表示領域を設定する
@@ -29,6 +29,7 @@ tf.gothic = "BIZ UDPGothic"
 [chara_new name=narrator storage=dummy.png jname=]
 [chara_new name=alice storage=dummy.png jname=アリス]
 [chara_new name=danu storage=dummy.png jname=ダヌー]
+[chara_new name=yukio storage=dummy.png jname=ユキヲ]
 
 ; ==========================================================
 
