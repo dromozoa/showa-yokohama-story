@@ -38,6 +38,7 @@ local data = {}
 for i = 4, #arg do
   local source = arg[i]
   local line_index = assert(source:match "(%d+)%-.-%.wav$")
+  print("line_index", line_index)
   local item = assert(map[tonumber(line_index)])
 
   local target = ("%s/%s%d"):format(out_directory, item.speaker, item.index)

@@ -16,7 +16,7 @@
 #narrator
 破[ruby x=-16 text=カタストロフ]局から十年。[l][r]
 #narrator
-現在の世界人口は二十億人と推定される。[l][r]
+現在の世界人口は約二十億人と推定されている。[l][r]
 #narrator
 人類の生存圏は三十パーセントを下まわった。[p]
 
@@ -24,40 +24,40 @@
 #narrator
 人類の大半は寒冷地に押しこめられた。[l][r]
 #narrator
-凍てつく冬が屍[ruby x=-16 text=ゾンビ spacing=8]人を不活性化するから。[l][r]
+冬が屍[ruby x=-16 text=ゾンビ spacing=12]者の脳髄を凍りつかせるから。[l][r]
 #narrator
-封鎖と検疫に成功した島嶼部もある。[l][r]
+海を要害に、封鎖と検疫に成功した島嶼もある。[l][r]
 #narrator
-それでも人類は、南極以外の五大陸を喪いつつあった。[p]
+総じて人類は、南極以外の五大陸を喪いつつある。[p]
 
 [autosave]
 #narrator
 日本国は国体を北海道以北に疎開した。[l][r]
 #narrator
-総力戦体制下、一千万を切った人口の過半は農業生産と石炭採掘に従事している。[l][r]
+一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。[l][r]
 #narrator
-本州の生存者は数十万人内外と見られる。[p]
+本州の生存者は四十万人内外と見られる。[p]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
 #narrator
 一万人超の住民を抱える関東最大の根拠地、本牧[ruby x=-16 text=ホンモク・ディビジョン]地区。[l][r]
 #narrator
-資源調達師団隷下、胡狼[ruby x=-16 text=スカベンジャーズ]大隊は京浜工業地帯からの資源回収を専門とする。[p]
+資源調達師団隷下、第一回[ruby x=-16 text=スカベンジャーズ spacing=13.714285714285714]収大隊は京浜工業地帯を責任地域とする。[p]
 
 [autosave]
 #narrator
 対咬戦闘服に円匙をかつぎ、キミは湾岸道路下のバラック集落を巡回する。[l][r]
 #narrator
-キミのその日の相棒は訓[ruby text=ハンドラー spacing=4]練士のユキヲだ。[l][r]
+キミのその日の相棒は訓[ruby text=ハンドラー spacing=6]練士のユキヲだ。[l][r]
 #narrator
-カレの犬は屍[ruby x=-16 text=ゾンビ spacing=8]人ウイルスを嗅ぐ。[p]
+彼の犬は屍[ruby x=-16 text=ゾンビ spacing=12]者の屍臭を嗅ぐ。[p]
 
 [autosave]
 #yukio
-決戦の噂、聞いたか？[l][r]
+決戦の噂、聞いたか。[l][r]
 #yukio
-南本牧埠頭に大量の物資が陸揚げされた。[l][r]
+本牧埠頭に大量の物資が陸揚げされてる。[l][r]
 #yukio
 猿島には重砲まで持ちこんでるんだとさ。[l][r]
 #yukio
@@ -65,9 +65,9 @@
 
 [autosave]
 #narrator
-その日は屍[ruby x=-16 text=ゾンビ spacing=8]人にも不審者にも遭遇しなかった。[l][r]
+その日は屍[ruby x=-16 text=ゾンビ spacing=12]者にも不審者にも遭遇しなかった。[l][r]
 #narrator
-本部が置かれた小学校に戻り、下番したキミに大隊幕僚が声をかける。[l][r]
+本部が置かれた中学校に戻り、下番したキミに大隊幕僚が声をかけた。[l][r]
 #narrator
 キミを訪ねてきた者がいるという。[p]
 
@@ -77,30 +77,23 @@
 #yukio
 オマエ、なんちゅう厄ネタを抱えこんだんだ。[l][r]
 #yukio
-オレは逃[ruby x=-16 text=フケ spacing=32]げるぜ。[l][r]
+オレは逃[ruby x=-16 text=フケ spacing=48]げるぜ。[l][r]
 #yukio
 あばよ。[p]
 
 [autosave]
 #narrator
-透きとおるように白い肌の少女。[l][r]
+透きとおるように白い肌の少女がいた。[l][r]
 #narrator
-カノジョに従う十二人の情報兵。[p]
-[vostop]
-
-*アリス登場
-
-[voconfig name=alice vostorage=alice{number}.ogg number=0]
-[voconfig name=danu vostorage=danu{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
-[vostart]
+フードを目深にかぶった十二の兵が背後に従う。[l][r]
+#narrator
+少女の深紅の瞳がきらめいた。[p]
 
 [autosave]
 #alice
-資源調達師団特殊検索群、アリス特務少佐だ。[l][r]
+資源調達師団特殊検索群、アリス大佐だ。[l][r]
 #alice
-これは辞令。[l][r]
+これは辞令。こっちは階級章。[l][r]
 #alice
 特殊検索群少尉に任ずる、ってね。[l][r]
 #alice
@@ -108,99 +101,334 @@
 
 [autosave]
 #alice
-今後ともよろしく。[p]
-
-[autosave]
-#danu
-アンタはここでダヌーと死ぬのよ。[p]
+今後ともよろしく。[l][r]
+#alice
+そうだ。[l][r]
+#alice
+キミの拳銃を見せてほしい。[p]
 
 [autosave]
 #alice
-強制はしない。[l][r]
+年季のはいったガヴァメントだ。[l][r]
 #alice
-熱望か希望か拒否か、ひとつを択べ。
+刻印がある。[l][r]
+#alice
+そうか。そういうことか。[l][r]
+#alice
+その銃をキミに渡した莫迦の名前をキミは憶えているか。
 [vostop]
-[glink color=btn_06_black target=*熱望 x=48 y=32 text=熱望する size=32]
-[glink color=btn_06_black target=*希望 x=48 y=128 text=希望する size=32]
-[glink color=btn_06_black target=*拒否 x=48 y=224 text=拒否する size=32]
+[glink color=btn_06_black target=*銃の持ち主 x=48 y=32 text=サム・スペード size=32]
+[glink color=btn_06_black target=*銃の持ち主 x=48 y=128 text=フィリップ・マーロウ size=32]
+[glink color=btn_06_black target=*銃の持ち主 x=48 y=224 text=マイク・ハマー size=32]
 [s]
 
-*熱望
+*銃の持ち主
 
-[voconfig name=alice vostorage=alice{number}.ogg number=7]
-[voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
+[voconfig name=alice vostorage=alice{number}.ogg number=11]
+[voconfig name=danu vostorage=danu{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=23]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=8]
 [vostart]
 
 [autosave]
 #alice
-熱望か。[p]
-[vostop]
-[jump target=*デモ]
-
-*希望
-
-[voconfig name=alice vostorage=alice{number}.ogg number=8]
-[voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
-[vostart]
-
-[autosave]
+偽名を名乗るにしたって、もうちょっと品性があってもいいと思うんだけどね。[l][r]
 #alice
-希望か。[p]
-[vostop]
-[jump target=*デモ]
-
-*拒否
-
-[voconfig name=alice vostorage=alice{number}.ogg number=9]
-[voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
-[vostart]
-
-[autosave]
+まあ、いい。[l][r]
 #alice
-拒否か。[p]
-[vostop]
-[jump target=*デモ]
-
-*デモ
-
-[voconfig name=alice vostorage=alice{number}.ogg number=10]
-[voconfig name=danu vostorage=danu{number}.ogg number=1]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=22]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
-[vostart]
+キミにひとりつけよう。ダヌー軍曹だ。[p]
 
 [autosave]
 #narrator
-壊れかけの鉱石ラジオが布[ruby x=-16 text=ハワイ spacing=8]哇陥落を伝えている。[l][r]
+歩みでた兵がフードを脱ぐ。[l][r]
 #narrator
-終末論的[ruby text=アポカリプティック・ディスペアー・シンドローム]絶望症候群による死者数が全世界で増加傾向にある。[p]
-
-[autosave]
-#alice
-今日からキミは資源調達師団特殊検索群少尉だ。[l][r]
-#alice
-サバルタンでもいいが、な。[p]
-
-[autosave]
-#danu
-安心して。[l][r]
-#danu
-アンタのことは、ダヌーがちゃんと終わらせてあげるから。[p]
-
-[autosave]
-[bg2 storage=title.png time=1000 wait=false method=vanishIn]
-#alice
-今宵もアリスと地獄につきあってもらう。[p]
+褐色の肌。白い髪。戦[ruby text=ガングロ spacing=16]化粧。[l][r]
+#narrator
+──尖った耳。[l][r]
+#narrator
+闇[ruby text=ダークエルフ]妖精だ。[p]
 
 [autosave]
 #danu
-調[ruby x=-16 text=チョ spacing=32]子づいてんじゃねぇぞ。[p]
+ダヌーだよ。[l][r]
+#danu
+よろー。[l][r]
+#danu
+少尉、よろしくありますか。[p]
+
+[autosave]
+#alice
+ババァ、無理すんな。[p]
+
+[autosave]
+#danu
+ロリババァは黙っていてくれないか。[l][r]
+#danu
+マジでキ[ruby text=エムケーファイブ spacing=34.285714285714285]レる五秒前。[l][r]
+#danu
+拠点にご案内します。[p]
+
+[autosave]
+#narrator
+南本牧埠頭に並ぶ蒲鉾兵舎に、人間と人間に似た者たちが棲む。[l][r]
+#narrator
+人呼んで、本牧異人町。[l][r]
+#narrator
+一角に特殊検索群α分遣隊の拠点があった。[p]
+
+[autosave]
+#narrator
+指揮所に備えられた壊れかけの黒い鉱石ラジオが布[ruby x=-16 text=ハワイ spacing=12]哇陥落を伝えている。[p]
+
+[autosave]
+#alice
+α分遣隊にようこそ、少尉。[l][r]
+#alice
+秘匿名は魔女の[ruby text=マジェスティック・トゥウェルヴ]落とし子。[p]
+
+[autosave]
+#alice
+我々は、人類と人類っぽいものの固有の尊厳と譲れない権利を護り、世界に自由と正義と平和を築くことを目的とする。[p]
+
+[autosave]
+#alice
+その意味で、いや、どのような意味においても、我々は軍隊ではない。[l][r]
+#alice
+楽にしていい。[l][r]
+#alice
+無理に兵隊言葉を遣う必要もない。コギャル語もな。[p]
+
+[autosave]
+#danu
+超ム[ruby text=チョムカ spacing=48]カつく。[l][r]
+#danu
+ありがたくあります。[p]
+
+[autosave]
+#alice
+状況を整理しよう。[l][r]
+#alice
+国内戦線は膠着している。[l][r]
+#alice
+北海道の食料生産は順調だ。[l][r]
+#alice
+銃後の食料統制も緩和された。[p]
+
+[autosave]
+#alice
+安全[ruby x=-16 text=グリーンゾーン spacing=4]地帯では、屍[ruby x=-16 text=ゾンビ spacing=12]者による死者数が終末論的[ruby text=アポカリプティック・ディスペアー・シンドローム]絶望症候群や自殺による死者数を下まわった。[l][r]
+#alice
+状況は小康状態にある。[l][r]
+#alice
+そうだったらよかったのに、な。[p]
+
+[autosave]
+#danu
+ある晩、彼または彼女が眠りにつく。[l][r]
+#danu
+傷つき絶望した人間は、夜のとばりのなか、そっと息をひきとる。[l][r]
+#danu
+明日なんてもう見たくないから。[l][r]
+#danu
+あーね。[p]
+
+[autosave]
+#danu
+死に至る病とは絶望である。[l][r]
+#danu
+バーイ、アンティ・クリマクス。[l][r]
+#danu
+だから、処方箋もいっしょ、なのにね。[l][r]
+#danu
+偉い人にはそれがわからんのです。[p]
+
+[autosave]
+#alice
+だから、決号作戦が発動した。[l][r]
+#alice
+決定的な勝利をもって厭戦気分を吹きとばす。[l][r]
+#alice
+まあ、あれだ。[l][r]
+#alice
+建前だ。[p]
+
+[autosave]
+#alice
+布[ruby x=-16 text=ハワイ spacing=12]哇が陥落した。[l][r]
+#alice
+武装要塞都市ホノルル。[l][r]
+#alice
+合衆国でもっとも安全だったはずの島。[l][r]
+#alice
+これには仔細がある。[p]
+
+[autosave]
+#alice
+未確認巨大敵性体、仮称リヴァイアサンが布[ruby x=-16 text=ハワイ spacing=12]哇を強襲した。[l][r]
+#alice
+巨鯨の屍[ruby x=-16 text=ゾンビ spacing=12]者と推測されている。[l][r]
+#alice
+審判の喇叭よろしく、仮称リヴァイアサンが吠えた。[p]
+
+[autosave]
+#danu
+獲物を見つけた屍[ruby x=-16 text=ゾンビ spacing=12]者はうなり声を発する。[l][r]
+#danu
+うなり声を聞いた屍[ruby x=-16 text=ゾンビ spacing=12]者もうなり声を発する。[l][r]
+#danu
+これが群体形成の理屈。[p]
+
+[autosave]
+#danu
+水中の屍[ruby x=-16 text=ゾンビ spacing=12]者はうなり声を出せない。[l][r]
+#danu
+だから、深[ruby text=ディープ・ワンズ]き者は溺[ruby text=ドラウンド spacing=6]屍者を圧倒できた。[l][r]
+#danu
+仮称リヴァイアサンの声はとても遠くまで届く。[l][r]
+#danu
+数百キロの範囲から溺[ruby text=ドラウンド spacing=6]屍者を呼びよせる。[p]
+
+[autosave]
+#alice
+仮称リヴァイアサンは、いわば屍[ruby x=-16 text=ゾンビ spacing=12]者の強襲揚陸艦だ。[l][r]
+#alice
+布[ruby x=-16 text=ハワイ spacing=12]哇は巨大群体に蹂躙された。[l][r]
+#alice
+空母エンタープライズに避難民を満載して、合衆国太平洋艦隊は転進した。[p]
+
+[autosave]
+#alice
+海はいまや要害ではなくなった。[l][r]
+#alice
+五大陸を喪った人類は、七つの海も喪おうとしている。[l][r]
+#alice
+だから、決号作戦が発動した。発動してしまった。[p]
+
+[autosave]
+#alice
+仮称リヴァイアサンを東京湾に誘引して邀撃する。[l][r]
+#alice
+関東は巨大群体に滅ぼされるだろう。[l][r]
+#alice
+それでも、仮称リヴァイアサンを撃滅すれば、被害は本州に極限される。[p]
+
+[autosave]
+#alice
+本州以外のすべての島嶼が救われる。[l][r]
+#alice
+人類が海をとりもどすための特別攻撃作戦。[l][r]
+#alice
+やれやれ。[l][r]
+#alice
+前時代的だね。[p]
+
+[autosave]
+#alice
+我々の任務は、それではない冴えたやりかたを見つけることだ。[l][r]
+#alice
+そのためにボクは横濱に来た。[l][r]
+#alice
+そのためにボクたちは横濱にいる。[p]
+
+[autosave]
+#alice
+さてと。[l][r]
+#alice
+スティーブンと呼ばれた人物、あるいは結社の噂を聞いたことがあるか。
+[vostop]
+[glink color=btn_06_black target=*スティーブン_有 x=48 y=32 text=ある size=32]
+[glink color=btn_06_black target=*スティーブン_無 x=48 y=128 text=ない size=32]
+[s]
+
+*スティーブン_有
+
+[voconfig name=alice vostorage=alice{number}.ogg number=57]
+[voconfig name=danu vostorage=danu{number}.ogg number=23]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=31]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
+[vostart]
+
+[autosave]
+#alice
+そう。飽きるほど囁かれた噂だ。[l][r]
+#alice
+戦局を一変する決戦兵器。特効薬。ワクチン。[l][r]
+#alice
+絶望した人間の願望が産みだした、存在しないマクガフィン。都市伝説。[p]
+[vostop]
+[jump target=*スティーブン]
+
+*スティーブン_無
+
+[voconfig name=alice vostorage=alice{number}.ogg number=60]
+[voconfig name=danu vostorage=danu{number}.ogg number=23]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=31]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
+[vostart]
+
+[autosave]
+#alice
+そうか。まあ、一顧だに値しない噂だ。[l][r]
+#alice
+戦局を一変する決戦兵器。特効薬。ワクチン。[l][r]
+#alice
+絶望した人間の願望が産みだした、存在しないマクガフィン。都市伝説。[p]
+[vostop]
+[jump target=*スティーブン]
+
+*スティーブン
+
+[voconfig name=alice vostorage=alice{number}.ogg number=63]
+[voconfig name=danu vostorage=danu{number}.ogg number=23]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=31]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=8]
+[vostart]
+
+[autosave]
+#alice
+まだもうすこしだけ時間がある。[l][r]
+#alice
+キミには三通の手紙を届けてもらう。[p]
+
+[autosave]
+#danu
+だいじょうぶい。[l][r]
+#danu
+手紙は届いてしまうよ。[l][r]
+#danu
+郵便は誤配されないよ。[l][r]
+#danu
+ダヌーがついてるから。[p]
+
+[autosave]
+#alice
+だいじょうぶいって、コギャル語どころか、オヤジギャグじゃないか。[p]
+
+[autosave]
+#danu
+超[ruby text=チョベリバ spacing=6]最悪。[l][r]
+#danu
+あれあれ。怒らせていいんですか。[l][r]
+#danu
+遣いますよ。郵便的脱構築。[p]
+
+[autosave]
+#alice
+いいですよ。遣ってください。[l][r]
+#alice
+否定神学とやらを。[l][r]
+#alice
+冗談はさておき、ボクには届けられない、これは手紙だから。[p]
+
+[autosave]
+#narrator
+これは手紙。これは郵便。[l][r]
+#narrator
+これは物[ruby x=-16 text=ナラティブ]語。[l][r]
+#narrator
+昭和横濱物語。スティーブンによる福音書。第一節。[l][r]
+#narrator
+了。（つづく）[p]
 [vostop]
 
 [return]
