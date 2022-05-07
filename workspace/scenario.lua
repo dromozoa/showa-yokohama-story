@@ -218,8 +218,7 @@ for i = 1, #sections do
 
           local spacing
           if m < n * 2 then
-            -- spacing = (" spacing=%.17g"):format((n * 2 - m) * 16 / (m - 1))
-            spacing = (" spacing=%.17g"):format((n * 2 - m) * 24 / (m - 1))
+            spacing = (" spacing=%.17g"):format((n * 2 - m) * 16 / (m - 1))
           else
             spacing = ""
           end

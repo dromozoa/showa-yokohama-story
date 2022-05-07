@@ -24,7 +24,7 @@
 #narrator
 人類の大半は寒冷地に押しこめられた。[l][r]
 #narrator
-冬が屍[ruby x=-16 text=ゾンビ spacing=12]者の脳髄を凍りつかせるから。[l][r]
+冬が屍[ruby x=-16 text=ゾンビ spacing=8]者の脳髄を凍りつかせるから。[l][r]
 #narrator
 海を要害に、封鎖と検疫に成功した島嶼もある。[l][r]
 #narrator
@@ -43,15 +43,15 @@
 #narrator
 一万人超の住民を抱える関東最大の根拠地、本牧[ruby x=-16 text=ホンモク・ディビジョン]地区。[l][r]
 #narrator
-資源調達師団隷下、第一回[ruby x=-16 text=スカベンジャーズ spacing=13.714285714285714]収大隊は京浜工業地帯を責任地域とする。[p]
+資源調達師団隷下、第一回[ruby x=-16 text=スカベンジャーズ spacing=9.1428571428571423]収大隊は京浜工業地帯を責任地域とする。[p]
 
 [autosave]
 #narrator
 対咬戦闘服に円匙をかつぎ、キミは湾岸道路下のバラック集落を巡回する。[l][r]
 #narrator
-キミのその日の相棒は訓[ruby text=ハンドラー spacing=6]練士のユキヲだ。[l][r]
+キミのその日の相棒は訓[ruby text=ハンドラー spacing=4]練士のユキヲだ。[l][r]
 #narrator
-彼の犬は屍[ruby x=-16 text=ゾンビ spacing=12]者の屍臭を嗅ぐ。[p]
+彼の犬は屍[ruby x=-16 text=ゾンビ spacing=8]者の屍臭を嗅ぐ。[p]
 
 [autosave]
 #yukio
@@ -65,7 +65,7 @@
 
 [autosave]
 #narrator
-その日は屍[ruby x=-16 text=ゾンビ spacing=12]者にも不審者にも遭遇しなかった。[l][r]
+その日は屍[ruby x=-16 text=ゾンビ spacing=8]者にも不審者にも遭遇しなかった。[l][r]
 #narrator
 本部が置かれた中学校に戻り、下番したキミに大隊幕僚が声をかけた。[l][r]
 #narrator
@@ -77,7 +77,7 @@
 #yukio
 オマエ、なんちゅう厄ネタを抱えこんだんだ。[l][r]
 #yukio
-オレは逃[ruby x=-16 text=フケ spacing=48]げるぜ。[l][r]
+オレは逃[ruby x=-16 text=フケ spacing=32]げるぜ。[l][r]
 #yukio
 あばよ。[p]
 
@@ -142,7 +142,7 @@
 #narrator
 歩みでた兵がフードを脱ぐ。[l][r]
 #narrator
-褐色の肌。白い髪。戦[ruby text=ガングロ spacing=16]化粧。[l][r]
+褐色の肌。白い髪。戦[ruby text=ガングロ spacing=10.666666666666666]化粧。[l][r]
 #narrator
 ──尖った耳。[l][r]
 #narrator
@@ -164,7 +164,7 @@
 #danu
 ロリババァは黙っていてくれないか。[l][r]
 #danu
-マジでキ[ruby text=エムケーファイブ spacing=34.285714285714285]レる五秒前。[l][r]
+マジでキ[ruby text=エムケーファイブ spacing=22.857142857142858]レる五秒前。[l][r]
 #danu
 拠点にご案内します。[p]
 
@@ -178,7 +178,7 @@
 
 [autosave]
 #narrator
-指揮所に備えられた壊れかけの黒い鉱石ラジオが布[ruby x=-16 text=ハワイ spacing=12]哇陥落を伝えている。[p]
+指揮所に備えられた壊れかけの黒い鉱石ラジオが布[ruby x=-16 text=ハワイ spacing=8]哇陥落を伝えている。[p]
 
 [autosave]
 #alice
@@ -200,7 +200,7 @@
 
 [autosave]
 #danu
-超ム[ruby text=チョムカ spacing=48]カつく。[l][r]
+超ム[ruby text=チョムカ spacing=32]カつく。[l][r]
 #danu
 ありがたくあります。[p]
 
@@ -216,7 +216,7 @@
 
 [autosave]
 #alice
-安全[ruby x=-16 text=グリーンゾーン spacing=4]地帯では、屍[ruby x=-16 text=ゾンビ spacing=12]者による死者数が終末論的[ruby text=アポカリプティック・ディスペアー・シンドローム]絶望症候群や自殺による死者数を下まわった。[l][r]
+安全[ruby x=-16 text=グリーンゾーン spacing=2.6666666666666665]地帯では、屍[ruby x=-16 text=ゾンビ spacing=8]者による死者数が終末論的[ruby text=アポカリプティック・ディスペアー・シンドローム]絶望症候群や自殺による死者数を下まわった。[l][r]
 #alice
 状況は小康状態にある。[l][r]
 #alice
@@ -254,7 +254,7 @@
 
 [autosave]
 #alice
-布[ruby x=-16 text=ハワイ spacing=12]哇が陥落した。[l][r]
+布[ruby x=-16 text=ハワイ spacing=8]哇が陥落した。[l][r]
 #alice
 武装要塞都市ホノルル。[l][r]
 #alice
@@ -264,35 +264,35 @@
 
 [autosave]
 #alice
-未確認巨大敵性体、仮称リヴァイアサンが布[ruby x=-16 text=ハワイ spacing=12]哇を強襲した。[l][r]
+未確認巨大敵性体、仮称リヴァイアサンが布[ruby x=-16 text=ハワイ spacing=8]哇を強襲した。[l][r]
 #alice
-巨鯨の屍[ruby x=-16 text=ゾンビ spacing=12]者と推測されている。[l][r]
+巨鯨の屍[ruby x=-16 text=ゾンビ spacing=8]者と推測されている。[l][r]
 #alice
 審判の喇叭よろしく、仮称リヴァイアサンが吠えた。[p]
 
 [autosave]
 #danu
-獲物を見つけた屍[ruby x=-16 text=ゾンビ spacing=12]者はうなり声を発する。[l][r]
+獲物を見つけた屍[ruby x=-16 text=ゾンビ spacing=8]者はうなり声を発する。[l][r]
 #danu
-うなり声を聞いた屍[ruby x=-16 text=ゾンビ spacing=12]者もうなり声を発する。[l][r]
+うなり声を聞いた屍[ruby x=-16 text=ゾンビ spacing=8]者もうなり声を発する。[l][r]
 #danu
 これが群体形成の理屈。[p]
 
 [autosave]
 #danu
-水中の屍[ruby x=-16 text=ゾンビ spacing=12]者はうなり声を出せない。[l][r]
+水中の屍[ruby x=-16 text=ゾンビ spacing=8]者はうなり声を出せない。[l][r]
 #danu
-だから、深[ruby text=ディープ・ワンズ]き者は溺[ruby text=ドラウンド spacing=6]屍者を圧倒できた。[l][r]
+だから、深[ruby text=ディープ・ワンズ]き者は溺[ruby text=ドラウンド spacing=4]屍者を圧倒できた。[l][r]
 #danu
 仮称リヴァイアサンの声はとても遠くまで届く。[l][r]
 #danu
-数百キロの範囲から溺[ruby text=ドラウンド spacing=6]屍者を呼びよせる。[p]
+数百キロの範囲から溺[ruby text=ドラウンド spacing=4]屍者を呼びよせる。[p]
 
 [autosave]
 #alice
-仮称リヴァイアサンは、いわば屍[ruby x=-16 text=ゾンビ spacing=12]者の強襲揚陸艦だ。[l][r]
+仮称リヴァイアサンは、いわば屍[ruby x=-16 text=ゾンビ spacing=8]者の強襲揚陸艦だ。[l][r]
 #alice
-布[ruby x=-16 text=ハワイ spacing=12]哇は巨大群体に蹂躙された。[l][r]
+布[ruby x=-16 text=ハワイ spacing=8]哇は巨大群体に蹂躙された。[l][r]
 #alice
 空母エンタープライズに避難民を満載して、合衆国太平洋艦隊は転進した。[p]
 
@@ -406,7 +406,7 @@
 
 [autosave]
 #danu
-超[ruby text=チョベリバ spacing=6]最悪。[l][r]
+超[ruby text=チョベリバ spacing=4]最悪。[l][r]
 #danu
 あれあれ。怒らせていいんですか。[l][r]
 #danu
