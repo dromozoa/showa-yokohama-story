@@ -35,6 +35,11 @@ tf.gothic = "BIZ UDPGothic"
 
 *title
 
+[preload storage=data/bgimage/title.png]
+[preload storage=data/bgimage/map.png]
+[preload storage=data/fgimage/dummy.png]
+[save_img storage=dummy.png]
+
 [font face=VT323 size=48 color=0x029D93]
 #
 H.H.C MONITOR VER 1.3[r]
