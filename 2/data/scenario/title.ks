@@ -44,7 +44,7 @@ tf.gothic = "BIZ UDPGothic"
 [font face=VT323 size=48 color=0x029D93]
 #
 H.H.C MONITOR VER 1.3[r]
-EVANGELIUM SECUNDUM STEPHANUS II[l]
+EVANGELIUM SECUNDUM STEPHANUS verse II[l]
 [resetfont]
 
 [bg2 storage=title.png time=1000 wait=false method=vanishIn]
