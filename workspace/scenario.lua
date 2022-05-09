@@ -77,8 +77,8 @@ local speaker_map = {
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
-    angry = "1.0";
-    sad = "0.0";
+    angry = "0.5";
+    sad = "0.5";
   };
 
 }
