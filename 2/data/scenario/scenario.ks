@@ -196,11 +196,13 @@
 
 [autosave]
 #narrator
-ダヌーは無名戦士の墓碑に向きなおり、陸式の礼を捧げた。[l][r]
+神父が歩み去った。[l][r]
+#narrator
+無名戦士の墓碑に向きなおり、ダヌーは陸式の礼を捧げた。[l][r]
 #narrator
 掃除道具を拾い、キミは墓を磨いた。[l][r]
 #narrator
-年代物の葡萄酒と焼きたてのパンを受けとり、帰路についた。[p]
+年代物の葡萄酒を受けとり、帰路についた。[p]
 [vostop]
 [jump target=*選択肢]
 
@@ -208,7 +210,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=13]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
 [voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -217,7 +219,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=13]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
 [voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
