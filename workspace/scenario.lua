@@ -88,10 +88,10 @@ local speaker_map = {
     pause = "0.5";
     volume = "2.0";
     happy = "0.0";
-    fun = "0.2";
-    angry = "0.4";
-    sad = "0.4";
-  }
+    fun = "0.0";
+    angry = "0.2";
+    sad = "0.5";
+  };
 
 }
 local speakers = {}
