@@ -20,7 +20,7 @@
 #alice
 本牧大[ruby text=カテドラル spacing=4]聖堂。[l][r]
 #alice
-横濱市資源循環局。[l][r]
+資源循環局。[l][r]
 #alice
 魚人港湾労働組合。[p]
 [vostop]
@@ -38,12 +38,12 @@
 #danu
 少尉、どこに手紙を届けるの。
 [vostop]
-[glink color=btn_06_black target=*カテドラル x=48 y=32 text=本牧大聖堂 size=32]
-[glink color=btn_06_black target=*リサイクル x=48 y=128 text=横濱市資源循環局 size=32]
-[glink color=btn_06_black target=*ハーバー x=48 y=224 text=魚人港湾労働組合 size=32]
+[glink color=btn_06_black target=*聖職者 x=48 y=32 text=本牧大聖堂 size=32]
+[glink color=btn_06_black target=*技術者 x=48 y=128 text=資源循環局 size=32]
+[glink color=btn_06_black target=*活動家 x=48 y=224 text=魚人港湾労働組合 size=32]
 [s]
 
-*カテドラル
+*聖職者
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
@@ -132,13 +132,15 @@
 #priest
 生きのこるために、人類は人類を選別した。[l][r]
 #priest
-生きのこるために、みずから人間性を手放したのだ。[p]
+生きのこるために、みずから人間性を手放したのだ。[l][r]
+#priest
+信仰なかりせば、いまや、人類と屍[ruby x=-16 text=ゾンビ spacing=8]者は区別できない。[p]
 
 [autosave]
 #danu
-アンタのとこの教義で、それっていいの。[l][r]
+それって、ありなの。アンタんとこの教義的に。[l][r]
 #danu
-人類はすでに滅んでるってんでしょ。[p]
+人類、あらかじめ滅んでるじゃん。[p]
 
 [autosave]
 #priest
@@ -157,26 +159,66 @@
 その銃は、卒業の祝いとしてあ[ruby text=いつ]奴に贈られたものだ。[p]
 
 [autosave]
+#danu
+人類でないものたちを、その銃は救わないの。[p]
+
+[autosave]
 #priest
-無原罪のアリスからの書簡か。[p]
+人は人を救わない。ただ、赦すのみだ。[l][r]
+#priest
+救うのは主だ。人間と人間に似た者たちすべてを。[l][r]
+#priest
+まあ、まかせておけ。[l][r]
+#priest
+駱駝を狭い門にねじこむのは得意なんだ。[p]
+
+[autosave]
+#priest
+魔女の口車にだって乗ろうじゃないか。[l][r]
+#priest
+核攻撃を阻止するためならば、是非もない。[l][r]
+#priest
+ワタシたちは、そういう[ruby text=アラムナイ]幇だからな。[p]
+
+[autosave]
+#danu
+新式の歩兵銃、用意してあるけど。[p]
+
+[autosave]
+#priest
+弾薬だけでいい。[l][r]
+#priest
+知らんのか。[l][r]
+#priest
+十[ruby text=クルセイダーズ]字軍は聖別されたカラシニコフで屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒する。[l][r]
+#priest
+土産を持たせる。すこし待て。[p]
+
+[autosave]
+#narrator
+ダヌーは無名戦士の墓碑に向きなおり、陸式の礼を捧げた。[l][r]
+#narrator
+掃除道具を拾い、キミは墓を磨いた。[l][r]
+#narrator
+年代物の葡萄酒と焼きたてのパンを受けとり、帰路についた。[p]
 [vostop]
 [jump target=*選択肢]
 
-*リサイクル
+*技術者
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=13]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=10]
-[voconfig name=priest vostorage=priest{number}.ogg number=18]
+[voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=13]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
-*ハーバー
+*活動家
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=13]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=10]
-[voconfig name=priest vostorage=priest{number}.ogg number=18]
+[voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=13]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
