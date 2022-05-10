@@ -2,6 +2,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=0]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -20,7 +21,7 @@
 #alice
 本牧大[ruby text=カテドラル spacing=4]聖堂。[l][r]
 #alice
-資源循環局。[l][r]
+横濱市資源循環局。[l][r]
 #alice
 魚人港湾労働組合。[p]
 [vostop]
@@ -29,6 +30,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=2]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -39,7 +41,7 @@
 少尉、どこに手紙を届けるの。
 [vostop]
 [glink color=btn_06_black target=*聖職者 x=48 y=32 text=本牧大聖堂 size=32]
-[glink color=btn_06_black target=*技術者 x=48 y=128 text=資源循環局 size=32]
+[glink color=btn_06_black target=*技術者 x=48 y=128 text=横濱市資源循環局 size=32]
 [glink color=btn_06_black target=*活動家 x=48 y=224 text=魚人港湾労働組合 size=32]
 [s]
 
@@ -47,6 +49,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=2]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -58,7 +61,7 @@
 #narrator
 徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。[l][r]
 #narrator
-大震災で崩壊し、現在の場所に移転した。[p]
+関東大震災で崩壊し、現在の場所に移転した。[p]
 
 [autosave]
 #danu
@@ -94,7 +97,7 @@
 
 [autosave]
 #priest
-総[ruby text=ヴァチカン spacing=4]本山は総攻撃を容認したか。[p]
+本[ruby x=-16 text=ヴァチカン]山は総攻撃を容認したか。[p]
 
 [autosave]
 #danu
@@ -120,7 +123,9 @@
 
 [autosave]
 #priest
-アウシュビッツ。ヒロシマ。ナガサキ。名づけられた、そして、名づけられなかった沢山の悲劇たち。[l][r]
+アウシュビッツ。ヒロシマ。[l][r]
+#priest
+名づけられた、そして、名づけられなかった沢山の悲劇たち。[l][r]
 #priest
 二十世紀、人類の魂は傷つき、人間性は損なわれた。[l][r]
 #priest
@@ -134,13 +139,13 @@
 #priest
 生きのこるために、みずから人間性を手放したのだ。[l][r]
 #priest
-信仰なかりせば、いまや、人類と屍[ruby x=-16 text=ゾンビ spacing=8]者は区別できない。[p]
+信仰なかりせば、いまや人類と屍[ruby x=-16 text=ゾンビ spacing=8]者は区別できない。[p]
 
 [autosave]
 #danu
 それって、ありなの。アンタんとこの教義的に。[l][r]
 #danu
-人類、あらかじめ滅んでるじゃん。[p]
+人類、あらかじめ滅んでんじゃん。[p]
 
 [autosave]
 #priest
@@ -174,7 +179,7 @@
 
 [autosave]
 #priest
-魔女の口車にだって乗ろうじゃないか。[l][r]
+魔女の口車にだって乗ってやろうじゃないか。[l][r]
 #priest
 核攻撃を阻止するためならば、是非もない。[l][r]
 #priest
@@ -182,7 +187,7 @@
 
 [autosave]
 #danu
-新式の歩兵銃、用意してあるけど。[p]
+新式の歩兵銃を三百、用意してるけど。[p]
 
 [autosave]
 #priest
@@ -196,11 +201,11 @@
 
 [autosave]
 #narrator
-神父が歩み去った。[l][r]
+神父が歩み去る。[l][r]
 #narrator
 無名戦士の墓碑に向きなおり、ダヌーは陸式の礼を捧げた。[l][r]
 #narrator
-掃除道具を拾い、キミは墓を磨いた。[l][r]
+掃除用具を拾い、キミは墓を磨いた。[l][r]
 #narrator
 年代物の葡萄酒を受けとり、帰路についた。[p]
 [vostop]
@@ -210,17 +215,32 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
+
+[autosave]
+#narrator
+横濱市資源循環局、総力戦政策調整部、武器製[ruby text=ウェポン・メーカーズ spacing=7.1111111111111107]造推進課。[l][r]
+#narrator
+キミは手紙を課長の名刺と交換した。[p]
+
+[autosave]
+#engineer
+課長といっても、名ばかりのものでね。[l][r]
+#engineer
+もとは扶桑ファナティックで技術者をやっていたんだ。[p]
+[vostop]
 
 *活動家
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=2]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=16]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
