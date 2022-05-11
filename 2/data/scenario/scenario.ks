@@ -3,6 +3,7 @@
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=0]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -21,7 +22,7 @@
 #alice
 本牧大[ruby text=カテドラル spacing=4]聖堂。[l][r]
 #alice
-横濱市資源循環局。[l][r]
+資源循環局中事務所。[l][r]
 #alice
 魚人港湾労働組合。[p]
 [vostop]
@@ -31,6 +32,7 @@
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=2]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -41,7 +43,7 @@
 少尉、どこに手紙を届けるの。
 [vostop]
 [glink color=btn_06_black target=*聖職者 x=48 y=32 text=本牧大聖堂 size=32]
-[glink color=btn_06_black target=*技術者 x=48 y=128 text=横濱市資源循環局 size=32]
+[glink color=btn_06_black target=*技術者 x=48 y=128 text=資源循環局中事務所 size=32]
 [glink color=btn_06_black target=*活動家 x=48 y=224 text=魚人港湾労働組合 size=32]
 [s]
 
@@ -50,6 +52,7 @@
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=2]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -159,7 +162,7 @@
 
 [autosave]
 #priest
-三十年前、東都大学の入試が中止された年、ワタシたちはメサイア会の高校を卒業した。[l][r]
+三十年前、東京大学の入試が中止された年、ワタシたちはメサイア会の高校を卒業した。[l][r]
 #priest
 その銃は、卒業の祝いとしてあ[ruby text=いつ]奴に贈られたものだ。[p]
 
@@ -216,6 +219,7 @@
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
@@ -223,7 +227,37 @@
 
 [autosave]
 #narrator
-横濱市資源循環局、総力戦政策調整部、武器製[ruby text=ウェポン・メーカーズ spacing=7.1111111111111107]造推進課。[l][r]
+武装臨海鉄道、本牧線、横濱本牧駅。[l][r]
+#narrator
+資源循環局、総力戦政策調整部、武器製[ruby text=ウェポン・メーカーズ spacing=7.1111111111111107]造推進課。[l][r]
+#narrator
+自動車を解体して円匙と斧槍を製造する。[l][r]
+#narrator
+いわば、官営のリサイクル工場だ。[p]
+
+[autosave]
+#narrator
+キミは手紙をさしだし、課長の名刺を受けとる。[p]
+
+[autosave]
+#engineer
+課長といっても、名ばかりの管理職でね。[l][r]
+#engineer
+武装ピックアップ二台。電源車。弾薬十基数。[l][r]
+#engineer
+戦争でもするのか。[p]
+
+[autosave]
+#danu
+戦争をするんだよ。[p]
+
+[autosave]
+#danu
+屍[ruby x=-16 text=ゾンビ spacing=8]者ウイルスは存在しない。[l][r]
+#danu
+栄養補給なしで、屍[ruby x=-16 text=ゾンビ spacing=8]者は動きつづける。[p]
+
+[autosave]
 #narrator
 キミは手紙をさしだし、課長の名刺を受けとった。[p]
 
@@ -231,17 +265,43 @@
 #engineer
 課長といっても、名ばかりの管理職でね。[l][r]
 #engineer
-もとは扶桑ファナティックで技術者をやっていたんだ。[p]
+もとはファナティックで技術者をやっていたんだ。[p]
 [vostop]
+[jump target=*選択肢]
 
 *活動家
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=2]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=16]
+[voconfig name=danu vostorage=danu{number}.ogg number=18]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=5]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=20]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
+
+[autosave]
+#magi
+南氷洋捕鯨船団、仮称リヴァイアサンを失探したみたいです。[l][r]
+#magi
+座標は、南緯四十九度、西経百二十三度。[l][r]
+#magi
+太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極。[p]
+
+[autosave]
+#alice
+マジかぁ。[l][r]
+#alice
+魚人ども、なにやらかしてくれてんの。[p]
+
+[autosave]
+#danu
+あー、ルルイエですか。[p]
+
+[autosave]
+#alice
+分遣隊βに死んでもらうしかないか。[p]
+[vostop]
+[jump target=*選択肢]
 
 [return]
