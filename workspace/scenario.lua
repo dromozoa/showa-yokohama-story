@@ -57,6 +57,18 @@ local speaker_map = {
     sad = "1.0";
   };
 
+  magi = {
+    speaker = "Speaker/f4b";
+    speed = "1.0";
+    pitch = "-1.5";
+    pause = "0.5";
+    volume = "2.0";
+    happy = "0.0";
+    fun = "0.0";
+    angry = "0.5";
+    sad = "0.5";
+  };
+
   yukio = {
     speaker = "Speaker/m3";
     speed = "1.0";
