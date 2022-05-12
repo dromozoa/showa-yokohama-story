@@ -273,27 +273,31 @@
 
 [autosave]
 #engineer
-昭和六十年代の終わり、情報社会が高度化した。[l][r]
+昭和六十年代初頭、情報社会が高度化した。[l][r]
 #engineer
-情報方舟計画。[l][r]
+情報方舟計画を、聞いたことがあるだろうか。[l][r]
 #engineer
-離散化されたすべての情報を、収束光で石英硝子に彫刻する。[p]
+離散化されたすべての情報を、収[ruby text=レーザ spacing=24]束光で石英硝[ruby x=-16 text=ガラス spacing=8]子に彫刻する。[p]
+
+[autosave]
+#engineer
+結局は、破[ruby x=-16 text=カタストロフ]局のどさくさで立ちぎえになったんだが。[l][r]
+#engineer
+磯子の一般設計学研究所が、日本の拠点になった。[l][r]
+#engineer
+四菱の数値風洞で演算して、初芝の生産工学研究所でガラスに灼きつける。[p]
+
+[autosave]
+#engineer
+一般設計学研究所にスティーブンという研究者がいた。[l][r]
+#engineer
+マックス・プランクから引っぱってきたんじゃないかな。[p]
 
 [autosave]
 #danu
 屍[ruby x=-16 text=ゾンビ spacing=8]者ウイルスは存在しない。[l][r]
 #danu
 栄養補給なしで、屍[ruby x=-16 text=ゾンビ spacing=8]者は動きつづける。[p]
-
-[autosave]
-#narrator
-キミは手紙をさしだし、課長の名刺を受けとった。[p]
-
-[autosave]
-#engineer
-課長といっても、名ばかりの管理職でね。[l][r]
-#engineer
-もとはファナティックで技術者をやっていたんだ。[p]
 [vostop]
 [jump target=*選択肢]
 
@@ -301,9 +305,9 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=19]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=13]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=16]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=20]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=19]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -333,9 +337,9 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
 [voconfig name=danu vostorage=danu{number}.ogg number=21]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=13]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=16]
 [voconfig name=magi vostorage=magi{number}.ogg number=3]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=20]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=19]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -376,7 +380,7 @@
 
 [autosave]
 #narrator
-あれから、二十四年。[l][r]
+──四半世紀が経った。[l][r]
 #narrator
 世界人口は十億人を下回った。[l][r]
 #narrator
