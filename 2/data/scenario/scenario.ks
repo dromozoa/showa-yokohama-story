@@ -243,15 +243,23 @@
 #engineer
 課長といっても、名ばかりの管理職でね。[l][r]
 #engineer
-とは言い条、親友の娘の依頼だ。[l][r]
+もとは扶桑ファナティックでメカトロをやっていたんだが、なんの因果か公僕になっちまった。[l][r]
 #engineer
-かなえるさ。[p]
+とは言い条、親友の娘の依頼だ。かなえるさ。[p]
 
 [autosave]
 #engineer
-装甲ピックアップ二台。自走式電源車。弾薬十基数。[l][r]
+装甲ピックアップ二台。自走式電源車。[l][r]
 #engineer
 どんとこい。[l][r]
+#engineer
+弾丸は要らないんだね。[p]
+
+[autosave]
+#danu
+大隊の十基数、用意してる。[p]
+
+[autosave]
 #engineer
 いやはや、戦争[ruby x=-16 text=サマー・オブ・ウォー]の夏だな。[p]
 
@@ -261,7 +269,15 @@
 
 [autosave]
 #engineer
-情報方舟計画を知っているだろうか。[p]
+云わないんじゃないかな。[p]
+
+[autosave]
+#engineer
+昭和六十年代の終わり、情報社会が高度化した。[l][r]
+#engineer
+情報方舟計画。[l][r]
+#engineer
+離散化されたすべての情報を、収束光で石英硝子に彫刻する。[p]
 
 [autosave]
 #danu
@@ -284,8 +300,8 @@
 *活動家
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=18]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=danu vostorage=danu{number}.ogg number=19]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=13]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=20]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
@@ -298,7 +314,7 @@
 #magi
 座標は、南緯四十九度、西経百二十三度。[l][r]
 #magi
-太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極。[p]
+通称、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極。[p]
 
 [autosave]
 #danu
@@ -310,14 +326,14 @@
 #alice
 [ruby text=ミエルダ]糞。ルルイエか。[l][r]
 #alice
-β分遣隊には護国の鬼になってもらうしかないな。[p]
+β分遣隊に護国の鬼になってもらうしかないな。[p]
 [vostop]
 
 *拒否
 
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=20]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=danu vostorage=danu{number}.ogg number=21]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=13]
 [voconfig name=magi vostorage=magi{number}.ogg number=3]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=20]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
@@ -334,7 +350,7 @@
 #alice
 我々は軍隊ではない。[l][r]
 #alice
-あるいは、民主主義国家の民主主義的な軍隊だ。[p]
+あるいは、民主主義国家の最後の民主主義的な軍隊だ。[p]
 
 [autosave]
 #alice
@@ -344,7 +360,7 @@
 #alice
 良い晩餐だった。[l][r]
 #alice
-そうじゃないか。そうであったら、いい。[p]
+煙[ruby x=-16 text=ヤニ spacing=32]草はまずかったがな。[p]
 
 [autosave]
 #narrator
@@ -354,9 +370,9 @@
 #narrator
 仮称リヴァイアサンが横濱に襲来した。[l][r]
 #narrator
-日米連合[ruby x=-16 text=グランドフリート]艦隊は旗艦を自沈して東京湾を閉塞した。[l][r]
+日米連合[ruby x=-16 text=グランドフリート]艦隊は、旗艦を自沈して東京湾を閉塞した。[l][r]
 #narrator
-統合航空軍は空中巡洋艦から核爆雷を投下した。[p]
+統合航空軍は、空中巡洋艦から核爆雷を投下した。[p]
 
 [autosave]
 #narrator
