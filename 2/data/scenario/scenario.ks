@@ -231,25 +231,37 @@
 #narrator
 資源循環局、総力戦政策調整部、武器製[ruby text=ウェポン・メーカーズ spacing=7.1111111111111107]造推進課。[l][r]
 #narrator
-自動車を解体して円匙と斧槍を製造する。[l][r]
+破[ruby x=-16 text=カタストロフ]局初期、自動車を解体して円匙と斧槍を製造した解体工場。[l][r]
 #narrator
-いわば、官営のリサイクル工場だ。[p]
+つまり、官営のリサイクル工場。[p]
 
 [autosave]
 #narrator
-キミは手紙をさしだし、課長の名刺を受けとる。[p]
+キミは手紙をさしだし、課長の名刺を受けとった。[p]
 
 [autosave]
 #engineer
 課長といっても、名ばかりの管理職でね。[l][r]
 #engineer
-武装ピックアップ二台。電源車。弾薬十基数。[l][r]
+とは言い条、親友の娘の依頼だ。[l][r]
 #engineer
-戦争でもするのか。[p]
+かなえるさ。[p]
+
+[autosave]
+#engineer
+装甲ピックアップ二台。自走式電源車。弾薬十基数。[l][r]
+#engineer
+どんとこい。[l][r]
+#engineer
+いやはや、戦争[ruby x=-16 text=サマー・オブ・ウォー]の夏だな。[p]
 
 [autosave]
 #danu
-戦争をするんだよ。[p]
+決戦の夏、日本の夏っていうじゃん。[p]
+
+[autosave]
+#engineer
+情報方舟計画を知っているだろうか。[p]
 
 [autosave]
 #danu
@@ -273,7 +285,7 @@
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=18]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=5]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=20]
 [voconfig name=priest vostorage=priest{number}.ogg number=30]
@@ -289,19 +301,98 @@
 太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極。[p]
 
 [autosave]
+#danu
+[ruby text=デリモ]糞。マジかぁ。[l][r]
+#danu
+深[ruby text=ディープ・ワンズ]き者、なにやらかしてくれてんの。[p]
+
+[autosave]
 #alice
-マジかぁ。[l][r]
+[ruby text=ミエルダ]糞。ルルイエか。[l][r]
 #alice
-魚人ども、なにやらかしてくれてんの。[p]
+β分遣隊には護国の鬼になってもらうしかないな。[p]
+[vostop]
+
+*拒否
+
+[voconfig name=alice vostorage=alice{number}.ogg number=6]
+[voconfig name=danu vostorage=danu{number}.ogg number=20]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=3]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=20]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
 
 [autosave]
 #danu
-あー、ルルイエですか。[p]
+少尉。[p]
 
 [autosave]
 #alice
-分遣隊βに死んでもらうしかないか。[p]
+ダヌー軍曹、いいんだ。[l][r]
+#alice
+我々は軍隊ではない。[l][r]
+#alice
+あるいは、民主主義国家の民主主義的な軍隊だ。[p]
+
+[autosave]
+#alice
+少尉、血のように赤い葡萄酒だった。[l][r]
+#alice
+うまい包[ruby x=-16 text=パオ spacing=32]子だった。[l][r]
+#alice
+良い晩餐だった。[l][r]
+#alice
+そうじゃないか。そうであったら、いい。[p]
+
+[autosave]
+#narrator
+除隊したキミは、引揚船で北海道に渡る。[p]
+
+[autosave]
+#narrator
+仮称リヴァイアサンが横濱に襲来した。[l][r]
+#narrator
+日米連合[ruby x=-16 text=グランドフリート]艦隊は旗艦を自沈して東京湾を閉塞した。[l][r]
+#narrator
+統合航空軍は空中巡洋艦から核爆雷を投下した。[p]
+
+[autosave]
+#narrator
+あれから、二十四年。[l][r]
+#narrator
+世界人口は十億人を下回った。[l][r]
+#narrator
+あらたな黙示録の獣が、地上を闊歩している。[p]
+
+[autosave]
+#narrator
+南樺太。[l][r]
+#narrator
+炭鉱労働を終えたキミは帰路につく。[l][r]
+#narrator
+昭和百年の祝賀の雰囲気は雲散霧消していた。[p]
+
+[autosave]
+#narrator
+灯のない昏い道に、白い影が立つ。[l][r]
+#narrator
+つきしたがう十二の影は、闇にとけて見えなかった。[p]
+
+[autosave]
+#alice
+返してもらいにきた。その銃を。[l][r]
+#alice
+終わらせにきた。人類を。世界を。[l][r]
+#alice
+──昭和を。[p]
+
+[autosave]
+#narrator
+昭和横濱物語。アリスの黙[ruby text=リベレーション]示録。[l][r]
+#narrator
+了。[p]
 [vostop]
-[jump target=*選択肢]
 
 [return]
