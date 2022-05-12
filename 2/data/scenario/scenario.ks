@@ -57,11 +57,8 @@ sf.activist = 0;
 [iscript]
 sf.priest += 1;
 [endscript]
-[if exp="sf.priest == 2"]
-[jump target=*聖職者2]
-[endif]
-[if exp="sf.priest > 2"]
-[jump target=*聖職者n]
+[if exp="sf.priest > 1"]
+[jump target=*聖職者済]
 [endif]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
@@ -228,7 +225,7 @@ sf.priest += 1;
 [vostop]
 [jump target=*選択肢]
 
-*聖職者2
+*聖職者済
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
@@ -241,29 +238,20 @@ sf.priest += 1;
 
 [autosave]
 #danu
-本牧大[ruby text=カテドラル spacing=4]聖堂はもう行ったよね。[p]
-[vostop]
-[jump target=*選択肢]
-
-*聖職者n
-
-[voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=16]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
+本牧大[ruby text=カテドラル spacing=4]聖堂は、もう行かないよ。[l][r]
 #danu
-アンタ、バカァ。[p]
+苦手だっていったじゃん。[p]
 [vostop]
 [jump target=*選択肢]
 
 *工学者
 
+[iscript]
+sf.engineer += 1;
+[endscript]
+[if exp="sf.engineer > 1"]
+[jump target=*工学者済]
+[endif]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=17]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -471,10 +459,27 @@ sf.priest += 1;
 [vostop]
 [jump target=*選択肢]
 
-*活動家
+*工学者済
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=36]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=23]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+資源循環局は、もう行ったよね。[p]
+[vostop]
+[jump target=*選択肢]
+
+*活動家
+
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=42]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=36]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
@@ -506,7 +511,7 @@ sf.priest += 1;
 *拒否
 
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=43]
+[voconfig name=danu vostorage=danu{number}.ogg number=44]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=36]
 [voconfig name=magi vostorage=magi{number}.ogg number=3]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
