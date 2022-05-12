@@ -135,11 +135,11 @@ for line in io.lines() do
       page = nil
     end
 
-  elseif match(line, "@bg{(.-)}(.*)$") then
+  elseif match(line, "^@bg{(.-)}(.*)$") then
     local name = trim(_1)
     page.bg = name
 
-  elseif match(line, "@case{(.-)}(.*)$") then
+  elseif match(line, "^@case{(.-)}(.*)$") then
     local label = trim(_1)
     local text = trim(_2)
     local cases = page.cases
@@ -149,7 +149,7 @@ for line in io.lines() do
     end
     cases[#cases + 1] = { label = label, text = text }
 
-  elseif match(line, "@case(.*)$") then
+  elseif match(line, "^@case(.*)$") then
     local text = trim(_1)
     local cases = page.cases
     if not cases then
@@ -158,9 +158,35 @@ for line in io.lines() do
     end
     cases[#cases + 1] = { label = text, text = text }
 
-  elseif match(line, "@jump{(.-)}(.*)$") then
+  elseif match(line, "^@jump{(.-)}(.*)$") then
     local label = trim(_1)
     page.jump = label
+
+  elseif match(line, "^@if{(.-)}{(.-)}") then
+    local exp = trim(_1)
+    local label = trim(_2)
+    if page then
+      error "not implemented"
+    else
+      local conds = section.conds
+      if not conds then
+        conds = {}
+        section.conds = conds
+      end
+      conds[#conds + 1] = { exp = exp; label = label }
+    end
+
+  elseif match(line, "^!!%s*(.-)%s*$") then
+    if page then
+      error "not implemented"
+    else
+      local codes = section.codes
+      if not codes then
+        codes = {}
+        section.codes = codes
+      end
+      codes[#codes + 1] = trim(_1)
+    end
 
   elseif match(line, "^#%s*(.-)%s*$") then
     assert(not page)
@@ -205,6 +231,23 @@ local map = assert(io.open(map_filename, "w"))
 for i = 1, #sections do
   local section = sections[i]
   out:write("*", section.label, "\n\n")
+
+  if section.codes then
+    out:write "[iscript]\n"
+    for j = 1, #section.codes do
+      out:write(section.codes[j], "\n")
+    end
+    out:write "[endscript]\n"
+  end
+  if section.conds then
+    for j = 1, #section.conds do
+      local cond = section.conds[j]
+      out:write("[if exp=\"", cond.exp, "\"]\n")
+      out:write("[jump target=*", cond.label, "]\n")
+      out:write "[endif]\n"
+    end
+  end
+
 
   for j = 1, #speakers do
     local speaker = speakers[j]
