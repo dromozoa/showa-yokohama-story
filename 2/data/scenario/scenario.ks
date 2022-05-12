@@ -1,5 +1,10 @@
 *プロローグ
 
+[iscript]
+sf.priest = 0;
+sf.engineer = 0;
+sf.activist = 0;
+[endscript]
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -49,6 +54,15 @@
 
 *聖職者
 
+[iscript]
+sf.priest += 1;
+[endscript]
+[if exp="sf.priest == 2"]
+[jump target=*聖職者2]
+[endif]
+[if exp="sf.priest > 2"]
+[jump target=*聖職者n]
+[endif]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -214,10 +228,44 @@
 [vostop]
 [jump target=*選択肢]
 
-*工学者
+*聖職者2
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+本牧大[ruby text=カテドラル spacing=4]聖堂はもう行ったよね。[p]
+[vostop]
+[jump target=*選択肢]
+
+*聖職者n
+
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=16]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
+[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+アンタ、バカァ。[p]
+[vostop]
+[jump target=*選択肢]
+
+*工学者
+
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=17]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
@@ -233,7 +281,7 @@
 #danu
 毒でやられるだけ。[l][r]
 #danu
-すばしっこいから、鈍間の攻撃なんかよけるけど。[p]
+すばしっこいから、ノロマの攻撃なんかよけるけど。[p]
 
 [autosave]
 #danu
@@ -251,7 +299,7 @@
 
 [autosave]
 #danu
-十年間、科学者たちは探しもとめたけど、屍[ruby x=-16 text=ゾンビ spacing=8]者菌もウイルスも見つけられなかった。[l][r]
+十年間、科学者たちは探しもとめたけど、屍[ruby x=-16 text=ゾンビ spacing=8]者菌も屍[ruby x=-16 text=ゾンビ spacing=8]者ウイルスも見つけられなかった。[l][r]
 #danu
 だから、特効薬も予[ruby text=ワクチン spacing=10.666666666666666]防薬も作れなかった。[p]
 
@@ -291,7 +339,7 @@
 #narrator
 キミは手紙をさしだし、課長の名刺を受けとった。[l][r]
 #narrator
-即席の珈[ruby x=-16 text=コーヒ spacing=8]非が湯気をたてている。[p]
+即席[ruby x=-16 text=インスタントコーヒ]珈非が湯気をたてている。[p]
 
 [autosave]
 #engineer
@@ -351,7 +399,7 @@
 #engineer
 かつて計算され、これから計算されるだろう、すべての[ruby text=かず]数。[l][r]
 #engineer
-ここまでなら、ゲーデル数の亜種だな。[l][r]
+ここまでなら、ゲーデル数だな。[l][r]
 #engineer
 バベルの図書館。世界夫[ruby text=アカシック・レコード spacing=7.1111111111111107]人の記憶。[p]
 
@@ -391,7 +439,7 @@
 
 [autosave]
 #danu
-スティーブンって、実在した人間なの。[p]
+スティーブンって、実在した人物なの。[p]
 
 [autosave]
 #engineer
@@ -426,7 +474,7 @@
 *活動家
 
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=39]
+[voconfig name=danu vostorage=danu{number}.ogg number=41]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=36]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
@@ -458,7 +506,7 @@
 *拒否
 
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=danu vostorage=danu{number}.ogg number=43]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=36]
 [voconfig name=magi vostorage=magi{number}.ogg number=3]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
