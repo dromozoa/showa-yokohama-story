@@ -89,11 +89,23 @@ local speaker_map = {
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
-    angry = "0.5";
+    angry = "0.2";
     sad = "0.5";
   };
 
   engineer = {
+    speaker = "Speaker/m1";
+    speed = "1.0";
+    pitch = "-1.5";
+    pause = "0.5";
+    volume = "2.0";
+    happy = "0.0";
+    fun = "0.0";
+    angry = "0.2";
+    sad = "0.5";
+  };
+
+  activist = {
     speaker = "Speaker/m1";
     speed = "1.0";
     pitch = "-1.5";

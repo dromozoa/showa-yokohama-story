@@ -4,7 +4,9 @@
 sf.priest = 0;
 sf.engineer = 0;
 sf.activist = 0;
+sf.counter = 0;
 [endscript]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -34,6 +36,10 @@ sf.activist = 0;
 
 *選択肢
 
+[if exp="sf.counter == 3"]
+[jump target=*状況1]
+[endif]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -60,6 +66,22 @@ sf.priest += 1;
 [if exp="sf.priest > 1"]
 [jump target=*聖職者済]
 [endif]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=1]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=2]
+[voconfig name=priest vostorage=priest{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+*聖職者未
+
+[iscript]
+sf.counter += 1;
+[endscript]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=1]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
@@ -163,9 +185,7 @@ sf.priest += 1;
 
 [autosave]
 #priest
-それでも、救いはあるさ。[l][r]
-#priest
-探偵の弟子よ。[l][r]
+救いはある。[l][r]
 #priest
 そのガヴァメントには、ラテン語で刻印されている。[l][r]
 #priest
@@ -227,20 +247,19 @@ sf.priest += 1;
 
 *聖職者済
 
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=15]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
 [autosave]
 #danu
-本牧大[ruby text=カテドラル spacing=4]聖堂は、もう行かないよ。[l][r]
-#danu
-苦手だっていったじゃん。[p]
+大[ruby text=カテドラル spacing=4]聖堂は行ったじゃん。[p]
 [vostop]
 [jump target=*選択肢]
 
@@ -252,12 +271,28 @@ sf.engineer += 1;
 [if exp="sf.engineer > 1"]
 [jump target=*工学者済]
 [endif]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=17]
+[voconfig name=danu vostorage=danu{number}.ogg number=16]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+*工学者未
+
+[iscript]
+sf.counter += 1;
+[endscript]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=16]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=14]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -293,7 +328,7 @@ sf.engineer += 1;
 
 [autosave]
 #danu
-斬[ruby x=-16 text=首ちょんぱ]首した屍[ruby x=-16 text=ゾンビ spacing=8]者をＭＲＩにつっこんで調べた。[l][r]
+斬[ruby x=-16 text=くびちょんぱ]首した屍[ruby x=-16 text=ゾンビ spacing=8]者をＭＲＩにつっこんで調べた。[l][r]
 #danu
 観測できる範囲で、脳が活動していないことはわかってる。[l][r]
 #danu
@@ -319,7 +354,7 @@ sf.engineer += 1;
 #narrator
 資源循環局、総力戦政策調整部、武器製[ruby text=ウェポン・メーカーズ spacing=7.1111111111111107]造推進課。[l][r]
 #narrator
-破[ruby x=-16 text=カタストロフ]局初期、自動車を解体して円匙と斧槍を製造した解体工場。[l][r]
+破[ruby x=-16 text=カタストロフ]局初期、自動車を解体して円匙と斧槍を製造した工場。[l][r]
 #narrator
 つまりは、官営のリサイクル工場。[p]
 
@@ -363,7 +398,7 @@ sf.engineer += 1;
 
 [autosave]
 #engineer
-昭和六十年代初頭、情報社会の高度化にともない、ある多国間プロジェクトが起ちあげられた。[l][r]
+昭和六十年代初頭、情報社会の高度化にともない、国際的プロジェクトが起ちあげられた。[l][r]
 #engineer
 情報方舟計画。離散化された情報を、収[ruby text=レーザ spacing=24]束光で石英硝[ruby x=-16 text=ガラス spacing=8]子に彫刻して、スヴァールバル諸島の永久凍土に保存する。[p]
 
@@ -403,9 +438,9 @@ sf.engineer += 1;
 #engineer
 スティーブンがやったことは、実際には、ある種の情報テロルだ。[l][r]
 #engineer
-真偽がさだかでない機密情報を、方舟に載せようとした。[l][r]
+真偽さだかならぬ機密情報を、方舟に載せようとした。[l][r]
 #engineer
-ケネディ暗殺計画。超人[ruby x=-16 text=ＭＫウルトラマン]計画。無名祭祀書。[l][r]
+大[ruby text=ケネディ spacing=10.666666666666666]統領暗殺計画。超人[ruby x=-16 text=ＭＫウルトラマン]計画。無名[ruby text=ネームレス・カルツ spacing=2]祭祀書。[l][r]
 #engineer
 そのほか、有象無象。[p]
 
@@ -431,7 +466,9 @@ sf.engineer += 1;
 
 [autosave]
 #engineer
-さあね。ブルバキみたいなもんかもしれない。[p]
+さあな。[l][r]
+#engineer
+ブルバキみたいなもんかもしれない。[p]
 
 [autosave]
 #danu
@@ -441,7 +478,7 @@ sf.engineer += 1;
 #engineer
 わからんね。[l][r]
 #engineer
-字句通りに解釈するならば、ある種の計算のひとつひとつが、定数の異なる宇宙を生成する。[l][r]
+字句通りに解釈するなら、ある種の計算のひとつひとつが、定数の異なる宇宙を生成する。[l][r]
 #engineer
 なんのこっちゃ。[p]
 
@@ -455,18 +492,19 @@ sf.engineer += 1;
 #narrator
 応えは求められていなかった。[l][r]
 #narrator
-珈[ruby x=-16 text=コーヒ spacing=8]非を飲みほして、キミは事務所を辞した。[p]
+珈[ruby x=-16 text=コーヒ spacing=8]非を飲みほして、キミは席を立った。[p]
 [vostop]
 [jump target=*選択肢]
 
 *工学者済
 
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=41]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=36]
+[voconfig name=danu vostorage=danu{number}.ogg number=40]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -478,12 +516,144 @@ sf.engineer += 1;
 
 *活動家
 
+[iscript]
+sf.activist += 1;
+[endscript]
+[if exp="sf.activist > 1"]
+[jump target=*活動家済]
+[endif]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=42]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=36]
+[voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+*活動家未
+
+[iscript]
+sf.counter += 1;
+[endscript]
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=23]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#narrator
+本牧異人町。[l][r]
+#narrator
+蒲鉾兵舎にかかげられたネオンに、灯はともっていない。[l][r]
+#narrator
+リックス・カフェ・アメリカン。[p]
+
+[autosave]
+#narrator
+入口のかたわらにベニヤ看板。[l][r]
+#narrator
+角ばった字で、魚人港湾労組。[l][r]
+#narrator
+ポリ塩化ビニル暖簾を、キミはくぐった。[p]
+
+[autosave]
+#activist
+おまえさんが、探[ruby x=-16 text=ピンカートン]偵の弟子か。[l][r]
+#activist
+ピケやぶりなら帰ってくれ。[p]
+
+[autosave]
+#danu
+どっちかっていうと、ボス交。[p]
+
+[autosave]
+#activist
+なんか註文しろよ。[l][r]
+#activist
+労働運動はパートタイムなんだ。[p]
+
+[autosave]
+#danu
+あれを弾いて、サム。[l][r]
+#danu
+アズ・タイム・ゴーズ・バイ。[p]
+
+[autosave]
+#activist
+ピアノがねえよ。[l][r]
+#activist
+コーラでいいな。[p]
+
+[autosave]
+#danu
+深[ruby text=ディープ・ワンズ]き者って、いないの。[p]
+
+[autosave]
+#activist
+聞いてるだろう。ダゴン教団のせいだ。[l][r]
+#activist
+神、海にしろしめす、っておおさわぎして、奴ら布[ruby x=-16 text=ハワイ spacing=8]哇に向かっちまった。[l][r]
+#activist
+連中、どうなったかな。[p]
+
+[autosave]
+#danu
+さあ。[l][r]
+#danu
+頭からばりばり喰われてんじゃない。[p]
+
+[autosave]
+#activist
+残ったのは、穏健派だけだ。[l][r]
+#activist
+それだって、決戦準備にかりだされて、おおわらわだ。[l][r]
+#activist
+腰をおちつけるひまもない。[p]
+
+[autosave]
+#danu
+さらに面倒をおしつけるんだけどね。[p]
+
+[autosave]
+#narrator
+エンド。[p]
+[vostop]
+[jump target=*選択肢]
+
+*活動家済
+
+[voconfig name=activist vostorage=activist{number}.ogg number=12]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=48]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+手紙は届けられてしまったよ、すでに。[p]
+[vostop]
+[jump target=*選択肢]
+
+*状況1
+
+[voconfig name=activist vostorage=activist{number}.ogg number=12]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=49]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -499,7 +669,7 @@ sf.engineer += 1;
 #danu
 [ruby text=デリモ]糞。マジかぁ。[l][r]
 #danu
-深[ruby text=ディープ・ワンズ]き者、なにやらかしてくれてんの。[p]
+深き[ruby text=ディープ・ワンズ spacing=4.5714285714285712]者ども、なにやらかしてくれてんの。[p]
 
 [autosave]
 #alice
@@ -510,12 +680,13 @@ sf.engineer += 1;
 
 *拒否
 
+[voconfig name=activist vostorage=activist{number}.ogg number=12]
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=44]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=36]
+[voconfig name=danu vostorage=danu{number}.ogg number=51]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=3]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=30]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
+[voconfig name=priest vostorage=priest{number}.ogg number=29]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 

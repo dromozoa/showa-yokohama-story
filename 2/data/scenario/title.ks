@@ -33,6 +33,7 @@ tf.gothic = "BIZ UDPGothic"
 [chara_new name=yukio storage=dummy.png jname=ユキヲ]
 [chara_new name=priest storage=dummy.png jname=神父]
 [chara_new name=engineer storage=dummy.png jname=課長]
+[chara_new name=activist storage=dummy.png jname=店主]
 
 ; ==========================================================
 
