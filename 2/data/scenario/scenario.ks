@@ -151,15 +151,29 @@ sf.counter += 1;
 
 [autosave]
 #priest
-そうではない。[l][r]
+習合された地母神の名を名のる娘や。[l][r]
 #priest
-そうではないのだ。[l][r]
-#priest
-習合された地母神の名を名のる娘よ。[p]
+いきがるんじゃねぇぞ。[p]
 
 [autosave]
 #priest
-アウシュビッツ。ヒロシマ。[l][r]
+あ[ruby text=いつ]奴の銃を継いだキミよ。[l][r]
+#priest
+そのガヴァメントには、なんと刻印されているか。[p]
+
+[autosave]
+#priest
+他者のための人類たれ、他者とともに。[p]
+
+[autosave]
+#priest
+そうではない。[l][r]
+#priest
+そうではないのだ。[p]
+
+[autosave]
+#priest
+アウシュビッツ。ヒロシマ。ナガサキ。[l][r]
 #priest
 名づけられた、そして、名づけられなかった沢山の悲劇たち。[l][r]
 #priest
@@ -185,21 +199,15 @@ sf.counter += 1;
 
 [autosave]
 #priest
-救いはある。[l][r]
+そのガヴァメントには、英語で刻印されている。[l][r]
 #priest
-そのガヴァメントには、ラテン語で刻印されている。[l][r]
+人類のための人類たれ、人類とともに。[l][r]
 #priest
-人類のための人類であれ、人類とともに。[p]
-
-[autosave]
-#priest
-三十年前、東京大学の入試が中止された年、ワタシたちはメサイア会の高校を卒業した。[l][r]
-#priest
-その銃は、卒業の祝いとしてあ[ruby text=いつ]奴に贈られたものだ。[p]
+善きサマリア人。類人愛。[p]
 
 [autosave]
 #danu
-人類でないものたちを、その銃は救わないの。[p]
+ジェリコにくだる途中、人類でないものが強盗に襲われたら、その銃は救ってくれるの。[p]
 
 [autosave]
 #priest
@@ -253,7 +261,7 @@ sf.counter += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -277,7 +285,7 @@ sf.engineer += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -292,7 +300,7 @@ sf.counter += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -472,7 +480,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-演算それ自体が、世界を書きかえるってどういうこと。[p]
+演算それ自体が、世界を書きかえるって、どうやって。[p]
 
 [autosave]
 #engineer
@@ -504,7 +512,7 @@ sf.counter += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -528,7 +536,7 @@ sf.activist += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -543,7 +551,7 @@ sf.counter += 1;
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -565,7 +573,7 @@ sf.counter += 1;
 
 [autosave]
 #activist
-おまえさんが、探[ruby x=-16 text=ピンカートン]偵の弟子か。[l][r]
+おまえさん、探[ruby x=-16 text=ピンカートン]偵の弟子か。[l][r]
 #activist
 ピケやぶりなら帰ってくれ。[p]
 
@@ -575,9 +583,9 @@ sf.counter += 1;
 
 [autosave]
 #activist
-なんか註文しろよ。[l][r]
+なんか註文しろや。[l][r]
 #activist
-労働運動はパートタイムなんだ。[p]
+こっちゃパートタイムで闘争してんだ。[p]
 
 [autosave]
 #danu
@@ -587,55 +595,243 @@ sf.counter += 1;
 
 [autosave]
 #activist
-ピアノがねえよ。[l][r]
+そういう意味じゃねえ。[l][r]
+#activist
+そもそもピアノがねえよ。[l][r]
 #activist
 コーラでいいな。[p]
 
 [autosave]
-#danu
-深[ruby text=ディープ・ワンズ]き者って、いないの。[p]
+#narrator
+風呂敷包みを卓[ruby x=-16 text=テーブル]子に置き、キミはぬるいコーラをあおった。[l][r]
+#narrator
+店主に手紙をすべらせる。[p]
 
 [autosave]
 #activist
-聞いてるだろう。ダゴン教団のせいだ。[l][r]
+その銃な、海兵隊からカードでまきあげたんだとさ。[l][r]
 #activist
-神、海にしろしめす、っておおさわぎして、奴ら布[ruby x=-16 text=ハワイ spacing=8]哇に向かっちまった。[l][r]
+あ[ruby text=いつ]奴は、そう吹いてた。[l][r]
 #activist
-連中、どうなったかな。[p]
+刻印されてるだろ。[l][r]
+#activist
+他者のための[ruby text=メン]人であれ。[p]
 
 [autosave]
 #danu
-さあ。[l][r]
-#danu
-頭からばりばり喰われてんじゃない。[p]
+変わることができない、あいかわらずの男根[ruby x=-16 text=マチズモ spacing=21.333333333333332]主義の[ruby text=パルタイ]幇だ。[p]
 
 [autosave]
 #activist
-残ったのは、穏健派だけだ。[l][r]
+万国の労働者、団結[ruby x=-16 text=ユナイト spacing=21.333333333333332]せよ。[l][r]
 #activist
-それだって、決戦準備にかりだされて、おおわらわだ。[l][r]
-#activist
-腰をおちつけるひまもない。[p]
+魚人とともに。[p]
 
 [autosave]
 #danu
-さらに面倒をおしつけるんだけどね。[p]
+しら[ruby x=-16 text=ホワイトキック spacing=2.6666666666666665]ける。[l][r]
+#danu
+いつも、こんなに客いないの。[p]
+
+[autosave]
+#activist
+営業時間外だからな。[l][r]
+#activist
+正味のところ、ダゴン秘密教団の集会のせいさ。[l][r]
+#activist
+神、海に知ろしめす、ってな。[l][r]
+#activist
+本題にはいれよ、魔人小隊。[p]
+
+[autosave]
+#danu
+今日ご紹介するのは、こちらのマイクロフィルムなんです。[l][r]
+#danu
+あのミスカトニック大学で、アル・アジフを高解像度スキャン。[l][r]
+#danu
+不完全な写本をつかったせいで、浮上したルルイエがすぐ沈んじゃって困っているアナタ。[p]
+
+[autosave]
+#danu
+このマイクロフィルムなら、そんなことはございません。[l][r]
+#danu
+今なら、初心者でも簡単、あなたにも星辰の正しい位置がわかる、ルルイエ異[ruby x=-16 text=テクスト]本がついてきます。[l][r]
+#danu
+さらに読取機もつけて、お値段はおどろきの──[p]
 
 [autosave]
 #narrator
-エンド。[p]
+キミは風呂敷の結びをほどいた。[p]
+
+[autosave]
+#danu
+アタシたちの分析では、ダゴン秘密教団を放置すると、深[ruby text=ディープ・ワンズ]き者は人類に敵対することになる。[l][r]
+#danu
+合衆国からかっぱらった原潜、まだ動くんでしょ。[p]
+
+[autosave]
+#activist
+ノーコメント。[p]
+
+[autosave]
+#danu
+このまま、過激派が多数をおさえちゃったら、魚人社会は仮称リヴァイアサンを神と崇める狂信者集団になる。[l][r]
+#danu
+仮称リヴァイアサンを撃滅しても、北海道にＳＬＢＭが撃ちこまれる。[p]
+
+[autosave]
+#danu
+人類は、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極をＩＣＢＭで叩くことを躊躇しない。[l][r]
+#danu
+世界は核の炎に包まれる。[l][r]
+#danu
+それって、アンタたち、受けいれられるの。[p]
+
+[autosave]
+#activist
+受けいれないさ。[l][r]
+#activist
+しかし、それと、そのマイクロフィルムがどう関係する。[p]
+
+[autosave]
+#danu
+ダゴン秘密教団の教義は、新興カルト一般のそれ。[l][r]
+#danu
+いろんな神話や伝説をパッチワークしたでっちあげ。[p]
+
+[autosave]
+#danu
+そういうのって、脆弱性を持つんだよね。[l][r]
+#danu
+いかんともしがたく。[l][r]
+#danu
+器質的なもんだったらおもしろいよね。[l][r]
+#danu
+人類や人類っぽいものの。[p]
+
+[autosave]
+#danu
+特殊検索群プレゼンツ。[l][r]
+#danu
+絶対安全ネクロノミコン。[l][r]
+#danu
+深[ruby text=ディープ・ワンズ]き者を世論操作するべく開発された、できたてほやほや物語論兵器。[p]
+
+[autosave]
+#narrator
+店主は叶[ruby text=イェヘユアン]和圓に火を点けた。[p]
+
+[autosave]
+#activist
+大衆のメタンアンフェタミンってか。[l][r]
+#activist
+アヘンじゃなくて。[l][r]
+#activist
+喫うか。菊の紋がはいったやつもあるぜ。[p]
+
+[autosave]
+#danu
+土産にちょうだい。[l][r]
+#danu
+うちには喫うやつもいるから。[l][r]
+#danu
+それで、納得できないかな。[p]
+
+[autosave]
+#danu
+仮称リヴァイアサンを拝むのは、まあ、自由かもしれないけど。[l][r]
+#danu
+どうせ、小魚みたいに、頭からぽりぽり食べられちゃうよ。[l][r]
+#danu
+信教の自由は、そこまでは含まないっしょ。[p]
+
+[autosave]
+#danu
+それが総意で、それが本望だったとしても、死んじゃったら、アタシたちは哀しいよ。[l][r]
+#danu
+やっぱり、生きていてほしいと思うんだよ。[l][r]
+#danu
+そのための、いってみりゃ、脱洗脳だと思ってよ。[p]
+
+[autosave]
+#activist
+まあ、いい。[l][r]
+#activist
+表向きの理由は了解した。[p]
+
+[autosave]
+#danu
+ぜんぶはなしたし。[l][r]
+#danu
+裏の理由なんてないよ。[l][r]
+#danu
+少尉の拳銃にかけて。[p]
+
+[autosave]
+#narrator
+いうまでもない。[l][r]
+#narrator
+裏はある。[l][r]
+#narrator
+特殊検索群が本当におそれたのは、全面核戦争ではなかった。[p]
+
+[autosave]
+#narrator
+仮称リヴァイアサンから、仮称がとれてしまうこと。[l][r]
+#narrator
+遡及的に、深[ruby text=ディープ・ワンズ]き者の神になってしまうこと。[l][r]
+#narrator
+それを危惧した先制攻撃だ。[p]
+
+[autosave]
+#danu
+そんで、どうなの。[l][r]
+#danu
+できるよね。[l][r]
+#danu
+深[ruby text=ディープ・ワンズ]き者穏健派の首魁。[l][r]
+#danu
+最初の魚人のひとり。[p]
+
+[autosave]
+#activist
+できるさ。[l][r]
+#activist
+やらいでか。[p]
+
+[autosave]
+#danu
+ありがと。[l][r]
+#danu
+ところで、煙[ruby x=-16 text=ヤニ spacing=32]草喫う魚人ってはじめて見たよ。[l][r]
+#danu
+肺、どうなってんの。[p]
+
+[autosave]
+#activist
+学[ruby x=-16 text=ガキ spacing=32]生のころからの習い性だからさ。[l][r]
+#activist
+あ[ruby text=いつ]奴とつるんでさ。[p]
+
+[autosave]
+#narrator
+フィルタつき叶[ruby text=イェヘユアン]和圓のカートンをキミは受けとる。[l][r]
+#narrator
+ダヌーは古い歌をハミングした。[l][r]
+#narrator
+ただよう臭いが煙草のせいなのかどうか、キミにはわからなかった。[p]
 [vostop]
 [jump target=*選択肢]
 
 *活動家済
 
-[voconfig name=activist vostorage=activist{number}.ogg number=12]
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=48]
+[voconfig name=danu vostorage=danu{number}.ogg number=88]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -645,48 +841,15 @@ sf.counter += 1;
 [vostop]
 [jump target=*選択肢]
 
-*状況1
-
-[voconfig name=activist vostorage=activist{number}.ogg number=12]
-[voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=49]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
-[voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
-#magi
-南氷洋捕鯨船団、仮称リヴァイアサンを失探したみたいです。[l][r]
-#magi
-座標は、南緯四十九度、西経百二十三度。[l][r]
-#magi
-通称、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極。[p]
-
-[autosave]
-#danu
-[ruby text=デリモ]糞。マジかぁ。[l][r]
-#danu
-深き[ruby text=ディープ・ワンズ spacing=4.5714285714285712]者ども、なにやらかしてくれてんの。[p]
-
-[autosave]
-#alice
-[ruby text=ミエルダ]糞。ルルイエか。[l][r]
-#alice
-β分遣隊に護国の鬼になってもらうしかないな。[p]
-[vostop]
-
 *拒否
 
-[voconfig name=activist vostorage=activist{number}.ogg number=12]
-[voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=51]
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=89]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
-[voconfig name=magi vostorage=magi{number}.ogg number=3]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=30]
-[voconfig name=priest vostorage=priest{number}.ogg number=29]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=priest vostorage=priest{number}.ogg number=31]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
