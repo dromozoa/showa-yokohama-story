@@ -37,7 +37,7 @@ sf.counter = 0;
 *選択肢
 
 [if exp="sf.counter == 3"]
-[jump target=*状況1]
+[jump target=*特殊攻撃作戦]
 [endif]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
@@ -847,11 +847,70 @@ sf.counter += 1;
 [vostop]
 [jump target=*選択肢]
 
-*拒否
+*特殊攻撃作戦
 
 [voconfig name=activist vostorage=activist{number}.ogg number=29]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#alice
+強制はしない。[l][r]
+#alice
+熱望か希望か拒否か、ひとつを択べ。
+[vostop]
+[glink color=btn_06_black target=*熱望 x=48 y=32 text=熱望する size=32]
+[glink color=btn_06_black target=*希望 x=48 y=128 text=希望する size=32]
+[glink color=btn_06_black target=*拒否 x=48 y=224 text=拒否する size=32]
+[s]
+
+*熱望
+
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=alice vostorage=alice{number}.ogg number=6]
+[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#alice
+今宵もアリスと地獄につきあってもらう。[p]
+[vostop]
+
+*希望
+
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=alice vostorage=alice{number}.ogg number=7]
+[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+安心して。[l][r]
+#danu
+アンタのことは、ダヌーがちゃんと終わらせてあげるから。[p]
+[vostop]
+
+*拒否
+
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=alice vostorage=alice{number}.ogg number=7]
+[voconfig name=danu vostorage=danu{number}.ogg number=93]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=42]
@@ -928,6 +987,29 @@ sf.counter += 1;
 昭和横濱物語。アリスの黙[ruby text=リベレーション]示録。[l][r]
 #narrator
 了。[p]
+[vostop]
+
+*二章終
+
+[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=alice vostorage=alice{number}.ogg number=17]
+[voconfig name=danu vostorage=danu{number}.ogg number=94]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=56]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#narrator
+エデンの園配[ruby x=-16 text=パターン]置は喪われた。[l][r]
+#narrator
+グライダー銃で撃たれて、メトセラは九百六十九歳で死んだ。[l][r]
+#narrator
+昭和横濱物語。スティーブンによる福音書。第二節。[l][r]
+#narrator
+了。（つづく）[p]
 [vostop]
 
 [return]
