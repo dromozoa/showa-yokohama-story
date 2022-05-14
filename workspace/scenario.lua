@@ -185,8 +185,26 @@ for line in io.lines() do
         conds = {}
         section.conds = conds
       end
-      conds[#conds + 1] = { exp = exp; label = label }
+      conds[#conds + 1] = { type = "if", exp = exp; label = label }
     end
+
+  elseif match(line, "^@if_call{(.-)}{(.-)}") then
+    local exp = trim(_1)
+    local label = trim(_2)
+    if page then
+      error "not implemented"
+    else
+      local conds = section.conds
+      if not conds then
+        conds = {}
+        section.conds = conds
+      end
+      conds[#conds + 1] = { type = "if_call", exp = exp; label = label }
+    end
+
+  elseif match(line, "^@ret$") then
+    assert(page)
+    page.ret = true
 
   elseif match(line, "^!!%s*(.-)%s*$") then
     if page then
@@ -255,7 +273,13 @@ for i = 1, #sections do
     for j = 1, #section.conds do
       local cond = section.conds[j]
       out:write("[if exp=\"", cond.exp, "\"]\n")
-      out:write("[jump target=*", cond.label, "]\n")
+      if cond.type == "if" then
+        out:write("[jump target=*", cond.label, "]\n")
+      elseif cond.type == "if_call" then
+        out:write("[call target=*", cond.label, "]\n")
+      else
+        error "unknown cond.type"
+      end
       out:write "[endif]\n"
     end
   end
@@ -308,7 +332,7 @@ for i = 1, #sections do
           local m = utf8.len(item.ruby)
 
           local spacing
-          if m < n * 2 then
+          if m < n * 2 and m ~= 1 then
             spacing = (" spacing=%.17g"):format((n * 2 - m) * 16 / (m - 1))
           else
             spacing = ""
@@ -350,6 +374,10 @@ for i = 1, #sections do
 
     if page.jump then
       out:write("[jump target=*", page.jump, "]\n")
+    end
+
+    if page.ret then
+      out:write "[return]\n"
     end
 
     out:write "\n"
