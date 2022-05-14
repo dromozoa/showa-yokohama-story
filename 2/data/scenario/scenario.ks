@@ -36,6 +36,9 @@ sf.counter = 0;
 
 *選択肢
 
+[if exp="sf.counter == 1"]
+[call target=*菊と刀1]
+[endif]
 [if exp="sf.counter == 3"]
 [jump target=*特殊攻撃作戦]
 [endif]
@@ -165,7 +168,7 @@ sf.counter += 1;
 #priest
 それが、ワタシたちの信[ruby x=-16 text=プリンシプル]条だ。[l][r]
 #priest
-[ruby text=よ spacing=inf]善きサマリア人のたとえ。隣人愛。[p]
+[ruby text=よ]善きサマリア人のたとえ。隣人愛。[p]
 
 [autosave]
 #danu
@@ -191,7 +194,7 @@ sf.counter += 1;
 #priest
 天国の門は開かれている。[l][r]
 #priest
-ホモ・サピエンス・サピエンスと種や属が異なろうと、キリスト者でなかろうと。しかし、──[p]
+ホモ・サピエンス・サピエンスと種や属が異なろうと、キリスト者でなかろうと。だが、しかし、──[p]
 
 [autosave]
 #priest
@@ -243,7 +246,7 @@ sf.counter += 1;
 #priest
 知らんのか。[l][r]
 #priest
-十[ruby text=クルセイダーズ]字軍は聖別されたカラシニコフで屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒する。[l][r]
+極東十[ruby text=クルセイダーズ]字軍は聖別されたカラシニコフで屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒する。[l][r]
 #priest
 土産を持たせる。すこし待て。[p]
 
@@ -396,7 +399,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-大隊の十基数、用意してる。[p]
+大隊十基数、用意してる。[p]
 
 [autosave]
 #engineer
@@ -436,9 +439,9 @@ sf.counter += 1;
 #engineer
 かつて計算され、これから計算されるだろう、すべての[ruby text=かず]数。[l][r]
 #engineer
-ここまでなら、ゲーデル数だな。[l][r]
+ここまでなら、いわゆるゲーデル数だな。[l][r]
 #engineer
-バベルの図書館。世界夫[ruby text=アカシック・レコード spacing=7.1111111111111107]人の記憶。[p]
+あるいは、バベルの図書館。世界夫[ruby text=アカシック・レコード spacing=7.1111111111111107]人の記憶。[p]
 
 [autosave]
 #engineer
@@ -603,7 +606,7 @@ sf.counter += 1;
 #activist
 そういう意味じゃねえ。[l][r]
 #activist
-そもそもピアノがねえよ。[l][r]
+だいたいピアノがねえよ。[l][r]
 #activist
 コーラでいいな。[p]
 
@@ -625,7 +628,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-変わることができない、あいかわらずの男根[ruby x=-16 text=マチズモ spacing=21.333333333333332]主義の[ruby text=パルタイ]幇だ。[p]
+変わることができない、あいかわらず男根[ruby x=-16 text=マチズモ spacing=21.333333333333332]主義の[ruby text=パルタイ]幇だ。[p]
 
 [autosave]
 #activist
@@ -677,7 +680,9 @@ sf.counter += 1;
 
 [autosave]
 #activist
-ノーコメント。[p]
+ノーコメント。[l][r]
+#activist
+ナンセーンス。[p]
 
 [autosave]
 #danu
@@ -687,7 +692,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-人類は、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極をＩＣＢＭで叩くことを躊躇しない。[l][r]
+したっけ、人類は、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極をＩＣＢＭで叩くことを躊躇しない。[l][r]
 #danu
 世界は核の炎に包まれる。[l][r]
 #danu
@@ -779,7 +784,7 @@ sf.counter += 1;
 #narrator
 裏はある。[l][r]
 #narrator
-特殊検索群が本当におそれたのは、全面核戦争ではなかった。[p]
+特殊検索群が本当におそれたのは、全面核戦争ではない。[p]
 
 [autosave]
 #narrator
@@ -831,7 +836,7 @@ sf.counter += 1;
 
 *活動家済
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=90]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
@@ -847,9 +852,9 @@ sf.counter += 1;
 [vostop]
 [jump target=*選択肢]
 
-*特殊攻撃作戦
+*菊と刀1
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
 [voconfig name=danu vostorage=danu{number}.ogg number=91]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
@@ -858,6 +863,32 @@ sf.counter += 1;
 [voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
+
+[autosave]
+#narrator
+情報[ruby x=-16 text=メイジャイ spacing=12]分隊。[l][r]
+#narrator
+情報処理に特化した妖[ruby text=エルフ spacing=24]精種の幼生体の@{ruby}三人組@[/ruby トリオ}[p]
+[vostop]
+[return]
+
+*特殊攻撃作戦
+
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
+[voconfig name=alice vostorage=alice{number}.ogg number=4]
+[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+本物の豚肉を使った、肉まん。[l][r]
+#danu
+そういうのもあるのか。[p]
 
 [autosave]
 #alice
@@ -872,12 +903,12 @@ sf.counter += 1;
 
 *熱望
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=danu vostorage=danu{number}.ogg number=93]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
 [voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -886,15 +917,16 @@ sf.counter += 1;
 #alice
 今宵もアリスと地獄につきあってもらう。[p]
 [vostop]
+[jump target=*二章終]
 
 *希望
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=7]
-[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=danu vostorage=danu{number}.ogg number=93]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
 [voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -905,15 +937,16 @@ sf.counter += 1;
 #danu
 アンタのことは、ダヌーがちゃんと終わらせてあげるから。[p]
 [vostop]
+[jump target=*二章終]
 
 *拒否
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=7]
-[voconfig name=danu vostorage=danu{number}.ogg number=93]
+[voconfig name=danu vostorage=danu{number}.ogg number=95]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=42]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
 [voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -954,11 +987,21 @@ sf.counter += 1;
 
 [autosave]
 #narrator
+──数年が経った。[l][r]
+#narrator
+ユークリッド幾何学を無視した石柱都市が浮上した。[l][r]
+#narrator
+人類連合軍は残された大陸間弾道ミサイルを全力で投射した。[l][r]
+#narrator
+妖精種はたもとを分かった。人類種とも。魚人種とも。[p]
+
+[autosave]
+#narrator
 ──四半世紀が経った。[l][r]
 #narrator
 世界人口は十億人を下回った。[l][r]
 #narrator
-あらたな黙示録の獣が、地上を闊歩している。[p]
+あらたな黙示録の獣どもが、地上を闊歩している。[p]
 
 [autosave]
 #narrator
@@ -988,15 +1031,16 @@ sf.counter += 1;
 #narrator
 了。[p]
 [vostop]
+[jump target=*おわり]
 
 *二章終
 
-[voconfig name=activist vostorage=activist{number}.ogg number=29]
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=17]
-[voconfig name=danu vostorage=danu{number}.ogg number=94]
+[voconfig name=danu vostorage=danu{number}.ogg number=96]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=56]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=62]
 [voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
@@ -1011,5 +1055,17 @@ sf.counter += 1;
 #narrator
 了。（つづく）[p]
 [vostop]
+
+*おわり
+
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
+[voconfig name=alice vostorage=alice{number}.ogg number=17]
+[voconfig name=danu vostorage=danu{number}.ogg number=96]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=66]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
 
 [return]
