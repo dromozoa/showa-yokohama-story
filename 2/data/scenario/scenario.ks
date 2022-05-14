@@ -137,7 +137,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-それでも容認できない類の、アンタたちは[ruby text=ブラザーフッド]幇でしょ。[p]
+それでもそれを容認できない類の、アンタたちは[ruby text=ブラザーフッド]幇でしょ。[p]
 
 [autosave]
 #priest
@@ -147,15 +147,13 @@ sf.counter += 1;
 #danu
 調[ruby x=-16 text=チョ spacing=32]子づいてんじゃねぇぞ。[l][r]
 #danu
-大佐をそう呼んだ奴[ruby x=-16 text=ヒューマン]輩は、[ruby text=みんな]皆はかなくなった。[p]
+荒[ruby x=-16 text=あらの spacing=8]野の誘惑だってのは、まあ、否定できないけど。[p]
 
 [autosave]
 #priest
-習合された地母神の名を名のる娘や。[l][r]
+習合された地母神の名を名のる娘よ。[l][r]
 #priest
-いきがるんじゃねぇぞ。[p]
-
-[autosave]
+メサイア会、舐めてんじゃねえぞ。[l][r]
 #priest
 あ[ruby text=いつ]奴の銃を継いだキミよ。[l][r]
 #priest
@@ -163,13 +161,37 @@ sf.counter += 1;
 
 [autosave]
 #priest
-他者のための人類たれ、他者とともに。[p]
+他者のための人類たれ、他者とともに。[l][r]
+#priest
+それが、ワタシたちの信[ruby x=-16 text=プリンシプル]条だ。[l][r]
+#priest
+[ruby text=よ spacing=inf]善きサマリア人のたとえ。隣人愛。[p]
+
+[autosave]
+#danu
+ジェリコにくだる途中、人類でないものが強盗に襲われたら、少尉の銃は救ってくれるの。[p]
 
 [autosave]
 #priest
-そうではない。[l][r]
+銃は人を救わない。[l][r]
 #priest
-そうではないのだ。[p]
+人は人を救わない。[l][r]
+#priest
+人は愛し、ただ、赦すのみ。[p]
+
+[autosave]
+#danu
+こたえになってなくね。[l][r]
+#danu
+原罪を、あらかじめ喪ったアタシたちに救いはあるの。[p]
+
+[autosave]
+#priest
+傷つけられ、虐げられた、幼[ruby x=-16 text=おさなご]子よ。[l][r]
+#priest
+天国の門は開かれている。[l][r]
+#priest
+ホモ・サピエンス・サピエンスと種や属が異なろうと、キリスト者でなかろうと。しかし、──[p]
 
 [autosave]
 #priest
@@ -177,19 +199,17 @@ sf.counter += 1;
 #priest
 名づけられた、そして、名づけられなかった沢山の悲劇たち。[l][r]
 #priest
-二十世紀、人類の魂は傷つき、人間性は損なわれた。[l][r]
-#priest
-とこしえに。[p]
+二十世紀、人類の魂は傷つき、人間性は損なわれた。[p]
 
 [autosave]
 #priest
-破[ruby x=-16 text=カタストロフ]局が、とどめをさした。[l][r]
+破[ruby x=-16 text=カタストロフ]局が、とどめをさしたともいえる。[l][r]
 #priest
 生きのこるために、人類は人類を選別した。[l][r]
 #priest
 生きのこるために、みずから人間性を手放したのだ。[l][r]
 #priest
-信仰なかりせば、いまや人類と屍[ruby x=-16 text=ゾンビ spacing=8]者は区別できない。[p]
+信仰なかりせば、いまや人類は屍[ruby x=-16 text=ゾンビ spacing=8]者と区別できない。[p]
 
 [autosave]
 #danu
@@ -199,21 +219,7 @@ sf.counter += 1;
 
 [autosave]
 #priest
-そのガヴァメントには、英語で刻印されている。[l][r]
-#priest
-人類のための人類たれ、人類とともに。[l][r]
-#priest
-善きサマリア人。類人愛。[p]
-
-[autosave]
-#danu
-ジェリコにくだる途中、人類でないものが強盗に襲われたら、その銃は救ってくれるの。[p]
-
-[autosave]
-#priest
-人は人を救わない。ただ、赦すのみだ。[l][r]
-#priest
-救うのは主だ。人間と人間に似た者たちすべてを。[l][r]
+しかし、いつだって、まだ機[ruby x=-16 text=チャンス]会はある。[l][r]
 #priest
 まあ、まかせておけ。[l][r]
 #priest
@@ -257,11 +263,11 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=danu vostorage=danu{number}.ogg number=17]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -281,11 +287,11 @@ sf.engineer += 1;
 [endif]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=16]
+[voconfig name=danu vostorage=danu{number}.ogg number=18]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -296,11 +302,11 @@ sf.counter += 1;
 [endscript]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=16]
+[voconfig name=danu vostorage=danu{number}.ogg number=18]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=0]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=14]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -508,11 +514,11 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=40]
+[voconfig name=danu vostorage=danu{number}.ogg number=42]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -532,11 +538,11 @@ sf.activist += 1;
 [endif]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=danu vostorage=danu{number}.ogg number=43]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -547,11 +553,11 @@ sf.counter += 1;
 [endscript]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=41]
+[voconfig name=danu vostorage=danu{number}.ogg number=43]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=23]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -827,11 +833,11 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=29]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=88]
+[voconfig name=danu vostorage=danu{number}.ogg number=90]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=42]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -845,11 +851,11 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=29]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=89]
+[voconfig name=danu vostorage=danu{number}.ogg number=91]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=42]
-[voconfig name=priest vostorage=priest{number}.ogg number=31]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
