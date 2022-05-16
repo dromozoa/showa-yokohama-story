@@ -36,9 +36,6 @@ sf.counter = 0;
 
 *選択肢
 
-[if exp="sf.counter == 1"]
-[call target=*菊と刀1]
-[endif]
 [if exp="sf.counter == 3"]
 [jump target=*特殊攻撃作戦]
 [endif]
@@ -345,7 +342,7 @@ sf.counter += 1;
 
 [autosave]
 #danu
-斬[ruby x=-16 text=くびちょんぱ]首した屍[ruby x=-16 text=ゾンビ spacing=8]者をＭＲＩにつっこんで調べた。[l][r]
+斬[ruby x=-16 text=くびちょんぱ]首した屍[ruby x=-16 text=ゾンビ spacing=8]者を核磁気共[ruby text=ＭＲＩ spacing=120]鳴画像診断につっこんで調べた。[l][r]
 #danu
 観測できる範囲で、脳が活動していないことはわかってる。[l][r]
 #danu
@@ -387,7 +384,7 @@ sf.counter += 1;
 #engineer
 もとは扶桑ファナティックでメカトロをやっていたんだが、なんの因果か、公僕になっちまった。[l][r]
 #engineer
-とは言い条、親友の娘の依頼だ。かなえるさ。[p]
+とは言い条、親友の娘の依頼だ。応じよう。[p]
 
 [autosave]
 #engineer
@@ -439,7 +436,7 @@ sf.counter += 1;
 #engineer
 かつて計算され、これから計算されるだろう、すべての[ruby text=かず]数。[l][r]
 #engineer
-ここまでなら、いわゆるゲーデル数だな。[l][r]
+ここまでなら、まあ、ゲーデル数だな。[l][r]
 #engineer
 あるいは、バベルの図書館。世界夫[ruby text=アカシック・レコード spacing=7.1111111111111107]人の記憶。[p]
 
@@ -688,11 +685,11 @@ sf.counter += 1;
 #danu
 このまま、過激派が多数をおさえちゃったら、魚人社会は仮称リヴァイアサンを神と崇める狂信者集団になる。[l][r]
 #danu
-仮称リヴァイアサンを撃滅しても、北海道にＳＬＢＭが撃ちこまれる。[p]
+仮称リヴァイアサンを撃滅しても、北海道に潜水艦発[ruby x=-16 text=ＳＬＢＭ spacing=64]射弾道弾が撃ちこまれる。[p]
 
 [autosave]
 #danu
-したっけ、人類は、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極をＩＣＢＭで叩くことを躊躇しない。[l][r]
+したっけ、人類は、太平洋到[ruby x=-16 text=ポイント・ネモ spacing=24]達不能極を大陸間[ruby x=-16 text=ＩＣＢＭ spacing=42.666666666666664]弾道弾で叩くことを躊躇しない。[l][r]
 #danu
 世界は核の炎に包まれる。[l][r]
 #danu
@@ -718,7 +715,7 @@ sf.counter += 1;
 #danu
 器質的なもんだったらおもしろいよね。[l][r]
 #danu
-人類や人類っぽいものの。[p]
+人類や人類っぽいものに共通する。[p]
 
 [autosave]
 #danu
@@ -726,7 +723,7 @@ sf.counter += 1;
 #danu
 絶対安全ネクロノミコン。[l][r]
 #danu
-深[ruby text=ディープ・ワンズ]き者を世論操作するべく開発された、できたてほやほや物語論兵器。[p]
+深[ruby text=ディープ・ワンズ]き者の信仰を操作するべく開発された、できたてほやほや物語論兵器。[p]
 
 [autosave]
 #narrator
@@ -744,9 +741,7 @@ sf.counter += 1;
 #danu
 土産にちょうだい。[l][r]
 #danu
-うちには喫うやつもいるから。[l][r]
-#danu
-それで、納得できないかな。[p]
+うちには喫うやつもいるから。[p]
 
 [autosave]
 #danu
@@ -762,7 +757,7 @@ sf.counter += 1;
 #danu
 やっぱり、生きていてほしいと思うんだよ。[l][r]
 #danu
-そのための、いってみりゃ、脱洗脳だと思ってよ。[p]
+そのための、いってみりゃ、脱洗脳みたいなもん。[p]
 
 [autosave]
 #activist
@@ -790,9 +785,9 @@ sf.counter += 1;
 #narrator
 仮称リヴァイアサンから、仮称がとれてしまうこと。[l][r]
 #narrator
-遡及的に、深[ruby text=ディープ・ワンズ]き者の神になってしまうこと。[l][r]
+遡及的に、深[ruby text=ディープ・ワンズ]き者の神になりはててしまうこと。[l][r]
 #narrator
-それを危惧した先制攻撃だ。[p]
+それを危惧して先制攻撃をしかけている。[p]
 
 [autosave]
 #danu
@@ -814,7 +809,7 @@ sf.counter += 1;
 #danu
 ありがと。[l][r]
 #danu
-ところで、煙[ruby x=-16 text=ヤニ spacing=32]草喫う魚人ってはじめて見たよ。[l][r]
+ところで、煙[ruby x=-16 text=ヤニ spacing=32]草[ruby text=く]喫う魚人ってはじめて見たよ。[l][r]
 #danu
 肺、どうなってんの。[p]
 
@@ -838,7 +833,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=90]
+[voconfig name=danu vostorage=danu{number}.ogg number=89]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=42]
@@ -856,7 +851,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=danu vostorage=danu{number}.ogg number=90]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=42]
@@ -868,7 +863,7 @@ sf.counter += 1;
 #narrator
 情報[ruby x=-16 text=メイジャイ spacing=12]分隊。[l][r]
 #narrator
-情報処理に特化した妖[ruby text=エルフ spacing=24]精種の幼生体の@{ruby}三人組@[/ruby トリオ}[p]
+情報処理に特化した妖[ruby text=エルフ spacing=24]精種の三[ruby text=トリオ spacing=24]人組。[p]
 [vostop]
 [return]
 
@@ -876,7 +871,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=91]
+[voconfig name=danu vostorage=danu{number}.ogg number=90]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=44]
@@ -888,7 +883,9 @@ sf.counter += 1;
 #danu
 本物の豚肉を使った、肉まん。[l][r]
 #danu
-そういうのもあるのか。[p]
+そういうのもあるんだ。[l][r]
+#danu
+ちらっ。[p]
 
 [autosave]
 #alice
@@ -896,33 +893,15 @@ sf.counter += 1;
 #alice
 熱望か希望か拒否か、ひとつを択べ。
 [vostop]
-[glink color=btn_06_black target=*熱望 x=48 y=32 text=熱望する size=32]
-[glink color=btn_06_black target=*希望 x=48 y=128 text=希望する size=32]
-[glink color=btn_06_black target=*拒否 x=48 y=224 text=拒否する size=32]
+[glink color=btn_06_black target=*熱望 x=48 y=32 text=熱望 size=32]
+[glink color=btn_06_black target=*希望 x=48 y=128 text=希望 size=32]
+[glink color=btn_06_black target=*拒否 x=48 y=224 text=拒否 size=32]
 [s]
 
 *熱望
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=93]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
-[voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
-[voconfig name=priest vostorage=priest{number}.ogg number=32]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
-#alice
-今宵もアリスと地獄につきあってもらう。[p]
-[vostop]
-[jump target=*二章終]
-
-*希望
-
-[voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=7]
 [voconfig name=danu vostorage=danu{number}.ogg number=93]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
@@ -939,10 +918,33 @@ sf.counter += 1;
 [vostop]
 [jump target=*二章終]
 
+*希望
+
+[voconfig name=activist vostorage=activist{number}.ogg number=30]
+[voconfig name=alice vostorage=alice{number}.ogg number=6]
+[voconfig name=danu vostorage=danu{number}.ogg number=95]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
+[voconfig name=magi vostorage=magi{number}.ogg number=0]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
+[voconfig name=priest vostorage=priest{number}.ogg number=32]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#alice
+この世界に、希望はないんだ、少尉。[l][r]
+#alice
+希[ruby x=-16 text=エルピス]望もロ[ruby text=エルビス spacing=10.666666666666666]ックも喪われた。
+[vostop]
+[glink color=btn_06_black target=*熱望 x=48 y=32 text=最熱望 size=32]
+[glink color=btn_06_black target=*熱望 x=48 y=128 text=熱望 size=32]
+[glink color=btn_06_black target=*拒否 x=48 y=224 text=拒否 size=32]
+[s]
+
 *拒否
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=7]
+[voconfig name=alice vostorage=alice{number}.ogg number=8]
 [voconfig name=danu vostorage=danu{number}.ogg number=95]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
@@ -987,17 +989,17 @@ sf.counter += 1;
 
 [autosave]
 #narrator
-──数年が経った。[l][r]
+深[ruby text=ディープ・ワンズ]き者過激派の報復攻撃で、札幌、旭川、函館が蒸発した。[l][r]
 #narrator
-ユークリッド幾何学を無視した石柱都市が浮上した。[l][r]
+石柱都市が浮上した。[l][r]
 #narrator
-人類連合軍は残された大陸間弾道ミサイルを全力で投射した。[l][r]
+人類連合軍は残された大陸間[ruby x=-16 text=ＩＣＢＭ spacing=42.666666666666664]弾道弾を全力で投射した。[l][r]
 #narrator
 妖精種はたもとを分かった。人類種とも。魚人種とも。[p]
 
 [autosave]
 #narrator
-──四半世紀が経った。[l][r]
+──二十六年が経った。[l][r]
 #narrator
 世界人口は十億人を下回った。[l][r]
 #narrator
@@ -1036,7 +1038,7 @@ sf.counter += 1;
 *二章終
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=17]
+[voconfig name=alice vostorage=alice{number}.ogg number=18]
 [voconfig name=danu vostorage=danu{number}.ogg number=96]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
@@ -1047,9 +1049,9 @@ sf.counter += 1;
 
 [autosave]
 #narrator
-エデンの園配[ruby x=-16 text=パターン]置は喪われた。[l][r]
+エデンの園配[ruby x=-16 text=コンフィギュレーション]置は喪われた。[l][r]
 #narrator
-グライダー銃で撃たれて、メトセラは九百六十九歳で死んだ。[l][r]
+グライダー[ruby text=ガン]銃で撃たれて、長[ruby text=メトセラ spacing=10.666666666666666]命者は九百六十九歳で死んだ。[l][r]
 #narrator
 昭和横濱物語。スティーブンによる福音書。第二節。[l][r]
 #narrator
@@ -1059,7 +1061,7 @@ sf.counter += 1;
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=17]
+[voconfig name=alice vostorage=alice{number}.ogg number=18]
 [voconfig name=danu vostorage=danu{number}.ogg number=96]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
