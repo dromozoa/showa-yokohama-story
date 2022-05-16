@@ -22,8 +22,8 @@
 
 @# @if_call{sf.counter == 1}{菊と刀1}
 @# @if_call{sf.counter == 2}{菊と刀2}
-@# @if{sf.counter == 3}{特殊攻撃作戦}
-@if{sf.counter >= 0}{特殊攻撃作戦}
+@if{sf.counter == 3}{特殊攻撃作戦}
+@# @if{sf.counter >= 0}{特殊攻撃作戦}
 
 #danu
 少尉、どこに手紙を届けるの。

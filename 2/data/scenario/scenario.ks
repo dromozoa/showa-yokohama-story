@@ -36,7 +36,7 @@ sf.counter = 0;
 
 *選択肢
 
-[if exp="sf.counter >= 0"]
+[if exp="sf.counter == 3"]
 [jump target=*特殊攻撃作戦]
 [endif]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
