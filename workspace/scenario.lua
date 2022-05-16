@@ -151,6 +151,10 @@ for line in io.lines() do
     local name = trim(_1)
     page.bg = name
 
+  elseif match(line, "^@bgm{(.-)}(.*)$") then
+    local name = trim(_1)
+    page.bgm = name
+
   elseif match(line, "^@case{(.-)}(.*)$") then
     local label = trim(_1)
     local text = trim(_2)
@@ -298,6 +302,9 @@ for i = 1, #sections do
 
     if page.bg then
       out:write("[bg2 storage=", page.bg, " time=1000 wait=false method=vanishIn]\n")
+    end
+    if page.bgm then
+      out:write("[playbgm storage=", page.bgm, " loop=true volume=50]\n")
     end
 
     if page.cases then

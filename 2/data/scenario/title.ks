@@ -44,6 +44,9 @@ tf.gothic = "BIZ UDPGothic"
 [preload storage=data/fgimage/dummy.png]
 [save_img storage=dummy.png]
 
+[preload storage=data/bgm/sessions_diana_track19.ogg]
+; [preload storage=data/bgm/sessions_diana_track28.ogg]
+
 [font face=VT323 size=48 color=0x029D93]
 #
 H.H.C MONITOR VER 1.3[r]
