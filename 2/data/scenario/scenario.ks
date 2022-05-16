@@ -36,7 +36,7 @@ sf.counter = 0;
 
 *選択肢
 
-[if exp="sf.counter == 3"]
+[if exp="sf.counter >= 0"]
 [jump target=*特殊攻撃作戦]
 [endif]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
@@ -847,7 +847,7 @@ sf.counter += 1;
 [vostop]
 [jump target=*選択肢]
 
-*菊と刀1
+*特殊攻撃作戦
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=4]
@@ -860,36 +860,54 @@ sf.counter += 1;
 [vostart]
 
 [autosave]
-#narrator
-情報[ruby x=-16 text=メイジャイ spacing=12]分隊。[l][r]
-#narrator
-情報処理に特化した妖[ruby text=エルフ spacing=24]精種の三[ruby text=トリオ spacing=24]人組。[p]
-[vostop]
-[return]
+#danu
+少尉、今日の配給。[l][r]
+#danu
+本物の肉を使った肉まんだって。[p]
 
-*特殊攻撃作戦
-
-[voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=4]
-[voconfig name=danu vostorage=danu{number}.ogg number=90]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=37]
-[voconfig name=magi vostorage=magi{number}.ogg number=0]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=44]
-[voconfig name=priest vostorage=priest{number}.ogg number=32]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
+[autosave]
+#narrator
+三溪園、伝[ruby x=-16 text=ブーゲンビリア]説の樹のしたで、キミは配給を受けとる。[p]
 
 [autosave]
 #danu
-本物の豚肉を使った、肉まん。[l][r]
+肉[ruby text=パン spacing=64]まんと叶[ruby text=タバコ spacing=24]和圓と葡[ruby text=アルコール spacing=4]萄酒。[l][r]
 #danu
-そういうのもあるんだ。[l][r]
+ＰＴＡで今宵は晩餐としゃれこみましょう。。[p]
+
+[autosave]
+#narrator
+特殊検索群α分遣隊の全員が指揮所に集合した。[p]
+
+[autosave]
 #danu
-ちらっ。[p]
+傾聴。[p]
 
 [autosave]
 #alice
-強制はしない。[l][r]
+菊刀一号作戦は失敗した。[l][r]
+#alice
+日米連合[ruby x=-16 text=グランドフリート]艦隊は、マリアナ海溝邀撃漸減作戦に失敗した。[l][r]
+#alice
+β分遣隊は、第七艦隊旗艦とともに沈んだ。[p]
+
+[autosave]
+#alice
+菊刀二号作戦が発令された。[l][r]
+#alice
+我々の任務は、仮称リヴァイアサンの誘因。[l][r]
+#alice
+ボクもやきがまわったな。[l][r]
+#alice
+文字どおり、特別攻撃作戦だ。[p]
+
+[autosave]
+#danu
+ワンチャン、いけるって。[p]
+
+[autosave]
+#alice
+強制はしない、少尉。[l][r]
 #alice
 熱望か希望か拒否か、ひとつを択べ。
 [vostop]
@@ -901,8 +919,8 @@ sf.counter += 1;
 *熱望
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=93]
+[voconfig name=alice vostorage=alice{number}.ogg number=13]
+[voconfig name=danu vostorage=danu{number}.ogg number=96]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=44]
@@ -921,8 +939,8 @@ sf.counter += 1;
 *希望
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=6]
-[voconfig name=danu vostorage=danu{number}.ogg number=95]
+[voconfig name=alice vostorage=alice{number}.ogg number=13]
+[voconfig name=danu vostorage=danu{number}.ogg number=98]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=44]
@@ -944,8 +962,8 @@ sf.counter += 1;
 *拒否
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=8]
-[voconfig name=danu vostorage=danu{number}.ogg number=95]
+[voconfig name=alice vostorage=alice{number}.ogg number=15]
+[voconfig name=danu vostorage=danu{number}.ogg number=98]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=44]
@@ -955,7 +973,9 @@ sf.counter += 1;
 
 [autosave]
 #danu
-少尉。[p]
+少尉。[l][r]
+#danu
+アンタ。[p]
 
 [autosave]
 #alice
@@ -993,7 +1013,7 @@ sf.counter += 1;
 #narrator
 石柱都市が浮上した。[l][r]
 #narrator
-人類連合軍は残された大陸間[ruby x=-16 text=ＩＣＢＭ spacing=42.666666666666664]弾道弾を全力で投射した。[l][r]
+人類は残された大陸間[ruby x=-16 text=ＩＣＢＭ spacing=42.666666666666664]弾道弾を全力で投射した。[l][r]
 #narrator
 妖精種はたもとを分かった。人類種とも。魚人種とも。[p]
 
@@ -1038,8 +1058,8 @@ sf.counter += 1;
 *二章終
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=18]
-[voconfig name=danu vostorage=danu{number}.ogg number=96]
+[voconfig name=alice vostorage=alice{number}.ogg number=25]
+[voconfig name=danu vostorage=danu{number}.ogg number=100]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=62]
@@ -1061,8 +1081,8 @@ sf.counter += 1;
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
-[voconfig name=alice vostorage=alice{number}.ogg number=18]
-[voconfig name=danu vostorage=danu{number}.ogg number=96]
+[voconfig name=alice vostorage=alice{number}.ogg number=25]
+[voconfig name=danu vostorage=danu{number}.ogg number=100]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=66]
