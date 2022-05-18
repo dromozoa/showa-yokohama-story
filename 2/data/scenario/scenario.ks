@@ -422,7 +422,7 @@ sf.counter += 1;
 #engineer
 根岸の一般設計学研究所が、日本の拠点になった。[l][r]
 #engineer
-数値風洞で演算した結果を、初芝の生産工学研究所で硝[ruby x=-16 text=ガラス spacing=8]子に灼きつける。[p]
+数値風洞で演算した結果を、初芝の生産技術研究所で硝[ruby x=-16 text=ガラス spacing=8]子に灼きつける。[p]
 
 [autosave]
 #engineer
@@ -952,7 +952,11 @@ sf.counter += 1;
 #alice
 この世界に、希望はないんだ、少尉。[l][r]
 #alice
-希[ruby x=-16 text=エルピス]望もロ[ruby text=エルビス spacing=10.666666666666666]ックも喪われた。
+希[ruby x=-16 text=エルピス]望もロ[ruby text=エルビス spacing=10.666666666666666]ックも喪われた。[p]
+
+[autosave]
+#danu
+妖[ruby x=-16 text=エルブズ]精はいるけど。
 [vostop]
 [glink color=btn_06_black target=*熱望 x=48 y=32 text=最熱望 size=32]
 [glink color=btn_06_black target=*熱望 x=48 y=128 text=熱望 size=32]
@@ -963,7 +967,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=15]
-[voconfig name=danu vostorage=danu{number}.ogg number=98]
+[voconfig name=danu vostorage=danu{number}.ogg number=99]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=44]
@@ -1059,7 +1063,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=25]
-[voconfig name=danu vostorage=danu{number}.ogg number=100]
+[voconfig name=danu vostorage=danu{number}.ogg number=101]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=62]
@@ -1082,7 +1086,7 @@ sf.counter += 1;
 
 [voconfig name=activist vostorage=activist{number}.ogg number=30]
 [voconfig name=alice vostorage=alice{number}.ogg number=25]
-[voconfig name=danu vostorage=danu{number}.ogg number=100]
+[voconfig name=danu vostorage=danu{number}.ogg number=101]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=37]
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=66]
