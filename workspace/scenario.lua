@@ -231,18 +231,50 @@ for line in io.lines() do
     local p = 1
     local n = #line
     while true do
+      -- ルビが指定されていたら、その読みかたをしたいかも
+      -- 換言。ルビと独立に、読みかたを指定したい場合もある
+      -- 1. 句読点をいれたり、消したり
+      -- 2. ルビをふらずに、よみかたを指定したり
+      -- 3. ルビをふって、よみかたでさらにうらぎることはあるかな？
+      -- 4. あるかも。でも、それはそれでつくればいいんじゃない。
+      --
+      -- もともとはrubyタグ
+      -- r = rubyとvoiceをいっしょに定義する
+      --   @r...@{...}
+      -- v = voice only
+      --   @v...@{...}
+      -- R = ruby + voice
+      --   @R...@{...|...}
       local i, j, text, ruby = line:find("@{ruby}(.-)@{/ruby(.-)}", p)
       if i then
         if p < i then
           data[#data + 1] = { text = line:sub(p, i - 1) }
         end
-        data[#data + 1] = { text = text, ruby = trim(ruby) }
+        data[#data + 1] = { text = text, ruby = trim(ruby), voice = trim(ruby) }
         p = j + 1
       else
-        if p < n then
-          data[#data + 1] = { text = line:sub(p, n) }
+        local i, j, command, text, payload = line:find("@([rvR])(.-)@{(.-)}", p)
+        if i then
+          if p < i then
+            data[#data + 1] = { text = line:sub(p, i - 1) }
+          end
+          if command == "r" then
+            data[#data + 1] = { text = text, ruby = trim(payload), voice = trim(payload) }
+          elseif command == "v" then
+            data[#data + 1] = { text = text, voice= trim(payload) }
+          elseif command == "R" then
+            local ruby, voice = assert(payload:match "(.-)|(.*)")
+            data[#data + 1] = { text = text, ruby = trim(ruby), voice = trim(voice) }
+          else
+            error "unknown command"
+          end
+          p = j + 1
+        else
+          if p < n then
+            data[#data + 1] = { text = line:sub(p, n) }
+          end
+          break
         end
-        break
       end
     end
     local lines = page.lines
@@ -405,8 +437,8 @@ for i = 1, #sections do
       local line = page.lines[k]
       for l = 1, #line do
         local item = line[l]
-        if item.ruby then
-          out:write(item.ruby)
+        if item.voice then
+          out:write(item.voice)
         else
           out:write(item.text)
         end

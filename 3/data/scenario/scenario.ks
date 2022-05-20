@@ -31,7 +31,7 @@
 #magi
 宛、特殊検索群司令部。[l][r]
 #magi
-秘匿兵器断[ruby x=-16 text=フラグメント]章使用許可を[ruby text=もと]求む。[l][r]
+秘匿兵器断[ruby x=-16 text=フラグメント]章使用許可を求む。[l][r]
 #magi
 このままでは、エンタープライズが沈む。[p]
 
@@ -69,7 +69,7 @@
 
 [autosave]
 #danu
-大佐が構想を達する。[l][r]
+大佐が構想を達される。[l][r]
 #danu
 傾聴。[p]
 
@@ -119,7 +119,7 @@
 #alice
 辺縁からもたらされた人獣共通感染症。[l][r]
 #alice
-ゾンビ[ruby text=か]禍を、人類はそのように認識した。[l][r]
+屍[ruby x=-16 text=ゾンビ spacing=8]者禍を、人類はそのように認識した。[l][r]
 #alice
 手をこまねいているうちに、感染が拡大した。[p]
 
@@ -137,101 +137,47 @@
 #alice
 人類と人類っぽいものの固有の尊厳と譲れない権利を護る。[l][r]
 #alice
-それが、我々の信[ruby x=-16 text=プリンシプル]条だ。[l][r]
+それが、我々の信[ruby x=-16 text=プリンシプル]条だ。[p]
+
+[autosave]
+#danu
+世界に自由と正義と平和を築く。[l][r]
+#danu
+気づいてるよね、少尉。[l][r]
+#danu
+仮想リヴァイアサンを撃滅することも、人類を救済することも、それそのものは、アタシたちの目的じゃない。[p]
+
+[autosave]
 #alice
-それじゃあ、人類と人類っぽいものはなにによって分かたれる。[p]
+断[ruby x=-16 text=フラグメント]章を読んで、赤と黒は死んだ。[l][r]
+#alice
+我々は読む。[l][r]
+#alice
+スティーブンによる福音書。偽典の正本を。[l][r]
+#alice
+我々が読む。[p]
 
 [autosave]
 #magi
-一体、いつから──[l][r]
+京浜工業地帯。[l][r]
 #magi
-魚人がクトゥルフ神話に典拠していると錯覚していた？[l][r]
+根岸湾埋立地。[l][r]
 #magi
-予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械の利用を申請。[p]
+工業技術院一般設計学研究所情報基盤センター南棟。[p]
 
 [autosave]
 #alice
-却下する。[l][r]
+十[ruby text=クルセイダーズ]字軍を加入し、増強大隊を編成する。[l][r]
 #alice
-いまはまだ、な。[p]
+統合航空軍に空中巡洋艦の都合はつけた。[p]
 
 [autosave]
-#danu
-アタシは黒[ruby text=ダークエルフ]妖精の魔人。[l][r]
-#danu
-情報[ruby x=-16 text=メイジャイ spacing=12]分隊は真祖[ruby x=-16 text=ハイエルフ spacing=12]妖精の魔人。[l][r]
-#danu
-少尉、大佐はなんの魔人。
-[vostop]
-[glink color=btn_06_black target=*大佐 x=48 y=32 text=吸血鬼の魔人 size=32]
-[glink color=btn_06_black target=*大佐 x=48 y=128 text=屍人の魔人 size=32]
-[glink color=btn_06_black target=*大佐 x=48 y=224 text=屍都の女王 size=32]
-[s]
-
-*大佐
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=24]
-[voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=13]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
-[voconfig name=priest vostorage=priest{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
-#danu
-そうだね。[l][r]
-#danu
-そうだったね。[l][r]
-#danu
-少尉、アンタは。[p]
-
-[autosave]
-#alice
-特殊検索群α分遣隊。[l][r]
-#alice
-魔女の[ruby text=マジェスティック・トゥウェルヴ]落とし子。[l][r]
-#alice
-またの名を、魔人小隊。[p]
-
-[autosave]
-#magi
-魔人小隊に属するのは魔人。[l][r]
-#magi
-包含関係。[l][r]
-#magi
-自明。[p]
-
-[autosave]
-#danu
-少尉、アンタはなんだ。[l][r]
-#danu
-なにものであろうと、希った。
-[vostop]
-[glink color=btn_06_black target=*自分 x=48 y=32 text=人類 size=32]
-[glink color=btn_06_black target=*自分 x=48 y=128 text=人類の魔人 size=32]
-[glink color=btn_06_black target=*自分 x=48 y=224 text=…… size=32]
-[s]
-
-*自分
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=27]
-[voconfig name=danu vostorage=danu{number}.ogg number=20]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=16]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
-[voconfig name=priest vostorage=priest{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
-#alice
-それで、いい。[l][r]
-#alice
-それが、いい。[p]
+#narrator
+空中巡洋艦飛鳥。[l][r]
+#narrator
+水素を利用した硬式飛行船。[l][r]
+#narrator
+ヘリウムを利用できないほど、人類は追いつめられている。[p]
 [vostop]
 
 [return]
