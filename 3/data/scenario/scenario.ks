@@ -154,6 +154,84 @@
 却下する。[l][r]
 #alice
 いまはまだ、な。[p]
+
+[autosave]
+#danu
+アタシは黒[ruby text=ダークエルフ]妖精の魔人。[l][r]
+#danu
+情報[ruby x=-16 text=メイジャイ spacing=12]分隊は真祖[ruby x=-16 text=ハイエルフ spacing=12]妖精の魔人。[l][r]
+#danu
+少尉、大佐はなんの魔人。
+[vostop]
+[glink color=btn_06_black target=*大佐 x=48 y=32 text=吸血鬼の魔人 size=32]
+[glink color=btn_06_black target=*大佐 x=48 y=128 text=屍人の魔人 size=32]
+[glink color=btn_06_black target=*大佐 x=48 y=224 text=屍都の女王 size=32]
+[s]
+
+*大佐
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=24]
+[voconfig name=danu vostorage=danu{number}.ogg number=15]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=13]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
+[voconfig name=priest vostorage=priest{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#danu
+そうだね。[l][r]
+#danu
+そうだったね。[l][r]
+#danu
+少尉、アンタは。[p]
+
+[autosave]
+#alice
+特殊検索群α分遣隊。[l][r]
+#alice
+魔女の[ruby text=マジェスティック・トゥウェルヴ]落とし子。[l][r]
+#alice
+またの名を、魔人小隊。[p]
+
+[autosave]
+#magi
+魔人小隊に属するのは魔人。[l][r]
+#magi
+包含関係。[l][r]
+#magi
+自明。[p]
+
+[autosave]
+#danu
+少尉、アンタはなんだ。[l][r]
+#danu
+なにものであろうと、希った。
+[vostop]
+[glink color=btn_06_black target=*自分 x=48 y=32 text=人類 size=32]
+[glink color=btn_06_black target=*自分 x=48 y=128 text=人類の魔人 size=32]
+[glink color=btn_06_black target=*自分 x=48 y=224 text=…… size=32]
+[s]
+
+*自分
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=27]
+[voconfig name=danu vostorage=danu{number}.ogg number=20]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=16]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
+[voconfig name=priest vostorage=priest{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
+[vostart]
+
+[autosave]
+#alice
+それで、いい。[l][r]
+#alice
+それが、いい。[p]
 [vostop]
 
 [return]
