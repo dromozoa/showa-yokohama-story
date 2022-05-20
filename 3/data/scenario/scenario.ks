@@ -143,95 +143,61 @@
 
 [autosave]
 #magi
-一体、いつから──[l][r]
-#magi
-魚人がクトゥルフ神話に典拠していると錯覚していた？[l][r]
-#magi
-予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械の利用を申請。[p]
+進路上に屍[ruby x=-16 text=ゾンビ spacing=8]者百。[p]
+
+[autosave]
+#priest
+隊形を転換するか。[p]
+
+[autosave]
+#narrator
+支隊は二列縦隊で行軍している。[l][r]
+#narrator
+方陣を組むかどうか、神父は問うていた。[p]
 
 [autosave]
 #alice
-却下する。[l][r]
+時間がもったいない。[l][r]
 #alice
-いまはまだ、な。[p]
+我々が排除する。[p]
 
 [autosave]
 #danu
-アタシは黒[ruby text=ダークエルフ]妖精の魔人。[l][r]
+少尉、運転かわって。[l][r]
 #danu
-情報[ruby x=-16 text=メイジャイ spacing=12]分隊は真祖[ruby x=-16 text=ハイエルフ spacing=12]妖精の魔人。[l][r]
+α分遣隊に達する。[l][r]
 #danu
-少尉、大佐はなんの魔人。
-[vostop]
-[glink color=btn_06_black target=*大佐 x=48 y=32 text=吸血鬼の魔人 size=32]
-[glink color=btn_06_black target=*大佐 x=48 y=128 text=屍人の魔人 size=32]
-[glink color=btn_06_black target=*大佐 x=48 y=224 text=屍都の女王 size=32]
-[s]
-
-*大佐
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=24]
-[voconfig name=danu vostorage=danu{number}.ogg number=15]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=13]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
-[voconfig name=priest vostorage=priest{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
-
-[autosave]
+莫迦が大[ruby x=-16 text=クレイモア]剣で突撃する。[l][r]
 #danu
-そうだね。[l][r]
-#danu
-そうだったね。[l][r]
-#danu
-少尉、アンタは。[p]
-
-[autosave]
-#alice
-特殊検索群α分遣隊。[l][r]
-#alice
-魔女の[ruby text=マジェスティック・トゥウェルヴ]落とし子。[l][r]
-#alice
-またの名を、魔人小隊。[p]
+なんか、いいかんじにおなしゃす。[p]
 
 [autosave]
 #magi
-魔人小隊に属するのは魔人。[l][r]
+情報連結開始。[l][r]
 #magi
-包含関係。[l][r]
+莫迦にあてないようにまあまあ注意して。[l][r]
 #magi
-自明。[p]
+殲滅せよ。[p]
 
 [autosave]
-#danu
-少尉、アンタはなんだ。[l][r]
-#danu
-なにものであろうと、希った。
-[vostop]
-[glink color=btn_06_black target=*自分 x=48 y=32 text=人類 size=32]
-[glink color=btn_06_black target=*自分 x=48 y=128 text=人類の魔人 size=32]
-[glink color=btn_06_black target=*自分 x=48 y=224 text=…… size=32]
-[s]
-
-*自分
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=27]
-[voconfig name=danu vostorage=danu{number}.ogg number=20]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=16]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=5]
-[voconfig name=priest vostorage=priest{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=0]
-[vostart]
+#narrator
+背よりもおおきな大[ruby x=-16 text=クレイモア]剣をかつぎ、アリスが出撃する。[l][r]
+#narrator
+歩兵銃に着剣して、ダヌーが後を追う。[l][r]
+#narrator
+長[ruby x=-16 text=ロングボウ]弓からはなたれた炸裂矢が、後列の屍[ruby x=-16 text=ゾンビ spacing=8]者に着弾する。[p]
 
 [autosave]
-#alice
-それで、いい。[l][r]
-#alice
-それが、いい。[p]
+#narrator
+くるくるまわり、アリスは首をはねていく。[l][r]
+#narrator
+肩づけした歩兵銃で、一発ずつ、ダヌーは屍[ruby x=-16 text=ゾンビ spacing=8]者の眉間に弾を撃ちこむ。[l][r]
+#narrator
+弾倉が空になるまえに、すべての屍[ruby x=-16 text=ゾンビ spacing=8]者が地に伏した。[p]
+
+[autosave]
+#priest
+屍都の女王のふたつなは伊達ではないな。[p]
 [vostop]
 
 [return]
