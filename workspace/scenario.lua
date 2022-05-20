@@ -231,6 +231,12 @@ for line in io.lines() do
     local p = 1
     local n = #line
     while true do
+      -- ルビが指定されていたら、その読みかたをしたいかも
+      -- 換言。ルビと独立に、読みかたを指定したい場合もある
+      -- 1. 句読点をいれたり、消したり
+      -- 2. ルビをふらずに、よみかたを指定したり
+      -- 3. ルビをふって、よみかたでさらにうらぎることはあるかな？
+      -- 4. あるかも。でも、それはそれでつくればいいんじゃない。
       local i, j, text, ruby = line:find("@{ruby}(.-)@{/ruby(.-)}", p)
       if i then
         if p < i then
