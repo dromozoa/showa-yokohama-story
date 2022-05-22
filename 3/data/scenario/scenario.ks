@@ -228,6 +228,56 @@
 [autosave]
 #narrator
 最後の晩餐はそうして終わった。[p]
+
+[autosave]
+#narrator
+ある晩。[l][r]
+#narrator
+無名戦士の墓。[l][r]
+#narrator
+訓[ruby text=ハンドラー spacing=4]練士のユキヲが立つ。[l][r]
+#narrator
+彼の犬とともに。[p]
+
+[autosave]
+#yukio
+呼びだしてわるかったな。[l][r]
+#yukio
+長距[ruby text=ＬＲＰ spacing=56]離哨戒帰りなんだ。[l][r]
+#yukio
+オレは往くよ。[l][r]
+#yukio
+明日の輸送船でな。[p]
+
+[autosave]
+#yukio
+渡しておかなきゃいけないものがある。[l][r]
+#yukio
+[ruby text=ケーナイン]犬を護って死んだオッサンからの届けものだ。[p]
+
+[autosave]
+#narrator
+ガヴァメントの弾倉。[l][r]
+#narrator
+七発の銀の[ruby x=-16 text=シルバー・ヴァレット]弾丸。[p]
+
+[autosave]
+#yukio
+告げておかなきゃいけない言葉がある。[l][r]
+#yukio
+択べ。だとさ。[l][r]
+#yukio
+探偵を標榜したオッサンからの言伝だ。[p]
+
+[autosave]
+#narrator
+屍[ruby x=-16 text=ゾンビ spacing=8]者を嗅ぐ犬は、同量の金よりも価値がある。[l][r]
+#narrator
+いまや、金に価値などないけれど。[l][r]
+#narrator
+決戦前、ユキヲは犬とともに北海道に渡った。[l][r]
+#narrator
+決戦がせまっていた。[p]
 [vostop]
 
 [return]
