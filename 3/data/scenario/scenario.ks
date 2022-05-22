@@ -215,7 +215,7 @@
 #alice
 最悪、計算機棟とやらに雪隠詰めで玉砕だ。[l][r]
 #alice
-数百万の屍[ruby x=-16 text=ゾンビ spacing=8]者に重囲されてはどうにもならない。[l][r]
+千万の屍[ruby x=-16 text=ゾンビ spacing=8]者に重囲されてはどうにもならない。[l][r]
 #alice
 ボクもやきがまわったな。[l][r]
 #alice
@@ -271,7 +271,7 @@
 
 [autosave]
 #narrator
-屍[ruby x=-16 text=ゾンビ spacing=8]者を嗅ぐ犬は、同量の金よりも価値がある。[l][r]
+屍[ruby x=-16 text=ゾンビ spacing=8]者を嗅ぐ犬は、おなじ重さの金よりも価値がある。[l][r]
 #narrator
 いまや、金に価値などないけれど。[l][r]
 #narrator
@@ -298,9 +298,9 @@
 #narrator
 三百の兵が水をくちに含む。[l][r]
 #narrator
-主に択ばれた弊衣の古[ruby text=ヴェテラン spacing=4]強者ども。[l][r]
+主に選ばれた弊衣の古[ruby text=ヴェテラン spacing=4]強者ども。[l][r]
 #narrator
-極東十[ruby text=クルセイダーズ]字軍。[p]
+メサイア会、極東十[ruby text=クルセイダーズ]字軍。[p]
 
 [autosave]
 #alice
@@ -338,7 +338,7 @@
 #narrator
 阻止線を越えた屍[ruby x=-16 text=ゾンビ spacing=8]者の眉間を狙撃する。[l][r]
 #narrator
-焼夷弾が脳を灼く。[l][r]
+焼夷弾で脳を灼く。[l][r]
 #narrator
 それが、もっとも経済的で効率的な手段だから。[p]
 
@@ -346,7 +346,7 @@
 #narrator
 戦術を内面化した者たちだけが生きのこった。[l][r]
 #narrator
-弾薬が続くかぎり、屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒しつづける。[l][r]
+弾薬が続くかぎり、屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒する。[l][r]
 #narrator
 積みあがった屍体それ自体で阻塞する。[p]
 
@@ -358,7 +358,7 @@
 #narrator
 十[ruby text=クルセイダーズ]字軍は、銃剣を使う。[l][r]
 #narrator
-アリスの得物は、大[ruby x=-16 text=クレイモア]剣だ。[p]
+アリスの得物は大[ruby x=-16 text=クレイモア]剣だ。[p]
 
 [autosave]
 #magi
@@ -390,13 +390,13 @@
 
 [autosave]
 #narrator
-白い肌、赤い瞳、身長より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
+白い肌、赤い瞳、背より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
 #narrator
 少女は荷台から飛びおりる。[l][r]
 #narrator
 疾る。[l][r]
 #narrator
-その背をカラシニコフの発砲音が追う。[p]
+カラシニコフの発砲音が追いぬく。[p]
 
 [autosave]
 #alice
@@ -404,7 +404,7 @@
 
 [autosave]
 #narrator
-そのつぶやきはキミに届かなかった。[l][r]
+そのつぶやきはキミには届かなかった。[l][r]
 #narrator
 くるくるまわり、アリスは首を刈る。[l][r]
 #narrator
@@ -419,6 +419,12 @@
 運河を渡った。[l][r]
 #narrator
 一般設計学研究所に到着した。[p]
+
+[autosave]
+#narrator
+計算機棟内を掃討する。[l][r]
+#narrator
+屋上。壊れた太陽光発電パネル。菜園の痕跡。[p]
 [vostop]
 
 [return]
