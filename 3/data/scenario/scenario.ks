@@ -15,6 +15,7 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+[jump target=*test]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -231,7 +232,7 @@
 
 [autosave]
 #narrator
-夜。[l][r]
+ある夜。[l][r]
 #narrator
 無名戦士の墓。[l][r]
 #narrator
@@ -294,7 +295,107 @@
 
 [autosave]
 #narrator
-朝。[p]
+ある朝。[l][r]
+#narrator
+三百の兵が水をくちに含む。[l][r]
+#narrator
+主に択ばれた弊衣の古[ruby text=ヴェテラン spacing=4]強者ども。[l][r]
+#narrator
+極東十[ruby text=クルセイダーズ]字軍。[p]
+
+[autosave]
+#alice
+無停止進撃だ。[l][r]
+#alice
+目的を達するまで、我々は止まらない。[l][r]
+#alice
+我々は軍隊ではないから。[l][r]
+#alice
+我々が最後の軍隊だから。[p]
+
+[autosave]
+#narrator
+進軍を開始する。[l][r]
+#narrator
+二列縦隊で進む。[l][r]
+#narrator
+中段に武装ピックアップと電源車を置く。[l][r]
+#narrator
+弾薬を満載したトレーラーを牽引する。[p]
+
+[autosave]
+#narrator
+破[ruby x=-16 text=カタストロフ]局以降、人類が到達した対屍[ruby x=-16 text=ゾンビ spacing=8]者戦術。[l][r]
+#narrator
+屍[ruby x=-16 text=ゾンビ spacing=8]者の武器はかみつきと爪。[l][r]
+#narrator
+屍[ruby x=-16 text=ゾンビ spacing=8]者は、うなり声をあげて歩みよる。[l][r]
+#narrator
+屍[ruby x=-16 text=ゾンビ spacing=8]者は、塹壕にこもらない。[p]
+
+[autosave]
+#narrator
+屋外では、横陣または方陣を組む。[l][r]
+#narrator
+阻止線を越えた屍[ruby x=-16 text=ゾンビ spacing=8]者の眉間を狙撃する。[l][r]
+#narrator
+焼夷弾が脳を灼く。[l][r]
+#narrator
+それが、もっとも経済的で効率的な手段だから。[p]
+
+[autosave]
+#narrator
+戦術を内面化した者たちだけが生きのこった。[l][r]
+#narrator
+弾薬が続くかぎり、屍[ruby x=-16 text=ゾンビ spacing=8]者を打倒しつづける。[l][r]
+#narrator
+積みあがった屍体それ自体で阻塞する。[p]
+
+[autosave]
+#narrator
+屋内では、長柄の武器で近接戦闘を実施する。[l][r]
+#narrator
+第一回[ruby x=-16 text=スカベンジャーズ spacing=9.1428571428571423]収大隊は、円匙や斧槍を得意とする。[l][r]
+#narrator
+十[ruby text=クルセイダーズ]字軍は、銃剣を使う。[l][r]
+#narrator
+アリスの得物は、大[ruby x=-16 text=クレイモア]剣だ。[p]
+
+[autosave]
+#magi
+進路上に屍[ruby x=-16 text=ゾンビ spacing=8]者、中隊規模。一個小隊欠かな。[p]
+
+[autosave]
+#priest
+隊形を変換するか。[p]
+
+[autosave]
+#alice
+無停止進撃と命じたぞ、神父。[l][r]
+#alice
+ボクが排除する。[p]
+
+[autosave]
+#danu
+大隊総員に達する。[l][r]
+#danu
+莫迦が単騎で突撃する。[l][r]
+#danu
+なんか、いいかんじにおなしゃす。[p]
+
+[autosave]
+#magi
+射界がとれる人は一発だけ撃ってくださーい。[l][r]
+#magi
+莫迦にあてないようにまあまあ注意して。[p]
+
+[autosave]
+#narrator
+白い肌、赤い瞳、背よりも長い大[ruby x=-16 text=クレイモア]剣。[l][r]
+#narrator
+少女は荷台から飛びおりる。[l][r]
+#narrator
+疾る。[p]
 [vostop]
 
 [return]
