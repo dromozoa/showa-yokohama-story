@@ -15,7 +15,6 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
-[jump target=*test]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -417,7 +416,7 @@
 #narrator
 大隊は進軍した。[l][r]
 #narrator
-運河を渡る。[l][r]
+運河を渡った。[l][r]
 #narrator
 一般設計学研究所に到着した。[p]
 [vostop]
