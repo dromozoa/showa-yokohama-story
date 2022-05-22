@@ -213,7 +213,7 @@
 
 [autosave]
 #alice
-最悪、計算機棟とやらに押しこめられて玉砕だ。[l][r]
+最悪、計算機棟とやらに雪隠詰めで玉砕だ。[l][r]
 #alice
 数百万の屍[ruby x=-16 text=ゾンビ spacing=8]者に重囲されてはどうにもならない。[l][r]
 #alice
@@ -227,11 +227,11 @@
 
 [autosave]
 #narrator
-最後の晩餐はそうして終わった。[p]
+最後の晩餐は、そうして終わった。[p]
 
 [autosave]
 #narrator
-ある晩。[l][r]
+ある日。[l][r]
 #narrator
 無名戦士の墓。[l][r]
 #narrator
@@ -245,7 +245,7 @@
 #yukio
 長距[ruby text=ＬＲＰ spacing=56]離哨戒帰りなんだ。[l][r]
 #yukio
-オレは往くよ。[l][r]
+オレは往くぜ。[l][r]
 #yukio
 明日の輸送船でな。[p]
 
@@ -253,7 +253,7 @@
 #yukio
 渡しておかなきゃいけないものがある。[l][r]
 #yukio
-[ruby text=ケーナイン]犬を護って死んだオッサンからの届けものだ。[p]
+オレの[ruby text=ケーナイン]犬を護って死んだオッサンからの届けものだ。[p]
 
 [autosave]
 #narrator
@@ -275,7 +275,7 @@
 #narrator
 いまや、金に価値などないけれど。[l][r]
 #narrator
-決戦前、ユキヲは犬とともに北海道に渡った。[l][r]
+ユキヲは犬とともに北海道に渡る。[l][r]
 #narrator
 決戦がせまっていた。[p]
 [vostop]
