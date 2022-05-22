@@ -315,7 +315,7 @@
 
 [autosave]
 #narrator
-進軍を開始する。[l][r]
+大隊は進発した。[l][r]
 #narrator
 二列縦隊で進む。[l][r]
 #narrator
@@ -391,11 +391,35 @@
 
 [autosave]
 #narrator
-白い肌、赤い瞳、背よりも長い大[ruby x=-16 text=クレイモア]剣。[l][r]
+白い肌、赤い瞳、身長より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
 #narrator
 少女は荷台から飛びおりる。[l][r]
 #narrator
-疾る。[p]
+疾る。[l][r]
+#narrator
+その背をカラシニコフの発砲音が追う。[p]
+
+[autosave]
+#alice
+死んで[ruby text=ＤＩＥ　ＦＯＲ　ＭＥ！ spacing=4.7999999999999998]くれる？[p]
+
+[autosave]
+#narrator
+そのつぶやきはキミに届かなかった。[l][r]
+#narrator
+くるくるまわり、アリスは首を刈る。[l][r]
+#narrator
+α分遣隊の妖[ruby text=エルブズ spacing=10.666666666666666]精種が長[ruby x=-16 text=ロングボウ]弓で曲射する。[l][r]
+#narrator
+すべての屍[ruby x=-16 text=ゾンビ spacing=8]者が倒れ伏す。[p]
+
+[autosave]
+#narrator
+大隊は進軍した。[l][r]
+#narrator
+運河を渡る。[l][r]
+#narrator
+一般設計学研究所に到着した。[p]
 [vostop]
 
 [return]
