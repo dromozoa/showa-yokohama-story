@@ -231,7 +231,7 @@
 
 [autosave]
 #narrator
-ある日。[l][r]
+夜。[l][r]
 #narrator
 無名戦士の墓。[l][r]
 #narrator
@@ -265,9 +265,9 @@
 #yukio
 告げておかなきゃいけない言葉がある。[l][r]
 #yukio
-択べ。だとさ。[l][r]
+探偵を標榜したオッサンからの言伝だ。[l][r]
 #yukio
-探偵を標榜したオッサンからの言伝だ。[p]
+択べ。だとさ。[p]
 
 [autosave]
 #narrator
@@ -278,6 +278,23 @@
 ユキヲは犬とともに北海道に渡る。[l][r]
 #narrator
 決戦がせまっていた。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=36]
+[voconfig name=danu vostorage=danu{number}.ogg number=21]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
+[voconfig name=magi vostorage=magi{number}.ogg number=14]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=19]
+[voconfig name=priest vostorage=priest{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#narrator
+朝。[p]
 [vostop]
 
 [return]
