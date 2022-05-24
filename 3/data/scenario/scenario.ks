@@ -319,7 +319,7 @@
 #narrator
 二列縦隊で進む。[l][r]
 #narrator
-中段に武装ピックアップと電源車を置く。[l][r]
+中段に武装ピックアップと自走式電源車を置く。[l][r]
 #narrator
 弾薬を満載したトレーラーを牽引する。[p]
 
@@ -505,7 +505,7 @@
 #magi
 起動を確認。[l][r]
 #magi
-生体認証機器も正常。[p]
+生体認証装置も正常。[p]
 
 [autosave]
 #alice
@@ -530,6 +530,28 @@
 人間性。[l][r]
 #priest
 それが鍵だ。[p]
+
+[autosave]
+#engineer
+ジブンも電源車にいくよ。[l][r]
+#engineer
+いまさらだけど。[l][r]
+#engineer
+道理にあわないと思わないか。[p]
+
+[autosave]
+#engineer
+情報方舟計画。[l][r]
+#engineer
+たかが情報を記録するだけじゃないか。[l][r]
+#engineer
+どうして数値風洞を必要とした。[l][r]
+#engineer
+流体力学のためのスパコンになにを演算させた。[p]
+
+[autosave]
+#narrator
+ふたりは歩みさる。[p]
 [vostop]
 
 [return]
