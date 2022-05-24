@@ -15,6 +15,7 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+[jump target=*test]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -436,11 +437,11 @@
 
 [autosave]
 #magi
-Ｈ＋{プラス}４まで主攻正面は陸側、@r屍者数百万が誘引されると予測。[l][r]
+Ｈ＋４まで主攻正面は陸側、屍[ruby x=-16 text=ゾンビ spacing=8]者数百万が誘引されると予測。[l][r]
 #magi
-Ｈ@v＋{プラス}６、仮称リヴァイアサン東京湾に侵入。[l][r]
+Ｈ＋６、仮称リヴァイアサン東京湾に侵入。[l][r]
 #magi
-Ｈ@v＋{プラス}８、巨大群体上陸。[p]
+Ｈ＋８、巨大群体上陸。[p]
 
 [autosave]
 #danu
@@ -460,7 +461,7 @@
 #narrator
 狂気だった。[l][r]
 #narrator
-かつて人間だった身体を積みあげて壁とする。[l][r]
+かつて人間だった身体を積みあげる。[l][r]
 #narrator
 そのことに疑問を持つ者はここにない。[p]
 
@@ -481,6 +482,22 @@
 [autosave]
 #danu
 α分遣隊、捜索にかかれ。[p]
+
+[autosave]
+#magi
+石英硝[ruby x=-16 text=ガラス spacing=8]子は粉々。[l][r]
+#magi
+磁気テープを発見。[l][r]
+#magi
+自動図書館は故障。[p]
+
+[autosave]
+#danu
+読めるの。[p]
+
+[autosave]
+#magi
+可能。[p]
 [vostop]
 
 [return]
