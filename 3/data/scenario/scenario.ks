@@ -445,9 +445,7 @@
 
 [autosave]
 #danu
-最初の四時間で射耗していい。[l][r]
-#danu
-屍[ruby x=-16 text=ゾンビ spacing=8]者の屍体で壁を築く。[p]
+最初の四時間で射耗していい。[p]
 
 [autosave]
 #priest
@@ -461,7 +459,7 @@
 #narrator
 狂気だった。[l][r]
 #narrator
-かつて人間だった身体を積みあげる。[l][r]
+かつて人間だった身体で壁を築く。[l][r]
 #narrator
 そのことに疑問を持つ者はここにない。[p]
 
@@ -498,6 +496,40 @@
 [autosave]
 #magi
 可能。[p]
+
+[autosave]
+#danu
+制[ruby text=コンソール spacing=4]御卓はどう。[p]
+
+[autosave]
+#magi
+起動を確認。[l][r]
+#magi
+生体認証機器も正常。[p]
+
+[autosave]
+#alice
+はじめるか。[l][r]
+#alice
+統合航空軍に連絡。[p]
+
+[autosave]
+#priest
+ワタシは屋上で指揮をとる。[l][r]
+#priest
+そのまえに。[l][r]
+#priest
+あ[ruby text=いつ]奴に銃を託されたキミ。[l][r]
+#priest
+キミはなんだ。人間か。魔人か。[p]
+
+[autosave]
+#priest
+応えは要らない。[l][r]
+#priest
+人間性。[l][r]
+#priest
+それが鍵だ。[p]
 [vostop]
 
 [return]
