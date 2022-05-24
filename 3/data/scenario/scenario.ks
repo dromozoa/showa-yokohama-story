@@ -573,7 +573,7 @@
 #alice
 読むという行為。[l][r]
 #alice
-だけど、誰が読む。[p]
+しかし、誰が読む。[p]
 
 [autosave]
 #magi
@@ -581,7 +581,7 @@
 #magi
 えっと、これはテクストじゃなくて。[l][r]
 #magi
-えっと、これはブートストラップ。[p]
+えっと、これは起動[ruby x=-16 text=ブートストラップ]連環。[p]
 
 [autosave]
 #danu
@@ -589,7 +589,7 @@
 
 [autosave]
 #magi
-ブートストラップ第一段階完了。[l][r]
+起動[ruby x=-16 text=ブートストラップ]連環第一段[ruby x=-16 text=ステージ]階開始。[l][r]
 #magi
 認証[ruby text=プロンプト spacing=20]の催促。[p]
 
@@ -605,15 +605,15 @@
 
 [autosave]
 #magi
-認[ruby x=-16 text=ＡＵＴＨＺ]可。[l][r]
-#magi
-ブートストラップ第二段階開始。[p]
+認[ruby x=-16 text=ＡＵＴＨＺ]可。[p]
 
 [autosave]
 #danu
 認[ruby x=-16 text=ＡＵＴＨＮ]証じゃないってこと。[l][r]
 #danu
-いかようにも読まれてしまうテクスト。[p]
+いかようにも読まれてしまうテクスト。[l][r]
+#danu
+そういうこと。[p]
 
 [autosave]
 #magi
@@ -624,6 +624,8 @@
 [autosave]
 #narrator
 遠く、キミは審判[ruby text=アポカリプティックサウンド]の喇叭を聴く。[l][r]
+#narrator
+カラシニコフの散発的な銃声。[l][r]
 #narrator
 制[ruby text=コンソール spacing=4]御卓のブラウン管に文字が表示される。[l][r]
 #narrator
@@ -639,7 +641,7 @@
 
 [autosave]
 #steven
-私はおまえをみとめ、哀れに思って走り寄り、その首を抱いて接吻しよう。[l][r]
+私はオマエをみとめ、哀れに思って走りより、その首を抱いて接吻しよう。[l][r]
 #steven
 人類の魔人。[l][r]
 #steven
@@ -647,7 +649,9 @@
 
 [autosave]
 #magi
-禁則事項です♪[p]
+禁則事項です♪[l][r]
+#magi
+起動[ruby x=-16 text=ブートストラップ]連環第二段[ruby x=-16 text=ステージ]階開始。[p]
 
 [autosave]
 #steven
@@ -657,19 +661,23 @@
 
 [autosave]
 #danu
-予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械、仮説を受領。[l][r]
+予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械、仮説を受[ruby x=-16 text=アクセプト]入。[l][r]
 #danu
 だけど、これはなんの機械なのさ。そもそも。[p]
 
 [autosave]
 #magi
-任意の問いかけに対して、定数[ruby text=リアルタイム spacing=12.800000000000001]時間内に一貫した回答を返す機械。[l][r]
+任意の問い[ruby x=-16 text=クエリ spacing=40]かけに、定数[ruby text=リアルタイム spacing=12.800000000000001]時間内に一貫した回答を返す機械。[l][r]
 #magi
-昭和三十年代に中央計算技術研究所で開発された。[p]
+昭和三十年代、中央計算技術研究所で開発。[p]
 
 [autosave]
 #danu
 なるほど。わからん。[p]
+
+[autosave]
+#magi
+起動[ruby x=-16 text=ブートストラップ]連環第三段[ruby x=-16 text=ステージ]階開始。[p]
 [vostop]
 
 [return]
