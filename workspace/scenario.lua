@@ -117,6 +117,18 @@ local speaker_map = {
     sad = "0.5";
   };
 
+  steven = {
+    speaker = "Speaker/m4";
+    speed = "1.0";
+    pitch = "-1.5";
+    pause = "0.5";
+    volume = "2.0";
+    happy = "0.0";
+    fun = "0.0";
+    angry = "0.2";
+    sad = "0.5";
+  };
+
 }
 local speakers = {}
 for k, v in pairs(speaker_map) do

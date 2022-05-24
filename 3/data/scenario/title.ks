@@ -22,7 +22,7 @@ TG.kag.stat.skip_link = "false"
 [iscript]
 tf.gothic = "BIZ UDPGothic"
 [endscript]
-[ptext layer=message0 x=48 y=426 size=32 face=&tf.gothic color=white name=chara_name_area]
+[ptext layer=message0 x=44 y=426 size=32 face=&tf.gothic color=white name=chara_name_area]
 [chara_config ptext=chara_name_area]
 
 ; キャラクターを設定する
@@ -34,6 +34,7 @@ tf.gothic = "BIZ UDPGothic"
 [chara_new name=priest storage=dummy.png jname=神父]
 [chara_new name=engineer storage=dummy.png jname=課長]
 [chara_new name=activist storage=dummy.png jname=店主]
+[chara_new name=steven storage=dummy.png jname=STEVEN]
 
 ; ==========================================================
 
