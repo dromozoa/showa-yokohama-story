@@ -7,6 +7,7 @@
 [voconfig name=magi vostorage=magi{number}.ogg number=0]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=0]
 [voconfig name=priest vostorage=priest{number}.ogg number=0]
+[voconfig name=steven vostorage=steven{number}.ogg number=0]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=0]
 [vostart]
 
@@ -279,19 +280,6 @@
 ユキヲは犬とともに北海道に渡る。[l][r]
 #narrator
 決戦がせまっていた。[p]
-[vostop]
-
-*test
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=36]
-[voconfig name=danu vostorage=danu{number}.ogg number=21]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=0]
-[voconfig name=magi vostorage=magi{number}.ogg number=14]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=19]
-[voconfig name=priest vostorage=priest{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
-[vostart]
 
 [autosave]
 #narrator
@@ -449,17 +437,15 @@
 
 [autosave]
 #priest
-メサイア会、舐めてんじゃねえぞ。小娘。[l][r]
-#priest
-半分で充分だ。[p]
+メサイア会、舐めてんじゃねえぞ。小娘。[p]
 
 [autosave]
 #narrator
-屍体の山が二階の高さに達すると、屍[ruby x=-16 text=ゾンビ spacing=8]者は乗りこえられない。[l][r]
+屍体の山が二階の高さに達すると屍[ruby x=-16 text=ゾンビ spacing=8]者は乗りこえられない。[l][r]
 #narrator
 狂気だった。[l][r]
 #narrator
-かつて人間だった身体で壁を築く。[l][r]
+かつて人間だった身体を積んで壁となす。[l][r]
 #narrator
 そのことに疑問を持つ者はここにない。[p]
 
@@ -469,13 +455,27 @@
 #alice
 そのあとは籠城だな。[l][r]
 #alice
-弾が続くかぎり、屋上から狙撃する。[p]
+弾が続くかぎり、屋上から狙撃して遅滞する。[p]
 
 [autosave]
 #engineer
 ケーブルは二階まで引けばいいんだな。[l][r]
 #engineer
 ラックひとつ動かすだけなら、八時間は持つ。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=48]
+[voconfig name=danu vostorage=danu{number}.ogg number=25]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=2]
+[voconfig name=magi vostorage=magi{number}.ogg number=20]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=58]
+[voconfig name=priest vostorage=priest{number}.ogg number=4]
+[voconfig name=steven vostorage=steven{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [autosave]
 #danu
@@ -487,7 +487,7 @@
 #magi
 磁気テープを発見。[l][r]
 #magi
-自動図書館は故障。[p]
+自動[ruby text=ライブラリ spacing=20]図書館は故障。[p]
 
 [autosave]
 #danu
@@ -511,7 +511,7 @@
 #alice
 はじめるか。[l][r]
 #alice
-統合航空軍に連絡。[p]
+統合航空軍に打電。[p]
 
 [autosave]
 #priest
@@ -537,21 +537,133 @@
 #engineer
 いまさらだけど。[l][r]
 #engineer
-道理にあわないと思わないか。[p]
+道理にあわないと思わないかい。[p]
 
 [autosave]
 #engineer
 情報方舟計画。[l][r]
 #engineer
-たかが情報を記録するだけじゃないか。[l][r]
+たかが、情報を記録するだけじゃないか。[l][r]
 #engineer
 どうして数値風洞を必要とした。[l][r]
 #engineer
-流体力学のためのスパコンになにを演算させた。[p]
+流体力学のためのスパコンで、なにを演算した。[p]
 
 [autosave]
 #narrator
 ふたりは歩みさる。[p]
+
+[autosave]
+#alice
+はじめよう。[p]
+
+[autosave]
+#danu
+予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械、起[ruby x=-16 text=ブート spacing=8]動。[l][r]
+#danu
+仮説を待[ruby x=-16 text=ポーリング]機。[p]
+
+[autosave]
+#magi
+テープ読[ruby x=-16 text=ロード spacing=8]出開始。[l][r]
+#magi
+残り時間三分。[p]
+
+[autosave]
+#alice
+読むという行為。[l][r]
+#alice
+だけど、誰が読む。[p]
+
+[autosave]
+#magi
+テープ読[ruby x=-16 text=ロード spacing=8]出完了。[l][r]
+#magi
+えっと、これはテクストじゃなくて。[l][r]
+#magi
+えっと、これはブートストラップ。[p]
+
+[autosave]
+#danu
+どういうこと。[p]
+
+[autosave]
+#magi
+ブートストラップ第一段階完了。[l][r]
+#magi
+認証[ruby text=プロンプト spacing=20]の催促。[p]
+
+[autosave]
+#alice
+少尉、待たせたな。[l][r]
+#alice
+キミの血をもらう。[p]
+
+[autosave]
+#narrator
+生体認証装置に、キミは血をたらす。[p]
+
+[autosave]
+#magi
+認[ruby x=-16 text=ＡＵＴＨＺ]可。[l][r]
+#magi
+ブートストラップ第二段階開始。[p]
+
+[autosave]
+#danu
+認[ruby x=-16 text=ＡＵＴＨＮ]証じゃないってこと。[l][r]
+#danu
+いかようにも読まれてしまうテクスト。[p]
+
+[autosave]
+#magi
+不明。[l][r]
+#magi
+単に復号鍵として利用された可能性。[p]
+
+[autosave]
+#narrator
+遠く、キミは審判[ruby text=アポカリプティックサウンド]の喇叭を聴く。[l][r]
+#narrator
+制[ruby text=コンソール spacing=4]御卓のブラウン管に文字が表示される。[l][r]
+#narrator
+スティーブ[ruby x=-16 text=ＥＶＡＮＧＥＬＩＵＭ　ＳＥＣＵＮＤＵＭ　ＳＴＥＰＨＡＮＵＳ]ンの福音書。[p]
+
+[autosave]
+#steven
+これは手紙。[l][r]
+#steven
+これは郵便。[l][r]
+#steven
+これは物[ruby x=-16 text=ナラティブ]語。[p]
+
+[autosave]
+#steven
+私はおまえをみとめ、哀れに思って走り寄り、その首を抱いて接吻しよう。[l][r]
+#steven
+放蕩息子。あるいは娘。[l][r]
+#steven
+人類の魔人。[l][r]
+#steven
+旧人と新人の──[p]
+
+[autosave]
+#magi
+禁則事項です♪[p]
+
+[autosave]
+#alice
+伏せ札をめくれ、少尉。[p]
+
+[autosave]
+#steven
+エデンの園配[ruby x=-16 text=コンフィギュレーション]置は喪われた。[l][r]
+#steven
+グライダー[ruby text=ガン]銃で撃たれて、長[ruby text=メトセラ spacing=10.666666666666666]命者は九百六十九歳で死んだ。[p]
+
+[autosave]
+#danu
+予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械、仮説を受領。[p]
 [vostop]
 
 [return]
