@@ -16,7 +16,6 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
-[jump target=*test]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -799,5 +798,108 @@
 #magi
 そんな歴史。[p]
 [vostop]
+
+*選択肢
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=16]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#steven
+人間が読め。[l][r]
+#steven
+人間が択べ。[l][r]
+#steven
+配[ruby x=-16 text=コンフィギュレーション]置を択べ。
+[vostop]
+[glink color=btn_06_black target=*エデンの園 x=48 y=32 text=エデンの園 size=32]
+[glink color=btn_06_black target=*グライダー銃 x=48 y=128 text=グライダー銃 size=32]
+[glink color=btn_06_black target=*長命者 x=48 y=224 text=長命者 size=32]
+[glink color=btn_06_black target=*択ばない x=48 y=320 text=択ばない size=32]
+[s]
+
+*エデンの園
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#alice
+それが人類の選択か。[p]
+[vostop]
+[jump target=*選択肢]
+
+*グライダー銃
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=62]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#alice
+それが人類の選択か。[p]
+[vostop]
+[jump target=*選択肢]
+
+*長命者
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=63]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#alice
+それが人類の選択か。[p]
+[vostop]
+[jump target=*選択肢]
+
+*択ばない
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=64]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+[autosave]
+#alice
+それが人類の選択か。[p]
+[vostop]
+[jump target=*選択肢]
 
 [return]
