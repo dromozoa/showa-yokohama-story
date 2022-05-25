@@ -625,7 +625,7 @@
 #narrator
 遠く、キミは審判[ruby text=アポカリプティックサウンド]の喇叭を聴く。[l][r]
 #narrator
-カラシニコフのかわいた銃声が聞こえる。[l][r]
+カラシニコフのかわいた銃声が響く。[l][r]
 #narrator
 制[ruby text=コンソール spacing=4]御卓のブラウン管に文字が表示される。[l][r]
 #narrator
@@ -784,6 +784,20 @@
 インストール済仮想聖遺物の削除、状態機械と初期配置の上書きが必要。[l][r]
 #magi
 仮称リヴァイアサン襲来までにギリ完了。[p]
+
+[autosave]
+#danu
+グライダー[ruby text=ガン]銃が長[ruby text=メトセラ spacing=10.666666666666666]命者を撃つ。[l][r]
+#danu
+じゃあ、エデンの園は。[p]
+
+[autosave]
+#magi
+ここではない、どこか。[l][r]
+#magi
+ここからはたどりつけない、いつか。[l][r]
+#magi
+そんな歴史。[p]
 [vostop]
 
 [return]
