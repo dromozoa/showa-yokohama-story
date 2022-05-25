@@ -462,20 +462,6 @@
 ケーブルは二階まで引けばいいんだな。[l][r]
 #engineer
 ラックひとつ動かすだけなら、八時間は持つ。[p]
-[vostop]
-
-*test
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=48]
-[voconfig name=danu vostorage=danu{number}.ogg number=25]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=2]
-[voconfig name=magi vostorage=magi{number}.ogg number=20]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=58]
-[voconfig name=priest vostorage=priest{number}.ogg number=4]
-[voconfig name=steven vostorage=steven{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
-[vostart]
 
 [autosave]
 #danu
@@ -620,16 +606,30 @@
 不明。[l][r]
 #magi
 単に復号鍵として利用された可能性。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=55]
+[voconfig name=danu vostorage=danu{number}.ogg number=34]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=36]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=60]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=0]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [autosave]
 #narrator
 遠く、キミは審判[ruby text=アポカリプティックサウンド]の喇叭を聴く。[l][r]
 #narrator
-カラシニコフのかわいた銃声。[l][r]
+カラシニコフのかわいた銃声が聞こえる。[l][r]
 #narrator
 制[ruby text=コンソール spacing=4]御卓のブラウン管に文字が表示される。[l][r]
 #narrator
-スティーブ[ruby x=-16 text=ＥＶＡＮＧＥＬＩＵＭ　ＳＥＣＵＮＤＵＭ　ＳＴＥＰＨＡＮＵＳ]ンの福音書。[p]
+スティーブンによる福音書。[p]
 
 [autosave]
 #steven
@@ -710,6 +710,80 @@
 配[ruby x=-16 text=コンフィギュレーション]置を択べ。[l][r]
 #steven
 エデンの園。グライダー[ruby text=ガン]銃。長[ruby text=メトセラ spacing=10.666666666666666]命者。[p]
+
+[autosave]
+#alice
+そうか。そういうことか。[l][r]
+#alice
+たったひとりの魔人をのぞいて、すべての魔人は物語に典拠する。[l][r]
+#alice
+老化しない種属が物語から引用された。[p]
+
+[autosave]
+#danu
+妖[ruby text=エルブズ spacing=10.666666666666666]精種。[l][r]
+#danu
+魚[ruby text=ディープ・ワンズ]人種。[l][r]
+#danu
+吸[ruby text=ヴァンパイア]血鬼。[l][r]
+#danu
+──屍[ruby x=-16 text=ゾンビ spacing=8]者。[p]
+
+[autosave]
+#alice
+なにものかが、長[ruby text=メトセラ spacing=10.666666666666666]命者配置を読んだ。[p]
+
+[autosave]
+#danu
+世界が書きかわった。[l][r]
+#danu
+遡及的に。[l][r]
+#danu
+だけど、どうやって。[p]
+
+[autosave]
+#magi
+仮説。多元[ruby x=-16 text=マルチヴァース spacing=2.6666666666666665]宇宙。[l][r]
+#magi
+たとえば、模[ruby x=-16 text=シミュレーション]擬宇宙。[l][r]
+#magi
+この世界は上位世界の計算結果。[p]
+
+[autosave]
+#danu
+よくあるはなしだよね。[p]
+
+[autosave]
+#magi
+ふつう、下[ruby x=-16 text=ゲスト spacing=8]位世界から上[ruby x=-16 text=ホスト spacing=8]位世界は不可視。[l][r]
+#magi
+スティーブンが発見を主張したのは、上位世界の計[ruby text=コンピュータ]算機で直接実行される繊[ruby x=-16 text=センシティブ]細命令群。[l][r]
+#magi
+上位世界の脆弱性をつく演算。[p]
+
+[autosave]
+#alice
+その類[ruby x=-16 text=アナロジー]推だと、完全な特権は取得していないのか。[p]
+
+[autosave]
+#danu
+もしかして、距離なのかな。[l][r]
+#danu
+至近でだけ感染する類の計算。[l][r]
+#danu
+脳や機械に寄生しないと、すぐに崩壊しちゃう繊細な数学的構造。[p]
+
+[autosave]
+#alice
+飛鳥に積みこんだ贖宥状散布爆雷で、計算を広域展開可能か。[p]
+
+[autosave]
+#magi
+おそらく可能。[l][r]
+#magi
+インストール済仮想聖遺物の削除、状態機械と初期配置の上書きが必要。[l][r]
+#magi
+二時間くらい。[p]
 [vostop]
 
 [return]
