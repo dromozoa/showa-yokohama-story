@@ -689,13 +689,27 @@
 
 [autosave]
 #magi
-起動[ruby x=-16 text=ブートストラップ]連環完了。[l][r]
-#magi
-自分自身を開始して、自分自身を書きかえる、おりかさねられた計算。[p]
+起動[ruby x=-16 text=ブートストラップ]連環完了。[p]
 
 [autosave]
-#alice
-我々はなにを読んでいる。[p]
+#steven
+これは模擬[ruby x=-16 text=シミュレータ spacing=6.4000000000000004]機械。[l][r]
+#steven
+これは模倣[ruby x=-16 text=エミュレータ spacing=6.4000000000000004]機械。[l][r]
+#steven
+これは仮想[ruby x=-16 text=ヴァーチャルマシン]機械。[l][r]
+#steven
+これは状態[ruby x=-16 text=オートマトン spacing=6.4000000000000004]機械。[p]
+
+[autosave]
+#steven
+人間が読め。[l][r]
+#steven
+人間が択べ。[l][r]
+#steven
+配[ruby x=-16 text=コンフィギュレーション]置を択べ。[l][r]
+#steven
+エデンの園。グライダー[ruby text=ガン]銃。長[ruby text=メトセラ spacing=10.666666666666666]命者。[p]
 [vostop]
 
 [return]
