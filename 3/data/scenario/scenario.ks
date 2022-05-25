@@ -611,7 +611,7 @@
 #danu
 認[ruby x=-16 text=ＡＵＴＨＮ]証じゃないってこと。[l][r]
 #danu
-いかようにも読まれてしまうテクスト。[l][r]
+いかようにも読まれてしまう[ruby text=アンチ]非テクスト。[l][r]
 #danu
 そういうこと。[p]
 
@@ -625,7 +625,7 @@
 #narrator
 遠く、キミは審判[ruby text=アポカリプティックサウンド]の喇叭を聴く。[l][r]
 #narrator
-カラシニコフの散発的な銃声。[l][r]
+カラシニコフのかわいた銃声。[l][r]
 #narrator
 制[ruby text=コンソール spacing=4]御卓のブラウン管に文字が表示される。[l][r]
 #narrator
@@ -667,7 +667,7 @@
 
 [autosave]
 #magi
-任意の問い[ruby x=-16 text=クエリ spacing=40]かけに、定数[ruby text=リアルタイム spacing=12.800000000000001]時間内に一貫した回答を返す機械。[l][r]
+任意の問い[ruby x=-16 text=クエリ spacing=40]かけに、定数[ruby x=-16 text=リアルタイム spacing=6.4000000000000004]時間で一貫した回答を返す機械。[l][r]
 #magi
 昭和三十年代、中央計算技術研究所で開発。[p]
 
@@ -678,6 +678,24 @@
 [autosave]
 #magi
 起動[ruby x=-16 text=ブートストラップ]連環第三段[ruby x=-16 text=ステージ]階開始。[p]
+
+[autosave]
+#danu
+予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械、仮説流入量が増大。[l][r]
+#danu
+第一次予言値の生成が取[ruby x=-16 text=キャンセル]消。[l][r]
+#danu
+データ同化開始。[p]
+
+[autosave]
+#magi
+起動[ruby x=-16 text=ブートストラップ]連環完了。[l][r]
+#magi
+自分自身を開始して、自分自身を書きかえる、おりかさねられた計算。[p]
+
+[autosave]
+#alice
+我々はなにを読んでいる。[p]
 [vostop]
 
 [return]
