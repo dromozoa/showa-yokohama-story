@@ -934,6 +934,8 @@ sf.glider += 1;
 #narrator
 キミはガヴァメントを抜く。[l][r]
 #narrator
+銀の[ruby x=-16 text=シルバー・ヴァレット]弾丸。[l][r]
+#narrator
 かまえる。[l][r]
 #narrator
 背後から声。[p]
@@ -954,14 +956,31 @@ sf.glider += 1;
 
 [autosave]
 #narrator
-無限にたどりつけず、収束した第Ｎ次予言値。[l][r]
+無限にたどりつかないまま、収束してしまった第Ｎ次予言値。[l][r]
 #narrator
 予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械から、言葉がしたたりおちる。[p]
 
 [autosave]
 #danu
 間氷期があるなら、間バリケード期もあるかもね。[p]
+
+[autosave]
+#narrator
+一九六九年の伝説。[l][r]
+#narrator
+一九八九年の歴史。[l][r]
+#narrator
+一九九九年の、神話。[l][r]
+#narrator
+キミの意識は拡散する。[p]
+
+[autosave]
+#narrator
+昭和横濱物語。[l][r]
+#narrator
+了。[p]
 [vostop]
+[jump target=*おわり]
 
 *選択肢終
 
@@ -970,7 +989,20 @@ sf.glider += 1;
 [voconfig name=danu vostorage=danu{number}.ogg number=55]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=54]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=73]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=80]
+[voconfig name=priest vostorage=priest{number}.ogg number=12]
+[voconfig name=steven vostorage=steven{number}.ogg number=23]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
+
+*おわり
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=68]
+[voconfig name=danu vostorage=danu{number}.ogg number=55]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=80]
 [voconfig name=priest vostorage=priest{number}.ogg number=12]
 [voconfig name=steven vostorage=steven{number}.ogg number=23]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
