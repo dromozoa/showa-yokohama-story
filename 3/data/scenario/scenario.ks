@@ -1,5 +1,9 @@
 *プロローグ
 
+[iscript]
+sf.eden = 0;
+sf.glider = 0;
+[endscript]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=0]
 [voconfig name=danu vostorage=danu{number}.ogg number=0]
@@ -16,6 +20,7 @@
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
+[jump target=*test]
 
 [autosave]
 [bg2 storage=map.png time=1000 wait=false method=vanishIn]
@@ -605,20 +610,6 @@
 不明。[l][r]
 #magi
 単に復号鍵として利用された可能性。[p]
-[vostop]
-
-*test
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=55]
-[voconfig name=danu vostorage=danu{number}.ogg number=34]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=36]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=60]
-[voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=0]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
-[vostart]
 
 [autosave]
 #narrator
@@ -789,6 +780,20 @@
 グライダー[ruby text=ガン]銃が長[ruby text=メトセラ spacing=10.666666666666666]命者を撃つ。[l][r]
 #danu
 じゃあ、エデンの園は。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
+[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=51]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=16]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [autosave]
 #magi
@@ -828,6 +833,9 @@
 
 *エデンの園
 
+[iscript]
+sf.eden += 1;
+[endscript]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
@@ -840,46 +848,61 @@
 [vostart]
 
 [autosave]
-#alice
-それが人類の選択か。[p]
+#steven
+人類は、エデンの園配[ruby x=-16 text=コンフィギュレーション]置を択んだ。[l][r]
+#steven
+択びなおした。[p]
 [vostop]
-[jump target=*選択肢]
+[jump target=*選択肢終]
 
 *グライダー銃
 
+[iscript]
+sf.glider += 1;
+[endscript]
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=62]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=54]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=steven vostorage=steven{number}.ogg number=21]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
 
 [autosave]
-#alice
-それが人類の選択か。[p]
+#steven
+人類は、グライダー[ruby text=ガン]銃配置を択んだ。[l][r]
+#steven
+択びなおした。[p]
 [vostop]
-[jump target=*選択肢]
+[jump target=*選択肢終]
 
 *長命者
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=63]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=54]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=steven vostorage=steven{number}.ogg number=23]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
 
 [autosave]
+#danu
+長[ruby text=メトセラ spacing=10.666666666666666]命者配置は読まれてしまったよ、すでに。[p]
+
+[autosave]
 #alice
-それが人類の選択か。[p]
+終わらせる。[l][r]
+#alice
+そのためにボクは横濱に来た。[l][r]
+#alice
+そのためにボクたちは横濱にいる。[p]
 [vostop]
 [jump target=*選択肢]
 
@@ -887,19 +910,70 @@
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
 [voconfig name=alice vostorage=alice{number}.ogg number=64]
-[voconfig name=danu vostorage=danu{number}.ogg number=53]
+[voconfig name=danu vostorage=danu{number}.ogg number=54]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=54]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=19]
+[voconfig name=steven vostorage=steven{number}.ogg number=23]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
 
 [autosave]
+[playbgm storage=sessions_diana_track12.ogg loop=true volume=50]
 #alice
-それが人類の選択か。[p]
+それが人類の選択だというのならば。[l][r]
+#alice
+その銃を、かまえろ。[l][r]
+#alice
+新[ruby x=-16 text=ホモ・サピエンス]人に犯された旧[ruby x=-16 text=ホモ・ネアンデルターレンシス]人の胎から生まれた人類の魔人。[l][r]
+#alice
+ガヴァメントをかまえろ。[p]
+
+[autosave]
+#narrator
+キミはガヴァメントを抜く。[l][r]
+#narrator
+かまえる。[l][r]
+#narrator
+背後から声。[p]
+
+[autosave]
+#priest
+そういう[ruby text=アラムナイ]幇だと、告げた。[p]
+
+[autosave]
+#narrator
+神父はカラシニコフの引[ruby x=-16 text=トリガー]爪をしぼる。[l][r]
+#narrator
+キミは倒れる。[l][r]
+#narrator
+キミは見る。[l][r]
+#narrator
+キミは聞く。[p]
+
+[autosave]
+#narrator
+無限にたどりつけず、収束した第Ｎ次予言値。[l][r]
+#narrator
+予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械から、言葉がしたたりおちる。[p]
+
+[autosave]
+#danu
+間氷期があるなら、間バリケード期もあるかもね。[p]
 [vostop]
-[jump target=*選択肢]
+
+*選択肢終
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=68]
+[voconfig name=danu vostorage=danu{number}.ogg number=55]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=54]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=73]
+[voconfig name=priest vostorage=priest{number}.ogg number=12]
+[voconfig name=steven vostorage=steven{number}.ogg number=23]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [return]

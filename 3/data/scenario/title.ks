@@ -46,7 +46,7 @@ tf.gothic = "BIZ UDPGothic"
 [save_img storage=dummy.png]
 
 [preload storage=data/bgm/sessions_diana_track23.ogg]
-; [preload storage=data/bgm/sessions_diana_track28.ogg]
+[preload storage=data/bgm/sessions_diana_track12.ogg]
 
 [font face=VT323 size=48 color=0x029D93]
 #
