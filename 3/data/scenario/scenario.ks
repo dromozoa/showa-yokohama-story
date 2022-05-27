@@ -20,16 +20,16 @@ sf.glider = 0;
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
-[jump target=*test]
 
 [autosave]
-[bg2 storage=map.png time=1000 wait=false method=vanishIn]
+[bg2 storage=map.png time=1000 wait=false method=fadeIn]
 #narrator
 情報[ruby x=-16 text=メイジャイ spacing=12]分隊。[l][r]
 #narrator
 情報処理に特化した妖[ruby text=エルブズ spacing=10.666666666666666]精種の三[ruby text=トリオ spacing=24]人組。[l][r]
 #narrator
 オノ＝センダイのデッキを腕に装着している。[p]
+[jump target=*test]
 
 [autosave]
 #magi
@@ -383,7 +383,7 @@ sf.glider = 0;
 
 [autosave]
 #narrator
-白い肌、赤い瞳、背より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
+白い肌、深紅の瞳、背より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
 #narrator
 少女は荷台から飛びおりる。[l][r]
 #narrator
@@ -680,20 +680,6 @@ sf.glider = 0;
 [autosave]
 #magi
 起動[ruby x=-16 text=ブートストラップ]連環完了。[p]
-[vostop]
-
-*test
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=55]
-[voconfig name=danu vostorage=danu{number}.ogg number=40]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=42]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
-[voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=8]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
-[vostart]
 
 [autosave]
 #steven
@@ -711,7 +697,7 @@ sf.glider = 0;
 #steven
 人間が択べ。[l][r]
 #steven
-配[ruby x=-16 text=コンフィギュレーション]置を択べ。[l][r]
+配置を択べ。[l][r]
 #steven
 エデンの園。グライダー[ruby text=ガン]銃。長[ruby text=メトセラ spacing=10.666666666666666]命者。[p]
 
@@ -751,7 +737,7 @@ sf.glider = 0;
 #magi
 たとえば、模[ruby x=-16 text=シミュレーション]擬宇宙。[l][r]
 #magi
-この世界は上位世界の計算結果。[p]
+たとえば、この世界は上位世界の計算結果。[p]
 
 [autosave]
 #danu
@@ -761,7 +747,7 @@ sf.glider = 0;
 #magi
 ふつう、下[ruby x=-16 text=ゲスト spacing=8]位世界から上[ruby x=-16 text=ホスト spacing=8]位世界は不可視。[l][r]
 #magi
-スティーブンが発見を主張したのは、上[ruby x=-16 text=ホスト spacing=8]位世界の計[ruby text=コンピュータ]算機で直接実行される繊[ruby x=-16 text=センシティブ]細命令群。[l][r]
+スティーブンが発見を主張したのは、上[ruby x=-16 text=ホスト spacing=8]位世界の計[ruby text=コンピュータ]算機で直接実行される繊[ruby x=-16 text=センシティブ]細命令集[ruby x=-16 text=セット spacing=8]合。[l][r]
 #magi
 上[ruby x=-16 text=ホスト spacing=8]位世界の脆弱性をつく演算。[p]
 
@@ -785,9 +771,23 @@ sf.glider = 0;
 #magi
 おそらく、可能。[l][r]
 #magi
-インストール済仮想聖遺物の削除、状態機械と初期配置の上書きが必要。[l][r]
+インストール済仮想聖遺物の削除、構造物の瞬[ruby x=-16 text=スナップショット]間投入が必要。[l][r]
 #magi
 仮称リヴァイアサン襲来までにギリ完了。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
+[voconfig name=danu vostorage=danu{number}.ogg number=51]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=51]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=16]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [autosave]
 #danu
@@ -823,7 +823,7 @@ sf.glider = 0;
 #steven
 人間が択べ。[l][r]
 #steven
-配[ruby x=-16 text=コンフィギュレーション]置を択べ。
+配置を択べ。
 [vostop]
 [glink color=btn_06_black target=*エデンの園 x=48 y=32 text=エデンの園 size=32]
 [glink color=btn_06_black target=*グライダー銃 x=48 y=128 text=グライダー銃 size=32]
@@ -848,7 +848,9 @@ sf.eden += 1;
 
 [autosave]
 #magi
-エデンの園配置が活性化。[p]
+エデンの園配置が活性化。[l][r]
+#magi
+構造物を展開。[p]
 [vostop]
 [jump target=*選択肢終]
 
@@ -861,7 +863,7 @@ sf.glider += 1;
 [voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=55]
+[voconfig name=magi vostorage=magi{number}.ogg number=56]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
@@ -870,7 +872,9 @@ sf.glider += 1;
 
 [autosave]
 #magi
-グライダー[ruby text=ガン]銃配置が活性化。[p]
+グライダー[ruby text=ガン]銃配置が活性化。[l][r]
+#magi
+構造物を展開。[p]
 [vostop]
 [jump target=*選択肢終]
 
@@ -880,7 +884,7 @@ sf.glider += 1;
 [voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
@@ -894,7 +898,7 @@ sf.glider += 1;
 #alice
 その銃を、かまえろ。[l][r]
 #alice
-新[ruby x=-16 text=ホモ・サピエンス]人に犯された旧[ruby x=-16 text=ホモ・ネアンデルターレンシス]人の胎から生まれた人類の魔人。[l][r]
+新[ruby x=-16 text=ホモ・サピエンス]人に犯された旧[ruby x=-16 text=ホモ・ネアンデルターレンシス]人の胎から生まれた人類の、魔人。[l][r]
 #alice
 ガヴァメントを、かまえろ。[p]
 
@@ -912,11 +916,13 @@ sf.glider += 1;
 #narrator
 かまえる。[l][r]
 #narrator
-キミは撃つ。[p]
+撃つ。[p]
 
 [autosave]
 #danu
 少尉。[l][r]
+#danu
+アンタ。[l][r]
 #danu
 一体いつから──[l][r]
 #danu
@@ -928,7 +934,9 @@ sf.glider += 1;
 #alice
 人類の魔人がいるなら。[l][r]
 #alice
-屍[ruby x=-16 text=ゾンビ spacing=8]者の魔人もいる。[p]
+屍[ruby x=-16 text=ゾンビ spacing=8]者の魔人もいるだろう。[l][r]
+#alice
+ああ、この瞳はカラコンだ。[p]
 
 [autosave]
 #narrator
@@ -944,7 +952,7 @@ sf.glider += 1;
 #narrator
 予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械から、したたりおちる言葉。[l][r]
 #narrator
-無限にたどりつけず、収束していく第Ｎ次予言値。[l][r]
+無限にたどりつけず、収束していく予言値。[l][r]
 #narrator
 語られずに終わった、あの日の横濱の物[ruby x=-16 text=ストーリー]語。[p]
 
@@ -969,25 +977,70 @@ sf.glider += 1;
 *選択肢終
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=72]
-[voconfig name=danu vostorage=danu{number}.ogg number=56]
+[voconfig name=alice vostorage=alice{number}.ogg number=73]
+[voconfig name=danu vostorage=danu{number}.ogg number=57]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
 
+[autosave]
+#danu
+仮称リヴァイアサン、浦賀水道を通過中。[l][r]
+#danu
+機雷原も対艦弾も効かないとか、なんだかな。[p]
+
+[autosave]
+#priest
+陸側は抑えたぞ。[l][r]
+#priest
+二十万体は始末した。[l][r]
+#priest
+弾薬は半分残した。[l][r]
+#priest
+負傷者はいない。[p]
+
+[autosave]
+#engineer
+電力は問題なさそうかな。[p]
+
+[autosave]
+#alice
+問題ない。[l][r]
+#alice
+仮称リヴァイアサンが絶対防衛線を越えるまで、保ってくれればいい。[p]
+
+[autosave]
+#priest
+方陣を組む。[l][r]
+#priest
+そちらはどうだ。[p]
+
+[autosave]
+#alice
+目算はたった。[l][r]
+#alice
+この国に三発めは落ちるまい。[p]
+
+[autosave]
+#priest
+よろしい。[l][r]
+#priest
+おおいによろしい。[p]
+[vostop]
+
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=72]
-[voconfig name=danu vostorage=danu{number}.ogg number=56]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=alice vostorage=alice{number}.ogg number=77]
+[voconfig name=danu vostorage=danu{number}.ogg number=59]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=10]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
-[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=priest vostorage=priest{number}.ogg number=19]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
