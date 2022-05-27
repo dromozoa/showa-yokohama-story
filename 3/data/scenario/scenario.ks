@@ -991,33 +991,27 @@ sf.glider += 1;
 #danu
 仮称リヴァイアサン、浦賀水道を通過中。[l][r]
 #danu
-機雷原も対艦弾も効かないとか、なんだかな。[p]
-
-[autosave]
-#priest
-陸側は抑えたぞ。[l][r]
-#priest
-二十万体は始末した。[l][r]
-#priest
-弾薬は半分残した。[l][r]
-#priest
-負傷者はいない。[p]
-
-[autosave]
-#engineer
-電力は問題なさそうかな。[p]
+機雷も対艦誘導弾も効かないとか、なんだかな。[p]
 
 [autosave]
 #alice
-問題ない。[l][r]
-#alice
-仮称リヴァイアサンが絶対防衛線を越えるまで、保ってくれればいい。[p]
+ポ[ruby x=-16 text=ポストモダン]モに現代兵器は効かないからね。[p]
+
+[autosave]
+#magi
+空中巡洋艦一番艦と連[ruby x=-16 text=リンク spacing=8]結成立。[l][r]
+#magi
+構造物を転送中。[p]
 
 [autosave]
 #priest
-方陣を組む。[l][r]
+陸側はおさえた。[l][r]
 #priest
-そちらはどうだ。[p]
+二十万は始末した。[l][r]
+#priest
+負傷者はいない。[l][r]
+#priest
+そちらは、どうだ。[p]
 
 [autosave]
 #alice
@@ -1026,21 +1020,39 @@ sf.glider += 1;
 この国に三発めは落ちるまい。[p]
 
 [autosave]
-#priest
-よろしい。[l][r]
-#priest
-おおいによろしい。[p]
+#danu
+一般回線に入電。[l][r]
+#danu
+深[ruby text=ディープ・ワンズ]き者穏健派の首魁。[p]
+
+[autosave]
+#activist
+良い報せと悪い報せがある。[p]
+
+[autosave]
+#danu
+超態度[ruby x=-16 text=バッド・アティチュード]悪い。[p]
+
+[autosave]
+#activist
+良い報せだ。魚人の多数派工作は成功した。[l][r]
+#activist
+悪い報せだ。跳ねっかえりが携帯地対[ruby x=-16 text=スティンガー spacing=32]空誘導弾を[ruby text=パク]窃って潜伏した。[p]
+
+[autosave]
+#alice
+[ruby text=ミエルダ]糞。[p]
 [vostop]
 
 *おわり
 
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=activist vostorage=activist{number}.ogg number=3]
 [voconfig name=alice vostorage=alice{number}.ogg number=77]
-[voconfig name=danu vostorage=danu{number}.ogg number=59]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=10]
-[voconfig name=magi vostorage=magi{number}.ogg number=58]
+[voconfig name=danu vostorage=danu{number}.ogg number=62]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=60]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
-[voconfig name=priest vostorage=priest{number}.ogg number=19]
+[voconfig name=priest vostorage=priest{number}.ogg number=15]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
