@@ -383,7 +383,7 @@ sf.glider = 0;
 
 [autosave]
 #narrator
-白い肌、赤い瞳、背より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
+白い肌、深紅の瞳、背より巨きな大[ruby x=-16 text=クレイモア]剣。[l][r]
 #narrator
 少女は荷台から飛びおりる。[l][r]
 #narrator
@@ -711,7 +711,7 @@ sf.glider = 0;
 #steven
 人間が択べ。[l][r]
 #steven
-配[ruby x=-16 text=コンフィギュレーション]置を択べ。[l][r]
+配置を択べ。[l][r]
 #steven
 エデンの園。グライダー[ruby text=ガン]銃。長[ruby text=メトセラ spacing=10.666666666666666]命者。[p]
 
@@ -751,7 +751,7 @@ sf.glider = 0;
 #magi
 たとえば、模[ruby x=-16 text=シミュレーション]擬宇宙。[l][r]
 #magi
-この世界は上位世界の計算結果。[p]
+たとえば、この世界は上位世界の計算結果。[p]
 
 [autosave]
 #danu
@@ -761,7 +761,7 @@ sf.glider = 0;
 #magi
 ふつう、下[ruby x=-16 text=ゲスト spacing=8]位世界から上[ruby x=-16 text=ホスト spacing=8]位世界は不可視。[l][r]
 #magi
-スティーブンが発見を主張したのは、上[ruby x=-16 text=ホスト spacing=8]位世界の計[ruby text=コンピュータ]算機で直接実行される繊[ruby x=-16 text=センシティブ]細命令群。[l][r]
+スティーブンが発見を主張したのは、上[ruby x=-16 text=ホスト spacing=8]位世界の計[ruby text=コンピュータ]算機で直接実行される繊[ruby x=-16 text=センシティブ]細命令集[ruby x=-16 text=セット spacing=8]合。[l][r]
 #magi
 上[ruby x=-16 text=ホスト spacing=8]位世界の脆弱性をつく演算。[p]
 
@@ -785,7 +785,7 @@ sf.glider = 0;
 #magi
 おそらく、可能。[l][r]
 #magi
-インストール済仮想聖遺物の削除、状態機械と初期配置の上書きが必要。[l][r]
+インストール済仮想聖遺物の削除、構造物の瞬[ruby x=-16 text=スナップショット]間の投入が必要。[l][r]
 #magi
 仮称リヴァイアサン襲来までにギリ完了。[p]
 
@@ -823,7 +823,7 @@ sf.glider = 0;
 #steven
 人間が択べ。[l][r]
 #steven
-配[ruby x=-16 text=コンフィギュレーション]置を択べ。
+配置を択べ。
 [vostop]
 [glink color=btn_06_black target=*エデンの園 x=48 y=32 text=エデンの園 size=32]
 [glink color=btn_06_black target=*グライダー銃 x=48 y=128 text=グライダー銃 size=32]
@@ -894,7 +894,7 @@ sf.glider += 1;
 #alice
 その銃を、かまえろ。[l][r]
 #alice
-新[ruby x=-16 text=ホモ・サピエンス]人に犯された旧[ruby x=-16 text=ホモ・ネアンデルターレンシス]人の胎から生まれた人類の魔人。[l][r]
+新[ruby x=-16 text=ホモ・サピエンス]人に犯された旧[ruby x=-16 text=ホモ・ネアンデルターレンシス]人の胎から生まれた人類の、魔人。[l][r]
 #alice
 ガヴァメントを、かまえろ。[p]
 
@@ -912,11 +912,13 @@ sf.glider += 1;
 #narrator
 かまえる。[l][r]
 #narrator
-キミは撃つ。[p]
+撃つ。[p]
 
 [autosave]
 #danu
 少尉。[l][r]
+#danu
+アンタ。[l][r]
 #danu
 一体いつから──[l][r]
 #danu
@@ -928,7 +930,9 @@ sf.glider += 1;
 #alice
 人類の魔人がいるなら。[l][r]
 #alice
-屍[ruby x=-16 text=ゾンビ spacing=8]者の魔人もいる。[p]
+屍[ruby x=-16 text=ゾンビ spacing=8]者の魔人もいるだろう。[l][r]
+#alice
+ああ、この瞳はカラコンだ。[p]
 
 [autosave]
 #narrator
@@ -944,7 +948,7 @@ sf.glider += 1;
 #narrator
 予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械から、したたりおちる言葉。[l][r]
 #narrator
-無限にたどりつけず、収束していく第Ｎ次予言値。[l][r]
+無限にたどりつけず、収束していく予言値。[l][r]
 #narrator
 語られずに終わった、あの日の横濱の物[ruby x=-16 text=ストーリー]語。[p]
 
@@ -969,8 +973,8 @@ sf.glider += 1;
 *選択肢終
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=72]
-[voconfig name=danu vostorage=danu{number}.ogg number=56]
+[voconfig name=alice vostorage=alice{number}.ogg number=73]
+[voconfig name=danu vostorage=danu{number}.ogg number=57]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=56]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
@@ -982,8 +986,8 @@ sf.glider += 1;
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=72]
-[voconfig name=danu vostorage=danu{number}.ogg number=56]
+[voconfig name=alice vostorage=alice{number}.ogg number=73]
+[voconfig name=danu vostorage=danu{number}.ogg number=57]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=56]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
