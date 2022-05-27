@@ -991,13 +991,13 @@ sf.glider += 1;
 #danu
 仮称リヴァイアサン、浦賀水道を通過中。[l][r]
 #danu
-機雷原も対艦弾も効かないとか、なんだかな。[p]
+機雷も対艦弾も効かないとか、なんだかな。[p]
 
 [autosave]
 #priest
-陸側は抑えたぞ。[l][r]
+陸側はおさえたぞ。[l][r]
 #priest
-二十万体は始末した。[l][r]
+二十万は始末した。[l][r]
 #priest
 弾薬は半分残した。[l][r]
 #priest
@@ -1005,13 +1005,13 @@ sf.glider += 1;
 
 [autosave]
 #engineer
-電力は問題なさそうかな。[p]
+電力は問題ないかな。[p]
 
 [autosave]
 #alice
 問題ない。[l][r]
 #alice
-仮称リヴァイアサンが絶対防衛線を越えるまで、保ってくれればいい。[p]
+仮称リヴァイアサンが東京湾要塞線を越えるまで、保ってくれればいい。[p]
 
 [autosave]
 #priest
@@ -1030,15 +1030,53 @@ sf.glider += 1;
 よろしい。[l][r]
 #priest
 おおいによろしい。[p]
+
+[autosave]
+#danu
+一般回線から入電。[l][r]
+#danu
+深[ruby text=ディープ・ワンズ]き者穏健派の首魁。[p]
+
+[autosave]
+#alice
+つなげ。[p]
+
+[autosave]
+#activist
+良い報せと悪い報せがある。[l][r]
+#activist
+多数派工作は成功した。[l][r]
+#activist
+はねっかえりが携帯地対[ruby x=-16 text=スティンガー spacing=32]空誘導弾を[ruby text=パク]窃って潜伏した。[p]
+
+[autosave]
+#alice
+[ruby text=ミエルダ]糞。[l][r]
+#alice
+空中巡洋艦を退避させろ。[l][r]
+#alice
+海岸線から離せ。[p]
+
+[autosave]
+#magi
+空中巡洋艦一番艦と連[ruby x=-16 text=リンク spacing=8]結成立。[l][r]
+#magi
+構造物を転送中。[l][r]
+#magi
+残り時間、三十分と推定。[p]
+
+[autosave]
+#danu
+まにあうかな。[p]
 [vostop]
 
 *おわり
 
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=77]
-[voconfig name=danu vostorage=danu{number}.ogg number=59]
+[voconfig name=activist vostorage=activist{number}.ogg number=3]
+[voconfig name=alice vostorage=alice{number}.ogg number=81]
+[voconfig name=danu vostorage=danu{number}.ogg number=62]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=10]
-[voconfig name=magi vostorage=magi{number}.ogg number=58]
+[voconfig name=magi vostorage=magi{number}.ogg number=61]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
 [voconfig name=priest vostorage=priest{number}.ogg number=19]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
