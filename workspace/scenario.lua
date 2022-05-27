@@ -345,7 +345,7 @@ for i = 1, #sections do
     out:write "[autosave]\n"
 
     if page.bg then
-      out:write("[bg2 storage=", page.bg, " time=1000 wait=false method=vanishIn]\n")
+      out:write("[bg2 storage=", page.bg, " time=1000 wait=false method=fadeIn]\n")
     end
     if page.bgm then
       out:write("[playbgm storage=", page.bgm, " loop=true volume=50]\n")

@@ -20,16 +20,16 @@ sf.glider = 0;
 昭和七十四年七月、ボクはキミに出逢った。[l][r]
 #narrator
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。[p]
-[jump target=*test]
 
 [autosave]
-[bg2 storage=map.png time=1000 wait=false method=vanishIn]
+[bg2 storage=map.png time=1000 wait=false method=fadeIn]
 #narrator
 情報[ruby x=-16 text=メイジャイ spacing=12]分隊。[l][r]
 #narrator
 情報処理に特化した妖[ruby text=エルブズ spacing=10.666666666666666]精種の三[ruby text=トリオ spacing=24]人組。[l][r]
 #narrator
 オノ＝センダイのデッキを腕に装着している。[p]
+[jump target=*test]
 
 [autosave]
 #magi
@@ -680,20 +680,6 @@ sf.glider = 0;
 [autosave]
 #magi
 起動[ruby x=-16 text=ブートストラップ]連環完了。[p]
-[vostop]
-
-*test
-
-[voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=55]
-[voconfig name=danu vostorage=danu{number}.ogg number=40]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=42]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
-[voconfig name=priest vostorage=priest{number}.ogg number=11]
-[voconfig name=steven vostorage=steven{number}.ogg number=8]
-[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
-[vostart]
 
 [autosave]
 #steven
@@ -785,9 +771,23 @@ sf.glider = 0;
 #magi
 おそらく、可能。[l][r]
 #magi
-インストール済仮想聖遺物の削除、構造物の瞬[ruby x=-16 text=スナップショット]間の投入が必要。[l][r]
+インストール済仮想聖遺物の削除、構造物の瞬[ruby x=-16 text=スナップショット]間投入が必要。[l][r]
 #magi
 仮称リヴァイアサン襲来までにギリ完了。[p]
+[vostop]
+
+*test
+
+[voconfig name=activist vostorage=activist{number}.ogg number=0]
+[voconfig name=alice vostorage=alice{number}.ogg number=61]
+[voconfig name=danu vostorage=danu{number}.ogg number=51]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
+[voconfig name=magi vostorage=magi{number}.ogg number=51]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=64]
+[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=steven vostorage=steven{number}.ogg number=16]
+[voconfig name=yukio vostorage=yukio{number}.ogg number=9]
+[vostart]
 
 [autosave]
 #danu
@@ -848,7 +848,9 @@ sf.eden += 1;
 
 [autosave]
 #magi
-エデンの園配置が活性化。[p]
+エデンの園配置が活性化。[l][r]
+#magi
+構造物を展開。[p]
 [vostop]
 [jump target=*選択肢終]
 
@@ -861,7 +863,7 @@ sf.glider += 1;
 [voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=55]
+[voconfig name=magi vostorage=magi{number}.ogg number=56]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
@@ -870,7 +872,9 @@ sf.glider += 1;
 
 [autosave]
 #magi
-グライダー[ruby text=ガン]銃配置が活性化。[p]
+グライダー[ruby text=ガン]銃配置が活性化。[l][r]
+#magi
+構造物を展開。[p]
 [vostop]
 [jump target=*選択肢終]
 
@@ -880,7 +884,7 @@ sf.glider += 1;
 [voconfig name=alice vostorage=alice{number}.ogg number=61]
 [voconfig name=danu vostorage=danu{number}.ogg number=53]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=64]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
@@ -976,22 +980,67 @@ sf.glider += 1;
 [voconfig name=alice vostorage=alice{number}.ogg number=73]
 [voconfig name=danu vostorage=danu{number}.ogg number=57]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
 [voconfig name=priest vostorage=priest{number}.ogg number=11]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
 
+[autosave]
+#danu
+仮称リヴァイアサン、浦賀水道を通過中。[l][r]
+#danu
+機雷原も対艦弾も効かないとか、なんだかな。[p]
+
+[autosave]
+#priest
+陸側は抑えたぞ。[l][r]
+#priest
+二十万体は始末した。[l][r]
+#priest
+弾薬は半分残した。[l][r]
+#priest
+負傷者はいない。[p]
+
+[autosave]
+#engineer
+電力は問題なさそうかな。[p]
+
+[autosave]
+#alice
+問題ない。[l][r]
+#alice
+仮称リヴァイアサンが絶対防衛線を越えるまで、保ってくれればいい。[p]
+
+[autosave]
+#priest
+方陣を組む。[l][r]
+#priest
+そちらはどうだ。[p]
+
+[autosave]
+#alice
+目算はたった。[l][r]
+#alice
+この国に三発めは落ちるまい。[p]
+
+[autosave]
+#priest
+よろしい。[l][r]
+#priest
+おおいによろしい。[p]
+[vostop]
+
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=0]
-[voconfig name=alice vostorage=alice{number}.ogg number=73]
-[voconfig name=danu vostorage=danu{number}.ogg number=57]
-[voconfig name=engineer vostorage=engineer{number}.ogg number=9]
-[voconfig name=magi vostorage=magi{number}.ogg number=56]
+[voconfig name=alice vostorage=alice{number}.ogg number=77]
+[voconfig name=danu vostorage=danu{number}.ogg number=59]
+[voconfig name=engineer vostorage=engineer{number}.ogg number=10]
+[voconfig name=magi vostorage=magi{number}.ogg number=58]
 [voconfig name=narrator vostorage=narrator{number}.ogg number=79]
-[voconfig name=priest vostorage=priest{number}.ogg number=11]
+[voconfig name=priest vostorage=priest{number}.ogg number=19]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
 [vostart]
