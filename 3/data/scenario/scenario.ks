@@ -29,7 +29,6 @@ sf.glider = 0;
 情報処理に特化した妖[ruby text=エルブズ spacing=10.666666666666666]精種の三[ruby text=トリオ spacing=24]人組。[l][r]
 #narrator
 オノ＝センダイのデッキを腕に装着している。[p]
-[jump target=*test]
 
 [autosave]
 #magi
@@ -1101,13 +1100,13 @@ sf.glider += 1;
 
 [autosave]
 #magi
-えっと、予言[ruby x=-16 text=オラクルマシン spacing=2.6666666666666665]機械。[l][r]
+えっと、書きかわりつつある、たぶん。[l][r]
 #magi
 ダヌー姐さんは、ちょっとだけ、まちがってた。[l][r]
 #magi
 寄生するのは、生物の脳だけじゃない。[l][r]
 #magi
-そうやって、三位一体計算が成立した。[p]
+たがいに依存して、三位一体計算が成立した。[p]
 
 [autosave]
 #danu
@@ -1170,7 +1169,9 @@ sf.glider += 1;
 #narrator
 文芸部の部室。[l][r]
 #narrator
-窓際、透きとおるように白い肌の少女が、ふわりと振りむいて。[p]
+窓際、透きとおるように白い肌の少女が、ふわりと振りむいて。[l][r]
+#narrator
+カラコンをいれたボクなんだけど。[p]
 
 [autosave]
 #alice
@@ -1196,7 +1197,7 @@ sf.glider += 1;
 
 [autosave]
 #narrator
-合衆国軍住[ruby x=-16 text=ハウス spacing=8]宅の金[ruby x=-16 text=フェンス]網を眺めながら、ボクたちは肉まんを食べる。[p]
+米軍住[ruby x=-16 text=ハウス spacing=8]宅の金[ruby x=-16 text=フェンス]網を眺めながら、ボクたちは肉まんを食べる。[p]
 
 [autosave]
 #alice
@@ -1204,15 +1205,17 @@ sf.glider += 1;
 #alice
 だから、マイカル本牧は誕生しない。[l][r]
 #alice
-イオン本牧になることもない。[p]
+だから、イオン本牧になることもない。[p]
 
 [autosave]
 #alice
-ソ連はまだ崩壊しなさそうだ。[l][r]
+ソ連は、まだ崩壊しなさそうだ。[l][r]
 #alice
 ルイセンコが重用されなかったせいかもしれない。[l][r]
 #alice
-このセカイでは、冷戦がつづいている。[p]
+このセカイでは、冷戦が終わっていない。[l][r]
+#alice
+このセカイでは、戦後がつづいている。[p]
 
 [autosave]
 #danu
@@ -1224,7 +1227,7 @@ sf.glider += 1;
 #alice
 終わらせよう。[l][r]
 #alice
-今度こそ。今度は。[l][r]
+今度は。[l][r]
 #alice
 ──戦後を。[p]
 
@@ -1239,11 +1242,11 @@ sf.glider += 1;
 *グライダー銃ED
 
 [voconfig name=activist vostorage=activist{number}.ogg number=3]
-[voconfig name=alice vostorage=alice{number}.ogg number=99]
+[voconfig name=alice vostorage=alice{number}.ogg number=100]
 [voconfig name=danu vostorage=danu{number}.ogg number=71]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=67]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=104]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=105]
 [voconfig name=priest vostorage=priest{number}.ogg number=15]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
@@ -1323,11 +1326,11 @@ sf.glider += 1;
 *おわり
 
 [voconfig name=activist vostorage=activist{number}.ogg number=3]
-[voconfig name=alice vostorage=alice{number}.ogg number=99]
+[voconfig name=alice vostorage=alice{number}.ogg number=100]
 [voconfig name=danu vostorage=danu{number}.ogg number=77]
 [voconfig name=engineer vostorage=engineer{number}.ogg number=9]
 [voconfig name=magi vostorage=magi{number}.ogg number=68]
-[voconfig name=narrator vostorage=narrator{number}.ogg number=118]
+[voconfig name=narrator vostorage=narrator{number}.ogg number=119]
 [voconfig name=priest vostorage=priest{number}.ogg number=18]
 [voconfig name=steven vostorage=steven{number}.ogg number=19]
 [voconfig name=yukio vostorage=yukio{number}.ogg number=9]
