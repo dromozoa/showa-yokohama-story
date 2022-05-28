@@ -65,6 +65,7 @@ EVANGELIUM SECUNDUM STEPHANUS verse III[l]
 INSERT 30 PIECES OF SILVER TO CONTINUE
 [resetfont]
 
+[glink color=btn_10_black x=1088 y=512 face=VT323 size=30 width=160 text=FULLSCREEN role=fullscreen]
 [glink color=btn_10_black x=1088 y=576 face=VT323 size=32 width=160 text=START target=*最初から]
 [glink color=btn_10_black x=1088 y=640 face=VT323 size=32 width=160 text=CONTINUE target=*続きから]
 [s]
