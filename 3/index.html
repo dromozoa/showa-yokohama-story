@@ -9,6 +9,7 @@
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.json">
 
 <meta name="robots" content="noindex,nofollow" />
 
@@ -137,5 +138,10 @@ window.onload = function() { setTimeout(doScroll, 100); }
 </div>
 
 
+<script>
+window.addEventListener("load", function () {
+  setTimeout(function () { window.scrollTo(0, 1); }, 200);
+});
+</script>
 </body>
 </html>
