@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "昭和横濱物語Ⅲ",
+  "short_name": "昭和横濱物語",
+  "display": "standalone"
+}
