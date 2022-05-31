@@ -181,7 +181,7 @@ if vpp_filename then
     index = index + 1
     print(index, table.concat(buffer, "\t", i, math.min(i + 23, #buffer)))
   end
-  print("#", #buffer, #buffer * 10 / 72)
+  print("#", #buffer, #buffer / 6 / 72 * 60)
 
   local out = assert(io.open(out_filename, "wb"))
   out:write(result)
