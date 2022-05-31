@@ -1,6 +1,7 @@
 #! /usr/bin/env lua
 
 local json = require "dromozoa.commons.json"
+local utf8 = require "dromozoa.utf8"
 
 local speaker_map = {
   narrator = {
@@ -164,7 +165,7 @@ if vpp_filename then
         for l = 1, n do
           local s = syl[l].s
           if s == "" then
-            s = " "
+            s = "●"
           end
           buffer[#buffer + 1] = s
         end
@@ -176,12 +177,24 @@ if vpp_filename then
   -- 1拍あたり6音節
 
   local index = 0
-
-  for i = 1, #buffer, 24 do
+  local m = #buffer
+  for i = 1, m, 24 do
     index = index + 1
-    print(index, table.concat(buffer, "\t", i, math.min(i + 23, #buffer)))
+    io.write(("% 4d  "):format(index))
+    for j = i, math.min(i + 23, #buffer) do
+      local s = buffer[j]
+      local n = utf8.len(s)
+      assert(n == 1 or n == 2)
+      if n == 1 then
+        io.write(s, "   ")
+      else
+        io.write(s, " ")
+      end
+    end
+    io.write "\n"
+    -- print(index, table.concat(buffer, "\t", i, math.min(i + 23, #buffer)))
   end
-  print("#", #buffer, #buffer / 6 / 72 * 60)
+  io.write("   #  ", m, "syl => ", m / 6 / 72 * 60, "sec\n")
 
   local out = assert(io.open(out_filename, "wb"))
   out:write(result)
