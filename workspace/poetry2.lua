@@ -74,7 +74,7 @@ local lines = {}
 for line in io.lines() do
   if match(line, "^@#") or match(line, "^%s*$") then
     -- comment
-  elseif match(line, "^@skip{(%d+)}") then
+  elseif match(line, "^@skip{(.-)}") then
     -- skip bar
     local skip_bar = assert(tonumber(trim(_1)))
     current_bar = current_bar + skip_bar
