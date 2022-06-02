@@ -41,7 +41,7 @@ local speaker_map = {
   };
 }
 
-local srt_filename, bpm, syl_per_bar, vpp_filename, out_filename = ...
+local srt_filename, srt2_filename, bpm, syl_per_bar, vpp_filename, out_filename = ...
 local bpm = assert(tonumber(bpm))
 local syl_per_bar = assert(tonumber(syl_per_bar))
 
@@ -128,6 +128,23 @@ local speaker_index_map = {}
 local speaker_line_map = {}
 
 local out = assert(io.open(srt_filename, "wb"))
+local srt = assert(io.open(srt2_filename, "wb"))
+
+srt:write [[
+1
+00:00:03,000 --> 00:00:06,000
+Track: Sessions: Vi - Hollow
+
+2
+00:00:06,000 --> 00:00:09,000
+Voice: VOICEPEAK
+
+3
+00:00:09,000 --> 00:00:12,000
+Text: vaporoid
+
+]]
+
 for i = 1, #lines do
   local data = lines[i]
 
@@ -137,19 +154,27 @@ for i = 1, #lines do
   speaker_index_map[speaker_name] = speaker_index
   speaker_line_map[i] = { speaker_name = speaker_name, speaker_index = speaker_index }
 
-  out:write(i, "\n")
-
   local t1 = data.current_bar * 60 / (bpm / 4)
   local t2 = (data.current_bar + 1) * 60 / (bpm / 4)
 
+  out:write(i, "\n")
   out:write(("%s --> %s\n"):format(format_time(t1), format_time(t2)))
   for j = 1, #data do
     local item = data[j]
     out:write(assert(item.voice))
   end
   out:write "\n\n"
+
+  srt:write(i + 3, "\n")
+  srt:write(("%s --> %s\n"):format(format_time(t1), format_time(t2)))
+  for j = 1, #data do
+    local item = data[j]
+    srt:write(assert(item.text))
+  end
+  srt:write "\n\n"
 end
 out:close()
+srt:close()
 
 if vpp_filename then
   local handle = assert(io.open(vpp_filename, "rb"))
