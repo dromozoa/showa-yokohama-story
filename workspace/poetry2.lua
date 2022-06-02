@@ -41,7 +41,9 @@ local speaker_map = {
   };
 }
 
-local vpt_filename, vpp_filename, out_filename, bpm, syl_per_bar = ...
+local srt_filename, bpm, syl_per_bar, vpp_filename, out_filename = ...
+local bpm = assert(tonumber(bpm))
+local syl_per_bar = assert(tonumber(syl_per_bar))
 
 local _1
 local _2
@@ -57,16 +59,33 @@ local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
+local function format_time(time)
+  local t = math.floor(time)
+  local msec = math.floor((time - t) * 1000)
+  local sec = t % 60
+  local min = (time - sec) / 60
+  return ("00:%02d:%02d,%03d"):format(min, sec, msec)
+end
+
+local current_bar = 0
 local speaker_name
 local lines = {}
 
 for line in io.lines() do
   if match(line, "^@#") or match(line, "^%s*$") then
     -- comment
+  elseif match(line, "^@skip{(%d+)}") then
+    -- skip bar
+    local skip_bar = assert(tonumber(trim(_1)))
+    current_bar = current_bar + skip_bar
   elseif match(line, "^#(.*)$") then
     speaker_name = trim(_1)
   else
-    local data = { speaker_name = speaker_name }
+    local data = {
+      current_bar = current_bar;
+      speaker_name = speaker_name;
+    }
+    current_bar = current_bar + 1
     local p = 1
     local n = #line
     -- @r...@{ruby}
@@ -108,7 +127,7 @@ end
 local speaker_index_map = {}
 local speaker_line_map = {}
 
-local out = assert(io.open(vpt_filename, "wb"))
+local out = assert(io.open(srt_filename, "wb"))
 for i = 1, #lines do
   local data = lines[i]
 
@@ -118,19 +137,21 @@ for i = 1, #lines do
   speaker_index_map[speaker_name] = speaker_index
   speaker_line_map[i] = { speaker_name = speaker_name, speaker_index = speaker_index }
 
+  out:write(i, "\n")
+
+  local t1 = data.current_bar * 60 / (bpm / 4)
+  local t2 = (data.current_bar + 1) * 60 / (bpm / 4)
+
+  out:write(("%s --> %s\n"):format(format_time(t1), format_time(t2)))
   for j = 1, #data do
     local item = data[j]
     out:write(assert(item.voice))
   end
-  out:write "\n"
+  out:write "\n\n"
 end
 out:close()
 
 if vpp_filename then
-
-  local bpm = assert(tonumber(bpm))
-  local syl_per_bar = assert(tonumber(syl_per_bar))
-
   local handle = assert(io.open(vpp_filename, "rb"))
   local source = handle:read "*a"
   handle:close()
@@ -159,9 +180,19 @@ if vpp_filename then
 
   local root = json.decode(result)
   local blocks = root.project.blocks
-  local buffer = {}
+  local index = 0
+
+  io.write "  |"
+  for i = 1, 32 do
+    io.write((" %2d |"):format(i))
+  end
+  io.write "\n"
+
   for i = 1, #blocks do
     local sentence_list = blocks[i]["sentence-list"]
+    index = index + 1
+    io.write(("%2d|"):format(index))
+    local count = 0
     for j = 1, #sentence_list do
       local tokens = sentence_list[j].tokens
       for k = 1, #tokens do
@@ -173,32 +204,22 @@ if vpp_filename then
           if s == "" then
             s = "●"
           end
-          buffer[#buffer + 1] = s
+          local m = utf8.len(s)
+          assert(m == 1 or m == 2)
+          if m == 1 then
+            io.write(" ", s, " |")
+          else
+            io.write(s, "|")
+          end
+          count = count + 1
         end
-        -- print(token.s, n, table.concat(buffer, "/"))
       end
     end
-  end
-
-  local index = 0
-  local m = #buffer
-  for i = 1, m, syl_per_bar do
-    index = index + 1
-    io.write(("% 4d  "):format(index))
-    for j = i, math.min(i + syl_per_bar - 1, #buffer) do
-      local s = buffer[j]
-      local n = utf8.len(s)
-      assert(n == 1 or n == 2)
-      if n == 1 then
-        io.write(s, "   ")
-      else
-        io.write(s, " ")
-      end
+    for k = count + 1, 32 do
+      io.write "    |"
     end
     io.write "\n"
-    -- print(index, table.concat(buffer, "\t", i, math.min(i + 23, #buffer)))
   end
-  io.write("   #  ", m, "syl => ", m / (syl_per_bar / 4) / bpm * 60, "sec\n")
 
   local out = assert(io.open(out_filename, "wb"))
   out:write(result)
