@@ -97,7 +97,7 @@ function love.load()
 
   local W = g.getWidth()
   local H = g.getHeight()
-  canvas = assert(g.newCanvas(W, H))
+  canvas = assert(g.newCanvas(1280, 720))
 
   mesh = make_mesh(W, H, W, H, 64, 36)
 end
@@ -115,6 +115,9 @@ function love.draw(dt)
   g.printf("しずんでいく夕陽を、じっとながめていた。", font, x + 64, y + 416, w - 48)
   g.printf("おわっていく世界を、じっと見つめていた。", font, x + 64, y + 512, w - 48)
   g.printf("おわっていく昭和を、じっとにらんでいた。", font, x + 64, y + 608, w - 48)
+
+
+
   g.setCanvas()
 
   mesh:setTexture(canvas)
