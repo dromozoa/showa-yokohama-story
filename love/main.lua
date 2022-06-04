@@ -8,11 +8,13 @@ local shader
 --[[
 https://www.hitachihyoron.com/jp/pdf/1969/05/1969_05_08.pdf
 13型カラーブラウン管の寸法が載ってる。
+半径 455.0
+h 有効高 199.0以上
+w 有効幅 254.5以上
+d 有効径 295.2以上
 
 https://clemz.io/article-retro-shaders-webgl.html
 Retro Shaders with WebGL
-
-
 ]]
 
 function love.load()
