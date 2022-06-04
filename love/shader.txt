@@ -1,0 +1,23 @@
+// vim: filetype=glsl:
+
+vec4 position(mat4 transform_projection, vec4 vertex_position) {
+  return transform_projection * vertex_position;
+}
+
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  vec2 position = texture_coords;
+  float distortion = 0.3;
+  position -= vec2(0.5, 0.5);
+  position *= vec2(pow(length(position), distortion));
+  position *= vec2(1.25, 1.25);
+  position += vec2(0.5, 0.5);
+  // position *= vec2(1.5, 1.5);
+
+  // vec2 screen_size = vec2(love_ScreenSize);
+  // position = screen_coords;
+  // position *= vec2(1.0 / screen_size.x, 1.0 / screen_size.y);
+
+  vec4 c = Texel(texture, position);
+  // return vec4(vec3(1.0, 1.0, 1.0) * (max(c.r, max(c.g, c.b))), c.a);
+  return c;
+}
