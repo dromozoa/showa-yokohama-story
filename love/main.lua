@@ -26,7 +26,7 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
   local H = 199.0 -- 有効幅
   local D = 295.2 -- 有効径
 
-  local E = 250.0 -- 眼の距離
+  local E = 500.0 -- 眼の距離
   local F = 45 / (180 * math.pi) -- 視野角
 
   local XDEG = math.asin(W / 2 / R)
@@ -58,12 +58,20 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
     local y = math.sin(ydeg) * R
     local z = math.sqrt(R^2 - (x^2 + y^2))
     local f = z / (R + E)
-    x = x * f * scale + tw / 2
-    y = y * f * scale + th / 2
     local u = i / xn
     local v = j / yn
-    -- print(x, y, u, v)
-    return { x, y, u, v }
+    -- 視線と法線の角度を求める
+    local ax = -x
+    local ay = -y
+    local az = R + E - z
+    local bx = ay * z - az * y
+    local by = az * x - ax * z
+    local bz = ax * y - ay * x
+    local angle = math.atan2(math.sqrt(bx^2 + by^2 + bz^2), ax * x + ay * y + az * z)
+
+    x = x * f * scale + tw / 2
+    y = y * f * scale + th / 2
+    return { x, y, u, v, 1, 1, 1, math.cos(angle) }
   end
 
   local vertices = {}
