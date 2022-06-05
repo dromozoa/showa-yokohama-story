@@ -2,9 +2,11 @@ local g = love.graphics
 
 local vt323
 local bizudpmincho
+local bizudpgothic
 local bg
 local shader
 local mesh
+local use_mesh
 
 --[[
 https://clemz.io/article-retro-shaders-webgl.html
@@ -101,42 +103,73 @@ end
 function love.load()
   vt323 = assert(g.newFont(assert(love.font.newRasterizer "VT323-Regular.ttf")))
   bizudpmincho = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
+  bizudpgothic = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPGothic-Regular.ttf", 48))))
   bg = assert(g.newImage(assert(love.image.newImageData "map2.png")))
 
   local W = g.getWidth()
   local H = g.getHeight()
-  canvas = assert(g.newCanvas(1280, 720))
+  canvas1 = assert(g.newCanvas(1280, 720))
+  canvas2 = assert(g.newCanvas(1280, 720))
 
   mesh = make_mesh(W, H, W, H, 64, 36)
 end
+
+local texts = {
+"壁にかこまれた横濱。本牧地区。";
+"うちすてられた校舎。しのびこんだ屋上で。";
+"銀蝿した肉まんを、ほおばってボクたちは";
+"しずんでいく夕陽を、じっとながめていた。";
+"おわっていく世界を、じっと見つめていた。";
+"おわっていく昭和を、じっとにらんでいた。";
+}
 
 function love.draw(dt)
   local x, y, w, h = love.window.getSafeArea()
   local font = bizudpmincho
 
-  g.setCanvas(canvas)
+  ------------------------------------------------------------------------
+
+  g.setCanvas(canvas1)
   g.clear()
+
   g.draw(bg, 0, 0)
-  g.printf("しずんでいく夕陽を、じっとながめていた。", font, x + 64, y + 128, w - 48)
-  g.printf("おわっていく世界を、じっと見つめていた。", font, x + 64, y + 224, w - 48)
-  g.printf("おわっていく昭和を、じっとにらんでいた。", font, x + 64, y + 320, w - 48)
-  g.printf("しずんでいく夕陽を、じっとながめていた。", font, x + 64, y + 416, w - 48)
-  g.printf("おわっていく世界を、じっと見つめていた。", font, x + 64, y + 512, w - 48)
-  g.printf("おわっていく昭和を、じっとにらんでいた。", font, x + 64, y + 608, w - 48)
+  i = 1
+  dx = 32
+  dy = 32
 
+  for j = 1, #texts do
+    g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
+  end
 
+  -- local sr, sg, sb, sa = g.getColor()
+  -- g.setColor(0, 0, 0, 1)
+  -- for y = 3, 720, 4 do
+  --   g.line(0, y, 1280, y)
+  -- end
+  -- g.setColor(sr, sg, sb, sa)
 
   g.setCanvas()
 
-  mesh:setTexture(canvas)
+  ------------------------------------------------------------------------
 
+  g.setCanvas(canvas2)
+  g.clear()
   if shader then
     g.setShader(shader)
   end
-  -- g.draw(canvas, 0, 0)
-  g.draw(mesh, 0, 0)
+  g.draw(canvas1, 0, 0)
   if shader then
     g.setShader()
+  end
+  g.setCanvas()
+
+  ------------------------------------------------------------------------
+
+  if use_mesh then
+    mesh:setTexture(canvas2)
+    g.draw(mesh, 0, 0)
+  else
+    g.draw(canvas2, 0, 0)
   end
 end
 
@@ -147,5 +180,7 @@ function love.keyreleased(key)
     shader = assert(g.newShader "shader.txt")
   elseif key == "c" then
     shader = nil
+  elseif key == "m" then
+    use_mesh = not use_mesh
   end
 end
