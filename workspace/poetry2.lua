@@ -2,6 +2,9 @@
 
 local json = require "dromozoa.commons.json"
 local utf8 = require "dromozoa.utf8"
+local ucd_kana = require "ucd_kana"
+
+local unpack = table.unpack or unpack
 
 local speaker_map = {
   narrator = {
@@ -65,6 +68,46 @@ local function format_time(time)
   local sec = t % 60
   local min = (time - sec) / 60
   return ("00:%02d:%02d,%03d"):format(min, sec, msec)
+end
+
+local function SGR(n)
+  return "\27[" .. n .. "m"
+end
+local sgr_reset = SGR(0)
+local sgr_aiueo = {
+  A = SGR(91);
+  I = SGR(93);
+  U = SGR(94);
+  E = SGR(92);
+  O = SGR(90);
+}
+
+local function render_syl(s)
+  local codes = {}
+  for p, c in utf8.codes(s) do
+    codes[#codes + 1] = c
+  end
+  local buffer = {}
+  for i = 1, #codes do
+    local c = codes[i]
+    local d = ucd_kana[c]
+    if d and d.hiragana then
+      buffer[i] = d.hiragana
+    else
+      buffer[i] = c
+    end
+  end
+  local sgr1 = ""
+  local sgr2 = ""
+  local d = ucd_kana[codes[#codes]]
+  if d then
+    sgr = sgr_aiueo[d.value:sub(-1)]
+    if sgr then
+      sgr1 = sgr
+      sgr2 = sgr_reset
+    end
+  end
+  return sgr1 .. utf8.char(unpack(buffer)) .. sgr2
 end
 
 local current_bar = 0
@@ -133,15 +176,15 @@ local srt = assert(io.open(srt2_filename, "wb"))
 srt:write [[
 1
 00:00:03,000 --> 00:00:06,000
-Track: Sessions: Vi - Hollow
+<font color="#029D93">Track: Sessions: Vi - Hollow</font>
 
 2
 00:00:06,000 --> 00:00:09,000
-Voice: VOICEPEAK
+<font color="#029D93">Voice: VOICEPEAK</font>
 
 3
 00:00:09,000 --> 00:00:12,000
-Text: vaporoid
+<font color="#029D93">Text: vaporoid</font>
 
 ]]
 
@@ -227,14 +270,14 @@ if vpp_filename then
         for l = 1, n do
           local s = syl[l].s
           if s == "" then
-            s = "●"
+            s = "○"
           end
           local m = utf8.len(s)
           assert(m == 1 or m == 2)
           if m == 1 then
-            io.write(" ", s, " |")
+            io.write(" ", render_syl(s), " |")
           else
-            io.write(s, "|")
+            io.write(render_syl(s), "|")
           end
           count = count + 1
         end
