@@ -133,15 +133,15 @@ local srt = assert(io.open(srt2_filename, "wb"))
 srt:write [[
 1
 00:00:03,000 --> 00:00:06,000
-Track: Sessions: Vi - Hollow
+<font color="#029D93">Track: Sessions: Vi - Hollow</font>
 
 2
 00:00:06,000 --> 00:00:09,000
-Voice: VOICEPEAK
+<font color="#029D93">Voice: VOICEPEAK</font>
 
 3
 00:00:09,000 --> 00:00:12,000
-Text: vaporoid
+<font color="#029D93">Text: vaporoid</font>
 
 ]]
 
