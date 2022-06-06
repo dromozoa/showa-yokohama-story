@@ -73,8 +73,8 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
     local bz = ax * y - ay * x
     local angle = math.atan2(math.sqrt(bx^2 + by^2 + bz^2), ax * x + ay * y + az * z)
 
-    x = x * f * scale + tw / 2
-    y = y * f * scale + th / 2
+    x = x * f * scale -- + tw / 2
+    y = y * f * scale -- + th / 2
     return { x, y, u, v, 1, 1, 1, math.cos(angle) }
   end
 
@@ -203,7 +203,15 @@ function love.draw()
 
   if use_mesh then
     mesh:setTexture(canvas2)
-    g.draw(mesh, 0, 0)
+    local s = 1
+    -- local s = math.abs(math.sin(frame / 30 * math.pi))
+    -- if frame < 15 then
+    --   s = math.sin(frame / 30 * math.pi)
+    -- end
+    g.push()
+    g.scale(1, s)
+    g.draw(mesh, 640, 360 / s)
+    g.pop()
   else
     g.draw(canvas2, 0, 0)
   end
