@@ -153,7 +153,20 @@ function love.draw()
     char_length = math.min(text_length, char_length)
     local char_offset = utf8.offset(text_buffer, char_length)
     -- print(text_buffer:sub(1, char_offset - 1))
-    g.printf(text_buffer:sub(1, char_offset - 1), font, x + dx, y + dy, w - 48)
+    local text = text_buffer:sub(1, char_offset - 1)
+    g.setColor(0, 0, 0, 1)
+    for ey = -2, 2 do
+      for ex = -2, 2 do
+        g.printf(text, font, x + dx + ex, y + dy + ey, w - 48)
+      end
+    end
+    -- g.printf(text, font, x + dx + d, y + dy + 0, w - 48)
+    -- g.printf(text, font, x + dx + 0, y + dy + d, w - 48)
+    -- g.printf(text, font, x + dx - d, y + dy - 0, w - 48)
+    -- g.printf(text, font, x + dx - 0, y + dy - d, w - 48)
+
+    g.setColor(1, 1, 1, 1)
+    g.printf(text, font, x + dx, y + dy, w - 48)
     -- for j = 1, #texts do
     --   g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
     -- end
