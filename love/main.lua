@@ -106,7 +106,7 @@ function love.load()
   vt323 = assert(g.newFont(assert(love.font.newRasterizer "VT323-Regular.ttf")))
   bizudpmincho = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
   bizudpgothic = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPGothic-Regular.ttf", 48))))
-  bg = assert(g.newImage(assert(love.image.newImageData "map2.png")))
+  bg = assert(g.newImage(assert(love.image.newImageData "map4.png")))
 
   local W = g.getWidth()
   local H = g.getHeight()
