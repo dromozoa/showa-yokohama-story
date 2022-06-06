@@ -1,7 +1,13 @@
 // vim: filetype=glsl:
 
+uniform float seed;
+
 vec4 position(mat4 transform_projection, vec4 vertex_position) {
   return transform_projection * vertex_position;
+}
+
+float rand(vec2 p) {
+  return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453);
 }
 
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
@@ -19,14 +25,23 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
 
   vec4 c = Texel(texture, texture_coords);
 
+  vec2 p = texture_coords * vec2(1280, 720);
+  float mx = mod(p.x, 3);
+  float my = mod(p.y, 4);
+  vec2 q = floor((p + vec2(seed))/ vec2(3, 4));
+  float r = rand(q);
+
   float x = 1.0;
   float y = 0.0;
-  float mx = mod(texture_coords.x * 1280, 3);
-  float my = mod(texture_coords.y * 720, 4);
+
+  x *= r + 0.5;
+  // x *= r + 0.9;
+
   if (my >= 3.0) {
-    x = 0.5;
+    x = 0.0;
     y = 0.0;
   }
+
   if (mx < 1.0) {
     c *= vec4(x, y, y, 1.0);
   } else if (mx < 2.0) {

@@ -1,3 +1,5 @@
+local utf8 = require "utf8"
+
 local g = love.graphics
 
 local vt323
@@ -123,7 +125,17 @@ local texts = {
 "おわっていく昭和を、じっとにらんでいた。";
 }
 
-function love.draw(dt)
+local text_buffer = table.concat(texts, "\n") .. "\n"
+local text_length = utf8.len(text_buffer)
+
+local do_writer = false
+local frame = 0
+local seed = 0
+
+function love.update(dt)
+end
+
+function love.draw()
   local x, y, w, h = love.window.getSafeArea()
   local font = bizudpmincho
 
@@ -133,12 +145,18 @@ function love.draw(dt)
   g.clear()
 
   g.draw(bg, 0, 0)
-  i = 1
   dx = 32
   dy = 32
 
-  for j = 1, #texts do
-    g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
+  local char_length = math.floor(frame / 2)
+  if char_length > 0 then
+    char_length = math.min(text_length, char_length)
+    local char_offset = utf8.offset(text_buffer, char_length)
+    -- print(text_buffer:sub(1, char_offset - 1))
+    g.printf(text_buffer:sub(1, char_offset - 1), font, x + dx, y + dy, w - 48)
+    -- for j = 1, #texts do
+    --   g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
+    -- end
   end
 
   -- local sr, sg, sb, sa = g.getColor()
@@ -155,6 +173,10 @@ function love.draw(dt)
   g.setCanvas(canvas2)
   g.clear()
   if shader then
+    seed = frame * 69.1742 % 1280
+    -- seed = (seed + 52) % 1000
+    -- shader_seed = (shader_seed * (977 / 997) + 991) % 1000
+    shader:send("seed", seed)
     g.setShader(shader)
   end
   g.draw(canvas1, 0, 0)
@@ -171,6 +193,14 @@ function love.draw(dt)
   else
     g.draw(canvas2, 0, 0)
   end
+
+  if do_writer then
+    local filename = ("%08d.png"):format(frame)
+    print("captureScreenshot", filename)
+    g.captureScreenshot(filename)
+  end
+
+  frame = frame + 1
 end
 
 function love.keyreleased(key)
@@ -182,5 +212,9 @@ function love.keyreleased(key)
     shader = nil
   elseif key == "m" then
     use_mesh = not use_mesh
+  elseif key == "w" then
+    do_writer = not do_writer
+    frame = 0
+    shader_seed = 0
   end
 end
