@@ -173,8 +173,9 @@ function love.draw()
   g.setCanvas(canvas2)
   g.clear()
   if shader then
-    seed = frame * 69.1742 % 1280
-    -- seed = (seed + 52) % 1000
+    seed = frame * (1280 * 720 / 3 / 4) % (1280 + 42)
+    -- seed = frame * 69.1742 % 1280
+    -- seed = (seed + 69) % 10000
     -- shader_seed = (shader_seed * (977 / 997) + 991) % 1000
     shader:send("seed", seed)
     g.setShader(shader)
