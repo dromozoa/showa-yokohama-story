@@ -1,3 +1,5 @@
+local utf8 = require "utf8"
+
 local g = love.graphics
 
 local vt323
@@ -71,8 +73,8 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
     local bz = ax * y - ay * x
     local angle = math.atan2(math.sqrt(bx^2 + by^2 + bz^2), ax * x + ay * y + az * z)
 
-    x = x * f * scale + tw / 2
-    y = y * f * scale + th / 2
+    x = x * f * scale -- + tw / 2
+    y = y * f * scale -- + th / 2
     return { x, y, u, v, 1, 1, 1, math.cos(angle) }
   end
 
@@ -104,7 +106,7 @@ function love.load()
   vt323 = assert(g.newFont(assert(love.font.newRasterizer "VT323-Regular.ttf")))
   bizudpmincho = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
   bizudpgothic = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPGothic-Regular.ttf", 48))))
-  bg = assert(g.newImage(assert(love.image.newImageData "map2.png")))
+  bg = assert(g.newImage(assert(love.image.newImageData "map4.png")))
 
   local W = g.getWidth()
   local H = g.getHeight()
@@ -123,7 +125,17 @@ local texts = {
 "おわっていく昭和を、じっとにらんでいた。";
 }
 
-function love.draw(dt)
+local text_buffer = table.concat(texts, "\n") .. "\n"
+local text_length = utf8.len(text_buffer)
+
+local do_writer = false
+local frame = 0
+local seed = 0
+
+function love.update(dt)
+end
+
+function love.draw()
   local x, y, w, h = love.window.getSafeArea()
   local font = bizudpmincho
 
@@ -133,12 +145,31 @@ function love.draw(dt)
   g.clear()
 
   g.draw(bg, 0, 0)
-  i = 1
   dx = 32
   dy = 32
 
-  for j = 1, #texts do
-    g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
+  local char_length = math.floor(frame / 2)
+  if char_length > 0 then
+    char_length = math.min(text_length, char_length)
+    local char_offset = utf8.offset(text_buffer, char_length)
+    -- print(text_buffer:sub(1, char_offset - 1))
+    local text = text_buffer:sub(1, char_offset - 1)
+    g.setColor(0, 0, 0, 1)
+    for ey = -2, 2 do
+      for ex = -2, 2 do
+        g.printf(text, font, x + dx + ex, y + dy + ey, w - 48)
+      end
+    end
+    -- g.printf(text, font, x + dx + d, y + dy + 0, w - 48)
+    -- g.printf(text, font, x + dx + 0, y + dy + d, w - 48)
+    -- g.printf(text, font, x + dx - d, y + dy - 0, w - 48)
+    -- g.printf(text, font, x + dx - 0, y + dy - d, w - 48)
+
+    g.setColor(1, 1, 1, 1)
+    g.printf(text, font, x + dx, y + dy, w - 48)
+    -- for j = 1, #texts do
+    --   g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
+    -- end
   end
 
   -- local sr, sg, sb, sa = g.getColor()
@@ -155,6 +186,11 @@ function love.draw(dt)
   g.setCanvas(canvas2)
   g.clear()
   if shader then
+    seed = frame * (1280 * 720 / 3 / 4) % (1280 + 42)
+    -- seed = frame * 69.1742 % 1280
+    -- seed = (seed + 69) % 10000
+    -- shader_seed = (shader_seed * (977 / 997) + 991) % 1000
+    shader:send("seed", seed)
     g.setShader(shader)
   end
   g.draw(canvas1, 0, 0)
@@ -167,10 +203,26 @@ function love.draw(dt)
 
   if use_mesh then
     mesh:setTexture(canvas2)
-    g.draw(mesh, 0, 0)
+    local s = 1
+    -- local s = math.abs(math.sin(frame / 30 * math.pi))
+    -- if frame < 15 then
+    --   s = math.sin(frame / 30 * math.pi)
+    -- end
+    g.push()
+    g.scale(1, s)
+    g.draw(mesh, 640, 360 / s)
+    g.pop()
   else
     g.draw(canvas2, 0, 0)
   end
+
+  if do_writer then
+    local filename = ("%08d.png"):format(frame)
+    print("captureScreenshot", filename)
+    g.captureScreenshot(filename)
+  end
+
+  frame = frame + 1
 end
 
 function love.keyreleased(key)
@@ -182,5 +234,9 @@ function love.keyreleased(key)
     shader = nil
   elseif key == "m" then
     use_mesh = not use_mesh
+  elseif key == "w" then
+    do_writer = not do_writer
+    frame = 0
+    shader_seed = 0
   end
 end
