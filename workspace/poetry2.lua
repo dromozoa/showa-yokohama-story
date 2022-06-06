@@ -6,10 +6,17 @@ local ucd_kana = require "ucd_kana"
 
 local unpack = table.unpack or unpack
 
+local srt_filename, srt2_filename, bpm, syl_per_bar, vpp_filename, out_filename = ...
+local bpm = assert(tonumber(bpm))
+local syl_per_bar = assert(tonumber(syl_per_bar))
+
+local speaker_bpm = 60
+local speaker_speed = ("%.2f"):format(speaker_bpm / bpm)
+
 local speaker_map = {
   narrator = {
     speaker = "Speaker/f1";
-    speed = "1.35";
+    speed = speaker_speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -21,7 +28,7 @@ local speaker_map = {
 
   danu = {
     speaker = "Speaker/f5";
-    speed = "1.35";
+    speed = speaker_speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -33,7 +40,7 @@ local speaker_map = {
 
   magi = {
     speaker = "Speaker/f4b";
-    speed = "1.35";
+    speed = speaker_speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -43,10 +50,6 @@ local speaker_map = {
     sad = "0.5";
   };
 }
-
-local srt_filename, srt2_filename, bpm, syl_per_bar, vpp_filename, out_filename = ...
-local bpm = assert(tonumber(bpm))
-local syl_per_bar = assert(tonumber(syl_per_bar))
 
 local _1
 local _2
@@ -74,15 +77,23 @@ local function SGR(n)
   return "\27[" .. n .. "m"
 end
 local sgr_reset = SGR(0)
-local sgr_aiueo = {
-  A = SGR(91);
-  I = SGR(93);
-  U = SGR(94);
-  E = SGR(92);
-  O = SGR(90);
+local sgr_fg_aiueo = {
+  A = SGR(30);
+  I = SGR(30);
+  U = SGR(30);
+  E = SGR(30);
+  O = SGR(30);
 }
+local sgr_bg_aiueo = {
+  A = SGR(101);
+  I = SGR(103);
+  U = SGR(104);
+  E = SGR(102);
+  O = SGR(47);
+}
+local sgr_bar = SGR(31)
 
-local function render_syl(s)
+local function render_syl(s, pre, post)
   local codes = {}
   for p, c in utf8.codes(s) do
     codes[#codes + 1] = c
@@ -99,15 +110,25 @@ local function render_syl(s)
   end
   local sgr1 = ""
   local sgr2 = ""
-  local d = ucd_kana[codes[#codes]]
-  if d then
-    sgr = sgr_aiueo[d.value:sub(-1)]
-    if sgr then
-      sgr1 = sgr
-      sgr2 = sgr_reset
+  if s ~= "ッ" then
+    local d = ucd_kana[codes[#codes]]
+    if d then
+      local vowel = d.value:sub(-1)
+      local sgr_fg = sgr_fg_aiueo[vowel]
+      local sgr_bg = sgr_bg_aiueo[vowel]
+      if sgr_fg then
+        sgr1 = sgr1 .. sgr_fg
+        sgr2 = sgr_reset
+      end
+      if sgr_bg then
+        sgr1 = sgr1 .. sgr_bg
+        sgr2 = sgr_reset
+      end
     end
   end
-  return sgr1 .. utf8.char(unpack(buffer)) .. sgr2
+  pre = pre or ""
+  post = post or ""
+  return sgr1 .. pre .. utf8.char(unpack(buffer)) .. post .. sgr2
 end
 
 local current_bar = 0
@@ -250,16 +271,19 @@ if vpp_filename then
   local blocks = root.project.blocks
   local index = 0
 
-  io.write "  |"
-  for i = 1, 32 do
-    io.write((" %2d |"):format(i))
+  io.write "   "
+  for i = 1, 48 do
+    io.write((" %2d "):format(i))
+    if i == syl_per_bar then
+      io.write(sgr_bar, "|", sgr_reset)
+    end
   end
   io.write "\n"
 
   for i = 1, #blocks do
     local sentence_list = blocks[i]["sentence-list"]
     index = index + 1
-    io.write(("%2d|"):format(index))
+    io.write(("%2d "):format(index))
     local count = 0
     for j = 1, #sentence_list do
       local tokens = sentence_list[j].tokens
@@ -275,16 +299,22 @@ if vpp_filename then
           local m = utf8.len(s)
           assert(m == 1 or m == 2)
           if m == 1 then
-            io.write(" ", render_syl(s), " |")
+            io.write(render_syl(s, " ", " "))
           else
-            io.write(render_syl(s), "|")
+            io.write(render_syl(s))
           end
           count = count + 1
+          if count == syl_per_bar then
+            io.write(sgr_bar, "|", sgr_reset)
+          end
         end
       end
     end
-    for k = count + 1, 32 do
-      io.write "    |"
+    for k = count + 1, 48 do
+      io.write "    "
+      if k == syl_per_bar then
+        io.write(sgr_bar, "|", sgr_reset)
+      end
     end
     io.write "\n"
   end
