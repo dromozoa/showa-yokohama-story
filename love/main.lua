@@ -130,7 +130,6 @@ local text_length = utf8.len(text_buffer)
 
 local do_writer = false
 local frame = 0
-local seed = 0
 
 function love.update(dt)
 end
@@ -186,11 +185,16 @@ function love.draw()
   g.setCanvas(canvas2)
   g.clear()
   if shader then
-    seed = frame * (1280 * 720 / 3 / 4) % (1280 + 42)
+    local seed = frame * (1280 * 720 / 3 / 4) % (1280 + 42)
     -- seed = frame * 69.1742 % 1280
     -- seed = (seed + 69) % 10000
     -- shader_seed = (shader_seed * (977 / 997) + 991) % 1000
+    local scaler = 1
+    if frame < 30 then
+      scaler = (30 - frame) * 2
+    end
     shader:send("seed", seed)
+    shader:send("scaler", scaler)
     g.setShader(shader)
   end
   g.draw(canvas1, 0, 0)
@@ -236,6 +240,9 @@ function love.keyreleased(key)
     use_mesh = not use_mesh
   elseif key == "w" then
     do_writer = not do_writer
+    frame = 0
+    shader_seed = 0
+  elseif key == "r" then
     frame = 0
     shader_seed = 0
   end
