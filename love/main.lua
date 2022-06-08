@@ -1,7 +1,9 @@
 local utf8 = require "utf8"
+local read_scenario = require "read_scenario"
 
 local g = love.graphics
 
+local scenario
 local vt323
 local bizudpmincho
 local bizudpgothic
@@ -9,6 +11,21 @@ local bg
 local shader
 local mesh
 local use_mesh
+
+local texts = {
+"壁にかこまれた横濱。本牧地区。";
+"うちすてられた校舎。しのびこんだ屋上で。";
+"銀蝿した肉まんを、ほおばってボクたちは";
+"しずんでいく夕陽を、じっとながめていた。";
+"おわっていく世界を、じっと見つめていた。";
+"おわっていく昭和を、じっとにらんでいた。";
+}
+
+local text_buffer = table.concat(texts, "\n") .. "\n"
+local text_length = utf8.len(text_buffer)
+
+local do_writer = false
+local frame = 0
 
 --[[
 https://clemz.io/article-retro-shaders-webgl.html
@@ -99,10 +116,14 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
   end
 
   return g.newMesh(vertices, "triangles")
-
 end
 
-function love.load()
+function love.load(arg)
+  local scenario_filename = arg[1]
+  if scenario_filename then
+    scenario = read_scenario(scenario_filename)
+  end
+
   vt323 = assert(g.newFont(assert(love.font.newRasterizer "VT323-Regular.ttf")))
   bizudpmincho = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
   bizudpgothic = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPGothic-Regular.ttf", 48))))
@@ -115,21 +136,6 @@ function love.load()
 
   mesh = make_mesh(W, H, W, H, 64, 36)
 end
-
-local texts = {
-"壁にかこまれた横濱。本牧地区。";
-"うちすてられた校舎。しのびこんだ屋上で。";
-"銀蝿した肉まんを、ほおばってボクたちは";
-"しずんでいく夕陽を、じっとながめていた。";
-"おわっていく世界を、じっと見つめていた。";
-"おわっていく昭和を、じっとにらんでいた。";
-}
-
-local text_buffer = table.concat(texts, "\n") .. "\n"
-local text_length = utf8.len(text_buffer)
-
-local do_writer = false
-local frame = 0
 
 function love.update(dt)
 end
