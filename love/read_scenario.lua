@@ -31,7 +31,14 @@ return function (filename)
     行のなかで、話者 (speaker) は変えられるようにする？
     →変えられないとする
     →かわりに、時間を調整できるようにする
-    ※時間がかぶってるとどうなるのか実験する
+
+    小節ごとの音節数
+      @beats_per_minute{80}
+      @syllables_per_measure{24}
+      @set_measure{0}
+      @add_measure{-1}
+      @sub_measure{-1}
+      @duration{7}
 
     文節 (phrase)
     音節 (syllable)
@@ -52,9 +59,6 @@ return function (filename)
       @r...@{...}
       @v...@{...}
       @rv...@{...|...}
-
-
-
   ]]
 
 
