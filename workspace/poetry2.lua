@@ -11,7 +11,7 @@ local bpm = assert(tonumber(bpm))
 local syl_per_bar = assert(tonumber(syl_per_bar))
 
 local speaker_bpm = 60
-local speaker_speed = ("%.2f"):format(speaker_bpm / bpm)
+local speaker_speed = ("%.2f"):format(bpm / speaker_bpm)
 
 local speaker_map = {
   narrator = {

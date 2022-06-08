@@ -20,6 +20,50 @@ return function (filename)
     return _1, _2, _3, _4
   end
 
+  --[[
+    小節 (measure) ごとに分割する
+    ルビ (ruby) と音声 (voice) は分ける
+    圏点はなし
+
+    データ構造
+    行 (line=measure)
+
+    行のなかで、話者 (speaker) は変えられるようにする？
+    →変えられないとする
+    →かわりに、時間を調整できるようにする
+    ※時間がかぶってるとどうなるのか実験する
+
+    文節 (phrase)
+    音節 (syllable)
+
+    文 (sentence)
+    節 (clause)
+    句 (phrase)
+    語 (word)
+
+    ルビのほうがややこしい
+
+    ブロック
+      #speaker
+      @measure_max{}
+      @measure{}
+
+    インライン
+      @r...@{...}
+      @v...@{...}
+      @rv...@{...|...}
+
+
+
+  ]]
+
+
+
+
+
+
+
+
   local measure = 0
   local speaker_name
   local result = {}
