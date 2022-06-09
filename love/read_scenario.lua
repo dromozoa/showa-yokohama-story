@@ -1,8 +1,29 @@
+--[[
+  用語集
+    小節  measure, bar
+    ルビ  ruby
+    音声  voice
+    行    line
+    話者  speaker
+    文節  phrase
+    音節  syllable
+    文    sentence
+    節    clause
+    句    phrase
+    語    word
+
+    分あたりの拍数      beats per minute
+    小節あたりの音節数  syllables per measure
+]]
+
 local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
-return function (filename)
+
+local class = {}
+
+function class.read(filename)
   local handle
   if filename then
     handle = assert(io.open(filename))
@@ -20,47 +41,6 @@ return function (filename)
     return _1, _2, _3, _4
   end
 
-  --[[
-    小節 (measure) ごとに分割する
-    ルビ (ruby) と音声 (voice) は分ける
-    圏点はなし
-
-    データ構造
-    行 (line=measure)
-
-    行のなかで、話者 (speaker) は変えられるようにする？
-    →変えられないとする
-    →かわりに、時間を調整できるようにする
-
-    小節ごとの音節数
-      @beats_per_minute{80}
-      @syllables_per_measure{24}
-      @set_measure{0}
-      @add_measure{1}
-      @sub_measure{1}
-
-    文節 (phrase)
-    音節 (syllable)
-
-    文 (sentence)
-    節 (clause)
-    句 (phrase)
-    語 (word)
-
-    ルビのほうがややこしい
-
-    ブロック
-      #speaker
-      @measure_max{}
-      @measure{}
-
-    インライン
-      @d{duration}
-      @r...@{ruby}
-      @R...@{ruby|voice}
-      @v...@{voice}
-  ]]
-
   local beats_per_minute
   local syllables_per_measure
   local measure = 0
@@ -68,6 +48,13 @@ return function (filename)
   local result = {}
 
   for line in handle:lines() do
+    -- @#...
+    -- @beats_per_minute
+    -- @syllables_per_measure
+    -- @set_measure
+    -- @add_measure
+    -- @sub_measure
+    -- #...
     if match(line, "^@#") or match(line, "^%s*$") then
       -- comment
     elseif match(line, "^@beats_per_minute{(.-)}") then
@@ -133,6 +120,7 @@ return function (filename)
         end
       end
       result[#result + 1] = data
+
     end
   end
 
@@ -140,3 +128,5 @@ return function (filename)
 
   return result
 end
+
+return class
