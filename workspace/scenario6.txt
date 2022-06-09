@@ -1,0 +1,12 @@
+@# vim: set filetype=showa-yokohama-story-scenario tw=0 wrap:
+
+@beats_per_minute{80}
+@syllables_per_measure{24}
+
+@set_measure{8}
+
+#narrator
+@d{4}壁にかこまれた横濱。
+@v本牧地区@{ホンモク・ディビジョン}。
+うちすてられた校舎。しのびこんだ屋上で。
+

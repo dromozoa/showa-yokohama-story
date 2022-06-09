@@ -36,9 +36,8 @@ return function (filename)
       @beats_per_minute{80}
       @syllables_per_measure{24}
       @set_measure{0}
-      @add_measure{-1}
-      @sub_measure{-1}
-      @duration{7}
+      @add_measure{1}
+      @sub_measure{1}
 
     文節 (phrase)
     音節 (syllable)
@@ -56,38 +55,53 @@ return function (filename)
       @measure{}
 
     インライン
-      @r...@{...}
-      @v...@{...}
-      @rv...@{...|...}
+      @d{duration}
+      @r...@{ruby}
+      @R...@{ruby|voice}
+      @v...@{voice}
   ]]
 
-
-
-
-
-
-
-
+  local beats_per_minute
+  local syllables_per_measure
   local measure = 0
-  local speaker_name
+  local speaker
   local result = {}
 
   for line in handle:lines() do
     if match(line, "^@#") or match(line, "^%s*$") then
       -- comment
-    elseif match(line, "^@skip{(.-)}") then
-      -- skip measure
+    elseif match(line, "^@beats_per_minute{(.-)}") then
+      beats_per_minute = assert(tonumber(trim(_1)))
+    elseif match(line, "^@syllables_per_measure{(.-)}") then
+      syllables_per_measure = assert(tonumber(trim(_1)))
+    elseif match(line, "^@set_measure{(.-)}") then
+      measure = assert(tonumber(trim(_1)))
+    elseif match(line, "^@add_measure{(.-)}") then
       measure = measure + assert(tonumber(trim(_1)))
+    elseif match(line, "^@sub_measure{(.-)}") then
+      measure = measure - assert(tonumber(trim(_1)))
     elseif match(line, "^#(.*)$") then
-      speaker_name = trim(_1)
+      speaker = trim(_1)
     else
       local data = {
-        measure = measure;
-        speaker_name = speaker_name;
+        beats_per_minute = assert(beats_per_minute);
+        syllables_per_measure = assert(syllables_per_measure);
+        measure = assert(measure);
+        speaker = assert(speaker);
+        duration = 0;
       }
       measure = measure + 1
+
       local p = 1
       local n = #line
+
+      -- @d{duration}
+      local i, j, payload = line:find("^@d{(.-)}", p)
+      if i then
+        data.duration = assert(tonumber(trim(payload)))
+        p = j + 1
+      end
+
       -- @r...@{ruby}
       -- @R...@{ruby|voice}
       -- @v...@{voice}
@@ -99,11 +113,9 @@ return function (filename)
             data[#data + 1] = { text = payload, voice = payload }
           end
           if command == "r" then
-            error "unsupported"
             local payload = trim(payload)
             data[#data + 1] = { text = text, ruby = payload, voice = payload }
           elseif command == "R" then
-            error "unsupported"
             local ruby, voice = assert(payload:match "(.-)|(.*)")
             data[#data + 1] = { text = text, ruby = trim(ruby), voice = trim(voice) }
           elseif command == "v" then
