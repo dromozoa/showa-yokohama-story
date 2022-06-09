@@ -25,19 +25,23 @@ local class = {
     title = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 0.776, 0.200, 0.133, 1 };
-      font_size = 96;
+      font_size = 120;
+      font_border_color = { 1.000, 0.996, 0.854, 1 };
+      font_border_size = 2;
     };
 
     console = {
       font_filename = "VT323-Regular.ttf";
       font_color = { 0.007, 0.615, 0.576, 1 };
-      font_size = 96;
+      font_size = 80;
+      font_border_color = { 1.000, 0.996, 0.854, 1 };
+      font_border_size = 2;
     };
 
     alice = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 1, 1, 1, 1 };
-      font_size = 48;
+      font_size = 56;
       font_border_color = { 0, 0, 0, 1 };
       font_border_size = 2;
 
@@ -55,7 +59,7 @@ local class = {
     danu = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 1, 1, 1, 1 };
-      font_size = 48;
+      font_size = 56;
       font_border_color = { 0, 0, 0, 1 };
       font_border_size = 2;
 
@@ -73,7 +77,7 @@ local class = {
     magi = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 1, 1, 1, 1 };
-      font_size = 48;
+      font_size = 56;
       font_border_color = { 0, 0, 0, 1 };
       font_border_size = 2;
 

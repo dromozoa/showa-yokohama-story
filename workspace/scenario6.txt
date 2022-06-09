@@ -5,6 +5,18 @@
 
 @set_measure{8}
 
+#console
+INSERT 30 PIECES OF SILVER TO CONTINUE
+Track: Sessions: Vi - Hollow
+Voice: VOICEPEAK
+Text: vaporoid
+
+#danu
+うまれかわっても、アタシたちはくりかえすのかな。
+
+#title
+偽典・昭和横濱物語
+
 #alice
 うちすてられた校舎。しのびこんだ屋上で。
 壁にかこまれた横濱。@r本牧地区@{ホンモク・ディビジョン}。

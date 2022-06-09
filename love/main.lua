@@ -3,6 +3,8 @@ local scenario = require "scenario"
 
 local g = love.graphics
 local fonts = {}
+local bg
+local scenario_data = {}
 
 local function prepare_font(filename, size)
   local key = filename .. "/" .. size
@@ -111,33 +113,38 @@ function love.load(arg)
     scenario_data = scenario.read(scenario_filename)
     for i = 1, #scenario_data do
       local data = scenario_data[i]
-      local speaker = data.speaker
-      local def = scenario.speakers[speaker]
+      local def = scenario.speakers[data.speaker]
       if def and def.text_font then
         prepare_text(data, def.text_font, def.ruby_font)
       end
     end
   end
+
+  bg = assert(g.newImage(assert(love.image.newImageData "map4.png")))
 end
 
-function love.update(dt)
-end
-
-local frame
-
-function love.draw()
-  local data = scenario_data[1]
-
-  if frame then
-    frame = frame + 1
+local function copy_color(source, alpha)
+  local result = {}
+  for i = 1, #source do
+    result[i] = source[i]
   end
+  if alpha then
+    result[4] = alpha
+  end
+  return result
+end
+
+local function draw_text(data, frame)
+  local def = scenario.speakers[data.speaker]
+  if not (def and def.text_font) then
+    return
+  end
+
+  local debug_rect = false
 
   local text_x = 0
   local text_i = 0
   local range_x
-
-  g.push()
-  g.translate((g.getWidth() - data.text_width) / 2, (g.getHeight() - data.text_height) / 2)
 
   for i = 1, #data do
     local item = data[i]
@@ -162,10 +169,22 @@ function love.draw()
       end
 
       text_x = text_x + text_char.margin_before
-      g.print({ { 1, 1, 1, text_alpha }, text_char.char }, text_char.font, text_x, -24)
-      g.setColor({ 1, 0, 0, 1 })
-      g.rectangle("line", text_x, -24, text_char.width, text_char.height)
-      g.setColor({ 1, 1, 1, 1 })
+
+      local border_size = def.font_border_size
+      if border_size then
+        for dy = -border_size, border_size do
+          for dx = -border_size, border_size do
+            g.print({ copy_color(def.font_border_color, text_alpha), text_char.char }, text_char.font, text_x + dx, dy)
+          end
+        end
+      end
+      g.print({ copy_color(def.font_color, text_alpha), text_char.char }, text_char.font, text_x, 0)
+      if debug_rect then
+        g.setColor { 1, 0, 0, 1 }
+        g.rectangle("line", text_x, 0, text_char.width, text_char.height)
+        g.setColor { 1, 1, 1, 1 }
+      end
+
       text_x = text_x + text_char.width + text_char.margin_after
 
       if range_x then
@@ -181,10 +200,12 @@ function love.draw()
         end
 
         ruby_x = ruby_x + ruby_char.margin_before
-        g.print({ { 1, 1, 1, 1 }, ruby_char.char }, ruby_char.font, ruby_x, -48)
-        g.setColor({ 1, 0, 0, 1 })
-        g.rectangle("line", ruby_x, -48, ruby_char.width, ruby_char.height)
-        g.setColor({ 1, 1, 1, 1 })
+        g.print({ copy_color(def.font_color), ruby_char.char }, ruby_char.font, ruby_x, -24)
+        if debug_rect then
+          g.setColor { 1, 0, 0, 1 }
+          g.rectangle("line", ruby_x, -24, ruby_char.width, ruby_char.height)
+          g.setColor { 1, 1, 1, 1 }
+        end
         ruby_x = ruby_x + ruby_char.width + ruby_char.margin_after
       end
     end
@@ -193,6 +214,27 @@ function love.draw()
       break
     end
   end
+end
+
+local frame
+
+function love.draw()
+  local data = scenario_data[1]
+
+  if frame then
+    frame = frame + 1
+  end
+
+  g.draw(bg, 0, 0)
+
+  -- local h = g.getHeight()
+  -- g.setColor { 0, 0, 0, 0.5 }
+  -- g.rectangle("fill", 0, (g.getHeight() - h) / 2, g.getWidth(), h)
+  -- g.setColor { 1, 1, 1, 1 }
+
+  g.push()
+  g.translate((g.getWidth() - data.text_width) / 2, (g.getHeight() - data.text_height) / 2)
+  draw_text(data, frame)
 
   g.pop()
 end
