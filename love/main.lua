@@ -103,6 +103,9 @@ local function prepare_text(data, text_font, ruby_font)
       text_char.ex = text_x
     end
   end
+
+  data.text_width = text_x
+  data.text_height = text_font:getHeight()
 end
 
 function love.load(arg)
@@ -133,6 +136,9 @@ function love.draw()
   local text_i = 0
   local range_x
 
+  g.push()
+  g.translate((g.getWidth() - data.text_width) / 2, (g.getHeight() - data.text_height) / 2)
+
   for i = 1, #data do
     local item = data[i]
     local text_chars = item.text_chars
@@ -156,7 +162,7 @@ function love.draw()
       end
 
       text_x = text_x + text_char.margin_before
-      g.print({ { 1, 1, 1, text_alpha }, text_char.char }, text_char.font, text_x, 24)
+      g.print({ { 1, 1, 1, text_alpha }, text_char.char }, text_char.font, text_x, -24)
       -- g.setColor({ 1, 0, 0, 1 })
       -- g.rectangle("line", text_x, 24, text_char.width, text_char.height)
       -- g.setColor({ 1, 1, 1, 1 })
@@ -175,7 +181,7 @@ function love.draw()
         end
 
         ruby_x = ruby_x + ruby_char.margin_before
-        g.print({ { 1, 1, 1, 1 }, ruby_char.char }, ruby_char.font, ruby_x, 0)
+        g.print({ { 1, 1, 1, 1 }, ruby_char.char }, ruby_char.font, ruby_x, -48)
         -- g.setColor({ 1, 0, 0, 1 })
         -- g.rectangle("line", ruby_x, 0, ruby_char.width, ruby_char.height)
         -- g.setColor({ 1, 1, 1, 1 })
@@ -187,6 +193,8 @@ function love.draw()
       break
     end
   end
+
+  g.pop()
 end
 
 function love.keyreleased(key)
