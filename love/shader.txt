@@ -1,6 +1,7 @@
 // vim: filetype=glsl:
 
 uniform float seed;
+uniform float scaler;
 
 vec4 position(mat4 transform_projection, vec4 vertex_position) {
   return transform_projection * vertex_position;
@@ -23,7 +24,9 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
   // position = screen_coords;
   // position *= vec2(1.0 / screen_size.x, 1.0 / screen_size.y);
 
-  vec4 c = Texel(texture, texture_coords);
+  vec2 position = texture_coords;
+  position.y = (position.y - 0.5) * scaler + 0.5;
+  vec4 c = Texel(texture, position);
 
   vec2 p = texture_coords * vec2(1280, 720);
   float mx = mod(p.x, 3);

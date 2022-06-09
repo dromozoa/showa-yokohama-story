@@ -12,6 +12,7 @@ syn match syssLabel /^#.*$/
 syn match syssCode /^!!.*$/
 syn region syssRuby start="@{ruby}" end="@{/ruby[^}]*}"
 syn region syssRuby start="@[rvR]" end="@{[^}]*}"
+syn match syssCode /^@d{[^}]*}/
 
 hi def link syssComment Comment
 hi def link syssSection Function
