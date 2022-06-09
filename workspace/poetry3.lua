@@ -5,7 +5,7 @@ package.path = "../love/?.lua;" .. package.path
 local dumper = require "dromozoa.commons.dumper"
 
 local ucd_kana = require "ucd_kana"
-local scenario = require "read_scenario"
+local scenario = require "scenario"
 
 local function format_time(time)
   time = math.floor(time * 1000)
