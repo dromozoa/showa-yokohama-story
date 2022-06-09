@@ -20,8 +20,19 @@ local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
-
 local class = {}
+
+function class.format_time_srt(time)
+  time = math.floor(time * 1000)
+  local msec = time % 1000
+  time = math.floor(time / 1000)
+  local sec = time % 60
+  time = math.floor(time / 60)
+  local min = time % 60
+  time = math.floor(time / 60)
+  local hour = time
+  return ("%02d:%02d:%02d,%03d"):format(hour, min, sec, msec)
+end
 
 function class.read(filename)
   local handle
@@ -70,9 +81,16 @@ function class.read(filename)
     elseif match(line, "^#(.*)$") then
       speaker = trim(_1)
     else
+      local seconds_per_beat = 60 / assert(beats_per_minute)
+      local seconds_per_measure = seconds_per_beat * 4
+      local seconds_per_syllable = seconds_per_measure / assert(syllables_per_measure)
+
       local data = {
-        beats_per_minute = assert(beats_per_minute);
-        syllables_per_measure = assert(syllables_per_measure);
+        beats_per_minute = beats_per_minute;
+        syllables_per_measure = syllables_per_measure;
+        seconds_per_beat = seconds_per_beat;
+        seconds_per_measure = seconds_per_measure;
+        seconds_per_syllable = seconds_per_syllable;
         measure = assert(measure);
         speaker = assert(speaker);
         duration = 0;
