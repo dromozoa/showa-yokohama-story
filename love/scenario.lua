@@ -138,7 +138,6 @@ function class.read(filename)
         end
       end
       result[#result + 1] = data
-
     end
   end
 

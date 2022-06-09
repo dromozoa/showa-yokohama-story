@@ -8,21 +8,20 @@ local scenario_filename = ...
 local basename = scenario_filename:gsub("%.[^%.]*", "")
 local srt_filename = basename .. "-vp.srt"
 
-local data = scenario.read(scenario_filename)
+local scenario_data = scenario.read(scenario_filename)
 
 local out = assert(io.open(srt_filename, "w"))
 local counter = 0
-for i = 1, #data do
-  local x = data[i]
+for i = 1, #scenario_data do
+  local data = scenario_data[i]
   counter = counter + 1
   out:write(counter, "\n")
   out:write(("%s --> %s\n"):format(
-      scenario.format_time_srt(x.measure * x.seconds_per_measure + x.duration * x.seconds_per_syllable),
-      scenario.format_time_srt((x.measure + 1) * x.seconds_per_measure)))
-
-  for j = 1, #x do
-    local y = x[j]
-    out:write(y.voice)
+      scenario.format_time_srt(data.measure * data.seconds_per_measure + data.duration * data.seconds_per_syllable),
+      scenario.format_time_srt((data.measure + 1) * data.seconds_per_measure)))
+  for j = 1, #data do
+    local item = data[j]
+    out:write(item.voice)
   end
   out:write "\n\n"
 end
