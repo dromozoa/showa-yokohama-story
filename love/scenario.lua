@@ -20,7 +20,75 @@ local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
-local class = {}
+local class = {
+  speakers = {
+    title = {
+      font_filename = "BIZUDPMincho-Regular.ttf";
+      font_color = { 0.776, 0.200, 0.133, 1 };
+      font_size = 96;
+    };
+
+    console = {
+      font_filename = "VT323-Regular.ttf";
+      font_color = { 0.007, 0.615, 0.576, 1 };
+      font_size = 96;
+    };
+
+    alice = {
+      font_filename = "BIZUDPMincho-Regular.ttf";
+      font_color = { 1, 1, 1, 1 };
+      font_size = 48;
+      font_border_color = { 0, 0, 0, 1 };
+      font_border_size = 2;
+
+      speaker = "Speaker/f1";
+      speed = "1.0";
+      pitch = "-1.5";
+      pause = "0.5";
+      volume = "2.0";
+      happy = "0.0";
+      fun = "0.0";
+      angry = "0.0";
+      sad = "1.0";
+    };
+
+    danu = {
+      font_filename = "BIZUDPMincho-Regular.ttf";
+      font_color = { 1, 1, 1, 1 };
+      font_size = 48;
+      font_border_color = { 0, 0, 0, 1 };
+      font_border_size = 2;
+
+      speaker = "Speaker/f5";
+      speed = "1.0";
+      pitch = "-1.5";
+      pause = "0.5";
+      volume = "2.0";
+      happy = "0.0";
+      fun = "0.0";
+      angry = "0.0";
+      sad = "1.0";
+    };
+
+    magi = {
+      font_filename = "BIZUDPMincho-Regular.ttf";
+      font_color = { 1, 1, 1, 1 };
+      font_size = 48;
+      font_border_color = { 0, 0, 0, 1 };
+      font_border_size = 2;
+
+      speaker = "Speaker/f4b";
+      speed = "1.0";
+      pitch = "-1.5";
+      pause = "0.5";
+      volume = "2.0";
+      happy = "0.0";
+      fun = "0.0";
+      angry = "0.5";
+      sad = "0.5";
+    };
+  };
+}
 
 function class.format_time_srt(time)
   time = math.floor(time * 1000)

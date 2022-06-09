@@ -4,25 +4,15 @@ local scenario = require "scenario"
 local g = love.graphics
 local fonts = {}
 
-local DATA = {
-  {
-    text = "うちすてられた";
-  },
-  {
-    text = "校舎";
-    ruby = "こうしゃ";
-  },
-  {
-    text = "。しのびこんだ";
-  },
-  {
-    text = "屋上";
-    ruby = "おくじょう";
-  },
-  {
-    text = "で。";
-  },
-}
+local function prepare_font(filename, size)
+  local key = filename .. "/" .. size
+  local font = fonts[key]
+  if not font then
+    font = assert(g.newFont(assert(love.font.newRasterizer(filename, size))))
+    fonts[key] = font
+  end
+  return font
+end
 
 local function prepare_text_chars(text, font)
   local height = font:getHeight()
@@ -109,13 +99,25 @@ local function prepare_text(data, text_font, ruby_font)
 end
 
 function love.load(arg)
+  for speaker, def in pairs(scenario.speakers) do
+    if def.font_filename then
+      def.text_font = prepare_font(def.font_filename, def.font_size)
+      def.ruby_font = prepare_font(def.font_filename, def.font_size / 2)
+    end
+  end
+
   local scenario_filename = arg[1]
   if scenario_filename then
     scenario_data = scenario.read(scenario_filename)
+    for i = 1, #scenario_data do
+      local data = scenario_data[i]
+      local speaker = data.speaker
+      local def = scenario.speakers[speaker]
+      if def and def.text_font then
+        prepare_text(data, def.text_font, def.ruby_font)
+      end
+    end
   end
-  fonts.BIZUDPMincho_Regular_24 = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 24))))
-  fonts.BIZUDPMincho_Regular_48 = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
-  prepare_text(DATA, fonts.BIZUDPMincho_Regular_48, fonts.BIZUDPMincho_Regular_24)
 end
 
 function love.update(dt)
@@ -124,9 +126,7 @@ end
 local frame
 
 function love.draw()
-  -- 1280
-
-  local data = DATA
+  local data = scenario_data[1]
 
   if frame then
     frame = frame + 1
@@ -163,9 +163,9 @@ function love.draw()
 
       text_x = text_x + text_char.margin_before
       g.print({ { 1, 1, 1, text_alpha }, text_char.char }, text_char.font, text_x, -24)
-      -- g.setColor({ 1, 0, 0, 1 })
-      -- g.rectangle("line", text_x, 24, text_char.width, text_char.height)
-      -- g.setColor({ 1, 1, 1, 1 })
+      g.setColor({ 1, 0, 0, 1 })
+      g.rectangle("line", text_x, -24, text_char.width, text_char.height)
+      g.setColor({ 1, 1, 1, 1 })
       text_x = text_x + text_char.width + text_char.margin_after
 
       if range_x then
@@ -182,9 +182,9 @@ function love.draw()
 
         ruby_x = ruby_x + ruby_char.margin_before
         g.print({ { 1, 1, 1, 1 }, ruby_char.char }, ruby_char.font, ruby_x, -48)
-        -- g.setColor({ 1, 0, 0, 1 })
-        -- g.rectangle("line", ruby_x, 0, ruby_char.width, ruby_char.height)
-        -- g.setColor({ 1, 1, 1, 1 })
+        g.setColor({ 1, 0, 0, 1 })
+        g.rectangle("line", ruby_x, -48, ruby_char.width, ruby_char.height)
+        g.setColor({ 1, 1, 1, 1 })
         ruby_x = ruby_x + ruby_char.width + ruby_char.margin_after
       end
     end

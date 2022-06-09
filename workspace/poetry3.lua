@@ -2,6 +2,7 @@
 
 package.path = "../love/?.lua;" .. package.path
 
+local dumper = require "dromozoa.commons.dumper"
 local scenario = require "scenario"
 
 local scenario_filename = ...
@@ -9,6 +10,7 @@ local basename = scenario_filename:gsub("%.[^%.]*", "")
 local srt_filename = basename .. "-vp.srt"
 
 local scenario_data = scenario.read(scenario_filename)
+print(dumper.encode(scenario_data, { pretty = true, stable = true }))
 
 local out = assert(io.open(srt_filename, "w"))
 local counter = 0
