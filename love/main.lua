@@ -11,8 +11,6 @@ local canvases = {}
 local shaders = {}
 local mesh
 
-local do_save
-
 local function prepare_font(filename, size)
   local key = filename .. "/" .. size
   local font = fonts[key]
@@ -365,6 +363,8 @@ end
 
 -- フレームは0起源とする
 local current_frame = 0
+local running
+local writing
 
 function love.draw()
   local measure_data
@@ -443,10 +443,20 @@ function love.draw()
     mesh:setTexture(canvases.crt)
     g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
 
-    if do_save then
-      do_save = false
-      g.captureScreenshot "test.png"
+    if writing then
+      local filename = ("%08d.png"):format(current_frame)
+      g.captureScreenshot(filename)
+      print("filename", filename)
     end
+  else
+    if writing then
+      writing = false
+      current_frame = 0
+    end
+  end
+
+  if running or writing then
+    current_frame = current_frame + 1
   end
 end
 
@@ -465,7 +475,13 @@ function love.keypressed(key)
       current_frame = current_frame + 1
     end
     print("current_frame", current_frame)
+  elseif key == "r" then
+    current_frame = 0
+    print("current_frame", current_frame)
   elseif key == "s" then
-    do_save = true
+    running = not running
+  elseif key == "w" then
+    writing = not writing
+    current_frame = 0
   end
 end
