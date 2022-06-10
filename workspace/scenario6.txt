@@ -1,13 +1,13 @@
 @# vim: set filetype=showa-yokohama-story-scenario tw=0 wrap:
 
+@max_measure{10}
 @beats_per_minute{80}
 @syllables_per_measure{24}
 
-@set_measure{8}
+@# @set_measure{2}
 
-#alice
-壁にかこまれた横濱。@r本牧地区@{ホンモク・ディビジョン}。
-うちすてられた校舎。しのびこんだ屋上で。
+#title
+偽典・昭和横濱物語
 
 #console
 INSERT 30 PIECES OF SILVER TO CONTINUE
@@ -15,14 +15,10 @@ Track: Sessions: Vi - Hollow
 Voice: VOICEPEAK
 Text: vaporoid
 
-#title
-偽典・昭和横濱物語
-
-
-#danu
-うまれかわっても、アタシたちはくりかえすのかな。
-
 #alice
 うちすてられた校舎。しのびこんだ屋上で。
 壁にかこまれた横濱。@r本牧地区@{ホンモク・ディビジョン}。
+
+#danu
+うまれかわっても、アタシたちはくりかえすのかな。
 

@@ -19,8 +19,8 @@ for i = 1, #scenario_data do
   counter = counter + 1
   out:write(counter, "\n")
   out:write(("%s --> %s\n"):format(
-      scenario.format_time_srt(data.measure * data.seconds_per_measure + data.duration * data.seconds_per_syllable),
-      scenario.format_time_srt((data.measure + 1) * data.seconds_per_measure)))
+      scenario.format_time_srt((data.measure - 1) * data.seconds_per_measure + data.duration * data.seconds_per_syllable),
+      scenario.format_time_srt(data.measure * data.seconds_per_measure)))
   for j = 1, #data do
     local item = data[j]
     out:write(item.voice)

@@ -124,22 +124,26 @@ function class.read(filename)
     return _1, _2, _3, _4
   end
 
+  local max_measure
   local beats_per_minute
   local syllables_per_measure
-  local measure = 0
+  local measure = 1
   local speaker
   local result = {}
 
   for line in handle:lines() do
     -- @#...
-    -- @beats_per_minute
-    -- @syllables_per_measure
-    -- @set_measure
-    -- @add_measure
-    -- @sub_measure
+    -- @max_measure{...}
+    -- @beats_per_minute{...}
+    -- @syllables_per_measure{...}
+    -- @set_measure{...}
+    -- @add_measure{...}
+    -- @sub_measure{...}
     -- #...
     if match(line, "^@#") or match(line, "^%s*$") then
       -- comment
+    elseif match(line, "^@max_measure{(.-)}") then
+      max_measure = assert(tonumber(trim(_1)))
     elseif match(line, "^@beats_per_minute{(.-)}") then
       beats_per_minute = assert(tonumber(trim(_1)))
     elseif match(line, "^@syllables_per_measure{(.-)}") then
@@ -215,7 +219,18 @@ function class.read(filename)
 
   handle:close()
 
-  return result
+  local measures = {}
+  for i = 1, max_measure do
+    measures[i] = {}
+  end
+  for i = 1, #result do
+    local data = result[i]
+    measures[data.measure] = data
+    data.time_start = (data.measure - 1) * data.seconds_per_measure
+    data.time_end = data.measure * data.seconds_per_measure
+  end
+
+  return result, measures
 end
 
 return class

@@ -2,7 +2,9 @@ local utf8 = require "utf8"
 local scenario = require "scenario"
 
 local g = love.graphics
-local scenario_data = {}
+local scenario_data
+local scenario_measures
+local frames_per_second
 local fonts = {}
 local textures = {}
 local canvases = {}
@@ -103,6 +105,8 @@ local function prepare_text(data, text_font, ruby_font)
 end
 
 function love.load(arg)
+  love.keyboard.setKeyRepeat(true)
+
   for speaker, def in pairs(scenario.speakers) do
     if def.font_filename then
       def.text_font = prepare_font(def.font_filename, def.font_size)
@@ -110,21 +114,21 @@ function love.load(arg)
     end
   end
 
-  local scenario_filename = arg[1]
-  if scenario_filename then
-    scenario_data = scenario.read(scenario_filename)
-    for i = 1, #scenario_data do
-      local data = scenario_data[i]
-      local def = scenario.speakers[data.speaker]
-      if def and def.text_font then
-        prepare_text(data, def.text_font, def.ruby_font)
-      end
+  scenario_data = scenario.read(arg[1])
+  for i = 1, #scenario_data do
+    local data = scenario_data[i]
+    local def = scenario.speakers[data.speaker]
+    if def and def.text_font then
+      prepare_text(data, def.text_font, def.ruby_font)
     end
   end
+
+  frames_per_second = assert(tonumber(arg[2]))
 
   textures[1] = assert(g.newImage(assert(love.image.newImageData "texture2.png")))
 
   canvases.text_char = g.newCanvas(g.getWidth(), g.getHeight())
+  canvases.text = g.newCanvas(g.getWidth(), g.getHeight())
 
   shaders.text = assert(g.newShader "shader-text.txt")
 end
@@ -146,6 +150,10 @@ local function draw_text(data, frame)
     return
   end
 
+  if frame == 0 then
+    return
+  end
+
   local debug_rectangle = false
 
   local text_x = 0
@@ -163,15 +171,13 @@ local function draw_text(data, frame)
       local text_alpha = 1
 
       text_i = text_i + 1
-      if frame then
-        local k = text_i * 2
-        if k == frame then
-          text_alpha = 1
-          range_x = text_char.ex
-        elseif k == frame + 1 then
-          text_alpha = 0.5
-          range_x = text_char.cx
-        end
+      local k = text_i * 2
+      if k == frame then
+        text_alpha = 1
+        range_x = text_char.ex
+      elseif k == frame + 1 then
+        text_alpha = 0.5
+        range_x = text_char.cx
       end
 
       text_x = text_x + text_char.margin_before
@@ -247,41 +253,65 @@ local function draw_text(data, frame)
   end
 end
 
-local frame
+-- フレームは0起源とする
+local current_frame = 0
 
 function love.draw()
-  local data = scenario_data[1]
-
-  -- if frame then
-  --   frame = frame + 1
-  -- end
-
   g.draw(textures[1], 0, 0)
 
-  -- local h = g.getHeight()
-  -- g.setColor { 0, 0, 0, 0.5 }
-  -- g.rectangle("fill", 0, (g.getHeight() - h) / 2, g.getWidth(), h)
-  -- g.setColor { 1, 1, 1, 1 }
+  local measure_data
+  local measure_frame
+  local measure_frame_end
 
-  g.push()
-  g.translate((g.getWidth() - data.text_width) / 2, (g.getHeight() - data.text_height) / 2)
-  draw_text(data, frame)
+  local time = current_frame / frames_per_second
+  for i = 1, #scenario_data do
+    local data = scenario_data[i]
+    if data.time_start <= time and time < data.time_end then
+      measure_data = data
+      measure_frame = math.floor((time - data.time_start) * frames_per_second + 0.5)
+      measure_frame_end = math.floor((data.time_end - data.time_start) * frames_per_second + 0.5)
+      break
+    end
+  end
 
-  g.pop()
+  if measure_data then
+    g.setCanvas(canvases.text)
+    g.clear()
+
+    g.push()
+    g.translate((g.getWidth() - measure_data.text_width) / 2, (g.getHeight() - measure_data.text_height) / 2)
+    draw_text(measure_data, measure_frame)
+    g.pop()
+
+    g.setCanvas()
+
+    local n = 16
+    local alpha = 1
+    if measure_frame >= measure_frame_end - n then
+      local beta = (measure_frame_end - measure_frame) / n
+      alpha = (math.sin((beta - 0.5) * math.pi) + 1) / 2
+    end
+    shaders.text:send("alpha", alpha)
+    g.setShader(shaders.text)
+    g.draw(canvases.text, 0, 0)
+    g.setShader()
+  end
 end
 
-function love.keyreleased(key)
+function love.keypressed(key)
   if key == "h" then
-    if not frame then
-      frame = 0
+    if love.keyboard.isDown("lshift", "rshift") then
+      current_frame = current_frame - 30
     else
-      frame = frame - 1
+      current_frame = current_frame - 1
     end
+    print("current_frame", current_frame)
   elseif key == "l" then
-    if not frame then
-      frame = 0
+    if love.keyboard.isDown("lshift", "rshift") then
+      current_frame = current_frame + 30
     else
-      frame = frame + 1
+      current_frame = current_frame + 1
     end
+    print("current_frame", current_frame)
   end
 end
