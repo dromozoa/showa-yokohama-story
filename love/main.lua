@@ -2,9 +2,11 @@ local utf8 = require "utf8"
 local scenario = require "scenario"
 
 local g = love.graphics
-local fonts = {}
-local bg
 local scenario_data = {}
+local fonts = {}
+local textures = {}
+local canvases = {}
+local shaders = {}
 
 local function prepare_font(filename, size)
   local key = filename .. "/" .. size
@@ -120,7 +122,11 @@ function love.load(arg)
     end
   end
 
-  bg = assert(g.newImage(assert(love.image.newImageData "map4.png")))
+  textures[1] = assert(g.newImage(assert(love.image.newImageData "texture2.png")))
+
+  canvases.text_char = g.newCanvas(g.getWidth(), g.getHeight())
+
+  shaders.text = assert(g.newShader "shader-text.txt")
 end
 
 local function copy_color(source, alpha)
@@ -140,7 +146,7 @@ local function draw_text(data, frame)
     return
   end
 
-  local debug_rect = false
+  local debug_rectangle = false
 
   local text_x = 0
   local text_i = 0
@@ -163,12 +169,17 @@ local function draw_text(data, frame)
           text_alpha = 1
           range_x = text_char.ex
         elseif k == frame + 1 then
-          text_alpha = 0.25
+          text_alpha = 0.5
           range_x = text_char.cx
         end
       end
 
       text_x = text_x + text_char.margin_before
+
+      if text_alpha < 1 then
+        g.setCanvas(canvases.text_char)
+        g.clear()
+      end
 
       local border_size = def.font_border_size
       if border_size then
@@ -179,10 +190,21 @@ local function draw_text(data, frame)
         end
       end
       g.print({ copy_color(def.font_color, text_alpha), text_char.char }, text_char.font, text_x, 0)
-      if debug_rect then
+      if debug_rectangle then
         g.setColor { 1, 0, 0, 1 }
         g.rectangle("line", text_x, 0, text_char.width, text_char.height)
         g.setColor { 1, 1, 1, 1 }
+      end
+
+      if text_alpha < 1 then
+        g.setCanvas()
+        shaders.text:send("alpha", text_alpha)
+        g.setShader(shaders.text)
+        g.push()
+        g.origin()
+        g.draw(canvases.text_char, 0, 0)
+        g.pop()
+        g.setShader()
       end
 
       text_x = text_x + text_char.width + text_char.margin_after
@@ -200,8 +222,17 @@ local function draw_text(data, frame)
         end
 
         ruby_x = ruby_x + ruby_char.margin_before
+
+        local border_size = def.font_border_size
+        if border_size then
+          for dy = -border_size, border_size do
+            for dx = -border_size, border_size do
+              g.print({ copy_color(def.font_border_color), ruby_char.char }, ruby_char.font, ruby_x + dx, -24 + dy)
+            end
+          end
+        end
         g.print({ copy_color(def.font_color), ruby_char.char }, ruby_char.font, ruby_x, -24)
-        if debug_rect then
+        if debug_rectangle then
           g.setColor { 1, 0, 0, 1 }
           g.rectangle("line", ruby_x, -24, ruby_char.width, ruby_char.height)
           g.setColor { 1, 1, 1, 1 }
@@ -221,11 +252,11 @@ local frame
 function love.draw()
   local data = scenario_data[1]
 
-  if frame then
-    frame = frame + 1
-  end
+  -- if frame then
+  --   frame = frame + 1
+  -- end
 
-  g.draw(bg, 0, 0)
+  g.draw(textures[1], 0, 0)
 
   -- local h = g.getHeight()
   -- g.setColor { 0, 0, 0, 0.5 }
@@ -240,11 +271,17 @@ function love.draw()
 end
 
 function love.keyreleased(key)
-  if key == "a" then
-    if frame then
-      frame = nil
-    else
+  if key == "h" then
+    if not frame then
       frame = 0
+    else
+      frame = frame - 1
+    end
+  elseif key == "l" then
+    if not frame then
+      frame = 0
+    else
+      frame = frame + 1
     end
   end
 end
