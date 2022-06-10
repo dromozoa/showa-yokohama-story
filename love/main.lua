@@ -430,8 +430,31 @@ function love.draw()
     g.clear()
 
     local seed = current_frame * (1280 * 720 / 3 / 4) % (1280 + 42)
+    local scaler = 1
+
+    if measure_data.measure_first then
+      local n = 30
+      if measure_frame < n then
+        if measure_frame == 0 then
+          scaler = g.getHeight()
+        else
+          scaler = (n - measure_frame) * 2
+        end
+      end
+    end
+    if measure_data.measure_last then
+      local n = 30
+      if measure_frame >= measure_frame_end - n then
+        if measure_frame == measure_frame_end - 1 then
+          scaler = g.getHeight()
+        else
+          scaler = (measure_frame - measure_frame_end + n + 1) * 2
+        end
+      end
+    end
+
     shaders.crt:send("seed", seed)
-    shaders.crt:send("scaler", 1)
+    shaders.crt:send("scaler", scaler)
     g.setShader(shaders.crt)
     g.draw(canvases.text2, 0, 0)
     g.setShader()

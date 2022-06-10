@@ -263,6 +263,9 @@ function class.read(filename)
         data.background = background
       end
     end
+
+    measures[1].measure_first = true
+    measures[#measures].measure_last = true
   end
 
   return result, measures
