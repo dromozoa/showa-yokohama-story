@@ -3,7 +3,7 @@
 @max_measure{10}
 @beats_per_minute{80}
 @syllables_per_measure{24}
-@background{texture1.png}
+@background{texture2.png}
 
 @# @set_measure{2}
 
