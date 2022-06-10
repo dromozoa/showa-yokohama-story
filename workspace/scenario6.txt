@@ -3,6 +3,7 @@
 @max_measure{10}
 @beats_per_minute{80}
 @syllables_per_measure{24}
+@background{texture1.png}
 
 @# @set_measure{2}
 
@@ -10,6 +11,7 @@
 偽典・昭和横濱物語
 
 #console
+@background{texture2.png}
 INSERT 30 PIECES OF SILVER TO CONTINUE
 Track: Sessions: Vi - Hollow
 Voice: VOICEPEAK

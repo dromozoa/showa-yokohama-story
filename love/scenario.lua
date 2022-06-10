@@ -128,6 +128,8 @@ function class.read(filename)
   local beats_per_minute
   local syllables_per_measure
   local measure = 1
+  local background
+  local background_first
   local speaker
   local result = {}
 
@@ -136,6 +138,7 @@ function class.read(filename)
     -- @max_measure{...}
     -- @beats_per_minute{...}
     -- @syllables_per_measure{...}
+    -- @background{...}
     -- @set_measure{...}
     -- @add_measure{...}
     -- @sub_measure{...}
@@ -148,6 +151,11 @@ function class.read(filename)
       beats_per_minute = assert(tonumber(trim(_1)))
     elseif match(line, "^@syllables_per_measure{(.-)}") then
       syllables_per_measure = assert(tonumber(trim(_1)))
+    elseif match(line, "^@background{(.-)}") then
+      background = trim(_1)
+      if not background_first then
+        background_first = background
+      end
     elseif match(line, "^@set_measure{(.-)}") then
       measure = assert(tonumber(trim(_1)))
     elseif match(line, "^@add_measure{(.-)}") then
@@ -167,6 +175,7 @@ function class.read(filename)
         seconds_per_beat = seconds_per_beat;
         seconds_per_measure = seconds_per_measure;
         seconds_per_syllable = seconds_per_syllable;
+        background = background;
         measure = assert(measure);
         speaker = assert(speaker);
         duration = 0;
@@ -220,14 +229,40 @@ function class.read(filename)
   handle:close()
 
   local measures = {}
-  for i = 1, max_measure do
-    measures[i] = {}
+  do
+    local seconds_per_beat = 60 / assert(beats_per_minute)
+    local seconds_per_measure = seconds_per_beat * 4
+
+    for i = 1, max_measure do
+      local data = {
+        seconds_per_beat = seconds_per_beat;
+        seconds_per_measure = seconds_per_measure;
+      }
+      measures[i] = data
+      data.time_start = (i - 1) * seconds_per_measure
+      data.time_end = i * seconds_per_measure
+    end
   end
+
   for i = 1, #result do
     local data = result[i]
     measures[data.measure] = data
     data.time_start = (data.measure - 1) * data.seconds_per_measure
     data.time_end = data.measure * data.seconds_per_measure
+  end
+
+  do
+    local background = background_first
+
+    for i = 1, #measures do
+      local data = measures[i]
+
+      if data.background then
+        background = data.background
+      else
+        data.background = background
+      end
+    end
   end
 
   return result, measures

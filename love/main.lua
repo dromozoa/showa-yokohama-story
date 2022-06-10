@@ -6,7 +6,7 @@ local scenario_data
 local scenario_measures
 local frames_per_second
 local fonts = {}
-local textures = {}
+local background_textures = {}
 local canvases = {}
 local shaders = {}
 
@@ -104,6 +104,15 @@ local function prepare_text(data, text_font, ruby_font)
   data.text_height = text_font:getHeight()
 end
 
+local function prepare_background_texture(filename)
+  local texture = background_textures[filename]
+  if not texture then
+    texture = assert(g.newImage(assert(love.image.newImageData(filename))))
+    background_textures[filename] = texture
+  end
+  return texture
+end
+
 function love.load(arg)
   love.keyboard.setKeyRepeat(true)
 
@@ -114,7 +123,7 @@ function love.load(arg)
     end
   end
 
-  scenario_data = scenario.read(arg[1])
+  scenario_data, scenario_measures = scenario.read(arg[1])
   for i = 1, #scenario_data do
     local data = scenario_data[i]
     local def = scenario.speakers[data.speaker]
@@ -125,7 +134,10 @@ function love.load(arg)
 
   frames_per_second = assert(tonumber(arg[2]))
 
-  textures[1] = assert(g.newImage(assert(love.image.newImageData "texture2.png")))
+  for i = 1, #scenario_measures do
+    local data = scenario_measures[i]
+    data.background_texture = prepare_background_texture(data.background)
+  end
 
   canvases.text_char = g.newCanvas(g.getWidth(), g.getHeight())
   canvases.text = g.newCanvas(g.getWidth(), g.getHeight())
@@ -257,15 +269,13 @@ end
 local current_frame = 0
 
 function love.draw()
-  g.draw(textures[1], 0, 0)
-
   local measure_data
   local measure_frame
   local measure_frame_end
 
   local time = current_frame / frames_per_second
-  for i = 1, #scenario_data do
-    local data = scenario_data[i]
+  for i = 1, #scenario_measures do
+    local data = scenario_measures[i]
     if data.time_start <= time and time < data.time_end then
       measure_data = data
       measure_frame = math.floor((time - data.time_start) * frames_per_second + 0.5)
@@ -275,26 +285,30 @@ function love.draw()
   end
 
   if measure_data then
-    g.setCanvas(canvases.text)
-    g.clear()
+    g.draw(measure_data.background_texture, 0, 0)
 
-    g.push()
-    g.translate((g.getWidth() - measure_data.text_width) / 2, (g.getHeight() - measure_data.text_height) / 2)
-    draw_text(measure_data, measure_frame)
-    g.pop()
+    if measure_data[1] then
+      g.setCanvas(canvases.text)
+      g.clear()
 
-    g.setCanvas()
+      g.push()
+      g.translate((g.getWidth() - measure_data.text_width) / 2, (g.getHeight() - measure_data.text_height) / 2)
+      draw_text(measure_data, measure_frame)
+      g.pop()
 
-    local n = 16
-    local alpha = 1
-    if measure_frame >= measure_frame_end - n then
-      local beta = (measure_frame_end - measure_frame) / n
-      alpha = (math.sin((beta - 0.5) * math.pi) + 1) / 2
+      g.setCanvas()
+
+      local n = 16
+      local alpha = 1
+      if measure_frame >= measure_frame_end - n then
+        local beta = (measure_frame_end - measure_frame) / n
+        alpha = (math.sin((beta - 0.5) * math.pi) + 1) / 2
+      end
+      shaders.text:send("alpha", alpha)
+      g.setShader(shaders.text)
+      g.draw(canvases.text, 0, 0)
+      g.setShader()
     end
-    shaders.text:send("alpha", alpha)
-    g.setShader(shaders.text)
-    g.draw(canvases.text, 0, 0)
-    g.setShader()
   end
 end
 

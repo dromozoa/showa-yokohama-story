@@ -9,8 +9,9 @@ local scenario_filename = ...
 local basename = scenario_filename:gsub("%.[^%.]*", "")
 local srt_filename = basename .. "-vp.srt"
 
-local scenario_data = scenario.read(scenario_filename)
-print(dumper.encode(scenario_data, { pretty = true, stable = true }))
+local scenario_data, scenario_measures = scenario.read(scenario_filename)
+-- print(dumper.encode(scenario_data, { pretty = true, stable = true }))
+print(dumper.encode(scenario_measures, { pretty = true, stable = true }))
 
 local out = assert(io.open(srt_filename, "w"))
 local counter = 0
