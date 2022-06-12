@@ -25,9 +25,19 @@ local class = {
     title = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 0.776, 0.200, 0.133, 1 };
-      font_size = 120;
+      font_size = 100;
       font_border_color = { 1.000, 0.996, 0.854, 1 };
       font_border_size = 2;
+
+      speaker = "Speaker/f4b";
+      speed = "1.0";
+      pitch = "-1.5";
+      pause = "0.5";
+      volume = "2.0";
+      happy = "0.0";
+      fun = "0.0";
+      angry = "0.5";
+      sad = "0.5";
     };
 
     console = {
@@ -41,7 +51,7 @@ local class = {
     alice = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 1, 1, 1, 1 };
-      font_size = 56;
+      font_size = 52;
       font_border_color = { 0, 0, 0, 1 };
       font_border_size = 2;
 
@@ -59,7 +69,7 @@ local class = {
     danu = {
       font_filename = "BIZUDPMincho-Regular.ttf";
       font_color = { 1, 1, 1, 1 };
-      font_size = 56;
+      font_size = 52;
       font_border_color = { 0, 0, 0, 1 };
       font_border_size = 2;
 
@@ -235,6 +245,7 @@ function class.read(filename)
 
     for i = 1, max_measure do
       local data = {
+        beats_per_minute = beats_per_minute;
         seconds_per_beat = seconds_per_beat;
         seconds_per_measure = seconds_per_measure;
       }

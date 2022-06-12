@@ -5,6 +5,8 @@ local g = love.graphics
 local scenario_data
 local scenario_measures
 local frames_per_second
+local encoder_command
+local encoder_filename
 local fonts = {}
 local background_textures = {}
 local canvases = {}
@@ -220,6 +222,8 @@ function love.load(arg)
   end
 
   frames_per_second = assert(tonumber(arg[2]))
+  encoder_command = assert(arg[3])
+  encoder_filename = assert(arg[4])
 
   for i = 1, #scenario_measures do
     local data = scenario_measures[i]
@@ -364,7 +368,8 @@ end
 -- フレームは0起源とする
 local current_frame = 0
 local running
-local writing
+local encoding
+local encoder
 
 function love.draw()
   local measure_data
@@ -466,19 +471,25 @@ function love.draw()
     mesh:setTexture(canvases.crt)
     g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
 
-    if writing then
-      local filename = ("%08d.png"):format(current_frame)
-      g.captureScreenshot(filename)
-      print("filename", filename)
+    if encoder then
+      g.captureScreenshot(function (image_data)
+        -- encoder:write(data:getString())
+        local data = image_data:encode "png"
+        encoder:write(data:getString())
+      end)
+      -- print("filename", filename, current_frame)
+      -- local contents, size = assert(love.filesystem.read(filename))
+      -- encoder:write(contents)
     end
   else
-    if writing then
-      writing = false
+    if encoder then
+      encoder:close()
+      encoder = nil
       current_frame = 0
     end
   end
 
-  if running or writing then
+  if running or encoder then
     current_frame = current_frame + 1
   end
 end
@@ -503,8 +514,20 @@ function love.keypressed(key)
     print("current_frame", current_frame)
   elseif key == "s" then
     running = not running
-  elseif key == "w" then
-    writing = not writing
+  elseif key == "e" then
+    if encoder then
+      encoder:close()
+      encoder = nil
+    else
+      encoder = assert(io.popen(([['%s' -y -r %d -f image2pipe -i - -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p '%s']]):format(
+          encoder_command, frames_per_second, encoder_filename), "w"))
+    end
     current_frame = 0
+  end
+end
+
+function love.quit()
+  if encoder then
+    encoder:close()
   end
 end
