@@ -1,36 +1,120 @@
 local utf8 = require "utf8"
-local read_scenario = require "read_scenario"
+local scenario = require "scenario"
 
 local g = love.graphics
-
-local scenario
-local vt323
-local bizudpmincho
-local bizudpgothic
-local bg
-local shader
+local scenario_data
+local scenario_measures
+local frames_per_second
+local encoder_command
+local encoder_filename
+local fonts = {}
+local background_textures = {}
+local canvases = {}
+local shaders = {}
 local mesh
-local use_mesh
 
-local texts = {
-"壁にかこまれた横濱。本牧地区。";
-"うちすてられた校舎。しのびこんだ屋上で。";
-"銀蝿した肉まんを、ほおばってボクたちは";
-"しずんでいく夕陽を、じっとながめていた。";
-"おわっていく世界を、じっと見つめていた。";
-"おわっていく昭和を、じっとにらんでいた。";
-}
+local function prepare_font(filename, size)
+  local key = filename .. "/" .. size
+  local font = fonts[key]
+  if not font then
+    font = assert(g.newFont(assert(love.font.newRasterizer(filename, size))))
+    fonts[key] = font
+  end
+  return font
+end
 
-local text_buffer = table.concat(texts, "\n") .. "\n"
-local text_length = utf8.len(text_buffer)
+local function prepare_text_chars(text, font)
+  local height = font:getHeight()
 
-local do_writer = false
-local frame = 0
+  local chars = {}
+  local width = 0
+  for _, code in utf8.codes(text) do
+    local char = utf8.char(code)
+    local w = font:getWidth(char);
+    chars[#chars + 1] = {
+      font = font;
+      char = char;
+      width = w;
+      margin_before = 0;
+      margin_after = 0;
+      height = height;
+    }
+    width = width + w
+  end
 
---[[
-https://clemz.io/article-retro-shaders-webgl.html
-Retro Shaders with WebGL
-]]
+  return chars, width
+end
+
+local function prepare_text(data, text_font, ruby_font)
+  local text_x = 0
+
+  for i = 1, #data do
+    local item = data[i]
+    local text_chars, text_width = prepare_text_chars(item.text, text_font)
+    item.text_chars = text_chars
+
+    if item.ruby then
+      local ruby_chars, ruby_width = prepare_text_chars(item.ruby, ruby_font)
+      item.ruby_chars = ruby_chars
+
+      -- https://www.w3.org/TR/jlreq/
+      -- 非常に素朴なルビの実装
+      if text_width >= ruby_width then
+        local margin = (text_width - ruby_width) / #ruby_chars / 2
+        for j = 1, #ruby_chars do
+          local ruby_char = ruby_chars[j]
+          ruby_char.margin_before = margin
+          ruby_char.margin_after = margin
+        end
+      else
+        -- 前後にルビ一文字ずつはみだしてもよいものとする
+        local ruby_width_first = ruby_chars[1].width
+        local ruby_width_last = ruby_chars[#ruby_chars].width
+        local overhanging_width =  ruby_width_first + ruby_width_last
+        if text_width + overhanging_width >= ruby_width then
+          ruby_chars[1].margin_before = (text_width - ruby_width) / 2
+        else
+          ruby_chars[1].margin_before = -overhanging_width / 2
+          local margin = (ruby_width - text_width - overhanging_width) / #text_chars / 2
+          for j = 1, #text_chars do
+            local text_char = text_chars[j]
+            text_char.margin_before = margin
+            text_char.margin_after = margin
+          end
+        end
+      end
+
+      local ruby_x = text_x
+      for j = 1, #ruby_chars do
+        local ruby_char = ruby_chars[j]
+        ruby_x = ruby_x + ruby_char.margin_before
+        ruby_char.cx = ruby_x + ruby_char.width / 2
+        ruby_x = ruby_x + ruby_char.width + ruby_char.margin_after
+      end
+    end
+
+    for j = 1, #text_chars do
+      local text_char = text_chars[j]
+      text_char.sx = text_x
+      text_x = text_x + text_char.margin_before
+      text_char.cx = text_x + text_char.width / 2
+      text_x = text_x + text_char.width + text_char.margin_after
+      text_char.ex = text_x
+    end
+  end
+
+  data.text_width = text_x
+  data.text_height = text_font:getHeight()
+end
+
+local function prepare_background_texture(filename)
+  local texture = background_textures[filename]
+  if not texture then
+    texture = assert(g.newImage(assert(love.image.newImageData(filename))))
+    background_textures[filename] = texture
+  end
+  return texture
+end
 
 -- sw: 入力画像の幅
 -- sh: 入力画像の幅
@@ -38,7 +122,7 @@ Retro Shaders with WebGL
 -- th: 出力画像の幅
 -- xn: X方向のメッシュ分割数
 -- yn: Y方向のメッシュ分割数
-local function make_mesh(sw, sh, tw, th, xn, yn)
+local function prepare_mesh(sw, sh, tw, th, xn, yn)
   -- https://www.hitachihyoron.com/jp/pdf/1969/05/1969_05_08.pdf
   -- 13型カラーブラウン管の寸法
   -- 5:4比のディスプレイとして扱う
@@ -119,137 +203,331 @@ local function make_mesh(sw, sh, tw, th, xn, yn)
 end
 
 function love.load(arg)
-  local scenario_filename = arg[1]
-  if scenario_filename then
-    scenario = read_scenario(scenario_filename)
+  love.keyboard.setKeyRepeat(true)
+
+  for speaker, def in pairs(scenario.speakers) do
+    if def.font_filename then
+      def.text_font = prepare_font(def.font_filename, def.font_size)
+      def.ruby_font = prepare_font(def.font_filename, def.font_size / 2)
+    end
   end
 
-  vt323 = assert(g.newFont(assert(love.font.newRasterizer "VT323-Regular.ttf")))
-  bizudpmincho = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPMincho-Regular.ttf", 48))))
-  bizudpgothic = assert(g.newFont(assert(love.font.newRasterizer("BIZUDPGothic-Regular.ttf", 48))))
-  bg = assert(g.newImage(assert(love.image.newImageData "map4.png")))
+  scenario_data, scenario_measures = scenario.read(arg[1])
+  for i = 1, #scenario_data do
+    local data = scenario_data[i]
+    local def = scenario.speakers[data.speaker]
+    if def and def.text_font then
+      prepare_text(data, def.text_font, def.ruby_font)
+    end
+  end
+
+  frames_per_second = assert(tonumber(arg[2]))
+  encoder_command = assert(arg[3])
+  encoder_filename = assert(arg[4])
+
+  for i = 1, #scenario_measures do
+    local data = scenario_measures[i]
+    data.background_texture = prepare_background_texture(data.background)
+  end
 
   local W = g.getWidth()
   local H = g.getHeight()
-  canvas1 = assert(g.newCanvas(1280, 720))
-  canvas2 = assert(g.newCanvas(1280, 720))
 
-  mesh = make_mesh(W, H, W, H, 64, 36)
+  canvases.text_char = g.newCanvas(W, H)
+  canvases.text1 = g.newCanvas(W, H)
+  canvases.text2 = g.newCanvas(W, H)
+  canvases.crt = g.newCanvas(W, H)
+
+  shaders.text = assert(g.newShader "shader-text.txt")
+  shaders.crt = assert(g.newShader "shader-crt.txt")
+
+  mesh = prepare_mesh(W, H, W, H, 64, 36)
 end
 
-function love.update(dt)
+local function copy_color(source, alpha)
+  local result = {}
+  for i = 1, #source do
+    result[i] = source[i]
+  end
+  if alpha then
+    result[4] = alpha
+  end
+  return result
 end
 
-function love.draw()
-  local x, y, w, h = love.window.getSafeArea()
-  local font = bizudpmincho
+local function draw_text(data, frame)
+  local def = scenario.speakers[data.speaker]
+  if not (def and def.text_font) then
+    return
+  end
 
-  ------------------------------------------------------------------------
+  if frame == 0 then
+    return
+  end
 
-  g.setCanvas(canvas1)
-  g.clear()
+  local debug_rectangle = false
 
-  g.draw(bg, 0, 0)
-  dx = 32
-  dy = 32
+  local text_x = 0
+  local text_i = 0
+  local range_x
 
-  local char_length = math.floor(frame / 2)
-  if char_length > 0 then
-    char_length = math.min(text_length, char_length)
-    local char_offset = utf8.offset(text_buffer, char_length)
-    -- print(text_buffer:sub(1, char_offset - 1))
-    local text = text_buffer:sub(1, char_offset - 1)
-    g.setColor(0, 0, 0, 1)
-    for ey = -2, 2 do
-      for ex = -2, 2 do
-        g.printf(text, font, x + dx + ex, y + dy + ey, w - 48)
+  for i = 1, #data do
+    local item = data[i]
+    local text_chars = item.text_chars
+    local ruby_chars = item.ruby_chars
+    local ruby_x = text_x
+
+    for j = 1, #text_chars do
+      local text_char = text_chars[j]
+      local text_alpha = 1
+
+      text_i = text_i + 1
+      local k = text_i * 2
+      if k == frame then
+        text_alpha = 1
+        range_x = text_char.ex
+      elseif k == frame + 1 then
+        text_alpha = 0.5
+        range_x = text_char.cx
+      end
+
+      text_x = text_x + text_char.margin_before
+
+      local canvas = g.getCanvas()
+      if text_alpha < 1 then
+        g.setCanvas(canvases.text_char)
+        g.clear()
+      end
+
+      local border_size = def.font_border_size
+      if border_size then
+        for dy = -border_size, border_size do
+          for dx = -border_size, border_size do
+            g.print({ copy_color(def.font_border_color, text_alpha), text_char.char }, text_char.font, text_x + dx, dy)
+          end
+        end
+      end
+      g.print({ copy_color(def.font_color, text_alpha), text_char.char }, text_char.font, text_x, 0)
+      if debug_rectangle then
+        g.setColor { 1, 0, 0, 1 }
+        g.rectangle("line", text_x, 0, text_char.width, text_char.height)
+        g.setColor { 1, 1, 1, 1 }
+      end
+
+      if text_alpha < 1 then
+        g.setCanvas(canvas)
+        shaders.text:send("alpha", text_alpha)
+        g.setShader(shaders.text)
+        g.push()
+        g.origin()
+        g.draw(canvases.text_char, 0, 0)
+        g.pop()
+        g.setShader()
+      end
+
+      text_x = text_x + text_char.width + text_char.margin_after
+
+      if range_x then
+        break
       end
     end
-    -- g.printf(text, font, x + dx + d, y + dy + 0, w - 48)
-    -- g.printf(text, font, x + dx + 0, y + dy + d, w - 48)
-    -- g.printf(text, font, x + dx - d, y + dy - 0, w - 48)
-    -- g.printf(text, font, x + dx - 0, y + dy - d, w - 48)
 
-    g.setColor(1, 1, 1, 1)
-    g.printf(text, font, x + dx, y + dy, w - 48)
-    -- for j = 1, #texts do
-    --   g.printf(texts[j], font, x + dx, y + dy + 96 * (j - 1), w - 48)
-    -- end
-  end
+    if ruby_chars then
+      for j = 1, #ruby_chars do
+        local ruby_char = ruby_chars[j]
+        if range_x and ruby_char.cx >= range_x then
+          break
+        end
 
-  -- local sr, sg, sb, sa = g.getColor()
-  -- g.setColor(0, 0, 0, 1)
-  -- for y = 3, 720, 4 do
-  --   g.line(0, y, 1280, y)
-  -- end
-  -- g.setColor(sr, sg, sb, sa)
+        ruby_x = ruby_x + ruby_char.margin_before
 
-  g.setCanvas()
-
-  ------------------------------------------------------------------------
-
-  g.setCanvas(canvas2)
-  g.clear()
-  if shader then
-    local seed = frame * (1280 * 720 / 3 / 4) % (1280 + 42)
-    -- seed = frame * 69.1742 % 1280
-    -- seed = (seed + 69) % 10000
-    -- shader_seed = (shader_seed * (977 / 997) + 991) % 1000
-    local scaler = 1
-    if frame < 30 then
-      scaler = (30 - frame) * 2
+        local border_size = def.font_border_size
+        if border_size then
+          for dy = -border_size, border_size do
+            for dx = -border_size, border_size do
+              g.print({ copy_color(def.font_border_color), ruby_char.char }, ruby_char.font, ruby_x + dx, -24 + dy)
+            end
+          end
+        end
+        g.print({ copy_color(def.font_color), ruby_char.char }, ruby_char.font, ruby_x, -24)
+        if debug_rectangle then
+          g.setColor { 1, 0, 0, 1 }
+          g.rectangle("line", ruby_x, -24, ruby_char.width, ruby_char.height)
+          g.setColor { 1, 1, 1, 1 }
+        end
+        ruby_x = ruby_x + ruby_char.width + ruby_char.margin_after
+      end
     end
-    shader:send("seed", seed)
-    shader:send("scaler", scaler)
-    g.setShader(shader)
-  end
-  g.draw(canvas1, 0, 0)
-  if shader then
-    g.setShader()
-  end
-  g.setCanvas()
 
-  ------------------------------------------------------------------------
-
-  if use_mesh then
-    mesh:setTexture(canvas2)
-    local s = 1
-    -- local s = math.abs(math.sin(frame / 30 * math.pi))
-    -- if frame < 15 then
-    --   s = math.sin(frame / 30 * math.pi)
-    -- end
-    g.push()
-    g.scale(1, s)
-    g.draw(mesh, 640, 360 / s)
-    g.pop()
-  else
-    g.draw(canvas2, 0, 0)
+    if range_x then
+      break
+    end
   end
-
-  if do_writer then
-    local filename = ("%08d.png"):format(frame)
-    print("captureScreenshot", filename)
-    g.captureScreenshot(filename)
-  end
-
-  frame = frame + 1
 end
 
-function love.keyreleased(key)
-  if key == "s" then
-    g.captureScreenshot("test.png")
-  elseif key == "o" then
-    shader = assert(g.newShader "shader.txt")
-  elseif key == "c" then
-    shader = nil
-  elseif key == "m" then
-    use_mesh = not use_mesh
-  elseif key == "w" then
-    do_writer = not do_writer
-    frame = 0
-    shader_seed = 0
+-- フレームは0起源とする
+local current_frame = 0
+local running
+local encoding
+local encoder
+
+function love.draw()
+  local measure_data
+  local measure_frame
+  local measure_frame_end
+
+  local time = current_frame / frames_per_second
+  for i = 1, #scenario_measures do
+    local data = scenario_measures[i]
+    if data.time_start <= time and time < data.time_end then
+      measure_data = data
+      measure_frame = math.floor((time - data.time_start) * frames_per_second + 0.5)
+      measure_frame_end = math.floor((data.time_end - data.time_start) * frames_per_second + 0.5)
+      break
+    end
+  end
+
+  if measure_data then
+    local render_text = measure_data[1]
+
+    --======================================================================
+
+    if render_text then
+      local canvas = g.getCanvas()
+      g.setCanvas(canvases.text1)
+      g.clear()
+
+      g.push()
+      g.translate((g.getWidth() - measure_data.text_width) / 2, (g.getHeight() - measure_data.text_height) / 2)
+      draw_text(measure_data, measure_frame)
+      g.pop()
+
+      g.setCanvas(canvas)
+    end
+
+    --======================================================================
+
+    local canvas = g.getCanvas()
+    g.setCanvas(canvases.text2)
+    g.clear()
+
+    g.draw(measure_data.background_texture, 0, 0)
+    if render_text then
+      local n = 16
+      local alpha = 1
+      if measure_frame >= measure_frame_end - n then
+        local beta = (measure_frame_end - measure_frame) / n
+        alpha = (math.sin((beta - 0.5) * math.pi) + 1) / 2
+      end
+
+      shaders.text:send("alpha", alpha)
+      g.setShader(shaders.text)
+      g.draw(canvases.text1, 0, 0)
+      g.setShader()
+    end
+
+    g.setCanvas(canvas)
+
+    --======================================================================
+
+    local canvas = g.getCanvas()
+    g.setCanvas(canvases.crt)
+    g.clear()
+
+    local seed = current_frame * (1280 * 720 / 3 / 4) % (1280 + 42)
+    local scaler = 1
+
+    if measure_data.measure_first then
+      local n = 30
+      if measure_frame < n then
+        if measure_frame == 0 then
+          scaler = g.getHeight()
+        else
+          scaler = (n - measure_frame) * 2
+        end
+      end
+    end
+    if measure_data.measure_last then
+      local n = 30
+      if measure_frame >= measure_frame_end - n then
+        if measure_frame == measure_frame_end - 1 then
+          scaler = g.getHeight()
+        else
+          scaler = (measure_frame - measure_frame_end + n + 1) * 2
+        end
+      end
+    end
+
+    shaders.crt:send("seed", seed)
+    shaders.crt:send("scaler", scaler)
+    g.setShader(shaders.crt)
+    g.draw(canvases.text2, 0, 0)
+    g.setShader()
+
+    g.setCanvas(canvas)
+
+    --======================================================================
+
+    mesh:setTexture(canvases.crt)
+    g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
+
+    if encoder then
+      g.captureScreenshot(function (image_data)
+        -- encoder:write(data:getString())
+        local data = image_data:encode "png"
+        encoder:write(data:getString())
+      end)
+      -- print("filename", filename, current_frame)
+      -- local contents, size = assert(love.filesystem.read(filename))
+      -- encoder:write(contents)
+    end
+  else
+    if encoder then
+      encoder:close()
+      encoder = nil
+      current_frame = 0
+    end
+  end
+
+  if running or encoder then
+    current_frame = current_frame + 1
+  end
+end
+
+function love.keypressed(key)
+  if key == "h" then
+    if love.keyboard.isDown("lshift", "rshift") then
+      current_frame = current_frame - 30
+    else
+      current_frame = current_frame - 1
+    end
+    print("current_frame", current_frame)
+  elseif key == "l" then
+    if love.keyboard.isDown("lshift", "rshift") then
+      current_frame = current_frame + 30
+    else
+      current_frame = current_frame + 1
+    end
+    print("current_frame", current_frame)
   elseif key == "r" then
-    frame = 0
-    shader_seed = 0
+    current_frame = 0
+    print("current_frame", current_frame)
+  elseif key == "s" then
+    running = not running
+  elseif key == "e" then
+    if encoder then
+      encoder:close()
+      encoder = nil
+    else
+      encoder = assert(io.popen(([['%s' -y -r %d -f image2pipe -i - -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p '%s']]):format(
+          encoder_command, frames_per_second, encoder_filename), "w"))
+    end
+    current_frame = 0
+  end
+end
+
+function love.quit()
+  if encoder then
+    encoder:close()
   end
 end
