@@ -514,6 +514,8 @@ function love.keypressed(key)
     print("current_frame", current_frame)
   elseif key == "s" then
     running = not running
+  elseif key == "w" then
+    g.captureScreenshot "ss.png"
   elseif key == "e" then
     if encoder then
       encoder:close()
