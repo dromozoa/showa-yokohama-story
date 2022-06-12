@@ -21,8 +21,8 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
   float x = 1.0;
   float y = 0.25;
 
-  // x *= r + 0.5;
-  x *= r + 0.75;
+  x *= r + 0.5;
+  // x *= r + 0.75;
 
   if (my >= 3.0) {
     x = 0.25;
