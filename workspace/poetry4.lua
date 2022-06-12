@@ -112,6 +112,9 @@ local result = source:gsub([[{"narrator".-{"speed".-{"happy".-}]], function (x)
   return x
 end)
 
+-- {"s": "\u3001", "pos": 4107, "lang": 0, "pe": false, "syl": [{"s": "", "ig": false, "a": 4096, "i": 0.0, "u": false, "p": [{"s": "pau", "d": 0.5}]}], "r8": [42, 45], "r32": [14, 15]}
+local result = result:gsub([["p": %[{"s": "pau", "d": 1%.0}%]}]], [["p": [{"s": "pau", "d": 0.5}]}]])
+
 local root = json.decode(result)
 -- print(json.encode(root, { pretty = true }))
 local blocks = root.project.blocks
