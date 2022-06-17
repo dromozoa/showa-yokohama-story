@@ -288,20 +288,10 @@ handle:close()
 out:close()
 tsv:close()
 
--- db1
--- sqrt(1/2) * [  1, 1 ]
--- sqrt(1/2) * [ -1, 1 ]
-
---  a
--- -a+b
--- a-(a-b)/2
-
--- a/2 + b/2  *sqrt(2)
--- -a + b     /sqrt(2)
-
-
-
 local X = C
+
+local synthesis_freq_upper_limit = 8000
+local synthesis_freq_lower_limit = 100
 
 -- 多重解像度合成
 for i = #D, 1, -1 do
@@ -316,6 +306,14 @@ for i = #D, 1, -1 do
   for j = 1, n do
     local c = X[j]
     local d = Y[j]
+
+    if Y.fmax > synthesis_freq_upper_limit then
+      d = 0
+    end
+    if Y.fmin < synthesis_freq_lower_limit then
+      c = 0
+      d = 0
+    end
 
     local k = j * 2 - 1 + inv_filter_c.offset
     for l = 1, inv_filter_n do
