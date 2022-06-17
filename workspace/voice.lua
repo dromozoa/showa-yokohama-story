@@ -2,7 +2,7 @@
 
 local png = require "dromozoa.png"
 
-local wav_filename, png_filename, scheme, tsv_filename = ...
+local wav_filename, png_filename, scheme, tsv_filename, vol_filename = ...
 
 local handle = assert(io.open(wav_filename, "rb"))
 
@@ -103,7 +103,24 @@ local m = math.log(n, 2) - 1
 local result = {}
 local f = fmt.samples_per_sec
 
--- Haar
+-- volume
+local out = assert(io.open(vol_filename, "wb"))
+
+local v_samples = fmt.samples_per_sec / 100
+for i = size_before + 1, size_before + size_main, v_samples do
+  local m = math.min(size_before + size_main - i - 1, v_samples)
+  local v = 0
+  for j = 1, m do
+    local u = X[i + j - 1]
+    v = v + u * u
+  end
+  v = math.sqrt(v / m)
+  out:write((i - size_before - 1) / f, "\t", v, "\n")
+end
+
+out:close()
+
+-- 多重解像度解析
 for i = 1, m do
   n = n / 2
   local fmin = f / 2
