@@ -2,7 +2,7 @@
 
 local png = require "dromozoa.png"
 
-local wav_filename, png_filename = ...
+local wav_filename, png_filename, scheme = ...
 
 local handle = assert(io.open(wav_filename, "rb"))
 
@@ -57,13 +57,13 @@ while true do
   end
 end
 
--- Haar
 local X = data
 local n = #X
 local m = math.log(n, 2) - 1
 local result = {}
 local f = fmt.samples_per_sec
 
+-- Haar
 for i = 1, m do
   n = n / 2
   local fmin = f / 2
@@ -75,12 +75,25 @@ for i = 1, m do
   local dmin = 0
   local dmax = 0
 
+  local c
+  local d = 0
   for j = 1, n do
-    local k = j * 2
-    local a = X[k - 1]
-    local b = X[k]
-    local d = a - b
-    local c = a + d / 2
+    if scheme == "bior22" then
+      local k = j * 2
+      local p = X[k - 2] or 0 -- 直前の偶数要素
+      local a = X[k - 1]      -- 現在の奇数要素
+      local b = X[k]          -- 現在の偶数要素
+      local q = d             -- 前回のd
+      d = a - (p + b) / 2
+      c = b + (q + d) / 4
+    else
+      -- haar
+      local k = j * 2
+      local a = X[k - 1]
+      local b = X[k]
+      d = a - b
+      c = a + d / 2
+    end
     if dmin > d then dmin = d end
     if dmax < d then dmax = d end
     C[j] = c
