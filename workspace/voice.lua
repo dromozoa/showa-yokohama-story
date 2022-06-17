@@ -2,13 +2,13 @@
 
 local png = require "dromozoa.png"
 
-local wav_filename, png_filename, scheme, tsv_filename, vol_filename = ...
+local wav_filename, png_filename, scheme, tsv_filename, vol_filename, out_filename = ...
 
 local handle = assert(io.open(wav_filename, "rb"))
 
 assert(handle:read(4) == "RIFF")
-local size = string.unpack("<I4", handle:read(4))
--- print(size)
+local file_size = string.unpack("<I4", handle:read(4))
+print("file_size", file_size)
 assert(handle:read(4) == "WAVE")
 
 local fmt
@@ -51,12 +51,37 @@ local filters = {
   };
 }
 
-local filter = filters[scheme] or filters.db2
+local inv_filters = {
+  db1 = filters.db1;
+  db2 = filters.db2;
+  db3 = filters.db3;
+  ["spline2:2"] = {
+    { offset = -2; 0, 0.353553390593274, 0.707106781186548, 0.353553390593274, 0, 0 };
+    { offset = -4; 0, -0.176776695296637, -0.353553390593274, 1.060660171779821, -0.353553390593274, -0.176776695296637 };
+  };
+  ["spline4:4"] = {
+    { offset = -5; 0, 0, 0, 0.088388347648318, 0.353553390593274, 0.530330085889911, 0.353553390593274, 0.088388347648318, 0, 0, 0, 0 };
+    { offset = -7; 0, 0.027621358640100, 0.110485434560398, 0.005524271728020, -0.530330085889911, -0.386699020961393, 1.546796083845573, -0.386699020961393, -0.530330085889911, 0.005524271728020, 0.110485434560398, 0.027621358640100 };
+  };
+  sym2 = filters.sym2;
+  sym3 = filters.sym3;
+}
+
+local filter = filters[scheme]
+if not filter then
+  scheme = "db1"
+  filter = filters[scheme]
+end
 local filter_c = filter[1]
 local filter_d = filter[2]
 local filter_n = #filter_c
 assert(filter_n == #filter_d)
 
+local inv_filter = assert(inv_filters[scheme])
+local inv_filter_c = inv_filter[1]
+local inv_filter_d = inv_filter[2]
+local inv_filter_n = #inv_filter_c
+assert(inv_filter_n == #inv_filter_d)
 
 while true do
   local tag = handle:read(4)
@@ -64,7 +89,7 @@ while true do
     break
   end
   local size = string.unpack("<I4", handle:read(4))
-  -- print(tag, size)
+  print(tag, size)
 
   if tag == "fmt " then
     fmt = {}
@@ -76,7 +101,10 @@ while true do
     fmt.bits_per_sample = string.unpack("<I2I2I4I4I2I2", handle:read(size))
     assert(fmt.format_tag == 1)
     assert(fmt.channels == 1)
+    print("samples_per_sec", fmt.samples_per_sec)
+    print("avg_bytes_per_sec", fmt.avg_bytes_per_sec)
     assert(fmt.block_align == 2)
+    print("bits_per_sample", fmt.bits_per_sample)
   elseif tag == "data" then
     size_main = size / fmt.block_align
     size_padded = 2 ^ math.ceil(math.log(size_main, 2))
@@ -126,28 +154,26 @@ for i = 1, m do
   local fmin = f / 2
   local fmax = f
 
-  local C = {}                        -- 低周波成分
+  local C = {}                           -- 低周波成分
   local D = { fmin = fmin, fmax = fmax } -- 高周波成分
   f = fmin
 
   local dmin
   local dmax
 
-  local c
-  local d = 0
   for j = 1, n do
     -- c
     local k = j * 2 - 1 + filter_c.offset
-    c = 0
-    for i = 1, filter_n do
-      c = c + filter_c[i] * (X[k + i] or 0)
+    local c = 0
+    for l = 1, filter_n do
+      c = c + filter_c[l] * (X[k + l] or 0)
     end
 
     -- d
     local k = j * 2 - 1 + filter_d.offset
-    d = 0
-    for i = 1, filter_n do
-      d = d + filter_d[i] * (X[k + i] or 0)
+    local d = 0
+    for l = 1, filter_n do
+      d = d + filter_d[l] * (X[k + l] or 0)
     end
 
     if not dmin or dmin > d then dmin = d end
@@ -261,3 +287,81 @@ writer:write_png()
 handle:close()
 out:close()
 tsv:close()
+
+-- db1
+-- sqrt(1/2) * [  1, 1 ]
+-- sqrt(1/2) * [ -1, 1 ]
+
+--  a
+-- -a+b
+-- a-(a-b)/2
+
+-- a/2 + b/2  *sqrt(2)
+-- -a + b     /sqrt(2)
+
+
+
+local X = C
+
+-- 多重解像度合成
+for i = #D, 1, -1 do
+  local Y = D[i]
+  local n = #X
+  assert(n == #Y)
+  local Z = {}
+  for j = 1, n * 2 do
+    Z[j] = 0
+  end
+
+  for j = 1, n do
+    local c = X[j]
+    local d = Y[j]
+
+    local k = j * 2 - 1 + inv_filter_c.offset
+    for l = 1, inv_filter_n do
+      Z[k + l] = (Z[k + l] or 0) + inv_filter_c[l] * c
+    end
+
+    local k = j * 2 - 1 + inv_filter_d.offset
+    for l = 1, inv_filter_n do
+      Z[k + l] = (Z[k + l] or 0) + inv_filter_d[l] * d
+    end
+  end
+
+  local j = 0
+  while true do
+    if Z[j] then
+      Z[j] = nil
+      j = j - 1
+    else
+      break
+    end
+  end
+
+  for j = n * 2 + 1, #Z do
+    Z[j] = nil
+  end
+
+  X = Z
+end
+
+local out_data = X
+
+local out = assert(io.open(out_filename, "wb"))
+
+local out_size = (4) + (8 + 16) + (8 + size_main * 2)
+out:write("RIFF", string.pack("<I4", out_size), "WAVE")
+out:write("fmt ", string.pack("<I4", 16))
+out:write(string.pack("<I2I2I4I4I2I2",
+    1,
+    1,
+    fmt.samples_per_sec,
+    fmt.samples_per_sec * 2,
+    2,
+    16))
+out:write("data", string.pack("<I4", size_main * 2))
+for i = size_before + 1, size_before + size_main do
+  out:write(string.pack("<i2", math.floor(out_data[i], 0.5)))
+end
+
+out:close()
