@@ -2,7 +2,7 @@
 
 local png = require "dromozoa.png"
 
-local wav_filename, png_filename, scheme = ...
+local wav_filename, png_filename, scheme, tsv_filename = ...
 
 local handle = assert(io.open(wav_filename, "rb"))
 
@@ -17,6 +17,7 @@ local size_before
 local size_main
 local size_after
 local size_padded
+local freq_lower_limit = 200
 
 local filters = {
   -- LTFATからもらってきた: [h,g] = wfilt_*のh: cell array of analysing filters impulse reponses
@@ -106,13 +107,14 @@ local f = fmt.samples_per_sec
 for i = 1, m do
   n = n / 2
   local fmin = f / 2
+  local fmax = f
 
   local C = {}                        -- 低周波成分
-  local D = { fmin = fmin, fmax = f } -- 高周波成分
+  local D = { fmin = fmin, fmax = fmax } -- 高周波成分
   f = fmin
 
-  local dmin = 0
-  local dmax = 0
+  local dmin
+  local dmax
 
   local c
   local d = 0
@@ -131,8 +133,8 @@ for i = 1, m do
       d = d + filter_d[i] * (X[k + i] or 0)
     end
 
-    if dmin > d then dmin = d end
-    if dmax < d then dmax = d end
+    if not dmin or dmin > d then dmin = d end
+    if not dmax or dmax < d then dmax = d end
     C[j] = c
     D[j] = d
   end
@@ -141,6 +143,8 @@ for i = 1, m do
   D.dmin = dmin
   D.dmax = dmax
   result[i] = D
+
+  print(i, fmin, fmax, dmin, dmax)
 end
 
 local C = X
@@ -149,9 +153,9 @@ local D = result
 local rows
 local row_size = 100
 for i = 1, m do
+  rows = i
   local d = D[i]
-  if d.fmax < 200 then
-    rows = i
+  if d.fmax < freq_lower_limit then
     break
   end
 end
@@ -161,6 +165,7 @@ local t_scale = t_size / size_padded
 local t_size_before = math.floor(size_before * t_scale)
 local t_size_after = math.floor(size_after * t_scale)
 local t_size_main = t_size - t_size_before - t_size_after
+local t_freq = fmt.samples_per_sec * t_scale
 
 local out = assert(io.open(png_filename, "wb"))
 
@@ -176,6 +181,13 @@ writer:set_IHDR {
   bit_depth = 8;
   color_type = png.PNG_COLOR_TYPE_RGB;
 }
+
+local tsv = assert(io.open(tsv_filename, "wb"))
+
+for i = 1, t_size_main do
+  tsv:write("\t", (i - 1) / t_freq)
+end
+tsv:write "\n"
 
 for i = 1, rows do
   local d = D[i]
@@ -200,9 +212,13 @@ for i = 1, rows do
 
   local uscale = 255 / math.max(math.abs(d.dmin), math.abs(d.dmax))
 
+  tsv:write(d.fmin, "-", d.fmax)
+
   local buffer = {}
   for j = t_size_before + 1, t_size_before + t_size_main do
     local u = v[j]
+    tsv:write("\t", u)
+
     local x = math.floor(u * uscale)
     if x == 0 then
       buffer[#buffer + 1] = string.char(0x00, 0x00, 0x00)
@@ -215,6 +231,8 @@ for i = 1, rows do
     end
   end
 
+  tsv:write "\n"
+
   local buffer = table.concat(buffer)
   for j = (i - 1) * row_size + 1, i * row_size do
     writer:set_row(j, buffer)
@@ -225,3 +243,4 @@ writer:write_png()
 
 handle:close()
 out:close()
+tsv:close()
