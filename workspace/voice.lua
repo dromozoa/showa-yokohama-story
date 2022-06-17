@@ -18,6 +18,37 @@ local size_main
 local size_after
 local size_padded
 
+local filters = {
+  -- LTFATからもらってきた: [h,g] = wfilt_*のh: cell array of analysing filters impulse reponses
+  db1 = {
+    { offset = -1; 0.707106781186547, 0.707106781186547 };
+    { offset = -1; -0.707106781186547, 0.707106781186547 };
+  };
+  db2 = {
+    { offset = -2; -0.129409522551261, 0.224143868042013, 0.836516303737808, 0.482962913144534 };
+    { offset = -2; -0.482962913144534, 0.836516303737808, -0.224143868042013, -0.129409522551261 };
+  };
+  db2 = {
+    { offset = -3; 3.522629188570951e-02, -8.544127388202671e-02, -1.350110200102546e-01, 4.598775021184918e-01, 8.068915093110925e-01, 3.326705529500826e-01 };
+    { offset = -3; -3.326705529500826e-01, 8.068915093110925e-01, -4.598775021184918e-01, -1.350110200102546e-01, 8.544127388202671e-02, 3.522629188570951e-02 };
+  };
+  ["spline2:2"] = {
+    { offset = -2; -0.176776695296637, 0.353553390593274, 1.060660171779821, 0.353553390593274, -0.176776695296637, 0 };
+    { offset = -4; 0, 0, -0.353553390593274, 0.707106781186548, -0.353553390593274, 0 };
+  };
+  ["spline4:4"] = {
+    { offset = -5; -0.027621358640100, 0.110485434560398, -0.005524271728020, -0.530330085889911, 0.386699020961393, 1.546796083845573, 0.386699020961393, -0.530330085889911, -0.005524271728020, 0.110485434560398, -0.027621358640100, 0 };
+    { offset = -7; 0, 0, 0, 0, 0.088388347648318, -0.353553390593274, 0.530330085889911, -0.353553390593274, 0.088388347648318, 0, 0, 0 };
+  };
+}
+
+local filter = filters[scheme] or filters.db2
+local filter_c = filter[1]
+local filter_d = filter[2]
+local filter_n = #filter_c
+assert(filter_n == #filter_d)
+
+
 while true do
   local tag = handle:read(4)
   if not tag then
@@ -68,7 +99,7 @@ for i = 1, m do
   n = n / 2
   local fmin = f / 2
 
-  local C = {} -- 低周波成分
+  local C = {}                        -- 低周波成分
   local D = { fmin = fmin, fmax = f } -- 高周波成分
   f = fmin
 
@@ -78,27 +109,26 @@ for i = 1, m do
   local c
   local d = 0
   for j = 1, n do
-    if scheme == "bior22" then
-      local k = j * 2
-      local p = X[k - 2] or 0 -- 直前の偶数要素
-      local a = X[k - 1]      -- 現在の奇数要素
-      local b = X[k]          -- 現在の偶数要素
-      local q = d             -- 前回のd
-      d = a - (p + b) / 2
-      c = b + (q + d) / 4
-    else
-      -- haar
-      local k = j * 2
-      local a = X[k - 1]
-      local b = X[k]
-      d = a - b
-      c = a + d / 2
+    -- c
+    local k = j * 2 - 1 + filter_c.offset
+    c = 0
+    for i = 1, filter_n do
+      c = c + filter_c[i] * (X[k + i] or 0)
     end
+
+    -- d
+    local k = j * 2 - 1 + filter_d.offset
+    d = 0
+    for i = 1, filter_n do
+      d = d + filter_d[i] * (X[k + i] or 0)
+    end
+
     if dmin > d then dmin = d end
     if dmax < d then dmax = d end
     C[j] = c
     D[j] = d
   end
+
   X = C
   D.dmin = dmin
   D.dmax = dmax
