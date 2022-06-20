@@ -9,10 +9,23 @@ local scenario = require "scenario"
 
 local unpack = table.unpack or unpack
 
-local scenario_filename, speaker_speed = ...
+local scenario_filename, speaker_speed, speaker = ...
 local basename = scenario_filename:gsub("%.[^%.]*", "")
 local vpp_filename = basename .. "-vp.vpp"
 local out_filename = basename .. ".vpp"
+
+if speaker then
+  vpp_filename = basename .. "-vp-" .. speaker .. ".vpp"
+  out_filename = basename .. "-" .. speaker .. ".vpp"
+end
+
+local function check_speaker(data_speaker)
+  if speaker then
+    return data_speaker == speaker
+  else
+    return true
+  end
+end
 
 local scenario_data, scenario_measures = scenario.read(scenario_filename)
 
@@ -96,7 +109,7 @@ local result = source:gsub([[{"narrator".-{"speed".-{"happy".-}]], function (x)
     index = index + 1
     local data = scenario_data[index]
     def = speakers[data.speaker]
-    if def.speaker then
+    if def.speaker and check_speaker(data.speaker) then
       break
     end
   end
