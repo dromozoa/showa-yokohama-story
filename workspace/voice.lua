@@ -141,7 +141,7 @@ local size_before
 local size_main
 local size_after
 local size_padded
-local freq_lower_limit = 200
+local freq_lower_limit = 100
 
 local filter = assert(filters[scheme])
 local filter_c = filter[1]
@@ -362,88 +362,117 @@ handle:close()
 out:close()
 tsv:close()
 
-local X = C
+local function synthesis(C, D, out_filename, mode, lower, upper)
+  local X = C
 
-local synthesis_freq_upper_limit = 8000
-local synthesis_freq_lower_limit = 100
+  local synthesis_level_lower_limit
+  local synthesis_level_upper_limit
 
--- local synthesis_freq_upper_limit = 96000
--- local synthesis_freq_lower_limit = 0
+  if mode == "freq" then
+    local synthesis_freq_lower_limit = lower
+    local synthesis_freq_upper_limit = upper
 
--- 多重解像度合成
-for i = #D, 1, -1 do
-  local Y = D[i]
-  local n = #X
-  assert(n == #Y)
-  local Z = {}
-  for j = 1, n * 2 do
-    Z[j] = 0
+    for i = 1, #D do
+      local Y = D[i]
+      if Y.fmin <= synthesis_freq_lower_limit  and synthesis_freq_upper_limit <= Y.fmax then
+        if not synthesis_level_lower_limit then
+          synthesis_level_lower_limit = i
+        end
+        synthesis_level_upper_limit = i
+      end
+    end
+  elseif mode == "level" then
+    synthesis_level_lower_limit = lower
+    synthesis_level_upper_limit = upper
+  else
+    error "invalid mode"
   end
 
-  for j = 1, n do
-    local c = X[j]
-    local d = Y[j]
+  print(synthesis_level_lower_limit)
+  print(synthesis_level_upper_limit)
 
-    if Y.fmax > synthesis_freq_upper_limit then
-      d = 0
-    end
-    if Y.fmin < synthesis_freq_lower_limit then
-      c = 0
-      d = 0
-    end
-
-    local k = j * 2 - 1 + inv_filter_c.offset
-    for l = 1, inv_filter_n do
-      Z[k + l] = (Z[k + l] or 0) + inv_filter_c[l] * c
+  -- 多重解像度合成
+  for i = #D, 1, -1 do
+    local Y = D[i]
+    local n = #X
+    assert(n == #Y)
+    local Z = {}
+    for j = 1, n * 2 do
+      Z[j] = 0
     end
 
-    local k = j * 2 - 1 + inv_filter_d.offset
-    for l = 1, inv_filter_n do
-      Z[k + l] = (Z[k + l] or 0) + inv_filter_d[l] * d
-    end
-  end
+    for j = 1, n do
+      local c = X[j]
+      local d = Y[j]
 
-  local j = 0
-  while true do
-    if Z[j] then
+      if i < synthesis_level_lower_limit then
+        d = 0
+      end
+      if i > synthesis_level_upper_limit then
+        c = 0
+        d = 0
+      end
+
+      local k = j * 2 - 1 + inv_filter_c.offset
+      for l = 1, inv_filter_n do
+        Z[k + l] = (Z[k + l] or 0) + inv_filter_c[l] * c
+      end
+
+      local k = j * 2 - 1 + inv_filter_d.offset
+      for l = 1, inv_filter_n do
+        Z[k + l] = (Z[k + l] or 0) + inv_filter_d[l] * d
+      end
+    end
+
+    local j = 0
+    while true do
+      if Z[j] then
+        Z[j] = nil
+        j = j - 1
+      else
+        break
+      end
+    end
+
+    for j = n * 2 + 1, #Z do
       Z[j] = nil
-      j = j - 1
-    else
-      break
     end
+
+    X = Z
   end
 
-  for j = n * 2 + 1, #Z do
-    Z[j] = nil
+  local out_data = X
+
+  local out = assert(io.open(out_filename, "wb"))
+
+  local out_size = (4) + (8 + 16) + (8 + size_main * 2)
+  out:write("RIFF", string.pack("<I4", out_size), "WAVE")
+  out:write("fmt ", string.pack("<I4", 16))
+  out:write(string.pack("<I2I2I4I4I2I2",
+      1,
+      1,
+      fmt.samples_per_sec,
+      fmt.samples_per_sec * 2,
+      2,
+      16))
+  out:write("data", string.pack("<I4", size_main * 2))
+  for i = size_before + 1, size_before + size_main do
+    local v = math.floor(out_data[i], 0.5)
+    -- local u = v
+    v = math.max(v, -32768)
+    v = math.min(v, 32767)
+    -- if u ~= v then
+    --   print("clamped", i, math.abs(u - v))
+    -- end
+    out:write(string.pack("<i2", v))
   end
 
-  X = Z
+  out:close()
 end
 
-local out_data = X
-
-local out = assert(io.open(out_filename, "wb"))
-
-local out_size = (4) + (8 + 16) + (8 + size_main * 2)
-out:write("RIFF", string.pack("<I4", out_size), "WAVE")
-out:write("fmt ", string.pack("<I4", 16))
-out:write(string.pack("<I2I2I4I4I2I2",
-    1,
-    1,
-    fmt.samples_per_sec,
-    fmt.samples_per_sec * 2,
-    2,
-    16))
-out:write("data", string.pack("<I4", size_main * 2))
-for i = size_before + 1, size_before + size_main do
-  local v = math.floor(out_data[i], 0.5)
-  -- local u = v
-  v = math.max(v, -32768)
-  v = math.min(v, 32767)
-  -- if u ~= v then
-  --   print("clamped", i, math.abs(u - v))
-  -- end
-  out:write(string.pack("<i2", v))
+-- synthesis(C, D, out_filename, "freq", 4000, 200)
+synthesis(C, D, out_filename, "level", 4, 9)
+for i = 4, 9 do
+  local filename = basename_scheme .. "-L" .. i .. ".wav"
+  synthesis(C, D, filename, "level", i, i)
 end
-
-out:close()
