@@ -1,9 +1,5 @@
 # 設計メモ
 
-## UIコンポーネント
-
-画像サイトで購入する予定。
-
 ## Webフォント
 
 本文は基本的に[BIZ UDPMincho](https://fonts.google.com/specimen/BIZ+UDPMincho)を使う。
@@ -41,4 +37,10 @@ TyranoScriptにおいて、ルビの実装が困難である理由は、おそ�
 ## ksのシンタックスハイライト
 
 あまり必要ではないが、[vim-syntax-tyranoscript](https://github.com/bellflower2015/vim-syntax-tyranoscript)を使うことにした。
+
+## UIの再構築
+
+## UIコンポーネント
+
+サイバーパンク風味のUIコンポーネントを画像サイトで購入する。SVG画像で構成できないかを検討する。
 
