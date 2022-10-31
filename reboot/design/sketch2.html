@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+body {
+}
+.container {
+  display: flex;
+  overflow: auto;
+  flex: none;
+  width: 960px;
+  height: 480px;
+  scroll-snap-type: y mandatory;
+  flex-flow: column nowrap;
+}
+.container:focus {
+  outline: none;
+}
+.text {
+  scroll-snap-align: center;
+  flex: none;
+  width: 960px;
+  height: 480px;
+  font-family: "BIZ UDPMincho";
+  font-size: 48px;
+  line-height: 96px;
+}
+</style>
+<title>実験</title>
+</head>
+<body>
+<div id="container" class="container" tabindex="0">
+  <div class="text">
+    昭和七十四年七月、ボクはキミに出逢った。<br>
+    人類が滅亡するまでの、最期のひとつきの、これは物語だ。
+  </div>
+  <div class="text">
+    キミには三通の手紙を届けてもらう。<br>
+    本牧<ruby>大聖堂<rt>カテドラル</rt></ruby>。<br>
+    資源循環局。<br>
+    魚人港湾労働組合。
+  </div>
+  <div class="text">
+    本牧<ruby>大聖堂<rt>カテドラル</rt></ruby>。<br>
+    徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。<br>
+    関東大震災で崩壊し、現在の場所に移転した。
+  </div>
+  <div class="text">
+    メサイア会かぁ。<br>
+    苦手なんだよね。<br>
+    アタシたち、<ruby>無原罪<rt>シンレス</rt></ruby>だから。
+  </div>
+  <div class="text">
+    アンタ、詳しくないんだっけ。<br>
+    <ruby>取り替え子<rt>チェンジリング</rt></ruby>。<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。<br>
+    油をそそがれなかった者たち。<br>
+    ──遡及的に。
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", (ev) => {
+    document.getElementById("container").focus();
+  });
+</script>
+</body>
+</html>
