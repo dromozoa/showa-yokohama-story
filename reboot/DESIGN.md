@@ -29,9 +29,11 @@ TyranoScript Ver520cではフォント名に空白があってもただしく解
 - 『[小説家になろう](https://syosetu.com/)』は24文字
 - 『[カクヨム](https://kakuyomu.jp/)』は20文字
 - 素のHTML5をMobile Safariで表示すると42文字
+- Twitterは21文字。
 
 それ以外、PC・コンソール・スマートフォンの横画面
 - 横画面では25文字から30文字程度。
+- Twitterは33文字。
 
 ## ルビの実装
 
@@ -75,4 +77,3 @@ shutterstock_2138204831.eps  HUD
 shutterstock_2146094129.eps
 shutterstock_2171694161.eps  狐娘
 ```
-
