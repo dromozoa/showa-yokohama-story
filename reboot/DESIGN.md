@@ -1,9 +1,5 @@
 # 設計メモ
 
-## UIコンポーネント
-
-画像サイトで購入する予定。
-
 ## Webフォント
 
 本文は基本的に[BIZ UDPMincho](https://fonts.google.com/specimen/BIZ+UDPMincho)を使う。
@@ -24,6 +20,19 @@ TyranoScript Ver520cではフォント名に空白があってもただしく解
 
 計算に必要な情報があらかじめ定まっていれば、前計算することができる。すべてを完全に決定する必要はなく、たとえば、親文字とルビの配置関係だけ計算しておくのも有用かもしれない。
 
+初回開発時は、横画面固定でレイアウトしていた。一行の文字数は26文字程度。
+
+### サーベイ
+
+スマートフォンの縦画面
+- ゲームによるが20文字程度
+- 『[小説家になろう](https://syosetu.com/)』は24文字
+- 『[カクヨム](https://kakuyomu.jp/)』は20文字
+- Mobile Safariのデフォルトは？
+
+それ以外、PC・コンソール・スマートフォンの横画面
+- 横画面では25文字から30文字程度。
+
 ## ルビの実装
 
 ルビの実装においては、『[日本語組版処理の要件](https://www.w3.org/TR/jlreq/)』を参考にする。
@@ -41,4 +50,29 @@ TyranoScriptにおいて、ルビの実装が困難である理由は、おそ�
 ## ksのシンタックスハイライト
 
 あまり必要ではないが、[vim-syntax-tyranoscript](https://github.com/bellflower2015/vim-syntax-tyranoscript)を使うことにした。
+
+## UIの再構築
+
+## UIコンポーネント
+
+サイバーパンク風味のUIコンポーネントを画像サイトで購入した。特に理由はないが、[Shutterstock](https://www.shutterstock.com/)という素材販売サイトを利用している。
+
+SVG画像で構成できないかを検討する。購入した素材によっては、ビットマップ画像が埋めこまれているだけだったりするらしい。
+
+UIコンセプトをOmniGraffleで作成する。
+
+## 画像素材メモ
+
+```
+shutterstock_1704200764.eps
+shutterstock_1867640776.eps  二刀流
+shutterstock_1888775401.eps  弓
+shutterstock_1896854332.eps  魔女
+shutterstock_1902971338.eps
+shutterstock_2067609683.eps  クレイモア
+shutterstock_2120043209.eps
+shutterstock_2138204831.eps  HUD
+shutterstock_2146094129.eps
+shutterstock_2171694161.eps  狐娘
+```
 
