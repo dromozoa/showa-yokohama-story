@@ -76,15 +76,15 @@ UIコンセプトをOmniGraffleで作成する。
 ## 画像素材メモ
 
 ```
-shutterstock_1704200764.eps
+shutterstock_1704200764.eps  HUD (bitmap?)
 shutterstock_1867640776.eps  二刀流
 shutterstock_1888775401.eps  弓
 shutterstock_1896854332.eps  魔女
-shutterstock_1902971338.eps
+shutterstock_1902971338.eps  HUD (bitmap?)
 shutterstock_2067609683.eps  クレイモア
-shutterstock_2120043209.eps
+shutterstock_2120043209.eps  HUD (bitmap?)
 shutterstock_2138204831.eps  HUD
-shutterstock_2146094129.eps
+shutterstock_2146094129.eps  HUD (bitmap?)
 shutterstock_2171694161.eps  狐娘
 ```
 
@@ -92,4 +92,55 @@ shutterstock_2171694161.eps  狐娘
 
 - ブラウン管
 - グリッチエフェクト
+
+## UI案
+
+### タイトル画面
+
+- ユーザアクションをなにか要請する
+  - ブラウザの自動再生のために必要
+
+- ロードゲーム
+  - つづきから
+- 新規ゲーム
+  - はじめから
+- ライセンス
+- DLC
+- 待機しているとオープニングムービー
+- CGモード
+- 回想モード
+- 設定
+  - コンフィグ
+
+### アイキャッチ画面
+
+- ロード待ちに挟む
+
+### セーブ画面
+
+- ユーザ名
+- 場所
+- プレイ時間
+- セーブ日時
+
+### メイン画面
+
+- メインテキスト
+- ボタン
+  - skip
+  - auto
+  - save
+  - load
+  - quick save
+  - quick load
+  - log
+  - close
+  - screen
+  - menu
+  - config
+  - title
+- 音声ビジュアライザ
+- 地図
+- 注釈
+- 画像
 
