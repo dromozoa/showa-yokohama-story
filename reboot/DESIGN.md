@@ -87,3 +87,9 @@ shutterstock_2138204831.eps  HUD
 shutterstock_2146094129.eps
 shutterstock_2171694161.eps  狐娘
 ```
+
+## アニメーション案
+
+- ブラウン管
+- グリッチエフェクト
+

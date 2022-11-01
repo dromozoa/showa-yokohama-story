@@ -11,10 +11,10 @@ body {
 }
 .container {
   display: flex;
-  overflow: scroll;
+  overflow: auto;
   flex: none;
   width: 100%;
-  height: 640px;
+  height: 480px;
   scroll-snap-type: y mandatory;
   flex-flow: column nowrap;
 }
@@ -25,96 +25,139 @@ body {
   scroll-snap-align: start;
   flex: none;
   width: 960px;
-  height: 640px;
+  height: 480px;
   font-family: "BIZ UDPMincho";
   font-size: 48px;
   line-height: 96px;
+}
+button {
+  font-family: "Share Tech Mono";
+  font-size: 48px;
 }
 </style>
 <title>実験</title>
 </head>
 <body>
 <div id="container" class="container" tabindex="0">
-  <div class="text">
+  <div class="text" id="t1">
     昭和七十四年七月、ボクはキミに出逢った。<br>
     人類が滅亡するまでの、最期のひとつきの、これは物語だ。
   </div>
-  <div class="text">
+  <div class="text" id="t2">
     キミには三通の手紙を届けてもらう。<br>
     本牧<ruby>大聖堂<rt>カテドラル</rt></ruby>。<br>
     資源循環局。<br>
     魚人港湾労働組合。
   </div>
-  <div class="text">
+  <div class="text" id="t3">
     本牧<ruby>大聖堂<rt>カテドラル</rt></ruby>。<br>
     徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。<br>
     関東大震災で崩壊し、現在の場所に移転した。
   </div>
-  <div class="text">
+  <div class="text" id="t4">
     メサイア会かぁ。<br>
     苦手なんだよね。<br>
     アタシたち、<ruby>無原罪<rt>シンレス</rt></ruby>だから。
   </div>
-  <div class="text">
+  <div class="text" id="t5">
     アンタ、詳しくないんだっけ。<br>
     <ruby>取り替え子<rt>チェンジリング</rt></ruby>。<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。<br>
     油をそそがれなかった者たち。<br>
     ——遡及的に。
   </div>
-  <div class="text">
+  <div class="text" id="t6">
     本牧山要塞の坂をキミはのぼっていった。しかし、一朶の白い雲はどこにも見つからなかった。<br>
     門前で用向きを告げる。<br>
     名宛人は墓掃除をしていると、侍祭が応えた。
   </div>
-  <div class="text">
+  <div class="text" id="t7">
     神父は無名戦士の墓を磨いていた。<br>
     キミは手紙を渡す。
   </div>
-  <div class="text">
+  <div class="text" id="t8">
     <ruby>本山<rt>ヴァチカン</rt></ruby>は総攻撃を容認したか。
   </div>
-  <div class="text">
+  <div class="text" id="t9">
     それでもそれを容認できない類の、アンタたちは<ruby>幇<rt>ブラザーフッド</rt></ruby>でしょ。
   </div>
-  <div class="text">
+  <div class="text" id="t10">
     屍都の女王が、<ruby>狡<rt>こす</rt></ruby>い手を遣うじゃないか。
   </div>
-  <div class="text">
+  <div class="text" id="t11">
     <ruby>調子<rt>チョ</rt></ruby>づいてんじゃねぇぞ。<br>
     <ruby>荒野<rt>あらの</rt></ruby>の誘惑だってのは、まあ、否定できないけど。
   </div>
-  <div class="text">
+  <div class="text" id="t12">
     習合された地母神の名を名のる娘よ。<br>
     メサイア会、舐めてんじゃねえぞ。<br>
     あ<ruby>奴<rt>いつ</rt></ruby>の銃を継いだキミよ。<br>
     そのガヴァメントには、なんと刻印されているか。
   </div>
-  <div class="text">
+  <div class="text" id="t13">
     他者のための人類たれ、他者とともに。
     それが、ワタシたちの<ruby>信条<rt>プリンシプル</rt></ruby>だ。
     <ruby>善<rt>よ</rt></ruby>きサマリア人のたとえ。隣人愛。
   </div>
-  <div class="text">
+  <div class="text" id="t14">
     ジェリコにくだる途中、人類でないものが強盗に襲われたら、少尉の銃は救ってくれるの。
   </div>
-  <div class="text">
+  <div class="text" id="t15">
     銃は人を救わない。<br>
     人は人を救わない。<br>
     人は愛し、ただ、赦すのみ。
   </div>
-  <div class="text">
+  <div class="text" id="t16">
     こたえになってなくね。<br>
     原罪を、あらかじめ喪ったアタシたちに救いはあるの。
   </div>
-  <div class="text">
+  <div class="text" id="t17">
     傷つけられ、虐げられた、<ruby>幼子<rt>おさなご</rt></ruby>よ。
     天国の門は開かれている。
     ホモ・サピエンス・サピエンスと種や属が異なろうと、キリスト者でなかろうと。だが、しかし、——
-    </div>
+  </div>
+</div>
+<div>
+  <button id="prev">PREV</button>
+  <button id="next">NEXT</button>
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", (ev) => {
-    document.getElementById("container").focus();
+    let text = document.getElementById("t1");
+
+    let observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        // console.log(entry.isIntersecting, entry.intersectionRatio, entry.target);
+        if (entry.isIntersecting) {
+          text = entry.target;
+        }
+      });
+    }, {
+      root: document.getElementById("container"),
+      threshold: 0.5,
+    });
+
+    document.querySelectorAll(".text").forEach(element => {
+      observer.observe(element);
+    });
+
+    document.getElementById("prev").addEventListener("click", (ev) => {
+      if (text) {
+        const n = +text.id.match(/^t(\d+)$/)[1]
+        if (n > 1) {
+          document.getElementById("t" + (n - 1)).scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+
+    document.getElementById("next").addEventListener("click", (ev) => {
+      if (text) {
+        const n = +text.id.match(/^t(\d+)$/)[1]
+        if (n < 17) {
+          document.getElementById("t" + (n + 1)).scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    });
+
   });
 </script>
 </body>
