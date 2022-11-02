@@ -22,4 +22,34 @@ local handle = assert(io.open(filename))
 local buffer = handle:read "*a"
 handle:close()
 
-parse_scenario(buffer)
+local scenario = parse_scenario(buffer)
+
+local quote_map = {
+  ["&"] = "&amp;";
+  ["<"] = "&lt;";
+  [">"] = "&gt;";
+  ["\""] = "&quot;"; ["\'"] = "&apos;";
+}
+
+local function quote(s)
+  return (s:gsub("[&<>\"\']", quote_map))
+end
+
+for _, paragraph in ipairs(scenario) do
+  io.write "<div>\n"
+  for i, line in ipairs(paragraph) do
+    for _, v in ipairs(line) do
+      if type(v) == "string" then
+        io.write("<span>", quote(v), "</span>")
+      else
+        io.write("<ruby>", quote(v.base), "<rt>", quote(v.ruby), "</rt></ruby>")
+      end
+    end
+    if i < #paragraph then
+      io.write "<br>"
+    end
+    io.write "\n"
+  end
+  io.write "</div>\n"
+end
+

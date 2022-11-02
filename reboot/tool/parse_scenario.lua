@@ -15,29 +15,20 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
---[[
+local function trim(s)
+  return (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
 
-
-
-
-]]
+local function append(t, v)
+  assert(v ~= nil)
+  if not t then
+    t = {}
+  end
+  t[#t + 1] = v
+  return t
+end
 
 return function (buffer)
-  -- bufferを先頭から読んでいく。
-
--- local result = { "return function (context) return {\n" }
--- local s = buffer
---   :gsub("%-%-%[(%=*)%[.-%]%1%]", "")
---   :gsub("%-%-[^\n]*", "")
---   :gsub("[ \t]+\n", "\n")
---   :gsub("\n\n+", "\n")
---   :gsub("^\n+", "")
---   :gsub("(.-)%$([A-Za-z_][0-9A-Za-z_]*)", function (a, b)
---     append(result, quote_lua(a), ";\ncontext[", quote_lua(b), "];\n")
---     return ""
---   end)
--- append(result, quote_lua(s), ";\n} end\n")
-
   local position = 1
   local _1
   local _2
@@ -58,19 +49,37 @@ return function (buffer)
     end
   end
 
+  local scenario = {}
+  local paragraph
+  local line
+
   while position <= #buffer do
     if match "^%%#([^\r\n]*)" then
-      print("comment", _1)
-    elseif match "^\r\n?" or match "^\n\r?" then
-      print("newline")
+      -- line comment
+    elseif match "^%%choose" then
+    elseif match "^%%end" then
     elseif match "^#([^\r\n]*)" then
-      print("speaker", _1)
-    elseif match "^([^%%#@\r\n]+)" then
-      print("chars", _1)
+      paragraph = { speaker = trim(_1) }
+      append(scenario, paragraph)
+    elseif match "^@@" then
+      line = append(line, "@")
     elseif match "^@r{(.-)}{(.-)}" then
-      print("ruby", _1, _2)
+      line = append(line, {
+        base = trim(_1);
+        ruby = trim(_2);
+      })
+    elseif match "^([^%%#@\r\n]+)" then
+      line = append(line, _1)
+    elseif match "^\r\n?" or match "^\n\r?" then
+      -- new line
+      if line then
+        append(paragraph, line)
+        line = nil
+      end
     else
       error("unknown text: "..buffer:sub(position))
     end
   end
+
+  return scenario
 end
