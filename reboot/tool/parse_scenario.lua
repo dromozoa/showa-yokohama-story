@@ -15,17 +15,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
---[[
-
-  用語集
-    行      line
-    段落    paragraph
-    ルビ    ruby
-    音声    voice
-    話者    spaker
-    注釈    annotation
-
-]]
+-- 話者   spaker
+-- 親文字 base
+-- ルビ   ruby
+-- 音声   voice
+-- 行     line
+-- 段落   paragraph
+-- 注釈   annotation
 
 local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
