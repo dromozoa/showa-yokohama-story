@@ -16,18 +16,15 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 --[[
-用語集
-  行      line
-  段落    paragraph
-  ルビ    ruby
-  音声    voice
-  話者    spaker
-  注釈    annotation
 
--- 1個以上の空行が段落を分ける
--- 遷移の単位は段落とする。
--- 選択肢は次の遷移先を設定する
--- 各種のログはタイミングをどこかで考える必要がある。
+  用語集
+    行      line
+    段落    paragraph
+    ルビ    ruby
+    音声    voice
+    話者    spaker
+    注釈    annotation
+
 ]]
 
 local function trim(s)
@@ -40,6 +37,7 @@ local function update(t, k, v)
   if not t then
     t = {}
   end
+  assert(not t[k])
   t[k] = v
   return t
 end
@@ -94,31 +92,33 @@ return function (buffer)
 
     elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
       -- @r{親文字}{ルビ}{発音}
-      line = append(line, {
-        base = trim(_1);
-        ruby = trim(_2);
-        voice = trim(_3);
-      })
+      line = append(line, { trim(_1), ruby = trim(_2), voice = trim(_3) })
 
     elseif match "^@r{([^}]*)}{([^}]*)}" then
       -- @r{親文字}{ルビ}
-      local ruby = trim(_2)
-      line = append(line, {
-        base = trim(_1);
-        ruby = ruby;
-        voice = ruby;
-      })
+      local v = trim(_2)
+      line = append(line, { trim(_1), ruby = v, voice = v })
 
     elseif match "^@v{([^}]*)}{([^}]*)}" then
       -- @v{親文字}{発音}
-      line = append(line, {
-        base = trim(_1);
-        voice = trim(_2);
-      })
+      line = append(line, { trim(_1), voice = trim(_2) })
 
     elseif match "^@label{([^}]*)}" then
       -- @label{ラベル}
       paragraph = update(paragraph, "label", trim(_1))
+
+    elseif match "^@jump{([^}]*)}" then
+      -- @jump{ラベル}
+      paragraph = update(paragraph, "jump", trim(_1))
+
+    elseif match "^@choice{([^}]*}{([^}]*}" then
+      -- @choice{選択肢}{ラベル}
+      paragraph.choices = append(paragraph.choices, { trim(_1), label = trim(_2) })
+
+    elseif match "^@choice{([^}]*)}" then
+      -- @choice{選択肢}
+      local v = trim(_1)
+      paragraph.choices = append(paragraph.choices, { v, label = v })
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -143,7 +143,7 @@ return function (buffer)
       line = append(line, _1)
 
     else
-      error("unknown text: "..buffer:sub(position))
+      error("cannot parse scenario: near '"..select(3, buffer:find("^([^\r\n]*)", position)).."'")
     end
   end
 
