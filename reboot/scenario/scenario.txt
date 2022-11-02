@@ -1,4 +1,4 @@
-%# vim: set filetype=showa-yokohama-story tw=0:
+@# vim: set filetype=showa-yokohama-story tw=0:
 
 #narrator
 昭和七十四年七月、ボクはキミに出逢った。
@@ -62,9 +62,10 @@
 そうだ。
 キミの拳銃を見せてほしい。
 
+@label{test}
 #alice
 年季のはいったガヴァメントだ。
 刻印がある。
 そうか。そういうことか。
-その銃をキミに渡した莫迦の名前をキミは憶えているか。
+その銃をキミに渡した莫迦の名前を@"{#}"キミは憶えているか。
 

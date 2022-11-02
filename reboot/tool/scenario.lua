@@ -41,8 +41,11 @@ for _, paragraph in ipairs(scenario) do
     for _, v in ipairs(line) do
       if type(v) == "string" then
         io.write("<span>", quote(v), "</span>")
-      else
+      elseif v.ruby then
         io.write("<ruby>", quote(v.base), "<rt>", quote(v.ruby), "</rt></ruby>")
+      else
+        assert(v.base)
+        io.write("<span>", quote(v.voice), "</span>")
       end
     end
     if i < #paragraph then
@@ -52,4 +55,3 @@ for _, paragraph in ipairs(scenario) do
   end
   io.write "</div>\n"
 end
-

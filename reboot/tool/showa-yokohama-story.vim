@@ -5,13 +5,21 @@ endif
 let s:cpo_save = &cpo
 set cpo&vim
 
-syn match sysComment /^%#.*$/
-syn match sysLabel /^#.*$/
-syn region sysRuby start="@r" end="[^}]*}[^}]*}"
+syntax match sysSpeaker   /#.*$/
+syntax match sysComment   /@#.*$/
+syntax match sysRawString /@"{.\{-}}"/
+syntax match sysRuby      /@r{[^}]*}{[^}]*}/
+syntax match sysRubyVoice /@r{[^}]*}{[^}]*}{[^}]*}/
+syntax match sysVoice     /@v{[^}]*}{[^}]*}/
+syntax match sysLabel     /@label{[^}]*}/
 
-hi def link sysComment Comment
-hi def link sysLabel Label
-hi def link sysRuby String
+highlight default link sysSpeaker   Identifier
+highlight default link sysComment   Comment
+highlight default link sysRawString String
+highlight default link sysRuby      String
+highlight default link sysRubyVoice String
+highlight default link sysVoice     String
+highlight default link sysLabel     Label
 
 let b:current_syntax = "showa-yokohama-story"
 
