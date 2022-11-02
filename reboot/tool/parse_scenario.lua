@@ -30,12 +30,8 @@
 -- 各種のログはタイミングをどこかで考える必要がある。
 ]]
 
-local function trim(s, b)
-  if b == "{}" then
-    return (s:gsub("^{%s*", ""):gsub("%s*}$", ""))
-  else
-    return (s:gsub("^%s+", ""):gsub("%s+$", ""))
-  end
+local function trim(s)
+  return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
 local function update(t, k, v)
