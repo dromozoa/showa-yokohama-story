@@ -47,7 +47,9 @@ local function append(t, v)
   return t
 end
 
-local function parse(scenario, filename)
+local class = {}
+
+function class:parse(scenario, filename)
   local handle = assert(io.open(filename))
   local source = handle:read "a" .. "\n\n"
   handle:close()
@@ -119,8 +121,7 @@ local function parse(scenario, filename)
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
-      local v = trim(_1)
-      parse(scenario, trim(_1))
+      self:parse(scenario, trim(_1))
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -152,6 +153,6 @@ local function parse(scenario, filename)
   return scenario
 end
 
-return function (filename)
-  return parse({}, filename)
+return function (include_path)
+  return setmetatable({ include_path = include_path }, { __index = class })
 end

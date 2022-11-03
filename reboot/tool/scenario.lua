@@ -18,7 +18,7 @@
 local parser = require "parser"
 
 local filename = ...
-local scenario = parser(filename)
+local scenario = parser():parse({}, filename)
 
 local quote_map = {
   ["&"] = "&amp;";
