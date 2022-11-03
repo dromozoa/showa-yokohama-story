@@ -18,11 +18,7 @@
 local parser = require "parser"
 
 local filename = ...
-local handle = assert(io.open(filename))
-local buffer = handle:read "*a"
-handle:close()
-
-local scenario = parser(buffer, filename)
+local scenario = parser(filename)
 
 local quote_map = {
   ["&"] = "&amp;";

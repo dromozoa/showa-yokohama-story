@@ -47,8 +47,10 @@ local function append(t, v)
   return t
 end
 
-local function parse(source, filename)
-  source = source.."\n\n"
+local function parse(scenario, filename)
+  local handle = assert(io.open(filename))
+  local source = handle:read "a" .. "\n\n"
+  handle:close()
 
   local position = 1
   local _1
@@ -70,7 +72,6 @@ local function parse(source, filename)
     end
   end
 
-  local scenario
   local paragraph
   local line
 
@@ -116,6 +117,11 @@ local function parse(source, filename)
       local v = trim(_1)
       paragraph.choices = append(paragraph.choices, { v, label = v })
 
+    elseif match "^@include{([^}]*)}" then
+      -- @include{ファイルパス}
+      local v = trim(_1)
+      parse(scenario, trim(_1))
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if line then
@@ -146,4 +152,6 @@ local function parse(source, filename)
   return scenario
 end
 
-return parse
+return function (filename)
+  return parse({}, filename)
+end
