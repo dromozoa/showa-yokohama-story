@@ -47,8 +47,8 @@ local function append(t, v)
   return t
 end
 
-return function (buffer)
-  buffer = buffer.."\n\n"
+local function parse(source, filename)
+  source = source.."\n\n"
 
   local position = 1
   local _1
@@ -57,7 +57,7 @@ return function (buffer)
   local _4
 
   local function match(pattern)
-    local i, j, a, b, c, d = buffer:find(pattern, position)
+    local i, j, a, b, c, d = source:find(pattern, position)
     if i then
       position = j + 1
       _1 = a
@@ -74,7 +74,7 @@ return function (buffer)
   local paragraph
   local line
 
-  while position <= #buffer do
+  while position <= #source do
     if match "^#([^\r\n]*)" then
       -- # 話者
       paragraph = update(paragraph, "speaker", trim(_1))
@@ -139,9 +139,11 @@ return function (buffer)
       line = append(line, _1)
 
     else
-      error("cannot parse scenario: near '"..select(3, buffer:find("^([^\r\n]*)", position)).."'")
+      error(filename..":"..position..": parser error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
     end
   end
 
   return scenario
 end
+
+return parse

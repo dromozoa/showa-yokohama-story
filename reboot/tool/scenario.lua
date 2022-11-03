@@ -22,7 +22,7 @@ local handle = assert(io.open(filename))
 local buffer = handle:read "*a"
 handle:close()
 
-local scenario = parse_scenario(buffer)
+local scenario = parse_scenario(buffer, filename)
 
 local quote_map = {
   ["&"] = "&amp;";
