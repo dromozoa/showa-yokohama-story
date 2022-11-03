@@ -107,7 +107,7 @@ local function parse(source, filename)
       -- @jump{ラベル}
       paragraph = update(paragraph, "jump", trim(_1))
 
-    elseif match "^@choice{([^}]*}{([^}]*}" then
+    elseif match "^@choice{([^}]*)}{([^}]*)}" then
       -- @choice{選択肢}{ラベル}
       paragraph.choices = append(paragraph.choices, { trim(_1), label = trim(_2) })
 

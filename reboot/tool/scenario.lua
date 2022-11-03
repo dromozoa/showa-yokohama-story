@@ -15,14 +15,14 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local parse_scenario = require "parse_scenario"
+local parser = require "parser"
 
 local filename = ...
 local handle = assert(io.open(filename))
 local buffer = handle:read "*a"
 handle:close()
 
-local scenario = parse_scenario(buffer, filename)
+local scenario = parser(buffer, filename)
 
 local quote_map = {
   ["&"] = "&amp;";
