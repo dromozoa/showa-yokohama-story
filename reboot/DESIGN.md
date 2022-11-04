@@ -148,10 +148,11 @@ shutterstock_2171694161.eps  狐娘
 
 - ルビを指定する際、音声を別に指定したい場合がある。
 - Non-conformingだが、rtcが意味にあたる。
-
 - 話者は#xxxで指示する。
-- インラインタグ的なものとして@x{...}を使う。
-  - @r{...}{...}
-  - @v{...}{...}
-  - @R{...}{...}{...}
-- %xxxで行コマンドを指示する。
+- ディレクティブとして@...を使う。
+
+## スクリプトの実行
+
+```
+env "LUA_PATH=tool/?.lua;;" lua tool/process1.lua scenario/scenario.txt scenario/core1.html output/core1.html output/voice1.txt
+```

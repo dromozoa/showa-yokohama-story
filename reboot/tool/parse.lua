@@ -15,6 +15,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+local basename = require "basename"
+local dirname = require "dirname"
+local speaker_definitions = require "speaker_definitions"
+
 -- 話者   spaker
 -- 親文字 base
 -- ルビ   ruby
@@ -45,6 +49,14 @@ local function append(t, v)
   end
   t[#t + 1] = v
   return t
+end
+
+local function append_jump(paragraph, jump)
+  if not paragraph then
+    paragraph = {}
+  end
+  paragraph.jumps = append(paragraph.jumps, jump)
+  return paragraph
 end
 
 local function parse(scenario, include_path, filename)
@@ -109,16 +121,16 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
-      paragraph = update(paragraph, "jump", trim(_1))
+      paragraph = append_jump(paragraph, { label = trim(_1) })
 
     elseif match "^@choice{([^}]*)}{([^}]*)}" then
       -- @choice{選択肢}{ラベル}
-      paragraph.choices = append(paragraph.choices, { trim(_1), label = trim(_2) })
+      paragraph = append_jump(paragraph, { choice = trim(_1), label = trim(_2) })
 
     elseif match "^@choice{([^}]*)}" then
       -- @choice{選択肢}
       local v = trim(_1)
-      paragraph.choices = append(paragraph.choices, { v, label = v })
+      paragraph = append_jump(paragraph, { choice = v, label = v })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -126,12 +138,19 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@when{{(.-)}}{([^}]*)}" then
       -- @when{{式}}{ラベル}
+      paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
 
     elseif match "^@enter{{(.-)}}" then
       -- @enter{{文}}
+      paragraph = update(paragraph, "enter", trim(_1))
 
     elseif match "^@exit{{(.-)}}" then
       -- @exit{{文}}
+      paragraph = update(paragraph, "exit", trim(_1))
+
+    elseif match "^@finish" then
+      -- @finish
+      paragraph = update(paragraph, "finish", true)
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -163,6 +182,54 @@ local function parse(scenario, include_path, filename)
   return scenario
 end
 
-return function (include_path, filename)
-  return parse({}, include_path, filename)
+local function process_labels(scenario)
+  local labels = {}
+  for index, paragraph in ipairs(scenario) do
+    paragraph.index = index
+    local label = paragraph.label
+    if label then
+      if labels[label] then
+        error("label '"..label.."' already defined")
+      end
+      local item = { label = label, index = index }
+      append(labels, item)
+      labels[label] = item
+    end
+  end
+  for index, paragraph in ipairs(scenario) do
+    if paragraph.jumps then
+      for _, jump in ipairs(paragraph.jumps) do
+        local label = jump.label
+        if not labels[label] then
+          error("label '"..label.."' not found")
+        end
+        labels[label].used = true
+      end
+    end
+  end
+  for _, item in ipairs(labels) do
+    if not item.used then
+      error("label '"..item.label.."' not used")
+    end
+  end
+  scenario.labels = labels
+end
+
+local function process_speakers(scenario)
+  for _, paragraph in ipairs(scenario) do
+    if paragraph.speaker then
+      if not speaker_definitions[paragraph.speaker] then
+        error("speaker '"..paragraph.speaker.."' not found")
+      end
+    end
+  end
+end
+
+return function (scenario_pathname)
+  local scenario_dirname = dirname(scenario_pathname)
+  local scenario_filename = basename(scenario_pathname)
+  local scenario = parse({}, scenario_dirname, scenario_filename)
+  process_labels(scenario)
+  process_speakers(scenario)
+  return scenario
 end

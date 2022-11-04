@@ -2,3 +2,4 @@
 
 @include{verse1.txt}
 @include{verse2.txt}
+@include{verse3.txt}

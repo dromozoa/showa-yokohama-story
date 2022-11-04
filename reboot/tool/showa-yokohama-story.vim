@@ -38,6 +38,7 @@ syntax match sysJump        /@jump{[^}]*}/
 syntax match sysChoice      /@choice{[^}]*}/
 syntax match sysChoiceLabel /@choice{[^}]*}{[^}]*}/
 syntax match sysInclude     /@include{[^}]*}/
+syntax match sysFinish      /@finish/
 
 syntax region sysWhen  start=/@when{{/  end=/}}{[^}]*}/ keepend contains=@javascript
 syntax region sysEnter start=/@enter{{/ end=/}}/        keepend contains=@javascript
@@ -58,6 +59,7 @@ highlight default link sysInclude     Include
 highlight default link sysWhen        Special
 highlight default link sysEnter       Special
 highlight default link sysExit        Special
+highlight default link sysFinish      Statement
 
 let b:current_syntax = "showa-yokohama-story"
 
