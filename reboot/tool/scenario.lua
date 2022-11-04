@@ -18,6 +18,8 @@
 local parser = require "parser"
 
 local filename = ...
+local include_path = "."
+
 local scenario = parser():parse({}, filename)
 
 local quote_map = {

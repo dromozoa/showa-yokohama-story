@@ -15,6 +15,7 @@ syntax match sysLabel       /@label{[^}]*}/
 syntax match sysJump        /@jump{[^}]*}/
 syntax match sysChoice      /@choice{[^}]*}/
 syntax match sysChoiceLabel /@choice{[^}]*}{[^}]*}/
+syntax match sysInclude     /@include{[^}]*}/
 
 highlight default link sysSpeaker     Identifier
 highlight default link sysComment     Comment
@@ -26,6 +27,7 @@ highlight default link sysLabel       Label
 highlight default link sysJump        Statement
 highlight default link sysChoice      Conditional
 highlight default link sysChoiceLabel Conditional
+highlight default link sysInclude     Include
 
 let b:current_syntax = "showa-yokohama-story"
 
