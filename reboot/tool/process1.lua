@@ -31,9 +31,12 @@ local function write(...)
   end
 end
 
+local n = 0
 for _, paragraph in ipairs(scenario) do
   write(('<div id="p%04d" class="paragraph">\n'):format(paragraph.index))
   for i, line in ipairs(paragraph) do
+    n = n + 1
+    write(('<span id="n%04d" class="line">'):format(n))
     for _, v in ipairs(line) do
       if type(v) == "string" then
         write(quote_html(v))
@@ -44,6 +47,7 @@ for _, paragraph in ipairs(scenario) do
         write(quote_html(v[1]))
       end
     end
+    write "</span>"
     if i < #paragraph then
       write "<br>"
     end
