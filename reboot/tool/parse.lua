@@ -133,6 +133,10 @@ local function parse(scenario, include_path, filename)
     elseif match "^@exit{{(.-)}}" then
       -- @exit{{文}}
 
+    elseif match "^@finish" then
+      -- @finish
+      paragraph = update(paragraph, "finish", true)
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if line then
