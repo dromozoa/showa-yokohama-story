@@ -47,6 +47,14 @@ local function append(t, v)
   return t
 end
 
+local function append_jump(paragraph, jump)
+  if not paragraph then
+    paragraph = {}
+  end
+  paragraph.jumps = append(paragraph.jumps, jump)
+  return paragraph
+end
+
 local function parse(scenario, include_path, filename)
   local handle, message = io.open(include_path.."/"..filename)
   if not handle then
@@ -109,16 +117,16 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
-      paragraph = update(paragraph, "jump", trim(_1))
+      paragraph = append_jump(paragraph, { label = trim(_1) })
 
     elseif match "^@choice{([^}]*)}{([^}]*)}" then
       -- @choice{選択肢}{ラベル}
-      paragraph.choices = append(paragraph.choices, { trim(_1), label = trim(_2) })
+      paragraph = append_jump(paragraph, { choice = trim(_1), label = trim(_2) })
 
     elseif match "^@choice{([^}]*)}" then
       -- @choice{選択肢}
       local v = trim(_1)
-      paragraph.choices = append(paragraph.choices, { v, label = v })
+      paragraph = append_jump(paragraph, { choice = v, label = v })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -126,12 +134,15 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@when{{(.-)}}{([^}]*)}" then
       -- @when{{式}}{ラベル}
+      paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
 
     elseif match "^@enter{{(.-)}}" then
       -- @enter{{文}}
+      paragraph = update(paragraph, "enter", trim(_1))
 
     elseif match "^@exit{{(.-)}}" then
       -- @exit{{文}}
+      paragraph = update(paragraph, "exit", trim(_1))
 
     elseif match "^@finish" then
       -- @finish
@@ -167,6 +178,41 @@ local function parse(scenario, include_path, filename)
   return scenario
 end
 
+local function process(scenario)
+  local labels = {}
+  for index, paragraph in ipairs(scenario) do
+    paragraph.index = index
+    local label = paragraph.label
+    if label then
+      if labels[label] then
+        error("label '"..label.."' already defined")
+      end
+      local item = { label = label, index = index }
+      append(labels, item)
+      labels[label] = item
+    end
+  end
+  for index, paragraph in ipairs(scenario) do
+    if paragraph.jumps then
+      for _, jump in ipairs(paragraph.jumps) do
+        local label = jump.label
+        if not labels[label] then
+          error("no visible label '"..label.."'")
+        end
+        labels[label].used = true
+      end
+    end
+  end
+  for _, item in ipairs(labels) do
+    if not item.used then
+      error("label '"..item.label.."' not used")
+    end
+  end
+  scenario.labels = labels
+end
+
 return function (include_path, filename)
-  return parse({}, include_path, filename)
+  local scenario = parse({}, include_path, filename)
+  process(scenario)
+  return scenario
 end

@@ -25,6 +25,18 @@ local scenario_dirname = dirname(scenario_pathname)
 local scenario_filename = basename(scenario_pathname)
 local scenario = parse(scenario_dirname, scenario_filename)
 
+
+
+
+
+
+
+
+
+
+
+
+local buffer = {}
 for _, paragraph in ipairs(scenario) do
   io.write "<div>\n"
   for i, line in ipairs(paragraph) do
