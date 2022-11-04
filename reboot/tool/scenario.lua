@@ -17,12 +17,12 @@
 
 local basename = require "basename"
 local dirname = require "dirname"
-local parser = require "parser"
+local parse = require "parse"
 
 local scenario_pathname = ...
 local scenario_dirname = dirname(scenario_pathname)
 local scenario_filename = basename(scenario_pathname)
-local scenario = parser(scenario_dirname, scenario_filename)
+local scenario = parse(scenario_dirname, scenario_filename)
 
 local quote_map = {
   ["&"] = "&amp;";
