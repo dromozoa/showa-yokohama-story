@@ -1,0 +1,4 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@include{verse1.txt}
+@include{verse2.txt}
