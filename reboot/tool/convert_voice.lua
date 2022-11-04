@@ -19,11 +19,19 @@
 
 local basename = require "basename"
 
-for i, source_pathname in ipairs(arg) do
+local output_dirname = arg[1]
+
+local extensions = { "webm", "mp3" }
+
+for i = 1, #arg - 1 do
+  local source_pathname = arg[i + 1]
   local source_filename = basename(source_pathname)
   local source_number = assert(source_filename:match "^(%d+).*%.wav$")
   assert(tonumber(source_number) + 1 == i)
-  local command = ("ffmpeg -y -i '%s' -dash 1 '%04d.webm'"):format(source_pathname, i)
-  print(command)
-  os.execute(command)
+
+  for _, extension in ipairs(extensions) do
+    local command = ("ffmpeg -y -i '%s' -dash 1 '%s/%04d.%s'"):format(source_pathname, output_dirname, i, extension)
+    print(command)
+    os.execute(command)
+  end
 end

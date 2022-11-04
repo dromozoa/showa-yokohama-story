@@ -34,16 +34,20 @@ local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
 handle:close()
 
--- "narrator": {"key": "Speaker/f1"},
--- "time-offset-mode": 2,
--- "time-offset": 0.0,
--- "params": {"speed": 1.0, "pitch": 0.0, "pause": 1.0, "volume": 1.0},
--- "emotions": {"happy": 0.0, "fun": 0.0, "angry": 0.0, "sad": 0.0},
+-- VPPファイルは\0で終端する疑似JSON形式とみられる。VoicePeakで読みなおせるよう
+-- にナレーター・設定・感情の部分だけ文字列として修正する。具体的には下記の文字
+-- 列を対象とする。
+--
+-- {"narrator": {"key": "Speaker/f1"},
+--  "time-offset-mode": 2,
+--  "time-offset": 0.0,
+--  "params": {"speed": 1.0, "pitch": 0.0, "pause": 1.0, "volume": 1.0},
+--  "emotions": {"happy": 0.0, "fun": 0.0, "angry": 0.0, "sad": 0.0},
 
 local params = { "speed", "pitch", "pause", "volume", "happy", "fun", "angry", "sad" }
 
 local i = 0
-local result = source:gsub([[{"narrator":.-"emotions": {"happy".-}]], function (s)
+local result = source:gsub([[{"narrator": .-, "emotions": {"happy": .-},]], function (s)
   i = i + 1
   local speaker = assert(speakers[i])
   s = s:gsub('"key": "[^"]*"', '"key": "'..speaker.speaker..'"')
