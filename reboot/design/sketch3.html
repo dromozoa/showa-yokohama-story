@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- https://fonts.google.com/ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<!-- https://getuikit.com/docs/installation -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.15.12/dist/css/uikit.min.css" integrity="sha256-HOyECaBy4btgnQ8UTiQ66OKxwWRi7shc2Ytli0REuJg=" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.15.12/dist/js/uikit.min.js" integrity="sha256-mMqwlWsEuRVSiqR88EJzjoM7370MAq5jlm1Sb8Z6pB0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.15.12/dist/js/uikit-icons.min.js" integrity="sha256-aJ53Gbac2Lt/pJyKvqy86RR81ZkinxmZG+AdALNCsdU=" crossorigin="anonymous"></script>
+<!-- https://github.com/goldfire/howler.js#quick-start -->
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 <style>
 body {
   margin: 0;
@@ -109,7 +117,6 @@ button {
   <button id="next">next</button>
   <button id="voice">voice</button>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   document.addEventListener("DOMContentLoaded", (ev) => {
     const paragraph_id = (index) => {
