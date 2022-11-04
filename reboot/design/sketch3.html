@@ -21,14 +21,14 @@ body {
 .container:focus {
   outline: none;
 }
-.p {
+.paragraph {
   scroll-snap-align: start;
   flex: none;
   width: 960px;
   height: 480px;
   font-family: "BIZ UDPMincho";
-  font-size: 48px;
-  line-height: 96px;
+  font-size: 40px;
+  line-height: 80px;
 }
 button {
   font-family: "Share Tech Mono";
@@ -39,57 +39,59 @@ button {
 </head>
 <body>
 <div id="container" class="container" tabindex="0">
-<div class="p p1">
+
+<div id="p0001" class="paragraph">
 昭和七十四年七月、ボクはキミに出逢った。<br>
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 </div>
-<div class="p p2">
+<div id="p0002" class="paragraph">
 <ruby>破局<rt>カタストロフ</rt></ruby>から十年。<br>
 現在の世界人口は約二十億人と推定されている。<br>
 人類の生存圏は三十パーセントを下まわった。
 </div>
-<div class="p p3">
+<div id="p0003" class="paragraph">
 人類の大半は寒冷地に押しこめられた。<br>
 冬が<ruby>屍者<rt>ゾンビ</rt></ruby>の脳髄を凍りつかせるから。<br>
 海を要害に、封鎖と検疫に成功した島嶼もある。<br>
 総じて人類は、南極以外の五大陸を喪いつつある。
 </div>
-<div class="p p4">
+<div id="p0004" class="paragraph">
 日本国は国体を北海道以北に疎開した。<br>
 一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。<br>
 本州の生存者は四十万人内外と見られる。
 </div>
-<div class="p p5">
+<div id="p0005" class="paragraph">
 一万人超の住民を抱える関東最大の根拠地、<ruby>本牧地区<rt>ホンモク・ディビジョン</rt></ruby>。<br>
 資源調達師団隷下、<ruby>第一回収大隊<rt>スカベンジャーズ</rt></ruby>は京浜工業地帯を責任地域とする。
 </div>
-<div class="p p6">
+<div id="p0006" class="paragraph">
 対咬戦闘服に円匙をかつぎ、キミは湾岸道路下のバラック集落を巡回する。<br>
 キミのその日の相棒は<ruby>訓練士<rt>ハンドラー</rt></ruby>のユキヲだ。<br>
 彼の犬は<ruby>屍者<rt>ゾンビ</rt></ruby>の屍臭を嗅ぐ。
 </div>
-<div class="p p7">
+<div id="p0007" class="paragraph">
 決戦の噂、聞いたか。<br>
 本牧埠頭に大量の物資が陸揚げされてる。<br>
 猿島には重砲まで持ちこんでるんだとさ。<br>
 まあ、おかげでオレたちも本物の肉にありつけるってわけだ。
 </div>
-<div class="p p8">
+<div id="p0008" class="paragraph">
 その日は<ruby>屍者<rt>ゾンビ</rt></ruby>にも不審者にも遭遇しなかった。<br>
 本部が置かれた中学校に戻り、下番したキミに大隊幕僚が声をかけた。<br>
 キミを訪ねてきた者がいるという。
 </div>
-<div class="p p9">
+<div id="p0009" class="paragraph">
 おい、あれ、魔人小隊じゃねえか。<br>
 オマエ、なんちゅう厄ネタを抱えこんだんだ。<br>
 オレは<ruby>逃げ<rt>フケ</rt></ruby>るぜ。<br>
 あばよ。
 </div>
-<div class="p p10">
+<div id="p0010" class="paragraph">
 透きとおるように白い肌の少女がいた。<br>
 フードを目深にかぶった十二の兵が背後に従う。<br>
 少女の深紅の瞳がきらめいた。
 </div>
+
 </div>
 <div>
   <button id="prev">prev</button>
@@ -97,7 +99,11 @@ button {
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", (ev) => {
-    let text = document.getElementById("p1");
+    const paragraph_id = (index) => {
+      return "p" + ("000" + index.toFixed()).slice(-4)
+    };
+
+    let text = document.getElementById(paragraph_id(1));
 
     let observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -111,7 +117,7 @@ button {
       threshold: 0.5,
     });
 
-    document.querySelectorAll(".text").forEach(element => {
+    document.querySelectorAll(".paragraph").forEach(element => {
       observer.observe(element);
     });
 
@@ -119,7 +125,7 @@ button {
       if (text) {
         const n = +text.id.match(/^p(\d+)$/)[1]
         if (n > 1) {
-          document.getElementById("p" + (n - 1)).scrollIntoView({ behavior: "smooth" });
+          document.getElementById(paragraph_id(n - 1)).scrollIntoView({ behavior: "smooth" });
         }
       }
     });
@@ -127,8 +133,8 @@ button {
     document.getElementById("next").addEventListener("click", (ev) => {
       if (text) {
         const n = +text.id.match(/^p(\d+)$/)[1]
-        if (n < 17) {
-          document.getElementById("p" + (n + 1)).scrollIntoView({ behavior: "smooth" });
+        if (n < 10) {
+          document.getElementById(paragraph_id(n + 1)).scrollIntoView({ behavior: "smooth" });
         }
       }
     });

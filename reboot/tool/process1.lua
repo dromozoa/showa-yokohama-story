@@ -32,7 +32,7 @@ local function write(...)
 end
 
 for _, paragraph in ipairs(scenario) do
-  write("<div class=\"p p", paragraph.index, "\">\n")
+  write(('<div id="p%04d" class="paragraph">\n'):format(paragraph.index))
   for i, line in ipairs(paragraph) do
     for _, v in ipairs(line) do
       if type(v) == "string" then
