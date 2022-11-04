@@ -15,6 +15,9 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+local basename = require "basename"
+local dirname = require "dirname"
+
 -- 話者   spaker
 -- 親文字 base
 -- ルビ   ruby
@@ -211,8 +214,10 @@ local function process(scenario)
   scenario.labels = labels
 end
 
-return function (include_path, filename)
-  local scenario = parse({}, include_path, filename)
+return function (scenario_pathname)
+  local scenario_dirname = dirname(scenario_pathname)
+  local scenario_filename = basename(scenario_pathname)
+  local scenario = parse({}, scenario_dirname, scenario_filename)
   process(scenario)
   return scenario
 end

@@ -15,15 +15,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local basename = require "basename"
-local dirname = require "dirname"
 local parse = require "parse"
 local quote_html = require "quote_html"
 
-local scenario_pathname, template_pathname, output_pathname = ...
-local scenario_dirname = dirname(scenario_pathname)
-local scenario_filename = basename(scenario_pathname)
-local scenario = parse(scenario_dirname, scenario_filename)
+local scenario_pathname, template_pathname, html_pathname, text_pathname = ...
+local scenario = parse(scenario_pathname)
 
 local buffer = {}
 local function write(...)
@@ -58,6 +54,25 @@ local handle = assert(io.open(template_pathname))
 local template = handle:read "a"
 handle:close()
 
-local handle = assert(io.open(output_pathname, "w"))
+local handle = assert(io.open(html_pathname, "w"))
 handle:write((template:gsub("$scenario\n", table.concat(buffer))))
+handle:close()
+
+local handle = assert(io.open(text_pathname, "w"))
+local function write(...)
+  handle:write(...)
+end
+for _, paragraph in ipairs(scenario) do
+  for _, line in ipairs(paragraph) do
+    for _, v in ipairs(line) do
+      if type(v) == "string" then
+        write(v)
+      else
+        assert(v.voice)
+        write(v.voice)
+      end
+    end
+    write "\n"
+  end
+end
 handle:close()

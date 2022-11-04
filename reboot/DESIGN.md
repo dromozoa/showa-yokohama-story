@@ -154,6 +154,5 @@ shutterstock_2171694161.eps  狐娘
 ## スクリプトの実行
 
 ```
-env "LUA_PATH=tool/?.lua;;" lua tool/process1.lua scenario/scenario.txt scenario/core1.html output/core1.html
+env "LUA_PATH=tool/?.lua;;" lua tool/process1.lua scenario/scenario.txt scenario/core1.html output/core1.html output/voice1.txt
 ```
-
