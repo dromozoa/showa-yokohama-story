@@ -15,12 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local parse = require "parse"
-
-local scenario_pathname, source_pathname, result_pathname = ...
-local scenario = parse(scenario_pathname)
-
-local speakers = {
+return {
   narrator = {
     speaker = "Speaker/f1";
     speed = "1.0";
@@ -129,7 +124,3 @@ local speakers = {
     sad = "0.5";
   };
 }
-
-local handle = assert(io.open(source_pathname))
-local source = handle:read "a"
-handle:close()

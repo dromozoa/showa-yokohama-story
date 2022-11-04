@@ -17,6 +17,7 @@
 
 local basename = require "basename"
 local dirname = require "dirname"
+local speakers = require "speakers"
 
 -- 話者   spaker
 -- 親文字 base
@@ -181,7 +182,7 @@ local function parse(scenario, include_path, filename)
   return scenario
 end
 
-local function process(scenario)
+local function process_labels(scenario)
   local labels = {}
   for index, paragraph in ipairs(scenario) do
     paragraph.index = index
@@ -200,7 +201,7 @@ local function process(scenario)
       for _, jump in ipairs(paragraph.jumps) do
         local label = jump.label
         if not labels[label] then
-          error("no visible label '"..label.."'")
+          error("label '"..label.."' not found")
         end
         labels[label].used = true
       end
@@ -214,10 +215,21 @@ local function process(scenario)
   scenario.labels = labels
 end
 
+local function process_speakers(scenario)
+  for _, paragraph in ipairs(scenario) do
+    if paragraph.speaker then
+      if not speakers[paragraph.speaker] then
+        error("speaker '"..paragraph.speaker.."' not found")
+      end
+    end
+  end
+end
+
 return function (scenario_pathname)
   local scenario_dirname = dirname(scenario_pathname)
   local scenario_filename = basename(scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
-  process(scenario)
+  process_labels(scenario)
+  process_speakers(scenario)
   return scenario
 end
