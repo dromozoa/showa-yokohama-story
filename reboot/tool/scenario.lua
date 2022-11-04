@@ -20,39 +20,44 @@ local dirname = require "dirname"
 local parse = require "parse"
 local quote_html = require "quote_html"
 
-local scenario_pathname = ...
+local scenario_pathname, template_pathname, output_pathname = ...
 local scenario_dirname = dirname(scenario_pathname)
 local scenario_filename = basename(scenario_pathname)
 local scenario = parse(scenario_dirname, scenario_filename)
 
-
-
-
-
-
-
-
-
-
-
-
 local buffer = {}
+local function write(...)
+  local n = #buffer
+  for i = 1, select("#", ...) do
+    buffer[n + i] = select(i, ...)
+  end
+end
+
 for _, paragraph in ipairs(scenario) do
-  io.write "<div>\n"
+  write "<div>\n"
   for i, line in ipairs(paragraph) do
     for _, v in ipairs(line) do
       if type(v) == "string" then
-        io.write("<span>", quote_html(v), "</span>")
+        write(quote_html(v))
       elseif v.ruby then
-        io.write("<ruby>", quote_html(v[1]), "<rt>", quote_html(v.ruby), "</rt></ruby>")
+        write("<ruby>", quote_html(v[1]), "<rt>", quote_html(v.ruby), "</rt></ruby>")
       else
-        io.write("<span>", quote_html(v[1]), "</span>")
+        assert(v.voice)
+        write(quote_html(v[1]))
       end
     end
     if i < #paragraph then
-      io.write "<br>"
+      write "<br>"
     end
-    io.write "\n"
+    write "\n"
   end
-  io.write "</div>\n"
+  write "</div>\n"
 end
+
+local handle = assert(io.open(template_pathname))
+local template = handle:read "a"
+handle:close()
+
+local handle = assert(io.open(output_pathname, "w"))
+handle:write((template:gsub("$scenario\n", table.concat(buffer))))
+handle:close()
