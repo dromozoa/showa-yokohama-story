@@ -157,7 +157,7 @@ button {
         const voices = [];
         text.querySelectorAll(".line").forEach(element => {
           const n = element.id.match(/^n(\d+)$/)[1];
-          voices.push(new Howl({ src: [ n + ".webm" ] }));
+          voices.push(new Howl({ src: [ n + ".webm", n + ".mp3" ], html5: true, rate: 1.2 }));
         });
         voices.forEach((voice, i) => {
           if (i + 1 < voices.length) {
