@@ -34,7 +34,7 @@ local function write(...)
 end
 
 for _, paragraph in ipairs(scenario) do
-  write "<div>\n"
+  write("<div class=\"p p", paragraph.index, "\">\n")
   for i, line in ipairs(paragraph) do
     for _, v in ipairs(line) do
       if type(v) == "string" then
