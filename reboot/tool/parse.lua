@@ -124,6 +124,15 @@ local function parse(scenario, include_path, filename)
       -- @include{ファイルパス}
       parse(scenario, include_path, trim(_1))
 
+    elseif match "^@when{{(.-)}}{([^}]*)}" then
+      -- @when{{式}}{ラベル}
+
+    elseif match "^@enter{{(.-)}}" then
+      -- @enter{{文}}
+
+    elseif match "^@exit{{(.-)}}" then
+      -- @exit{{文}}
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if line then
