@@ -15,10 +15,12 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+local speed = "1.2"
+
 return {
   narrator = {
     speaker = "Speaker/f1";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -30,7 +32,7 @@ return {
 
   alice = {
     speaker = "Speaker/f1";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -42,7 +44,7 @@ return {
 
   danu = {
     speaker = "Speaker/f5";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -54,7 +56,7 @@ return {
 
   demeter = {
     speaker = "Speaker/f4b";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -66,7 +68,7 @@ return {
 
   yukio = {
     speaker = "Speaker/m3";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -78,7 +80,7 @@ return {
 
   priest = {
     speaker = "Speaker/m1";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -90,7 +92,7 @@ return {
 
   engineer = {
     speaker = "Speaker/m1";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -102,7 +104,7 @@ return {
 
   activist = {
     speaker = "Speaker/m1";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
@@ -114,7 +116,7 @@ return {
 
   steven = {
     speaker = "Speaker/m4";
-    speed = "1.0";
+    speed = speed;
     pitch = "-1.5";
     pause = "0.5";
     volume = "2.0";
