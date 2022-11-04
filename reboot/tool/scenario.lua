@@ -18,33 +18,23 @@
 local basename = require "basename"
 local dirname = require "dirname"
 local parse = require "parse"
+local quote_html = require "quote_html"
 
 local scenario_pathname = ...
 local scenario_dirname = dirname(scenario_pathname)
 local scenario_filename = basename(scenario_pathname)
 local scenario = parse(scenario_dirname, scenario_filename)
 
-local quote_map = {
-  ["&"] = "&amp;";
-  ["<"] = "&lt;";
-  [">"] = "&gt;";
-  ["\""] = "&quot;"; ["\'"] = "&apos;";
-}
-
-local function quote(s)
-  return (s:gsub("[&<>\"\']", quote_map))
-end
-
 for _, paragraph in ipairs(scenario) do
   io.write "<div>\n"
   for i, line in ipairs(paragraph) do
     for _, v in ipairs(line) do
       if type(v) == "string" then
-        io.write("<span>", quote(v), "</span>")
+        io.write("<span>", quote_html(v), "</span>")
       elseif v.ruby then
-        io.write("<ruby>", quote(v[1]), "<rt>", quote(v.ruby), "</rt></ruby>")
+        io.write("<ruby>", quote_html(v[1]), "<rt>", quote_html(v.ruby), "</rt></ruby>")
       else
-        io.write("<span>", quote(v[1]), "</span>")
+        io.write("<span>", quote_html(v[1]), "</span>")
       end
     end
     if i < #paragraph then
