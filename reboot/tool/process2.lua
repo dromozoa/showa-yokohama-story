@@ -16,120 +16,41 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse = require "parse"
+local speaker_definitions = require "speaker_definitions"
 
 local scenario_pathname, source_pathname, result_pathname = ...
 local scenario = parse(scenario_pathname)
 
-local speakers = {
-  narrator = {
-    speaker = "Speaker/f1";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.0";
-    sad = "1.0";
-  };
-
-  alice = {
-    speaker = "Speaker/f1";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "1.0";
-    sad = "0.0";
-  };
-
-  danu = {
-    speaker = "Speaker/f5";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.0";
-    sad = "1.0";
-  };
-
-  demeter = {
-    speaker = "Speaker/f4b";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.5";
-    sad = "0.5";
-  };
-
-  yukio = {
-    speaker = "Speaker/m3";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.0";
-    sad = "0.0";
-  };
-
-  priest = {
-    speaker = "Speaker/m1";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.2";
-    sad = "0.5";
-  };
-
-  engineer = {
-    speaker = "Speaker/m1";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.2";
-    sad = "0.5";
-  };
-
-  activist = {
-    speaker = "Speaker/m1";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.2";
-    sad = "0.5";
-  };
-
-  steven = {
-    speaker = "Speaker/m4";
-    speed = "1.0";
-    pitch = "-1.5";
-    pause = "0.5";
-    volume = "2.0";
-    happy = "0.0";
-    fun = "0.0";
-    angry = "0.2";
-    sad = "0.5";
-  };
-}
+local speakers = {}
+for _, paragraph in ipairs(scenario) do
+  for _, line in ipairs(paragraph) do
+    speakers[#speakers + 1] = speaker_definitions[paragraph.speaker]
+  end
+end
 
 local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
+handle:close()
+
+-- "narrator": {"key": "Speaker/f1"},
+-- "time-offset-mode": 2,
+-- "time-offset": 0.0,
+-- "params": {"speed": 1.0, "pitch": 0.0, "pause": 1.0, "volume": 1.0},
+-- "emotions": {"happy": 0.0, "fun": 0.0, "angry": 0.0, "sad": 0.0},
+
+local params = { "speed", "pitch", "pause", "volume", "happy", "fun", "angry", "sad" }
+
+local i = 0
+local result = source:gsub([[{"narrator":.-"emotions": {"happy".-}]], function (s)
+  i = i + 1
+  local speaker = assert(speakers[i])
+  s = s:gsub('"key": "[^"]*"', '"key": "'..speaker.speaker..'"')
+  for _, param in ipairs(params) do
+    s = s:gsub('"'..param..'": [%-%.0-9]+', '"'..param..'": '..speaker[param])
+  end
+  return s
+end)
+
+local handle = assert(io.open(result_pathname, "w"))
+handle:write(result)
 handle:close()

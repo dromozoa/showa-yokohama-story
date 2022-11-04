@@ -17,7 +17,7 @@
 
 local basename = require "basename"
 local dirname = require "dirname"
-local speakers = require "speakers"
+local speaker_definitions = require "speaker_definitions"
 
 -- 話者   spaker
 -- 親文字 base
@@ -218,7 +218,7 @@ end
 local function process_speakers(scenario)
   for _, paragraph in ipairs(scenario) do
     if paragraph.speaker then
-      if not speakers[paragraph.speaker] then
+      if not speaker_definitions[paragraph.speaker] then
         error("speaker '"..paragraph.speaker.."' not found")
       end
     end
