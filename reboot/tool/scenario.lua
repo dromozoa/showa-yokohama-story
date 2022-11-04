@@ -15,12 +15,14 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+local basename = require "basename"
+local dirname = require "dirname"
 local parser = require "parser"
 
-local filename = ...
-local include_path = "."
-
-local scenario = parser():parse({}, filename)
+local scenario_pathname = ...
+local scenario_dirname = dirname(scenario_pathname)
+local scenario_filename = basename(scenario_pathname)
+local scenario = parser(scenario_dirname, scenario_filename)
 
 local quote_map = {
   ["&"] = "&amp;";

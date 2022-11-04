@@ -47,10 +47,11 @@ local function append(t, v)
   return t
 end
 
-local class = {}
-
-function class:parse(scenario, filename)
-  local handle = assert(io.open(filename))
+local function parse(scenario, include_path, filename)
+  local handle, message = io.open(include_path.."/"..filename)
+  if not handle then
+    error("cannot open "..message)
+  end
   local source = handle:read "a" .. "\n\n"
   handle:close()
 
@@ -121,7 +122,7 @@ function class:parse(scenario, filename)
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
-      self:parse(scenario, trim(_1))
+      parse(scenario, include_path, trim(_1))
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -146,13 +147,13 @@ function class:parse(scenario, filename)
       line = append(line, _1)
 
     else
-      error(filename..":"..position..": parser error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+      error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
     end
   end
 
   return scenario
 end
 
-return function (include_path)
-  return setmetatable({ include_path = include_path }, { __index = class })
+return function (include_path, filename)
+  return parse({}, include_path, filename)
 end
