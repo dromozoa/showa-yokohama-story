@@ -156,3 +156,17 @@ shutterstock_2171694161.eps  狐娘
 ```
 env "LUA_PATH=tool/?.lua;;" lua tool/process1.lua scenario/scenario.txt scenario/core1.html output/core1.html output/voice1.txt
 ```
+
+## 色
+
+16進数 | 色       | 説明
+-------|----------|-----------------------
+F50002 | 赤       | 真・女神転生のタイトル
+C63322 | 赤       | 昭和米国物語
+FFFEDA | クリーム | 昭和米国物語
+FD0000 | 赤       | エヴァンゲリオン
+029D93 | 緑       | メッセージ
+CD0200 | 赤       | ソ連国旗外側
+FFD800 | 黄       | ソ連国旗内側
+820818 | 赤       | 日本国旗
+

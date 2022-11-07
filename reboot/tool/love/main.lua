@@ -67,6 +67,7 @@ function love.load(arg)
   -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
   -- image_to_svg(unpack(arg))
   -- love.event.quit()
+
 end
 
 function love.draw()
