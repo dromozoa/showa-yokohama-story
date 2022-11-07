@@ -172,3 +172,18 @@ CD0200 | 赤       | ソ連国旗外側
 FFD800 | 黄       | ソ連国旗内側
 820818 | 赤       | 日本国旗
 
+## 画像
+
+白`rgba(255,255,255,1)`と黒`rgba(0,0,0,0)`の二値画像を作る。いくつか実験した結果、PNGの場合、1ビットグレイスケールでtRNSチャンクを使うとサイズがちいさくなった。ImageMagickで変換した後、pngcheckでチャンクを確認した。ImageMagickは`-quality`の一の位でPNGのフィルタを指定するが、二値画像では`-quality 90`、つまりフィルタなしで良さそうだった。
+
+```
+env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" \
+  convert \
+  -quality 90 \
+  -strip \
+  -type GrayscaleAlpha \
+  -define png:color-type=0 \
+  -define png:bit-depth=1 \
+  source.png result.png
+```
+
