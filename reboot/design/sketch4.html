@@ -11,6 +11,9 @@
 <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 <title>実験</title>
 <style>
+body {
+  margin: 0;
+}
 button {
   vertical-align: bottom;
   width: 150px;
@@ -32,18 +35,30 @@ button {
 
 -->
 
-<svg width="600" height="800" viewBox="0 0 3000 4000" style="background-color: #000">
+<svg width="600" height="800" viewBox="0 0 600 800" style="background-color: #333">
   <defs>
     <style>
       #screen {
+        /*
         mask-image: url(silhouette2.png);
         mask-repeat: no-repeat;
+        */
         filter: url(#filter1);
       }
       #silhouette1 {
-        mask-image: url(line.png);
+        -webkit-mask-image: url(line.png);
+        -webkit-mask-size: cover;
+        -webkit-mask-repeat: repeat;
+        -webkit-mask-position: 0px 0px;
+        -webkit-mask-size: 100%;
+
+        /*
+        -webkit-mask-repeat: repeat;
+        -webkit-mask-position: 0px 0px;
+        mask-image: url('line.png');
         mask-repeat: repeat;
         mask-position: 0px 0px;
+        */
       }
       #silhouette2 {
         mask-image: url(line.png);
@@ -54,17 +69,17 @@ button {
 
     <filter id="filter1">
       <feTurbulence baseFrequency="0.5" numOctaves="2" seed="0">
-        <animate id="animate1" attributeName="seed" begin="indefinite" end="indefinite" dur="10s" from="0" to="1000" fill="freeze"/>
+        <animate id="animate1" attributeName="seed" begin="indefinite" end="indefinite" dur="2s" from="0" to="1000" fill="freeze"/>
       </feTurbulence>
     </filter>
 
   </defs>
 
-  <rect id="screen" width="100%" height="100%" fill="#ccc"/>
+  <image id="silhouette1" href="silhouette1.png"/>
 
   <!--
+  <rect id="screen" width="100%" height="100%" fill="#ccc"/>
   <image id="silhouette2" href="silhouette2.png"/>
-  <image id="silhouette1" href="silhouette1.png" x="18.5" y="309"/>
   -->
 </svg>
 
