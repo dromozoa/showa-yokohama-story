@@ -15,14 +15,26 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local function image_to_svg(source_pathname, target_pathname)
-  -- love.filesystemの外側のファイルを扱いたいので自前でファイルを読む。
-  -- love.graphicsを使わないのでヘッドレスで処理できる。
-  local handle = assert(io.open(source_pathname, "rb"))
+-- love.filesystemの外側のファイルを扱いたいので自前でファイルを読む。
+-- love.graphicsを使わないのでヘッドレスで処理できる。
+local function new_image_data(pathname)
+  local handle = assert(io.open(pathname, "rb"))
   local byte_data = love.data.newByteData(handle:read "*a")
   handle:close()
-  local file_data = love.filesystem.newFileData(byte_data, source_pathname)
+  local file_data = love.filesystem.newFileData(byte_data, pathname)
   local image_data = love.image.newImageData(file_data)
+  return image_data
+end
+
+local function save_image_data(image_data, pathname)
+  local data = image_data:encode "png"
+  local handle = assert(io.open(pathname, "wb"))
+  handle:write(data:getString())
+  handle:close()
+end
+
+local function image_to_svg(source_pathname, target_pathname)
+  local image_data = new_image_data(source_pathname)
 
   local w = image_data:getWidth()
   local h = image_data:getHeight()
@@ -63,11 +75,33 @@ local function image_to_svg(source_pathname, target_pathname)
   handle:close()
 end
 
+local function binarize(source_pathname, target_pathname)
+  local image_data = new_image_data(source_pathname)
+
+  local w = image_data:getWidth()
+  local h = image_data:getHeight()
+
+  for j = 0, h - 1 do
+    for i = 1, w - 1 do
+      local r, g, b, a = image_data:getPixel(i, j)
+      local y = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      if y < 0.5 then
+        r, g, b, a = 1, 1, 1, 1
+      else
+        r, g, b, a = 0, 0, 0, 0
+      end
+      image_data:setPixel(i, j, r, g, b, a)
+    end
+  end
+
+  save_image_data(image_data, target_pathname)
+end
+
 function love.load(arg)
   -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
   -- image_to_svg(unpack(arg))
-  -- love.event.quit()
-
+  binarize(unpack(arg))
+  love.event.quit()
 end
 
 function love.draw()

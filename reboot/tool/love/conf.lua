@@ -15,7 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local headless = false
+local headless = true
 local unit = 1/2
 local width = 1920 * unit
 local height = 1080 * unit
