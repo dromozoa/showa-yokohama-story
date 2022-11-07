@@ -15,10 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-function love.load(arg)
-  -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
-  local source_pathname, target_pathname = unpack(arg)
-
+local function image_to_svg(source_pathname, target_pathname)
   -- love.filesystemの外側のファイルを扱いたいので自前でファイルを読む。
   -- love.graphicsを使わないのでヘッドレスで処理できる。
   local handle = assert(io.open(source_pathname, "rb"))
@@ -64,8 +61,12 @@ function love.load(arg)
   handle:write '</svg>\n'
 
   handle:close()
+end
 
-  love.event.quit()
+function love.load(arg)
+  -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
+  -- image_to_svg(unpack(arg))
+  -- love.event.quit()
 end
 
 function love.draw()

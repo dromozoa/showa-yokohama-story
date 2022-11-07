@@ -15,7 +15,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local headless = true
+local headless = false
+local unit = 1/2
+local width = 1920 * unit
+local height = 1080 * unit
 
 function love.conf(t)
   if headless then
@@ -24,7 +27,7 @@ function love.conf(t)
     t.gammacorrect = true
     t.window.resizable = true
     t.window.title = "昭和横濱物語"
-    t.window.width = 1080
-    t.window.height = 720
+    t.window.width = width
+    t.window.height = height
   end
 end
