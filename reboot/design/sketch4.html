@@ -38,53 +38,38 @@ button {
 <svg width="600" height="800" viewBox="0 0 600 800" style="background-color: #333">
   <defs>
     <style>
-      #screen {
-        /*
-        mask-image: url(silhouette2.png);
-        mask-repeat: no-repeat;
-        */
+      #silhouette1 {
         filter: url(#filter1);
       }
-      #silhouette1 {
-        -webkit-mask-image: url(line.png);
-        -webkit-mask-size: cover;
-        -webkit-mask-repeat: repeat;
-        -webkit-mask-position: 0px 0px;
-        -webkit-mask-size: 100%;
-
-        /*
-        -webkit-mask-repeat: repeat;
-        -webkit-mask-position: 0px 0px;
-        mask-image: url('line.png');
-        mask-repeat: repeat;
-        mask-position: 0px 0px;
-        */
-      }
       #silhouette2 {
-        mask-image: url(line.png);
-        mask-repeat: repeat;
-        mask-position: 0px 0px;
+        filter: url(#filter1);
       }
     </style>
 
     <filter id="filter1">
-      <feTurbulence baseFrequency="0.5" numOctaves="2" seed="0">
-        <animate id="animate1" attributeName="seed" begin="indefinite" end="indefinite" dur="2s" from="0" to="1000" fill="freeze"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="0" result="turbulence">
+        <animate id="animate1" attributeName="seed" begin="indefinite" end="indefinite" dur="1s" from="0" to="1000" fill="freeze"/>
       </feTurbulence>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" in="turbulence" result="color-matrix"/>
+      <feDisplacementMap in="SourceGraphic" in2="color-matrix" scale="400" xChannelSelector="R" yChannelSelector="A" result="displacement-map">
+        <animate id="animate2" attributeName="scale" begin="indefinite" end="indefinite" dur="1s" from="400" to="0" fill="freeze"/>
+      </feDisplacementMap>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" in="displacement-map">
+        <animate id="animate3" attributeName="values" begin="indefinite" end="indefinite" dur="1s"
+          from="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0" to="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" fill="freeze"/>
+      </feColorMatrix>
     </filter>
 
   </defs>
 
-  <image id="silhouette1" href="silhouette1.png"/>
+  <image id="silhouette1" href="silhouette1.png" style="display: none"/>
+  <image id="silhouette2" href="silhouette2.png" style="display: none"/>
 
-  <!--
-  <rect id="screen" width="100%" height="100%" fill="#ccc"/>
-  <image id="silhouette2" href="silhouette2.png"/>
-  -->
 </svg>
 
 <div>
   <button id="start1">Start 1</button>
+  <button id="start2">Start 2</button>
 </div>
 
 </div>
@@ -92,7 +77,19 @@ button {
   document.addEventListener("DOMContentLoaded", ev => {
     document.getElementById("start1").addEventListener("click", ev => {
       console.log("start1", ev);
+      document.getElementById("silhouette2").style.display = "none";
       document.getElementById("animate1").beginElement();
+      document.getElementById("animate2").beginElement();
+      document.getElementById("animate3").beginElement();
+      document.getElementById("silhouette1").style.display = "inline";
+    });
+    document.getElementById("start2").addEventListener("click", ev => {
+      console.log("start2", ev);
+      document.getElementById("silhouette1").style.display = "none";
+      document.getElementById("animate1").beginElement();
+      document.getElementById("animate2").beginElement();
+      document.getElementById("animate3").beginElement();
+      document.getElementById("silhouette2").style.display = "inline";
     });
   });
 </script>
