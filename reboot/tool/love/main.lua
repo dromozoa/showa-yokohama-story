@@ -15,23 +15,40 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
--- love.filesystemの外側のファイルを扱いたいので自前でファイルを読む。
--- love.graphicsを使わないのでヘッドレスで処理できる。
-local function new_image_data(pathname)
+package.path = "../?.lua;"..package.path
+local basename = require "basename"
+local table_unpack = table.unpack or unpack
+
+---------------------------------------------------------------------------
+
+local function new_byte_data(pathname)
+  -- love.filesystemの外のファイルを扱うためにネイティブ入出力を用いる。
   local handle = assert(io.open(pathname, "rb"))
   local byte_data = love.data.newByteData(handle:read "*a")
   handle:close()
-  local file_data = love.filesystem.newFileData(byte_data, pathname)
-  local image_data = love.image.newImageData(file_data)
-  return image_data
+  return byte_data
 end
 
-local function save_image_data(image_data, pathname)
-  local data = image_data:encode "png"
+local function new_file_data(pathname)
+  return love.filesystem.newFileData(new_byte_data(pathname), basename(pathname))
+end
+
+local function new_image_data(pathname)
+  -- love.graphicsを使わないのでヘッドレスで処理できる。
+  return love.image.newImageData(new_file_data(pathname))
+end
+
+local function write_image_data(image_data, pathname)
+  -- https://love2d.org/wiki/ImageEncodeFormat
+  local format = assert(pathname:match "[^.]+$"):lower()
+  assert(format == "tga" or format == "png")
+  local data = image_data:encode(format)
   local handle = assert(io.open(pathname, "wb"))
   handle:write(data:getString())
   handle:close()
 end
+
+---------------------------------------------------------------------------
 
 local class = {}
 local game = {}
@@ -108,7 +125,7 @@ function class.binarize(operator, source_pathname, target_pathname)
     end
   end
 
-  save_image_data(image_data, target_pathname)
+  write_image_data(image_data, target_pathname)
   return true
 end
 

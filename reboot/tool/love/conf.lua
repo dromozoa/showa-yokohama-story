@@ -19,14 +19,15 @@ local headless = false
 local width = 600
 local height = 800
 
+-- https://love2d.org/wiki/Config_Files
 function love.conf(t)
   if headless then
     t.window = false
   else
     t.gammacorrect = true
-    t.window.resizable = true
     t.window.title = "昭和横濱物語"
     t.window.width = width
     t.window.height = height
+    t.window.resizable = true
   end
 end
