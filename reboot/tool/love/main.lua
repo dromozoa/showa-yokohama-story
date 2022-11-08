@@ -193,9 +193,17 @@ end
 local seed_x = 1000 * love.math.random()
 local seed_y = 1000 * love.math.random()
 local seed_z = 1000 * love.math.random()
+local m = 2
+local reseed = true
 
 function love.draw()
   local g = love.graphics
+
+  if reseed then
+    seed_x = 1000 * love.math.random()
+    seed_y = 1000 * love.math.random()
+    seed_z = 1000 * love.math.random()
+  end
 
   local silhouettes = {
     -- { 0, 1 }; { 1, 2 }; { 2, 1 };
@@ -216,16 +224,15 @@ function love.draw()
   prev = game.silhouettes[prev]
   this = game.silhouettes[this]
 
-  -- 120フレームでアニメーションする。
-  local t = (game.frame % 120) / 119
+  local t = math.min((game.frame % 120) / 79, 1)
   local p = (1 - math.cos(math.pi * t)) * 0.5
   local q = 1 - p
   local scale = 400
 
   local colors = {
-    { 0.5, 0, 0 };
-    { 0, 0.5, 0 };
-    { 0, 0, 0.5 };
+    { 1, 0, 0 };
+    { 0, 1, 0 };
+    { 0, 0, 1 };
   }
 
   -- #029D93
@@ -239,6 +246,10 @@ function love.draw()
   --   { 1, 1, 1 };
   -- }
 
+  local W, H = love.window.getMode()
+  g.push()
+  g.translate((W - game.silhouettes[1].image_data:getWidth()) * 0.5, (H - game.silhouettes[1].image_data:getHeight()) * 0.5)
+
   g.clear()
   g.setLineWidth(1)
   g.setLineStyle "rough"
@@ -250,7 +261,7 @@ function love.draw()
 
     if true then
 
-      for j = 1, #prev.line_data, 2 do
+      for j = 1, #prev.line_data, m do
         local prev_lines = prev.line_data[j]
         local this_lines = this.line_data[j]
         local y = this_lines.y
@@ -343,7 +354,7 @@ function love.draw()
 
     else
 
-      for j = 1, #prev.line_data, 2 do
+      for j = 1, #prev.line_data, m do
         local lines = prev.line_data[j]
         local y = lines.y
         for i, line in ipairs(lines) do
@@ -362,7 +373,7 @@ function love.draw()
         end
       end
 
-      for j = 1, #this.line_data, 2 do
+      for j = 1, #this.line_data, m do
         local lines = this.line_data[j]
         local y = lines.y
         for i, line in ipairs(lines) do
@@ -383,7 +394,7 @@ function love.draw()
     end
 
   elseif prev then
-    for j = 1, #prev.line_data, 2 do
+    for j = 1, #prev.line_data, m do
       local lines = prev.line_data[j]
       local y = lines.y
       for i, line in ipairs(lines) do
@@ -401,7 +412,7 @@ function love.draw()
       end
     end
   elseif this then
-    for j = 1, #this.line_data, 2 do
+    for j = 1, #this.line_data, m do
       local lines = this.line_data[j]
       local y = lines.y
       for i, line in ipairs(lines) do
@@ -420,6 +431,7 @@ function love.draw()
     end
   end
   g.setBlendMode(blend_mode)
+  g.pop()
 
   if game.fps then
     g.setColor(1, 1, 1)
@@ -428,13 +440,13 @@ function love.draw()
 
   if game.running then
     game.frame = game.frame + 1
-    if game.frame % 120 == 0 then
-      game.running = false
-      game.frame = game.frame - 1
-      local t = love.timer.getTime() - game.start
-      game.start = nil
-      print("elapsed: "..t)
-    end
+    -- if game.frame % 120 == 0 then
+    --   game.running = false
+    --   game.frame = game.frame - 1
+    --   local t = love.timer.getTime() - game.start
+    --   game.start = nil
+    --   print("elapsed: "..t)
+    -- end
   end
 end
 
