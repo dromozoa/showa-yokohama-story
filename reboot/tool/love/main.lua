@@ -19,7 +19,7 @@ package.path = "../?.lua;"..package.path
 local basename = require "basename"
 local table_unpack = table.unpack or unpack
 
----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 local function new_byte_data(pathname)
   -- love.filesystemの外のファイルを扱うためにネイティブ入出力を用いる。
@@ -34,7 +34,6 @@ local function new_file_data(pathname)
 end
 
 local function new_image_data(pathname)
-  -- love.graphicsを使わないのでヘッドレスで処理できる。
   return love.image.newImageData(new_file_data(pathname))
 end
 
@@ -48,7 +47,34 @@ local function write_image_data(image_data, pathname)
   handle:close()
 end
 
----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+local function binarize(image_data, fn)
+  -- love.graphicsを使わないのでヘッドレスで処理できる。処理速度は考慮しない。
+
+  local image_data = image_data:clone()
+
+  local W = image_data:getWidth()
+  local H = image_data:getHeight()
+
+  for j = 0, H - 1 do
+    for i = 0, W - 1 do
+      -- libpngのマニュアルで引用されている式を使う。
+      -- https://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC9
+      local r, g, b, a = image_data:getPixel(i, j)
+      local y = (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
+      if fn(y) then
+        image_data:setPixel(i, j, 1, 1, 1, 1)
+      else
+        image_data:setPixel(i, j, 0, 0, 0, 0)
+      end
+    end
+  end
+
+  return image_data
+end
+
+--------------------------------------------------------------------------------
 
 local class = {}
 local game = {}
@@ -105,27 +131,9 @@ function operators.gt(y)
 end
 
 function class.binarize(operator, source_pathname, target_pathname)
-  local image_data = new_image_data(source_pathname)
-
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
-
-  local f = assert(operators[operator])
-
-  for j = 0, h - 1 do
-    for i = 1, w - 1 do
-      local r, g, b, a = image_data:getPixel(i, j)
-      local y = (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
-      if f(y) then
-        r, g, b, a = 1, 1, 1, 1
-      else
-        r, g, b, a = 0, 0, 0, 0
-      end
-      image_data:setPixel(i, j, r, g, b, a)
-    end
-  end
-
-  write_image_data(image_data, target_pathname)
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = binarize(source_image_data, assert(operators[operator]))
+  write_image_data(result_image_data, target_pathname)
   return true
 end
 
