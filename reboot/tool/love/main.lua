@@ -145,9 +145,10 @@ local function prepare_silhouette(pathname)
 end
 
 function class.play(pathname1, pathname2)
-  game.frame = 1
+  game.frame = 0
   game.silhouette1 = prepare_silhouette(pathname1)
   game.silhouette2 = prepare_silhouette(pathname2)
+  game.font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
 end
 
 function love.load(arg)
@@ -158,42 +159,84 @@ function love.load(arg)
   end
 end
 
-function love.draw(dt)
+function love.draw()
   local g = love.graphics
 
-  -- 1 2 3 4 4 3 2 1
+  -- 120フレームでアニメーションする。
+  local t = (game.frame % 120) / 119
+  local p = (1 - math.cos(math.pi * t)) * 0.5
+  local silhouette = game.silhouette1
+  local scale = 200
 
-  local F = { 4, 3, 2, 1, 1, 2, 3, 4 }
+  local seed_x = 1000 * love.math.random()
+  local seed_y = 1000 * love.math.random()
+  local seed_z = 1000 * love.math.random()
 
-  local f = F[game.frame % 8 + 1]
-  local s = game.silhouette1
+  local colors = {
+    { 1, 0, 0 };
+    { 0, 1, 0 };
+    { 0, 0, 1 };
+  }
+
+  -- #029D93
+  -- local colors = {
+  --   { 0x02/0xFF, 0, 0 };
+  --   { 0, 0x9D/0xFF, 0 };
+  --   { 0, 0, 0x93/0xFF };
+  -- }
 
   g.clear()
-  g.push()
-  g.setColor(0.25 * f, 0.25 * f, 0.25 * f)
   g.setLineWidth(1)
   g.setLineStyle "rough"
-  for j = 1, #s.line_data, f do
-    local lines = s.line_data[j]
+
+  local blend_mode = g.getBlendMode()
+  g.setBlendMode "add"
+  for j = 1, #silhouette.line_data, 2 do
+    local lines = silhouette.line_data[j]
+    local y = lines.y
     for i, line in ipairs(lines) do
-      g.line(line.x1, lines.y, line.x2, lines.y)
+      for c, color in ipairs(colors) do
+        local x1 = line.x1
+        local x2 = line.x2
+        x1 = x1 + scale * (1 - p) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
+        x2 = x2 + scale * (1 - p) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
+        g.setColor(color[1] * p, color[2] * p, color[3] * p)
+        g.line(x1, y, x2, y)
+      end
     end
   end
-  g.pop()
+  g.setBlendMode(blend_mode)
 
-  -- if game.frame % 2 == 1 then
-  --   g.draw(game.silhouette1.image)
-  -- else
-  --   g.draw(game.silhouette2.image)
-  -- end
+  if game.fps then
+    g.setColor(1, 1, 1)
+    g.print("FPS: "..love.timer.getFPS(), game.font, 20, 20)
+  end
+
+  if game.running then
+    game.frame = game.frame + 1
+    if game.frame == 120 then
+      game.running = false
+      game.frame = 119
+      local t = love.timer.getTime() - game.start
+      game.start = nil
+      print("elapsed: "..t)
+    end
+  end
 end
 
 function love.keypressed(key)
-  -- vi風のキーバインド
   if key == "h" then
+    -- vi風のキーバインド
     game.frame = game.frame - 1
   elseif key == "l" then
+    -- vi風のキーバインド
     game.frame = game.frame + 1
+  elseif key == "f" then
+    game.fps = not game.fps
+  elseif key == "s" then
+    game.running = not game.running
+    game.frame = 0
+    game.start = love.timer.getTime()
   end
 end
 
