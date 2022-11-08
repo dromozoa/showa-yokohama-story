@@ -33,7 +33,10 @@ local function save_image_data(image_data, pathname)
   handle:close()
 end
 
-local function image_to_svg(source_pathname, target_pathname)
+local class = {}
+local game = {}
+
+function class.image_to_svg(source_pathname, target_pathname)
   local image_data = new_image_data(source_pathname)
 
   local w = image_data:getWidth()
@@ -73,9 +76,10 @@ local function image_to_svg(source_pathname, target_pathname)
   handle:write '</svg>\n'
 
   handle:close()
+  return true
 end
 
-local function binarize(source_pathname, target_pathname)
+function class.binarize(source_pathname, target_pathname)
   local image_data = new_image_data(source_pathname)
 
   local w = image_data:getWidth()
@@ -95,16 +99,102 @@ local function binarize(source_pathname, target_pathname)
   end
 
   save_image_data(image_data, target_pathname)
+  return true
+end
+
+local function prepare_silhouette(pathname)
+  local image_data = new_image_data(pathname)
+
+  local w = image_data:getWidth()
+  local h = image_data:getHeight()
+
+  local line_data = {}
+  for j = 0, h - 1 do
+    local lines = { y = j }
+    local start
+
+    local u
+    for i = 0, w - 1 do
+      local r, g, b, a = image_data:getPixel(i, j)
+      local v = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      if i > 0 then
+        if u < 0.5 then
+          if v >= 0.5 then
+            assert(not start)
+            start = i
+          end
+        else
+          if v < 0.5 then
+            lines[#lines + 1] = { x1 = start, x2 = i }
+            start = nil
+          end
+        end
+      end
+      u = v
+    end
+
+    line_data[j + 1] = lines
+  end
+
+  local image = love.graphics.newImage(image_data)
+  return {
+    line_data = line_data;
+    image_data = image_data;
+    image = image;
+  }
+end
+
+function class.play(pathname1, pathname2)
+  game.frame = 1
+  game.silhouette1 = prepare_silhouette(pathname1)
+  game.silhouette2 = prepare_silhouette(pathname2)
 end
 
 function love.load(arg)
   -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
-  -- image_to_svg(unpack(arg))
-  binarize(unpack(arg))
-  love.event.quit()
+  local f = assert(class[arg[1]])
+  if f(unpack(arg, 2)) then
+    love.event.quit()
+  end
 end
 
-function love.draw()
+function love.draw(dt)
+  local g = love.graphics
+
+  -- 1 2 3 4 4 3 2 1
+
+  local F = { 4, 3, 2, 1, 1, 2, 3, 4 }
+
+  local f = F[game.frame % 8 + 1]
+  local s = game.silhouette1
+
+  g.clear()
+  g.push()
+  g.setColor(0.25 * f, 0.25 * f, 0.25 * f)
+  g.setLineWidth(1)
+  g.setLineStyle "rough"
+  for j = 1, #s.line_data, f do
+    local lines = s.line_data[j]
+    for i, line in ipairs(lines) do
+      g.line(line.x1, lines.y, line.x2, lines.y)
+    end
+  end
+  g.pop()
+
+  -- if game.frame % 2 == 1 then
+  --   g.draw(game.silhouette1.image)
+  -- else
+  --   g.draw(game.silhouette2.image)
+  -- end
+end
+
+function love.keypressed(key)
+  -- vi風のキーバインド
+  if key == "h" then
+    game.frame = game.frame - 1
+  elseif key == "l" then
+    game.frame = game.frame + 1
+  end
 end
 
 function love.quit()
