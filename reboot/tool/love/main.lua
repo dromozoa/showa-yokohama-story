@@ -79,17 +79,27 @@ function class.image_to_svg(source_pathname, target_pathname)
   return true
 end
 
-function class.binarize(source_pathname, target_pathname)
+local operators = {}
+function operators.lt(y)
+  return y < 0.5
+end
+function operators.gt(y)
+  return y > 0.5
+end
+
+function class.binarize(operator, source_pathname, target_pathname)
   local image_data = new_image_data(source_pathname)
 
   local w = image_data:getWidth()
   local h = image_data:getHeight()
 
+  local f = assert(operators[operator])
+
   for j = 0, h - 1 do
     for i = 1, w - 1 do
       local r, g, b, a = image_data:getPixel(i, j)
-      local y = 0.2126 * r + 0.7152 * g + 0.0722 * b
-      if y < 0.5 then
+      local y = (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
+      if f(y) then
         r, g, b, a = 1, 1, 1, 1
       else
         r, g, b, a = 0, 0, 0, 0
@@ -184,7 +194,7 @@ function love.draw()
   local g = love.graphics
 
   local silhouettes = {
-    { 0, 1 }; { 1, 2 }; { 2, 1 };
+    -- { 0, 1 }; { 1, 2 }; { 2, 1 };
 
     { 0, 1 };
     { 1, 1 };
