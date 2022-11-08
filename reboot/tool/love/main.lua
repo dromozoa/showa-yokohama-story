@@ -190,6 +190,10 @@ local function compare_x(a, b)
   end
 end
 
+local seed_x = 1000 * love.math.random()
+local seed_y = 1000 * love.math.random()
+local seed_z = 1000 * love.math.random()
+
 function love.draw()
   local g = love.graphics
 
@@ -217,10 +221,6 @@ function love.draw()
   local p = (1 - math.cos(math.pi * t)) * 0.5
   local q = 1 - p
   local scale = 400
-
-  local seed_x = 1000 * love.math.random()
-  local seed_y = 1000 * love.math.random()
-  local seed_z = 1000 * love.math.random()
 
   local colors = {
     { 0.5, 0, 0 };
