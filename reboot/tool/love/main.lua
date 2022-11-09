@@ -70,8 +70,7 @@ end
 
 
 local function process_line_data(line_data)
-  -- 各行の重心と全体の重心を求める。
-
+  -- 行の重心と全体の重心を求める。
   local global_moment_x = 0
   local global_moment_y = 0
   local global_sum_area = 0
@@ -107,7 +106,7 @@ local function process_line_data(line_data)
   line_data.gx = global_moment_x / global_sum_area
   line_data.gy = global_moment_y / global_sum_area
 
-  -- 各行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
+  -- 行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
   local sum_x = 0
   local sum_y = 0
   local sum_xy = 0
@@ -131,6 +130,7 @@ local function process_line_data(line_data)
   local b = (sum_x * sum_yy - sum_y * sum_xy) / d
   line_data.axis = { a = a, b = b }
 
+  -- 行の重心が割り当てられていない場合、軸から外挿する。
   for _, lines in ipairs(line_data) do
     if not lines.gx then
       lines.gx = a * lines.gy + b
