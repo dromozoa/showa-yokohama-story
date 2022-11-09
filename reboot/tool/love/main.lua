@@ -85,9 +85,17 @@ local function scanline(image_data, fn)
     height = H + 1;
   }
 
+  -- 全体の重心を計算する
+  local gx = 0
+  local gy = 0
+  local gn = 0
+
   for j = 0, H - 1 do
-    local lines = {}
+    local lines = { y1 = j, y2 = j + 1}
     local x1
+    -- 各行の重心を計算する
+    local m = 0
+    local n = 0
 
     local u = false
     for i = 0, W do
@@ -102,6 +110,13 @@ local function scanline(image_data, fn)
           x1 = i
         end
 
+        m = m + i + 0.5
+        n = n + 1
+
+        gx = gx + i + 0.5
+        gy = gy + j + 0.5
+        gn = gn + 1
+
       elseif u then
         local x2 = i
         lines[#lines + 1] = { x1 = x1, x2 = x2 }
@@ -111,13 +126,48 @@ local function scanline(image_data, fn)
       u = v
     end
 
-    lines.y1 = j
-    lines.y2 = j + 1
+    if n > 0 then
+      lines.gx = m / n
+    end
+    lines.gy = j + 0.5
+    lines.n = n
 
     line_data[#line_data + 1] = lines
   end
 
-  -- TODO 重心を求める
+  assert(gn > 0)
+  line_data.gx = gx / gn
+  line_data.gy = gy / gn
+
+  -- 各行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
+  local sum_x = 0
+  local sum_y = 0
+  local sum_xy = 0
+  local sum_yy = 0
+  local n = 0
+
+  for _, lines in ipairs(line_data) do
+    if lines.gx then
+      local x = lines.gx
+      local y = lines.gy
+      sum_x = sum_x + x
+      sum_y = sum_y + y
+      sum_xy = sum_xy + x * y
+      sum_yy = sum_yy + y * y
+      n = n + 1
+    end
+  end
+
+  local d = n * sum_yy - sum_y * sum_y
+  local a = (n * sum_xy - sum_x * sum_y) / d
+  local b = (sum_x * sum_yy - sum_y * sum_xy) / d
+  line_data.axis = { a = a, b = b }
+
+  for _, lines in ipairs(line_data) do
+    if not lines.gx then
+      lines.gx = a * lines.gy + b
+    end
+  end
 
   return line_data
 end
@@ -157,15 +207,51 @@ function commands.scanline(expression, source_pathname, target_pathname)
 
   local handle = assert(io.open(target_pathname, "wb"))
   handle:write('<svg xmlns="http://www.w3.org/2000/svg" width="', W, '" height="', H, '" viewBox="0 0 ', W, ' ', H, '">\n')
+  handle:write [[
+<defs>
+  <radialGradient id="gravity-center">
+    <stop offset="0%" stop-color="#f00" stop-opacity="1" />
+    <stop offset="100%" stop-color="#f00" stop-opacity="0" />
+  </radialGradient>
+  <style>
+    rect.line {
+      fill: #666;
+    }
+    circle.gravity-center {
+      fill: url(#gravity-center);
+    }
+    line.axis {
+      stroke: #000;
+    }
+  </style>
+</defs>
+]]
+
   for _, lines in ipairs(line_data) do
     local y1 = lines.y1
     local y2 = lines.y2
     for _, line in ipairs(lines) do
       local x1 = line.x1
       local x2 = line.x2
-      handle:write('<rect x="', x1, '" y="', y1, '" width="', x2 - x1, '" height="', y2 - y1, '"/>\n')
+      handle:write('<rect x="', x1, '" y="', y1, '" width="', x2 - x1, '" height="', y2 - y1, '" class="line"/>\n')
     end
   end
+
+  -- 各行の重心
+  for _, lines in ipairs(line_data) do
+    if lines.gx then
+      handle:write('<circle cx="', lines.gx, '" cy="', lines.gy, '" r="2" class="gravity-center"/>\n')
+    end
+  end
+
+  -- 全体の重心
+  handle:write('<circle cx="', line_data.gx, '" cy="', line_data.gy, '" r="8" class="gravity-center"/>\n')
+
+  -- 軸となる直線x=ay+b
+  local a = line_data.axis.a
+  local b = line_data.axis.b
+  handle:write('<line x1="', a + b, '" y1="0" x2="', a * H + b, '" y2="', H, '" class="axis"/>\n')
+
   handle:write '</svg>\n'
   handle:close()
 end
