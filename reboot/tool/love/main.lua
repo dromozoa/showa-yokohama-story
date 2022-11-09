@@ -76,7 +76,7 @@ local function scanline(image_data, fn)
   }
 
   for j = 0, image_data:getHeight() - 1 do
-    local lines = { y1 = j, y2 = j + 1}
+    local line = { y1 = j, y2 = j + 1}
     local x1
 
     local u = false
@@ -92,15 +92,14 @@ local function scanline(image_data, fn)
           x1 = i
         end
       elseif u then
-        local x2 = i
-        lines[#lines + 1] = { x1 = x1, x2 = x2 }
+        line[#line + 1] = { x1 = x1, x2 = i }
         x1 = nil
       end
 
       u = v
     end
 
-    line_data[#line_data + 1] = lines
+    line_data[#line_data + 1] = line
   end
 
   -- 全体の重心を計算する
