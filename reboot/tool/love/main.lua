@@ -75,10 +75,6 @@ local function process_line_data(line_data)
   local global_sum_area = 0
 
   for _, line in ipairs(line_data) do
-    local y1 = line.y1
-    local y2 = line.y2
-    local y = (y1 + y2) * 0.5
-
     local moment_x = 0
     local sum_area = 0
 
@@ -86,21 +82,23 @@ local function process_line_data(line_data)
       local x1 = segment.x1
       local x2 = segment.x2
       local x = (x1 + x2) * 0.5
-      local area = (x2 - x1) * (y2 - y1)
+      local area = x2 - x1
 
       moment_x = moment_x + area * x
       sum_area = sum_area + area
-
-      global_moment_x = global_moment_x + area * x
-      global_moment_y = global_moment_y + area * y
-      global_sum_area = global_sum_area + area
     end
+
+    local y = line.y1 + 0.5
 
     if sum_area > 0 then
       line.gx = moment_x / sum_area
     end
     line.gy = y
     line.n = sum_area
+
+    global_moment_x = global_moment_x + moment_x
+    global_moment_y = global_moment_y + sum_area * y
+    global_sum_area = global_sum_area + sum_area
   end
 
   assert(global_sum_area > 0)
