@@ -49,21 +49,21 @@ end
 
 --------------------------------------------------------------------------------
 
+local function luminance(r, g, b, a)
+  -- libpngのマニュアルで引用されている式を使う。
+  -- https://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC9
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
+end
+
 local function binarize(image_data, fn)
-  -- love.graphicsを使わないのでヘッドレスで処理できる。処理速度は考慮しない。
-
+  -- love.graphicsを使わないのでヘッドレスで処理できる。
   local image_data = image_data:clone()
-
   local W = image_data:getWidth()
   local H = image_data:getHeight()
 
   for j = 0, H - 1 do
     for i = 0, W - 1 do
-      -- libpngのマニュアルで引用されている式を使う。
-      -- https://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC9
-      local r, g, b, a = image_data:getPixel(i, j)
-      local y = (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
-      if fn(y) then
+      if fn(luminance(image_data:getPixel(i, j))) then
         image_data:setPixel(i, j, 1, 1, 1, 1)
       else
         image_data:setPixel(i, j, 0, 0, 0, 0)
@@ -74,103 +74,111 @@ local function binarize(image_data, fn)
   return image_data
 end
 
+local function scanline(image_data, fn)
+  -- 二値画像を線分の集合に変換する。
+  local W = image_data:getWidth()
+  local H = image_data:getHeight()
+
+  -- 画素(i,j)が左上(i,j)が右下(i+1,j+1)の正方形で表されるような座標系で表現する。
+  local line_data = {
+    width = W + 1;
+    height = H + 1;
+  }
+
+  for j = 0, H - 1 do
+    local lines = {}
+    local x1
+
+    local u = false
+    for i = 0, W do
+      local v = false
+      if i < W then
+        v = fn(luminance(image_data:getPixel(i, j)))
+      end
+
+      if v then
+        if not u then
+          assert(not x1)
+          x1 = i
+        end
+
+      elseif u then
+        local x2 = i
+        lines[#lines + 1] = { x1 = x1, x2 = x2 }
+        x1 = nil
+      end
+
+      u = v
+    end
+
+    lines.y1 = j
+    lines.y2 = j + 1
+
+    line_data[#line_data + 1] = lines
+  end
+
+  -- TODO 重心を求める
+
+  return line_data
+end
+
+--------------------------------------------------------------------------------
+
+local commands = {}
+
+local operators = {
+  ["=="] = function (a, b) return a == b end;
+  ["~="] = function (a, b) return a ~= b end;
+  ["<="] = function (a, b) return a <= b end;
+  [">="] = function (a, b) return a >= b end;
+  ["<"] = function (a, b) return a < b end;
+  [">"] = function (a, b) return a > b end;
+}
+
+function commands.binarize(expression, source_pathname, target_pathname)
+  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local fn = assert(operators[op])
+  local b = assert(tonumber(b))
+
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = binarize(source_image_data, function (a) return fn(a, b) end)
+  write_image_data(result_image_data, target_pathname)
+end
+
+function commands.scanline(expression, source_pathname, target_pathname)
+  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local fn = assert(operators[op])
+  local b = assert(tonumber(b))
+
+  local image_data = new_image_data(source_pathname)
+  local line_data = scanline(image_data, function (a) return fn(a, b) end)
+  local W = line_data.width
+  local H = line_data.height
+
+  local handle = assert(io.open(target_pathname, "wb"))
+  handle:write('<svg xmlns="http://www.w3.org/2000/svg" width="', W, '" height="', H, '" viewBox="0 0 ', W, ' ', H, '">\n')
+  for _, lines in ipairs(line_data) do
+    local y1 = lines.y1
+    local y2 = lines.y2
+    for _, line in ipairs(lines) do
+      local x1 = line.x1
+      local x2 = line.x2
+      handle:write('<rect x="', x1, '" y="', y1, '" width="', x2 - x1, '" height="', y2 - y1, '"/>\n')
+    end
+  end
+  handle:write '</svg>\n'
+  handle:close()
+end
+
 --------------------------------------------------------------------------------
 
 local class = {}
 local game = {}
 
-function class.image_to_svg(source_pathname, target_pathname)
-  local image_data = new_image_data(source_pathname)
-
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
-  local n = 0
-
-  local handle = assert(io.open(target_pathname, "wb"))
-
-  handle:write('<svg width="', w, '" height="', h, '" viewBox="0 0 ', w, " ", h, '">\n')
-  for j = 0, h - 1 do
-    local lines = {}
-    local start
-    local u = image_data:getPixel(0, j)
-    for i = 1, w - 1 do
-      local v = image_data:getPixel(i, j)
-      if u < 0.5 then
-        if v >= 0.5 then
-          -- line開始
-          start = i
-        end
-      else
-        if v < 0.5 then
-          -- line終了
-          lines[#lines + 1] = { start, i }
-        end
-      end
-      u = v
-    end
-    if lines[1] then
-      handle:write('<path d="')
-      for _, line in ipairs(lines) do
-        handle:write("M", line[1], " ", j, "L", line[2], " ", j)
-      end
-      handle:write('"/>\n')
-    end
-  end
-  handle:write '</svg>\n'
-
-  handle:close()
-  return true
-end
-
-local operators = {}
-function operators.lt(y)
-  return y < 0.5
-end
-function operators.gt(y)
-  return y > 0.5
-end
-
-function class.binarize(operator, source_pathname, target_pathname)
-  local source_image_data = new_image_data(source_pathname)
-  local result_image_data = binarize(source_image_data, assert(operators[operator]))
-  write_image_data(result_image_data, target_pathname)
-  return true
-end
-
 local function prepare_silhouette(pathname)
   local image_data = new_image_data(pathname)
 
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
-
-  local line_data = {}
-  for j = 0, h - 1 do
-    local lines = { y = j }
-    local start
-
-    local u
-    for i = 0, w - 1 do
-      local r, g, b, a = image_data:getPixel(i, j)
-      local v = 0.2126 * r + 0.7152 * g + 0.0722 * b
-      if i > 0 then
-        if u < 0.5 then
-          if v >= 0.5 then
-            assert(not start)
-            start = i
-          end
-        else
-          if v < 0.5 then
-            lines[#lines + 1] = { x1 = start, x2 = i }
-            start = nil
-          end
-        end
-      end
-      u = v
-    end
-
-    line_data[j + 1] = lines
-  end
-
+  local line_data = scanline(image_data, function (y) return y > 0.5 end)
   local image = love.graphics.newImage(image_data)
   return {
     pathaname = pathaname;
@@ -190,11 +198,14 @@ function class.play(...)
 end
 
 function love.load(arg)
-  -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
-  local f = assert(class[arg[1]])
-  if f(unpack(arg, 2)) then
+  local command = commands[arg[1]]
+  if command then
+    command(table_unpack(arg, 2))
     love.event.quit()
+    return
   end
+
+  class.play(table_unpack(arg, 2))
 end
 
 local function compare_length(a, b)
@@ -289,7 +300,7 @@ function love.draw()
       for j = 1, #prev.line_data, m do
         local prev_lines = prev.line_data[j]
         local this_lines = this.line_data[j]
-        local y = this_lines.y
+        local y = this_lines.y1
 
         -- どちらかに線分がなければ、中点を基準とする。
         if #this_lines == 0 then
@@ -381,7 +392,7 @@ function love.draw()
 
       for j = 1, #prev.line_data, m do
         local lines = prev.line_data[j]
-        local y = lines.y
+        local y = lines.y1
         for i, line in ipairs(lines) do
           for c, color in ipairs(colors) do
             local x1 = line.x1
@@ -400,7 +411,7 @@ function love.draw()
 
       for j = 1, #this.line_data, m do
         local lines = this.line_data[j]
-        local y = lines.y
+        local y = lines.y1
         for i, line in ipairs(lines) do
           for c, color in ipairs(colors) do
             local x1 = line.x1
@@ -421,7 +432,7 @@ function love.draw()
   elseif prev then
     for j = 1, #prev.line_data, m do
       local lines = prev.line_data[j]
-      local y = lines.y
+      local y = lines.y1
       for i, line in ipairs(lines) do
         for c, color in ipairs(colors) do
           local x1 = line.x1
@@ -439,7 +450,7 @@ function love.draw()
   elseif this then
     for j = 1, #this.line_data, m do
       local lines = this.line_data[j]
-      local y = lines.y
+      local y = lines.y1
       for i, line in ipairs(lines) do
         for c, color in ipairs(colors) do
           local x1 = line.x1
