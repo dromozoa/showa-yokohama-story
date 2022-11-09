@@ -395,8 +395,7 @@ local font
 local show_fps = false
 local frame = 0
 local running = false
-local line_data1
-local line_data2
+local line_dataset = {}
 
 --------------------------------------------------------------------------------
 
@@ -409,33 +408,67 @@ function love.load(arg)
   end
 
   font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
-  line_data1 = scanline(new_image_data(arg[2]), function (a) return a > 0.5 end)
-  line_data2 = scanline(new_image_data(arg[3]), function (a) return a > 0.5 end)
+  for i = 2, #arg do
+    line_dataset[#line_dataset + 1] = scanline(new_image_data(arg[i]), function (a) return a > 0.5 end)
+  end
 end
 
 function love.draw()
-  local N = 180
+  local M = 180
+  local N =  60
 
-  local f = frame % (N * 2)
+  local i = math.floor(frame / M) % #line_dataset + 1
+  local line_data1 = line_dataset[i]
+  local line_data2 = line_dataset[i + 1] or line_dataset[1]
+
+  local f = frame % M
   if f >= N then
-    f = N * 2 - f
+    f = N - 1
   end
-  local alpha = f / (N - 1)
+  local t = f / (N - 1)
+  local alpha = (1 - math.cos(math.pi * t)) * 0.5
+  local gamma = math.sin(math.pi * t)
+
+  local scale = 100
+
+  local colors = {
+    { 1, 0, 0 };
+    { 0, 1, 0 };
+    { 0, 0, 1 };
+  }
+
+  local seed_x = 1000 * love.math.random()
+  local seed_y = 1000 * love.math.random()
+  local seed_z = 1000 * love.math.random()
+
+  local line_data = blend(alpha, line_data1, line_data2)
 
   local g = love.graphics
   g.clear()
 
-  local line_data = blend(alpha, line_data1, line_data2)
+  local W, H = love.window.getMode()
+  g.push()
+  g.translate((W - line_data.width) * 0.5, (H - line_data.height) * 0.5)
+
+  local blend_mode = g.getBlendMode()
+  g.setBlendMode "add"
   for _, lines in ipairs(line_data) do
     local y1 = lines.y1
     local y2 = lines.y2
     for _, line in ipairs(lines) do
-      local x1 = line.x1
-      local x2 = line.x2
-      g.setColor(1, 1, 1, 1)
-      g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
+      for c, color in ipairs(colors) do
+        local x1 = line.x1
+        local x2 = line.x2
+        x1 = x1 + scale * gamma * (love.math.noise(seed_x * x1, seed_y * y1, seed_z * c) - 0.5) * 2
+        x2 = x2 + scale * gamma * (love.math.noise(seed_x * x2, seed_y * y1, seed_z * c) - 0.5) * 2
+        g.setColor(color[1], color[2], color[3])
+        g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
+      end
     end
   end
+  g.setBlendMode(blend_mode)
+
+  g.pop()
 
   local text_x = 20
   local text_y = 20
