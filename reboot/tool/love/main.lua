@@ -70,6 +70,8 @@ end
 
 
 local function process_line_data(line_data)
+  -- 各行の重心と全体の重心を求める。
+
   local global_moment_x = 0
   local global_moment_y = 0
   local global_sum_area = 0
