@@ -49,59 +49,41 @@ end
 
 --------------------------------------------------------------------------------
 
-local function luminance(r, g, b, a)
-  -- libpngのマニュアルで引用されている式を使う。
-  -- https://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC9
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
+local function grayscale(r, g, b, a)
+  -- sRGBを仮定してガンマ補正を行った後、輝度を計算する。
+  local r, g, b = love.math.gammaToLinear(r * a, g * a, b * a)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
 end
 
 local function binarize(image_data, fn)
   -- love.graphicsを使わないのでヘッドレスで処理できる。
   local image_data = image_data:clone()
-  local W = image_data:getWidth()
-  local H = image_data:getHeight()
-
-  for j = 0, H - 1 do
-    for i = 0, W - 1 do
-      if fn(luminance(image_data:getPixel(i, j))) then
-        image_data:setPixel(i, j, 1, 1, 1, 1)
-      else
-        image_data:setPixel(i, j, 0, 0, 0, 0)
-      end
+  image_data:mapPixel(function (x, y, r, g, b, a)
+    if (fn(grayscale(r, g, b, a))) then
+      return 1, 1, 1, 1
+    else
+      return 0, 0, 0, 0
     end
-  end
-
+  end)
   return image_data
 end
 
 local function scanline(image_data, fn)
-  -- 二値画像を線分の集合に変換する。
-  local W = image_data:getWidth()
-  local H = image_data:getHeight()
-
-  -- 画素(i,j)が左上(i,j)が右下(i+1,j+1)の正方形で表されるような座標系で表現する。
+  -- 画素(i,j)が左上(i,j)が右下(i+1,j+1)の正方形で表されるような座標系を用いる。
   local line_data = {
-    width = W + 1;
-    height = H + 1;
+    width = image_data:getWidth() + 1;
+    height = image_data:getHeight() + 1;
   }
 
-  -- 全体の重心を計算する
-  local gx = 0
-  local gy = 0
-  local gn = 0
-
-  for j = 0, H - 1 do
+  for j = 0, image_data:getHeight() - 1 do
     local lines = { y1 = j, y2 = j + 1}
     local x1
-    -- 各行の重心を計算する
-    local m = 0
-    local n = 0
 
     local u = false
-    for i = 0, W do
+    for i = 0, image_data:getWidth() do
       local v = false
-      if i < W then
-        v = fn(luminance(image_data:getPixel(i, j)))
+      if i < image_data:getWidth() then
+        v = fn(grayscale(image_data:getPixel(i, j)))
       end
 
       if v then
@@ -109,14 +91,6 @@ local function scanline(image_data, fn)
           assert(not x1)
           x1 = i
         end
-
-        m = m + i + 0.5
-        n = n + 1
-
-        gx = gx + i + 0.5
-        gy = gy + j + 0.5
-        gn = gn + 1
-
       elseif u then
         local x2 = i
         lines[#lines + 1] = { x1 = x1, x2 = x2 }
@@ -126,13 +100,43 @@ local function scanline(image_data, fn)
       u = v
     end
 
-    if n > 0 then
-      lines.gx = m / n
-    end
-    lines.gy = j + 0.5
-    lines.n = n
-
     line_data[#line_data + 1] = lines
+  end
+
+  -- 全体の重心を計算する
+  local gx = 0
+  local gy = 0
+  local gn = 0
+
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+
+    local m = 0
+    local n = 0
+
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+
+      -- モーメントを計算する。
+      local x = (x1 + x2) * 0.5
+      local y = (y1 + y2) * 0.5
+      local w = (x2 - x1) * (y2 - y1)
+
+      m = m + w * x
+      n = n + w
+
+      gx = gx + x * w
+      gy = gy + y * w
+      gn = gn + w
+    end
+
+    if n > 0 then
+      line.gx = m / n
+    end
+    line.gy = (y1 + y2) * 0.5
+    line.n = n
   end
 
   assert(gn > 0)
