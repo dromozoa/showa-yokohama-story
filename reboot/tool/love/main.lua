@@ -68,6 +68,78 @@ local function binarize(image_data, fn)
   return image_data
 end
 
+
+local function process_line_data(line_data)
+  local global_moment_x = 0
+  local global_moment_y = 0
+  local global_sum_area = 0
+
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+    local y = (y1 + y2) * 0.5
+
+    local moment_x = 0
+    local sum_area = 0
+
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      local x = (x1 + x2) * 0.5
+      local area = (x2 - x1) * (y2 - y1)
+
+      moment_x = moment_x + area * x
+      sum_area = sum_area + area
+
+      global_moment_x = global_moment_x + area * x
+      global_moment_y = global_moment_y + area * y
+      global_sum_area = global_sum_area + area
+    end
+
+    if sum_area > 0 then
+      line.gx = moment_x / sum_area
+    end
+    line.gy = y
+    line.n = sum_area
+  end
+
+  assert(global_sum_area > 0)
+  line_data.gx = global_moment_x / global_sum_area
+  line_data.gy = global_moment_y / global_sum_area
+
+  -- 各行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
+  local sum_x = 0
+  local sum_y = 0
+  local sum_xy = 0
+  local sum_yy = 0
+  local n = 0
+
+  for _, lines in ipairs(line_data) do
+    if lines.gx then
+      local x = lines.gx
+      local y = lines.gy
+      sum_x = sum_x + x
+      sum_y = sum_y + y
+      sum_xy = sum_xy + x * y
+      sum_yy = sum_yy + y * y
+      n = n + 1
+    end
+  end
+
+  local d = n * sum_yy - sum_y * sum_y
+  local a = (n * sum_xy - sum_x * sum_y) / d
+  local b = (sum_x * sum_yy - sum_y * sum_xy) / d
+  line_data.axis = { a = a, b = b }
+
+  for _, lines in ipairs(line_data) do
+    if not lines.gx then
+      lines.gx = a * lines.gy + b
+    end
+  end
+
+  return line_data
+end
+
 local function scanline(image_data, fn)
   -- 画素(i,j)が左上(i,j)が右下(i+1,j+1)の正方形で表されるような座標系を用いる。
   local line_data = {
@@ -102,77 +174,7 @@ local function scanline(image_data, fn)
     line_data[#line_data + 1] = line
   end
 
-  -- 全体の重心を計算する
-  local gx = 0
-  local gy = 0
-  local gn = 0
-
-  for _, line in ipairs(line_data) do
-    local y1 = line.y1
-    local y2 = line.y2
-
-    local m = 0
-    local n = 0
-
-    for _, segment in ipairs(line) do
-      local x1 = segment.x1
-      local x2 = segment.x2
-
-      -- モーメントを計算する。
-      local x = (x1 + x2) * 0.5
-      local y = (y1 + y2) * 0.5
-      local w = (x2 - x1) * (y2 - y1)
-
-      m = m + w * x
-      n = n + w
-
-      gx = gx + x * w
-      gy = gy + y * w
-      gn = gn + w
-    end
-
-    if n > 0 then
-      line.gx = m / n
-    end
-    line.gy = (y1 + y2) * 0.5
-    line.n = n
-  end
-
-  assert(gn > 0)
-  line_data.gx = gx / gn
-  line_data.gy = gy / gn
-
-  -- 各行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
-  local sum_x = 0
-  local sum_y = 0
-  local sum_xy = 0
-  local sum_yy = 0
-  local n = 0
-
-  for _, lines in ipairs(line_data) do
-    if lines.gx then
-      local x = lines.gx
-      local y = lines.gy
-      sum_x = sum_x + x
-      sum_y = sum_y + y
-      sum_xy = sum_xy + x * y
-      sum_yy = sum_yy + y * y
-      n = n + 1
-    end
-  end
-
-  local d = n * sum_yy - sum_y * sum_y
-  local a = (n * sum_xy - sum_x * sum_y) / d
-  local b = (sum_x * sum_yy - sum_y * sum_xy) / d
-  line_data.axis = { a = a, b = b }
-
-  for _, lines in ipairs(line_data) do
-    if not lines.gx then
-      lines.gx = a * lines.gy + b
-    end
-  end
-
-  return line_data
+  return process_line_data(line_data)
 end
 
 --------------------------------------------------------------------------------
