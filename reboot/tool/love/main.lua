@@ -185,27 +185,21 @@ local operators = {
   [">"] = function (a, b) return a > b end;
 }
 
-function commands.binarize(expression, source_pathname, target_pathname)
+function commands.binarize(expression, source_pathname, result_pathname)
   local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
   local fn = assert(operators[op])
   local b = assert(tonumber(b))
 
   local source_image_data = new_image_data(source_pathname)
   local result_image_data = binarize(source_image_data, function (a) return fn(a, b) end)
-  write_image_data(result_image_data, target_pathname)
+  write_image_data(result_image_data, result_pathname)
 end
 
-function commands.scanline(expression, source_pathname, target_pathname)
-  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
-  local fn = assert(operators[op])
-  local b = assert(tonumber(b))
-
-  local image_data = new_image_data(source_pathname)
-  local line_data = scanline(image_data, function (a) return fn(a, b) end)
+local function write_line_data(line_data, result_pathname)
   local W = line_data.width
   local H = line_data.height
 
-  local handle = assert(io.open(target_pathname, "wb"))
+  local handle = assert(io.open(result_pathname, "wb"))
   handle:write('<svg xmlns="http://www.w3.org/2000/svg" width="', W, '" height="', H, '" viewBox="0 0 ', W, ' ', H, '">\n')
   handle:write [[
 <defs>
@@ -245,18 +239,230 @@ function commands.scanline(expression, source_pathname, target_pathname)
   end
 
   -- 全体の重心
-  handle:write('<circle cx="', line_data.gx, '" cy="', line_data.gy, '" r="8" class="gravity-center"/>\n')
+  if line_data.gx then
+    handle:write('<circle cx="', line_data.gx, '" cy="', line_data.gy, '" r="8" class="gravity-center"/>\n')
+  end
 
   -- 軸となる直線x=ay+b
-  local a = line_data.axis.a
-  local b = line_data.axis.b
-  handle:write('<line x1="', a + b, '" y1="0" x2="', a * H + b, '" y2="', H, '" class="axis"/>\n')
+  if line_data.axis then
+    local a = line_data.axis.a
+    local b = line_data.axis.b
+    handle:write('<line x1="', a + b, '" y1="0" x2="', a * H + b, '" y2="', H, '" class="axis"/>\n')
+  end
 
   handle:write '</svg>\n'
   handle:close()
 end
 
+function commands.scanline(expression, source_pathname, result_pathname)
+  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local fn = assert(operators[op])
+  local b = assert(tonumber(b))
+
+  local image_data = new_image_data(source_pathname)
+  local line_data = scanline(image_data, function (a) return fn(a, b) end)
+  write_line_data(line_data, result_pathname)
+end
+
 --------------------------------------------------------------------------------
+
+local function blend_lines(alpha, alines, blines)
+  local beta = 1 - alpha
+  local clines = { y1 = alines.y1, y2 = alines.y2 }
+  assert(clines.y1 == blines.y1)
+  assert(clines.y2 == blines.y2)
+
+  if #alines == 0 then
+    for _, bline in ipairs(blines) do
+      local ax = alines.gx
+      local an = 0
+      local bx = (bline.x1 + bline.x2) * 0.5
+      local bn = bline.x2 - bline.x1
+      local cx = ax * beta + bx * alpha
+      local cn = an * beta + bn * alpha
+      clines[#clines + 1] = {
+        x1 = cx - cn * 0.5;
+        x2 = cx + cn * 0.5;
+      }
+    end
+  else
+    local bm = 0
+    for _, bline in ipairs(blines) do
+      local bn = bline.x2 - bline.x1
+      local bs = bm / blines.n
+      local be = bn / blines.n + bs
+
+      local segments = {}
+      local segment_start
+      local segment_n = 0
+
+      local am = 0
+      for i, aline in ipairs(alines) do
+        local an = aline.x2 - aline.x1
+        local as = am / alines.n
+        local ae = an / alines.n + as
+
+        -- aがbの始点を含むかどうかを調べる
+        if not segment_start then
+          if as <= bs and bs < ae then
+            segment_start = (bs - as) / (ae - as) * an + aline.x1
+          end
+        end
+
+        if segment_start then
+          -- aがbの終点を含むかどうかを調べる
+          if as < be and be <= ae then
+            local segment_end = (be - ae) / (ae - as) * an + aline.x2
+            local segment = { ax1 = segment_start, ax2 = segment_end }
+            segments[#segments + 1] = segment
+            segment.n = segment.ax2 - segment.ax1
+            segment_n = segment_n + segment.n
+            break
+          else
+            local segment = { ax1 = segment_start, ax2 = aline.x2 }
+            segments[#segments + 1] = segment
+            segment.n = segment.ax2 - segment.ax1
+            segment_n = segment_n + segment.n
+            segment_start = alines[i + 1].x1
+          end
+        end
+
+        am = am + an
+      end
+
+      local sm = 0
+      for i, segment in ipairs(segments) do
+        local sn = segment.n
+        local ss = sm / segment_n
+        local se = sn / segment_n + ss
+        segment.bx1 = ss * bn + bline.x1
+        segment.bx2 = se * bn + bline.x1
+
+        local x1 = segment.ax1 * beta + segment.bx1 * alpha
+        local x2 = segment.ax2 * beta + segment.bx2 * alpha
+        clines[#clines + 1] = {
+          x1 = x1;
+          x2 = x2;
+        }
+
+        sm = sm + sn
+      end
+
+      bm = bm + bn
+    end
+  end
+
+  return clines
+end
+
+local function blend(alpha, A, B)
+  if B then
+    assert(#A == #B)
+  end
+
+  local C = {
+    width = A.width;
+    height = B.height;
+  }
+  for i, a in ipairs(A) do
+    if B then
+      local b = B[i]
+      if #a < #b then
+        C[i] = blend_lines(alpha, a, b)
+      else
+        C[i] = blend_lines(1 - alpha, b, a)
+      end
+    end
+  end
+
+  return C
+end
+
+function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
+  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local fn = assert(operators[op])
+  local b = assert(tonumber(b))
+
+  local line_data1 = scanline(new_image_data(source_pathname1), function (a) return fn(a, b) end)
+  local line_data2 = scanline(new_image_data(source_pathname2), function (a) return fn(a, b) end)
+  local line_data = blend(tonumber(alpha), line_data1, line_data2)
+  write_line_data(line_data, result_pathname)
+end
+
+--------------------------------------------------------------------------------
+
+local font
+local show_fps = false
+local frame = 0
+local running = false
+local line_data1
+local line_data2
+
+--------------------------------------------------------------------------------
+
+function love.load(arg)
+  local command = commands[arg[1]]
+  if command then
+    command(table_unpack(arg, 2))
+    love.event.quit()
+    return
+  end
+
+  font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
+  line_data1 = scanline(new_image_data(arg[2]), function (a) return a > 0.5 end)
+  line_data2 = scanline(new_image_data(arg[3]), function (a) return a > 0.5 end)
+end
+
+function love.draw()
+  local N = 180
+
+  local f = frame % (N * 2)
+  if f >= N then
+    f = N * 2 - f
+  end
+  local alpha = f / (N - 1)
+
+  local g = love.graphics
+  g.clear()
+
+  local line_data = blend(alpha, line_data1, line_data2)
+  for _, lines in ipairs(line_data) do
+    local y1 = lines.y1
+    local y2 = lines.y2
+    for _, line in ipairs(lines) do
+      local x1 = line.x1
+      local x2 = line.x2
+      g.setColor(1, 1, 1, 1)
+      g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
+    end
+  end
+
+  local text_x = 20
+  local text_y = 20
+
+  g.setColor(1, 1, 1)
+  if show_fps then
+    g.print("FPS: "..love.timer.getFPS(), font, text_x, text_y)
+    text_y = text_y + 30
+  end
+
+  if running then
+    frame = frame + 1
+  end
+end
+
+function love.keypressed(key)
+  if key == "f" then
+    show_fps = not show_fps
+  elseif key == "s" then
+    running = not running
+  end
+end
+
+--------------------------------------------------------------------------------
+
+--[====[
+古いコード
 
 local class = {}
 local game = {}
@@ -290,6 +496,12 @@ function love.load(arg)
     love.event.quit()
     return
   end
+
+
+
+
+
+
 
   class.play(table_unpack(arg, 2))
 end
@@ -592,3 +804,5 @@ end
 
 function love.quit()
 end
+
+]====]
