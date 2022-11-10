@@ -459,10 +459,10 @@ function love.draw()
   end
 
   local colors = {
-    { 1, 1, 1 };
-    -- { 1, 0, 0 };
-    -- { 0, 1, 0 };
-    -- { 0, 0, 1 };
+    -- { 1, 1, 1 };
+    { 1, 0, 0 };
+    { 0, 1, 0 };
+    { 0, 0, 1 };
   }
 
   local line_data = blend_line_data(alpha, line_data1, line_data2)
@@ -483,16 +483,18 @@ function love.draw()
       for c, color in ipairs(colors) do
         local x1 = segment.x1
         local x2 = segment.x2
-        -- x1 = x1 + scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
-        -- x2 = x2 + scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
-        -- x1 = x1 + scale * gamma * (love.math.random() - 0.5) * 2
-        -- x2 = x2 + scale * gamma * (love.math.random() - 0.5) * 2
+        -- local n1 = scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- local n2 = scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- local n1 = scale * gamma * (love.math.random() - 0.5) * 2
+        -- local n2 = scale * gamma * (love.math.random() - 0.5) * 2
         local n1 = scale * gamma * love.math.randomNormal(0.5)
         local n2 = scale * gamma * love.math.randomNormal(0.5)
         x1 = x1 + n1
         x2 = x2 + n1
-        g.setColor(color[1], color[2], color[3])
-        g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
+        if x1 < x2 then
+          g.setColor(color[1], color[2], color[3])
+          g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
+        end
       end
     end
   end
