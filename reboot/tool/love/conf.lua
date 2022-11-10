@@ -16,7 +16,7 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local headless = false
-local width = 600
+local width = 800
 local height = 800
 
 -- https://love2d.org/wiki/Config_Files
