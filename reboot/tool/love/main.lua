@@ -426,6 +426,10 @@ function love.load(arg)
   end
 end
 
+local noise_base_x = love.math.random()
+local noise_base_y = love.math.random()
+local noise_base_z = love.math.random()
+
 function love.draw()
   local M = 180
   local N =  60
@@ -450,10 +454,6 @@ function love.draw()
     { 0, 0, 1 };
   }
 
-  local seed_x = 1000 * love.math.random()
-  local seed_y = 1000 * love.math.random()
-  local seed_z = 1000 * love.math.random()
-
   local line_data = blend_line_data(alpha, line_data1, line_data2)
 
   local g = love.graphics
@@ -472,8 +472,8 @@ function love.draw()
       for c, color in ipairs(colors) do
         local x1 = line.x1
         local x2 = line.x2
-        x1 = x1 + scale * gamma * (love.math.noise(seed_x * x1, seed_y * y1, seed_z * c) - 0.5) * 2
-        x2 = x2 + scale * gamma * (love.math.noise(seed_x * x2, seed_y * y1, seed_z * c) - 0.5) * 2
+        x1 = x1 + scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        x2 = x2 + scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
         g.setColor(color[1], color[2], color[3])
         g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
       end
@@ -488,7 +488,11 @@ function love.draw()
 
   g.setColor(1, 1, 1)
   if show_fps then
-    g.print("FPS: "..love.timer.getFPS(), font, text_x, text_y)
+    g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
+    text_y = text_y + 30
+  end
+  if running then
+    g.print("running", font, text_x, text_y)
     text_y = text_y + 30
   end
 
@@ -500,7 +504,7 @@ end
 function love.keypressed(key)
   if key == "f" then
     show_fps = not show_fps
-  elseif key == "s" then
+  elseif key == "space" then
     running = not running
   end
 end
