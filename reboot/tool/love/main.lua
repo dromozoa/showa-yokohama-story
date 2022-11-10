@@ -270,6 +270,10 @@ end
 
 local function blend_line(alpha, line1, line2)
   local beta = 1 - alpha
+  if #line1 > #line2 then
+    return blend_line(beta, line2, line1)
+  end
+
   local line = { y1 = line1.y1, y2 = line1.y2 }
 
   if #line1 == 0 then
@@ -304,16 +308,16 @@ local function blend_line(alpha, line1, line2)
         end
 
         if mapping_start then
-          local map = { ax1 = mapping_start }
+          local map = { x1 = mapping_start }
           if v1 < u2 and u2 <= v2 then
             mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
-            map.ax2 = mapping_end
+            map.x2 = mapping_end
           else
-            map.ax2 = segment1.x2
+            map.x2 = segment1.x2
             mapping_start = line1[i + 1].x1
           end
 
-          map.n = map.ax2 - map.ax1
+          map.n = map.x2 - map.x1
           mapping[#mapping + 1] = map
           mapping_n = mapping_n + map.n
 
@@ -325,22 +329,16 @@ local function blend_line(alpha, line1, line2)
         vm = vm + vn
       end
 
-      local sm = 0
-      for i, map in ipairs(mapping) do
-        local sn = map.n
-        local ss = sm / mapping_n
-        local se = sn / mapping_n + ss
-        local bx1 = ss * un + segment2.x1
-        local bx2 = se * un + segment2.x1
-
-        local x1 = map.ax1 * beta + bx1 * alpha
-        local x2 = map.ax2 * beta + bx2 * alpha
+      local m = 0
+      for _, map in ipairs(mapping) do
+        local n = map.n
+        local t1 = m / mapping_n
+        local t2 = n / mapping_n + t1
         line[#line + 1] = {
-          x1 = x1;
-          x2 = x2;
+          x1 = map.x1 * beta + (t1 * un + segment2.x1) * alpha;
+          x2 = map.x2 * beta + (t2 * un + segment2.x1) * alpha;
         }
-
-        sm = sm + sn
+        m = m + n
       end
 
       um = um + un
@@ -351,20 +349,24 @@ local function blend_line(alpha, line1, line2)
 end
 
 local function blend_line_data(alpha, line_data1, line_data2)
+  if not line_data1 then
+    return blend_line_data(1 - alpha, assert(line_data2))
+  end
+
   local line_data = {
     width = line_data1.width;
     height = line_data1.height;
   }
 
   for i, line1 in ipairs(line_data1) do
+    local line2
     if line_data2 then
-      local line2 = line_data2[i]
-      if #line1 < #line2 then
-        line_data[i] = blend_line(alpha, line1, line2)
-      else
-        line_data[i] = blend_line(1 - alpha, line2, line1)
-      end
+      line2 = line_data2[i]
+    else
+      line2 = {
+      }
     end
+    line_data[i] = blend_line(alpha, line1, line2)
   end
 
   return process_line_data(line_data)
