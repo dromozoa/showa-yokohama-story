@@ -274,195 +274,129 @@ local function mapping_line(line1, line2)
     for _, segment2 in ipairs(line2) do
       mapping[#mapping + 1] = { u1 = u, u2 = u, v1 = segment2.x1, v2 = segment2.x2 }
     end
-  elseif #line2 == 0 then
+    return mapping
+  end
+
+  if #line2 == 0 then
     local v = line2.gx
     for _, segment1 in ipairs(line1) do
       mapping[#mapping + 1] = { u1 = segment1.x1, u2 = segment1.x2, v1 = v, v2 = v }
     end
-  else
-    local am = 0
-    for _, segment1 in ipairs(line1) do
-      local an = segment1.x2 - segment1.x1
-      local a1 = am / line1.n
-      local a2 = an / line1.n + a1
+    return mapping
+  end
 
-      local mapping_start
-      local mapping_end
-      local mapping_i = #mapping + 1
-      local mapping_n = 0
+  local am = 0
+  for _, segment1 in ipairs(line1) do
+    local an = segment1.x2 - segment1.x1
+    local a1 = am / line1.n
+    local a2 = an / line1.n + a1
 
-      local bm = 0
-      for i, segment2 in ipairs(line2) do
-        local bn = segment2.x2 - segment2.x1
-        local b1 = bm / line2.n
-        local b2 = bn / line2.n + b1
+    local mapping_start
+    local mapping_end
+    local mapping_i = #mapping + 1
+    local mapping_n = 0
 
-        if not mapping_start then
-          if b1 <= a1 and a1 < b2 then
-            mapping_start = (a1 - b1) / (b2 - b1) * bn + segment2.x1
-          end
+    local bm = 0
+    for i, segment2 in ipairs(line2) do
+      local bn = segment2.x2 - segment2.x1
+      local b1 = bm / line2.n
+      local b2 = bn / line2.n + b1
+
+      if not mapping_start then
+        if b1 <= a1 and a1 < b2 then
+          mapping_start = (a1 - b1) / (b2 - b1) * bn + segment2.x1
         end
-
-        if mapping_start then
-          local map = { v1 = mapping_start }
-          if b1 < a2 and a2 <= b2 then
-            mapping_end = (a2 - b2) / (b2 - b1) * bn + segment2.x2
-            map.v2 = mapping_end
-          else
-            mapping_start = line2[i + 1].x1
-            map.v2 = segment2.x2
-          end
-
-          map.vn = map.v2 - map.v1
-          mapping[#mapping + 1] = map
-          mapping_n = mapping_n + map.vn
-
-          if mapping_end then
-            break
-          end
-        end
-
-        bm = bm + bn
       end
 
-      local vm = 0
-      for i = mapping_i, #mapping do
-        local map = mapping[i]
-        local vn = map.vn
-        local t1 = vm / mapping_n
-        local t2 = vn / mapping_n + t1
-        map.u1 = t1 * an + segment1.x1
-        map.u2 = t2 * an + segment1.x1
-        map.un = map.u2 - map.u1
-        vm = vm + vn
+      if mapping_start then
+        local map = { v1 = mapping_start }
+        if b1 < a2 and a2 <= b2 then
+          mapping_end = (a2 - b2) / (b2 - b1) * bn + segment2.x2
+          map.v2 = mapping_end
+        else
+          mapping_start = line2[i + 1].x1
+          map.v2 = segment2.x2
+        end
+        map.vn = map.v2 - map.v1
+        mapping[#mapping + 1] = map
+        mapping_n = mapping_n + map.vn
+        if mapping_end then
+          break
+        end
       end
 
-      am = am + an
+      bm = bm + bn
     end
+
+    local vm = 0
+    for i = mapping_i, #mapping do
+      local map = mapping[i]
+      local vn = map.vn
+      map.un = vn / mapping_n * an
+      map.u1 = vm / mapping_n * an + segment1.x1
+      map.u2 = map.u1 + map.un
+      vm = vm + vn
+    end
+
+    am = am + an
   end
 
   return mapping
 end
 
---------------------------------------------------------------------------------
+local function mapping_line_data(line_data1, line_data2)
+  assert(line_data1 or line_data2)
 
-local function blend_line(alpha, line1, line2)
-  local beta = 1 - alpha
-  local mapping = mapping_line(line1, line2)
-  local line = { y1 = mapping.y1, y2 = mapping.y2 }
-  for _, map in ipairs(mapping) do
-    line[#line + 1] = {
-      x1 = map.u1 * beta + map.v1 * alpha;
-      x2 = map.u2 * beta + map.v2 * alpha;
-    }
-  end
-  return line
-end
-
-local function blend_line_(alpha, line1, line2)
-  local beta = 1 - alpha
-  if #line1 > #line2 then
-    return blend_line(beta, line2, line1)
-  end
-
-  local line = { y1 = line1.y1, y2 = line1.y2 }
-
-  if #line1 == 0 then
-    for _, segment2 in ipairs(line2) do
-      line[#line + 1] = {
-        x1 = line1.gx * beta + segment2.x1 * alpha;
-        x2 = line1.gx * beta + segment2.x2 * alpha;
-      }
-    end
-  else
-    local um = 0
-    for _, segment2 in ipairs(line2) do
-      local un = segment2.x2 - segment2.x1
-      local u1 = um / line2.n
-      local u2 = un / line2.n + u1
-
-      local mapping = {}
-      local mapping_start
-      local mapping_end
-      local mapping_n = 0
-
-      local vm = 0
-      for i, segment1 in ipairs(line1) do
-        local vn = segment1.x2 - segment1.x1
-        local v1 = vm / line1.n
-        local v2 = vn / line1.n + v1
-
-        if not mapping_start then
-          if v1 <= u1 and u1 < v2 then
-            mapping_start = (u1 - v1) / (v2 - v1) * vn + segment1.x1
-          end
-        end
-
-        if mapping_start then
-          local map = { x1 = mapping_start }
-          if v1 < u2 and u2 <= v2 then
-            mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
-            map.x2 = mapping_end
-          else
-            map.x2 = segment1.x2
-            mapping_start = line1[i + 1].x1
-          end
-
-          map.n = map.x2 - map.x1
-          mapping[#mapping + 1] = map
-          mapping_n = mapping_n + map.n
-
-          if mapping_end then
-            break
-          end
-        end
-
-        vm = vm + vn
-      end
-
-      local m = 0
-      for _, map in ipairs(mapping) do
-        local n = map.n
-        local t1 = m / mapping_n
-        local t2 = n / mapping_n + t1
-        line[#line + 1] = {
-          x1 = map.x1 * beta + (t1 * un + segment2.x1) * alpha;
-          x2 = map.x2 * beta + (t2 * un + segment2.x1) * alpha;
-        }
-        m = m + n
-      end
-
-      um = um + un
-    end
-  end
-
-  return line
-end
-
-local function blend_line_data(alpha, line_data1, line_data2)
-  if not line_data1 then
-    return blend_line_data(1 - alpha, assert(line_data2))
-  end
-
-  local line_data = {
-    width = line_data1.width;
-    height = line_data1.height;
-  }
-
-  for i, line1 in ipairs(line_data1) do
-    local line2
-    if line_data2 then
-      line2 = line_data2[i]
-    else
-      line2 = {
+  if line_data1 then
+    local mapping_data = { width = line_data1.width, height = line_data1.height }
+    for i, line1 in ipairs(line_data1) do
+      local line2 = line_data2 and line_data2[i] or {
         y1 = line1.y1;
         y2 = line1.y2;
         gx = line1.gx;
         gy = line1.gy;
         n = line1.n;
       }
+      mapping_data[#mapping_data + 1] = mapping_line(line1, line2)
     end
-    line_data[i] = blend_line(alpha, line1, line2)
+    return mapping_data
+  else
+    local mapping_data = { width = line_data2.width, height = line_data2.height }
+    for _, line2 in ipairs(line_data2) do
+      local line1 = {
+        y1 = line2.y1;
+        y2 = line2.y2;
+        gx = line2.gx;
+        gy = line2.gy;
+        n = line2.n;
+      }
+      mapping_data[#mapping_data + 1] = mapping_line(line1, line2)
+    end
+    return mapping_data
+  end
+
+  return mapping_data
+end
+
+--------------------------------------------------------------------------------
+
+local function blend_line_data(alpha, line_data1, line_data2)
+  local beta = 1 - alpha
+  local mapping_data = mapping_line_data(line_data1, line_data2)
+  local line_data = {
+    width = mapping_data.width;
+    height = mapping_data.height;
+  }
+
+  for _, mapping in ipairs(mapping_data) do
+    local line = { y1 = mapping.y1, y2 = mapping.y2 }
+    for _, map in ipairs(mapping) do
+      line[#line + 1] = {
+        x1 = map.u1 * beta + map.v1 * alpha;
+        x2 = map.u2 * beta + map.v2 * alpha;
+      }
+    end
+    line_data[#line_data + 1] = line
   end
 
   return process_line_data(line_data)
