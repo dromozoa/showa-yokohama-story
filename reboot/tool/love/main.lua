@@ -49,6 +49,24 @@ end
 
 --------------------------------------------------------------------------------
 
+local operators = {
+  ["=="] = function (a, b) return a == b end;
+  ["~="] = function (a, b) return a ~= b end;
+  ["<="] = function (a, b) return a <= b end;
+  [">="] = function (a, b) return a >= b end;
+  ["<"] = function (a, b) return a < b end;
+  [">"] = function (a, b) return a > b end;
+}
+
+local function parse_expression(expression)
+  local operator, v = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local operator = assert(operators[operator])
+  local v = assert(tonumber(v))
+  return function (u) return operator(u, v) end
+end
+
+--------------------------------------------------------------------------------
+
 local function grayscale(r, g, b, a)
   -- sRGBを仮定してガンマ補正を行った後、輝度を計算する。
   local r, g, b = love.math.gammaToLinear(r * a, g * a, b * a)
@@ -68,6 +86,7 @@ local function binarize(image_data, fn)
   return image_data
 end
 
+--------------------------------------------------------------------------------
 
 local function process_line_data(line_data)
   -- 行の重心と全体の重心を求める。
@@ -179,94 +198,72 @@ end
 
 --------------------------------------------------------------------------------
 
-local commands = {}
-
-local operators = {
-  ["=="] = function (a, b) return a == b end;
-  ["~="] = function (a, b) return a ~= b end;
-  ["<="] = function (a, b) return a <= b end;
-  [">="] = function (a, b) return a >= b end;
-  ["<"] = function (a, b) return a < b end;
-  [">"] = function (a, b) return a > b end;
-}
-
-function commands.binarize(expression, source_pathname, result_pathname)
-  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
-  local fn = assert(operators[op])
-  local b = assert(tonumber(b))
-
-  local source_image_data = new_image_data(source_pathname)
-  local result_image_data = binarize(source_image_data, function (a) return fn(a, b) end)
-  write_image_data(result_image_data, result_pathname)
-end
-
 local function write_line_data(line_data, result_pathname)
   local W = line_data.width
   local H = line_data.height
 
   local handle = assert(io.open(result_pathname, "wb"))
-  handle:write('<svg xmlns="http://www.w3.org/2000/svg" width="', W, '" height="', H, '" viewBox="0 0 ', W, ' ', H, '">\n')
-  handle:write [[
+  handle:write(([[
+<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
+]]):format(line_data.width, line_data.height, line_data.width, line_data.height), [[
 <defs>
-  <radialGradient id="gravity-center">
+  <radialGradient id="gradient">
     <stop offset="0%" stop-color="#f00" stop-opacity="1" />
     <stop offset="100%" stop-color="#f00" stop-opacity="0" />
   </radialGradient>
   <style>
-    rect.line {
+    rect {
       fill: #666;
     }
-    circle.gravity-center {
-      fill: url(#gravity-center);
+    circle {
+      fill: url(#gradient);
     }
-    line.axis {
+    line {
       stroke: #000;
     }
   </style>
 </defs>
-]]
+]])
 
-  for _, lines in ipairs(line_data) do
-    local y1 = lines.y1
-    local y2 = lines.y2
-    for _, line in ipairs(lines) do
-      local x1 = line.x1
-      local x2 = line.x2
-      handle:write('<rect x="', x1, '" y="', y1, '" width="', x2 - x1, '" height="', y2 - y1, '" class="line"/>\n')
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      handle:write(([[
+<rect x="%.17g" y="%.17g" width="%.17g" height="%.17g"/>
+]]):format(x1, y1, x2 - x1, y2 - y1))
     end
   end
 
-  -- 各行の重心
-  for _, lines in ipairs(line_data) do
-    if lines.gx then
-      handle:write('<circle cx="', lines.gx, '" cy="', lines.gy, '" r="2" class="gravity-center"/>\n')
+  -- 行の重心
+  for _, line in ipairs(line_data) do
+    if line.gx then
+      handle:write(([[
+<circle cx="%.17g" cy="%.17g" r="2"/>
+]]):format(line.gx, line.gy))
     end
   end
 
   -- 全体の重心
   if line_data.gx then
-    handle:write('<circle cx="', line_data.gx, '" cy="', line_data.gy, '" r="8" class="gravity-center"/>\n')
+    handle:write(([[
+<circle cx="%.17g" cy="%.17g" r="8"/>
+]]):format(line_data.gx, line_data.gy))
   end
 
   -- 軸となる直線x=ay+b
   if line_data.axis then
     local a = line_data.axis.a
     local b = line_data.axis.b
-    handle:write('<line x1="', a + b, '" y1="0" x2="', a * H + b, '" y2="', H, '" class="axis"/>\n')
+    handle:write(([[
+<line x1="%.17g" y1="0" x2="%.17g" y2="%d"/>
+]]):format(a + b, a * line_data.height + b, line_data.height))
   end
 
   handle:write '</svg>\n'
   handle:close()
-end
-
-function commands.scanline(expression, source_pathname, result_pathname)
-  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
-  local fn = assert(operators[op])
-  local b = assert(tonumber(b))
-
-  local image_data = new_image_data(source_pathname)
-  local line_data = scanline(image_data, function (a) return fn(a, b) end)
-  write_line_data(line_data, result_pathname)
 end
 
 --------------------------------------------------------------------------------
@@ -383,14 +380,28 @@ local function blend(alpha, A, B)
   return C
 end
 
-function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
-  local op, b = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
-  local fn = assert(operators[op])
-  local b = assert(tonumber(b))
+--------------------------------------------------------------------------------
 
-  local line_data1 = scanline(new_image_data(source_pathname1), function (a) return fn(a, b) end)
-  local line_data2 = scanline(new_image_data(source_pathname2), function (a) return fn(a, b) end)
+local commands = {}
+
+function commands.binarize(expression, source_pathname, result_pathname)
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = binarize(source_image_data, parse_expression(expression))
+  write_image_data(result_image_data, result_pathname)
+end
+
+function commands.scanline(expression, source_pathname, result_pathname)
+  local image_data = new_image_data(source_pathname)
+  local line_data = scanline(image_data, parse_expression(expression))
+  write_line_data(line_data, result_pathname)
+end
+
+function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
+  local expression = parse_expression(expression)
+  local line_data1 = scanline(new_image_data(source_pathname1), expression)
+  local line_data2 = scanline(new_image_data(source_pathname2), expression)
   local line_data = blend(tonumber(alpha), line_data1, line_data2)
+  process_line_data(line_data)
   write_line_data(line_data, result_pathname)
 end
 
