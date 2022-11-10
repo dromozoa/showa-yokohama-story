@@ -402,12 +402,14 @@ end
 --------------------------------------------------------------------------------
 
 local font
+local output_dirpath
 local line_dataset = {}
 
 local frame = 0
 local show_fps = true
 local show_status = true
 local running = false
+local encoding = false
 
 local noise_base_update = false
 local noise_base_x = 0
@@ -415,7 +417,12 @@ local noise_base_y = 0
 local noise_base_z = 0
 
 local noise_modes = {
-  "noise/1", "noise/2", "random/1", "random/2", "randomNormal/1", "randomNormal/2";
+  "noise/1";
+  "noise/2";
+  "random/1";
+  "random/2";
+  "randomNormal/1";
+  "randomNormal/2";
 }
 local noise_mode_index = 1
 
@@ -436,7 +443,8 @@ function love.load(arg)
   end
 
   font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
-  for i = 2, #arg do
+  output_dirpath = arg[2]
+  for i = 3, #arg do
     line_dataset[#line_dataset + 1] = scanline(new_image_data(arg[i]), function (a) return a > 0.5 end)
   end
 end
@@ -540,19 +548,48 @@ function love.draw()
   if running then
     frame = frame + 1
   end
+  if encoding then
+    local pathname = ("%s/%04d.png"):format(output_dirpath, frame)
+    print("pathname: "..pathname)
+
+    g.captureScreenshot(function (image_data)
+      write_image_data(image_data, pathname)
+    end)
+
+    frame = frame + 1
+    if frame >= M * (#line_dataset + 1) then
+      encoding = false
+      frame = 0
+    end
+  end
 end
 
 function love.keypressed(key)
   if key == "c" then
     color_mode_index = color_mode_index % #color_modes + 1
     print("color: "..color_mode_index)
+
+  elseif key == "e" then
+    if encoding then
+      encoding = false
+    else
+      frame = 0
+      show_fps = false
+      show_status = false
+      running = false
+      encoding = true
+    end
+
   elseif key == "f" then
     show_fps = not show_fps
+
   elseif key == "n" then
     noise_mode_index = noise_mode_index % #noise_modes + 1
     print("noise: "..noise_modes[noise_mode_index])
+
   elseif key == "s" then
     show_status = not show_status
+
   elseif key == "space" then
     running = not running
   end
