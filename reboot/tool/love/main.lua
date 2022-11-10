@@ -417,6 +417,7 @@ local noise_base_y = 0
 local noise_base_z = 0
 
 local noise_modes = {
+  "none";
   "noise/1";
   "noise/2";
   "random/1";
@@ -496,8 +497,8 @@ function love.draw()
       for c, color in ipairs(color_mode) do
         local x1 = segment.x1
         local x2 = segment.x2
-        local n1
-        local n2
+        local n1 = 0
+        local n2 = 0
         if noise_mode == "noise/1" then
           n1 = (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
           n2 = n1
