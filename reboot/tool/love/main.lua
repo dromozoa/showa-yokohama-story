@@ -268,10 +268,6 @@ end
 
 local function blend_line(alpha, line1, line2)
   local beta = 1 - alpha
-  if #line1 > #line2 then
-    return blend_line(beta, line2, line1)
-  end
-
   local line = { y1 = line1.y1, y2 = line1.y2 }
 
   if #line1 == 0 then
@@ -279,6 +275,13 @@ local function blend_line(alpha, line1, line2)
       line[#line + 1] = {
         x1 = line1.gx * beta + segment2.x1 * alpha;
         x2 = line1.gx * beta + segment2.x2 * alpha;
+      }
+    end
+  elseif #line2 == 0 then
+    for _, segment1 in ipairs(line1) do
+      line[#line + 1] = {
+        x1 = segment1.x1 * alpha + line2.gx * beta;
+        x2 = segment1.x2 * alpha + line2.gx * beta;
       }
     end
   else
