@@ -133,10 +133,10 @@ local function process_line_data(line_data)
   local sum_yy = 0
   local n = 0
 
-  for _, lines in ipairs(line_data) do
-    if lines.gx then
-      local x = lines.gx
-      local y = lines.gy
+  for _, line in ipairs(line_data) do
+    if line.gx then
+      local x = line.gx
+      local y = line.gy
       sum_x = sum_x + x
       sum_y = sum_y + y
       sum_xy = sum_xy + x * y
@@ -151,9 +151,9 @@ local function process_line_data(line_data)
   line_data.axis = { a = a, b = b }
 
   -- 行の重心が割り当てられていない場合、軸から外挿する。
-  for _, lines in ipairs(line_data) do
-    if not lines.gx then
-      lines.gx = a * lines.gy + b
+  for _, line in ipairs(line_data) do
+    if not line.gx then
+      line.gx = a * line.gy + b
     end
   end
 
@@ -405,10 +405,16 @@ end
 --------------------------------------------------------------------------------
 
 local font
-local show_fps = false
-local frame = 0
-local running = false
 local line_dataset = {}
+
+local frame = 0
+local fps = true
+local running = false
+
+local noise_base_x = 0 -- love.math.random()
+local noise_base_y = 0 -- love.math.random()
+local noise_base_z = 0 -- love.math.random()
+local update_noise = true
 
 --------------------------------------------------------------------------------
 
@@ -426,32 +432,37 @@ function love.load(arg)
   end
 end
 
-local noise_base_x = love.math.random()
-local noise_base_y = love.math.random()
-local noise_base_z = love.math.random()
-
 function love.draw()
-  local M = 180
-  local N =  60
+  local M = 120
+  local N =  59
 
-  local i = math.floor(frame / M) % #line_dataset + 1
+  local i = math.floor(frame / M) % (#line_dataset + 1)
   local line_data1 = line_dataset[i]
   local line_data2 = line_dataset[i + 1]
 
   local f = frame % M
-  if f >= N then
-    f = N - 1
+  if f > N then
+    f = N
   end
-  local t = f / (N - 1)
+  local t = f / N
   local alpha = (1 - math.cos(math.pi * t)) * 0.5
   local gamma = math.sin(math.pi * t)
 
+  local W, H = love.window.getMode()
+
   local scale = 100
 
+  if update_noise_base then
+    noise_base_x = W * love.math.random()
+    noise_base_y = W * love.math.random()
+    noise_base_z = W * love.math.random()
+  end
+
   local colors = {
-    { 1, 0, 0 };
-    { 0, 1, 0 };
-    { 0, 0, 1 };
+    { 1, 1, 1 };
+    -- { 1, 0, 0 };
+    -- { 0, 1, 0 };
+    -- { 0, 0, 1 };
   }
 
   local line_data = blend_line_data(alpha, line_data1, line_data2)
@@ -459,21 +470,27 @@ function love.draw()
   local g = love.graphics
   g.clear()
 
-  local W, H = love.window.getMode()
   g.push()
   g.translate((W - line_data.width) * 0.5, (H - line_data.height) * 0.5)
 
   local blend_mode = g.getBlendMode()
   g.setBlendMode "add"
-  for _, lines in ipairs(line_data) do
-    local y1 = lines.y1
-    local y2 = lines.y2
-    for _, line in ipairs(lines) do
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+
+    for _, segment in ipairs(line) do
       for c, color in ipairs(colors) do
-        local x1 = line.x1
-        local x2 = line.x2
-        x1 = x1 + scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
-        x2 = x2 + scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        local x1 = segment.x1
+        local x2 = segment.x2
+        -- x1 = x1 + scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- x2 = x2 + scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- x1 = x1 + scale * gamma * (love.math.random() - 0.5) * 2
+        -- x2 = x2 + scale * gamma * (love.math.random() - 0.5) * 2
+        local n1 = scale * gamma * love.math.randomNormal(0.5)
+        local n2 = scale * gamma * love.math.randomNormal(0.5)
+        x1 = x1 + n1
+        x2 = x2 + n1
         g.setColor(color[1], color[2], color[3])
         g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
       end
@@ -487,7 +504,7 @@ function love.draw()
   local text_y = 20
 
   g.setColor(1, 1, 1)
-  if show_fps then
+  if fps then
     g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
     text_y = text_y + 30
   end
@@ -503,7 +520,7 @@ end
 
 function love.keypressed(key)
   if key == "f" then
-    show_fps = not show_fps
+    fps = not fps
   elseif key == "space" then
     running = not running
   end
