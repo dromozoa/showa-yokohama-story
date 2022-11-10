@@ -273,70 +273,62 @@ local function blend_line(alpha, line1, line2)
   local line = { y1 = line1.y1, y2 = line1.y2 }
 
   if #line1 == 0 then
-    for _, bline in ipairs(line2) do
-      local ax = line1.gx
-      local an = 0
-      local bx = (bline.x1 + bline.x2) * 0.5
-      local bn = bline.x2 - bline.x1
-      local cx = ax * beta + bx * alpha
-      local cn = an * beta + bn * alpha
+    for _, segment2 in ipairs(line2) do
       line[#line + 1] = {
-        x1 = cx - cn * 0.5;
-        x2 = cx + cn * 0.5;
+        x1 = line1.gx * beta + segment2.x1 * alpha;
+        x2 = line1.gx * beta + segment2.x2 * alpha;
       }
     end
   else
-    local bm = 0
-    for _, bline in ipairs(line2) do
-      local bn = bline.x2 - bline.x1
-      local bs = bm / line2.n
-      local be = bn / line2.n + bs
+    local um = 0
+    for _, segment2 in ipairs(line2) do
+      local un = segment2.x2 - segment2.x1
+      local u1 = um / line2.n
+      local u2 = un / line2.n + u1
 
-      local segments = {}
-      local segment_start
+      local mapping = {}
+      local mapping_start
       local segment_n = 0
 
-      local am = 0
-      for i, aline in ipairs(line1) do
-        local an = aline.x2 - aline.x1
-        local as = am / line1.n
-        local ae = an / line1.n + as
+      local vm = 0
+      for i, segment1 in ipairs(line1) do
+        local vn = segment1.x2 - segment1.x1
+        local v1 = vm / line1.n
+        local v2 = vn / line1.n + v1
 
-        -- aがbの始点を含むかどうかを調べる
-        if not segment_start then
-          if as <= bs and bs < ae then
-            segment_start = (bs - as) / (ae - as) * an + aline.x1
+        if not mapping_start then
+          if v1 <= u1 and u1 < v2 then
+            mapping_start = (u1 - v1) / (v2 - v1) * vn + segment1.x1
           end
         end
 
-        if segment_start then
-          -- aがbの終点を含むかどうかを調べる
-          if as < be and be <= ae then
-            local segment_end = (be - ae) / (ae - as) * an + aline.x2
-            local segment = { ax1 = segment_start, ax2 = segment_end }
-            segments[#segments + 1] = segment
-            segment.n = segment.ax2 - segment.ax1
-            segment_n = segment_n + segment.n
+        if mapping_start then
+          if v1 < u2 and u2 <= v2 then
+            local mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
+            local map = { ax1 = mapping_start, ax2 = mapping_end }
+            mapping[#mapping + 1] = map
+            map.n = map.ax2 - map.ax1
+            segment_n = segment_n + map.n
             break
           else
-            local segment = { ax1 = segment_start, ax2 = aline.x2 }
-            segments[#segments + 1] = segment
-            segment.n = segment.ax2 - segment.ax1
-            segment_n = segment_n + segment.n
-            segment_start = line1[i + 1].x1
+            local map = { ax1 = mapping_start, ax2 = segment1.x2 }
+            mapping[#mapping + 1] = map
+            map.n = map.ax2 - map.ax1
+            segment_n = segment_n + map.n
+            mapping_start = line1[i + 1].x1
           end
         end
 
-        am = am + an
+        vm = vm + vn
       end
 
       local sm = 0
-      for i, segment in ipairs(segments) do
+      for i, segment in ipairs(mapping) do
         local sn = segment.n
         local ss = sm / segment_n
         local se = sn / segment_n + ss
-        segment.bx1 = ss * bn + bline.x1
-        segment.bx2 = se * bn + bline.x1
+        segment.bx1 = ss * un + segment2.x1
+        segment.bx2 = se * un + segment2.x1
 
         local x1 = segment.ax1 * beta + segment.bx1 * alpha
         local x2 = segment.ax2 * beta + segment.bx2 * alpha
@@ -348,7 +340,7 @@ local function blend_line(alpha, line1, line2)
         sm = sm + sn
       end
 
-      bm = bm + bn
+      um = um + un
     end
   end
 
