@@ -288,7 +288,8 @@ local function blend_line(alpha, line1, line2)
 
       local mapping = {}
       local mapping_start
-      local segment_n = 0
+      local mapping_end
+      local mapping_n = 0
 
       local vm = 0
       for i, segment1 in ipairs(line1) do
@@ -303,19 +304,21 @@ local function blend_line(alpha, line1, line2)
         end
 
         if mapping_start then
+          local map = { ax1 = mapping_start }
           if v1 < u2 and u2 <= v2 then
-            local mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
-            local map = { ax1 = mapping_start, ax2 = mapping_end }
-            mapping[#mapping + 1] = map
-            map.n = map.ax2 - map.ax1
-            segment_n = segment_n + map.n
-            break
+            mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
+            map.ax2 = mapping_end
           else
-            local map = { ax1 = mapping_start, ax2 = segment1.x2 }
-            mapping[#mapping + 1] = map
-            map.n = map.ax2 - map.ax1
-            segment_n = segment_n + map.n
+            map.ax2 = segment1.x2
             mapping_start = line1[i + 1].x1
+          end
+
+          map.n = map.ax2 - map.ax1
+          mapping[#mapping + 1] = map
+          mapping_n = mapping_n + map.n
+
+          if mapping_end then
+            break
           end
         end
 
@@ -323,15 +326,15 @@ local function blend_line(alpha, line1, line2)
       end
 
       local sm = 0
-      for i, segment in ipairs(mapping) do
-        local sn = segment.n
-        local ss = sm / segment_n
-        local se = sn / segment_n + ss
-        segment.bx1 = ss * un + segment2.x1
-        segment.bx2 = se * un + segment2.x1
+      for i, map in ipairs(mapping) do
+        local sn = map.n
+        local ss = sm / mapping_n
+        local se = sn / mapping_n + ss
+        local bx1 = ss * un + segment2.x1
+        local bx2 = se * un + segment2.x1
 
-        local x1 = segment.ax1 * beta + segment.bx1 * alpha
-        local x2 = segment.ax2 * beta + segment.bx2 * alpha
+        local x1 = map.ax1 * beta + bx1 * alpha
+        local x2 = map.ax2 * beta + bx2 * alpha
         line[#line + 1] = {
           x1 = x1;
           x2 = x2;
