@@ -15,458 +15,515 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
--- love.filesystemの外側のファイルを扱いたいので自前でファイルを読む。
--- love.graphicsを使わないのでヘッドレスで処理できる。
-local function new_image_data(pathname)
+package.path = "../?.lua;"..package.path
+local basename = require "basename"
+local table_unpack = table.unpack or unpack
+
+--------------------------------------------------------------------------------
+
+local function new_byte_data(pathname)
+  -- love.filesystemの外のファイルを扱うためにネイティブ入出力を用いる。
   local handle = assert(io.open(pathname, "rb"))
   local byte_data = love.data.newByteData(handle:read "*a")
   handle:close()
-  local file_data = love.filesystem.newFileData(byte_data, pathname)
-  local image_data = love.image.newImageData(file_data)
-  return image_data
+  return byte_data
 end
 
-local function save_image_data(image_data, pathname)
-  local data = image_data:encode "png"
+local function new_file_data(pathname)
+  return love.filesystem.newFileData(new_byte_data(pathname), basename(pathname))
+end
+
+local function new_image_data(pathname)
+  return love.image.newImageData(new_file_data(pathname))
+end
+
+local function write_image_data(image_data, pathname)
+  -- https://love2d.org/wiki/ImageEncodeFormat
+  local format = assert(pathname:match "[^.]+$"):lower()
+  assert(format == "tga" or format == "png")
+  local data = image_data:encode(format)
   local handle = assert(io.open(pathname, "wb"))
   handle:write(data:getString())
   handle:close()
 end
 
-local class = {}
-local game = {}
+--------------------------------------------------------------------------------
 
-function class.image_to_svg(source_pathname, target_pathname)
-  local image_data = new_image_data(source_pathname)
+local operators = {
+  ["=="] = function (a, b) return a == b end;
+  ["~="] = function (a, b) return a ~= b end;
+  ["<="] = function (a, b) return a <= b end;
+  [">="] = function (a, b) return a >= b end;
+  ["<"] = function (a, b) return a < b end;
+  [">"] = function (a, b) return a > b end;
+}
 
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
+local function parse_expression(expression)
+  local operator, v = assert(expression:match "^%s*([=~<>]+)%s*(.*)$")
+  local operator = assert(operators[operator])
+  local v = assert(tonumber(v))
+  return function (u) return operator(u, v) end
+end
+
+--------------------------------------------------------------------------------
+
+local function grayscale(r, g, b, a)
+  -- sRGBを仮定してガンマ補正を行った後、輝度を計算する。
+  local r, g, b = love.math.gammaToLinear(r * a, g * a, b * a)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+end
+
+local function binarize(image_data, fn)
+  -- love.graphicsを使わないのでヘッドレスで処理できる。
+  local image_data = image_data:clone()
+  image_data:mapPixel(function (x, y, r, g, b, a)
+    if (fn(grayscale(r, g, b, a))) then
+      return 1, 1, 1, 1
+    else
+      return 0, 0, 0, 0
+    end
+  end)
+  return image_data
+end
+
+--------------------------------------------------------------------------------
+
+local function process_line_data(line_data)
+  -- 行の重心と全体の重心を求める。
+  local global_moment_x = 0
+  local global_moment_y = 0
+  local global_sum_area = 0
+
+  for _, line in ipairs(line_data) do
+    local moment_x = 0
+    local sum_area = 0
+
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      local x = (x1 + x2) * 0.5
+      local area = x2 - x1
+
+      moment_x = moment_x + area * x
+      sum_area = sum_area + area
+    end
+
+    local y = line.y1 + 0.5
+
+    if sum_area > 0 then
+      line.gx = moment_x / sum_area
+    end
+    line.gy = y
+    line.n = sum_area
+
+    global_moment_x = global_moment_x + moment_x
+    global_moment_y = global_moment_y + sum_area * y
+    global_sum_area = global_sum_area + sum_area
+  end
+
+  if global_sum_area > 0 then
+    line_data.gx = global_moment_x / global_sum_area
+    line_data.gy = global_moment_y / global_sum_area
+  end
+
+  -- 行の重心から、最小二乗法で軸となる直線x=ay+bを求める。
+  local sum_x = 0
+  local sum_y = 0
+  local sum_xy = 0
+  local sum_yy = 0
   local n = 0
 
-  local handle = assert(io.open(target_pathname, "wb"))
-
-  handle:write('<svg width="', w, '" height="', h, '" viewBox="0 0 ', w, " ", h, '">\n')
-  for j = 0, h - 1 do
-    local lines = {}
-    local start
-    local u = image_data:getPixel(0, j)
-    for i = 1, w - 1 do
-      local v = image_data:getPixel(i, j)
-      if u < 0.5 then
-        if v >= 0.5 then
-          -- line開始
-          start = i
-        end
-      else
-        if v < 0.5 then
-          -- line終了
-          lines[#lines + 1] = { start, i }
-        end
-      end
-      u = v
-    end
-    if lines[1] then
-      handle:write('<path d="')
-      for _, line in ipairs(lines) do
-        handle:write("M", line[1], " ", j, "L", line[2], " ", j)
-      end
-      handle:write('"/>\n')
-    end
-  end
-  handle:write '</svg>\n'
-
-  handle:close()
-  return true
-end
-
-local operators = {}
-function operators.lt(y)
-  return y < 0.5
-end
-function operators.gt(y)
-  return y > 0.5
-end
-
-function class.binarize(operator, source_pathname, target_pathname)
-  local image_data = new_image_data(source_pathname)
-
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
-
-  local f = assert(operators[operator])
-
-  for j = 0, h - 1 do
-    for i = 1, w - 1 do
-      local r, g, b, a = image_data:getPixel(i, j)
-      local y = (0.2126 * r + 0.7152 * g + 0.0722 * b) * a
-      if f(y) then
-        r, g, b, a = 1, 1, 1, 1
-      else
-        r, g, b, a = 0, 0, 0, 0
-      end
-      image_data:setPixel(i, j, r, g, b, a)
+  for _, line in ipairs(line_data) do
+    if line.gx then
+      local x = line.gx
+      local y = line.gy
+      sum_x = sum_x + x
+      sum_y = sum_y + y
+      sum_xy = sum_xy + x * y
+      sum_yy = sum_yy + y * y
+      n = n + 1
     end
   end
 
-  save_image_data(image_data, target_pathname)
-  return true
-end
+  local d = n * sum_yy - sum_y * sum_y
+  local a = (n * sum_xy - sum_x * sum_y) / d
+  local b = (sum_x * sum_yy - sum_y * sum_xy) / d
+  line_data.axis = { a = a, b = b }
 
-local function prepare_silhouette(pathname)
-  local image_data = new_image_data(pathname)
-
-  local w = image_data:getWidth()
-  local h = image_data:getHeight()
-
-  local line_data = {}
-  for j = 0, h - 1 do
-    local lines = { y = j }
-    local start
-
-    local u
-    for i = 0, w - 1 do
-      local r, g, b, a = image_data:getPixel(i, j)
-      local v = 0.2126 * r + 0.7152 * g + 0.0722 * b
-      if i > 0 then
-        if u < 0.5 then
-          if v >= 0.5 then
-            assert(not start)
-            start = i
-          end
-        else
-          if v < 0.5 then
-            lines[#lines + 1] = { x1 = start, x2 = i }
-            start = nil
-          end
-        end
-      end
-      u = v
+  -- 行の重心が割り当てられていない場合、軸から外挿する。
+  for _, line in ipairs(line_data) do
+    if not line.gx then
+      line.gx = a * line.gy + b
     end
-
-    line_data[j + 1] = lines
   end
 
-  local image = love.graphics.newImage(image_data)
-  return {
-    pathaname = pathaname;
-    line_data = line_data;
-    image_data = image_data;
-    image = image;
+  return line_data
+end
+
+local function scanline(image_data, fn)
+  -- 画素(i,j)が左上(i,j)が右下(i+1,j+1)の正方形で表されるような座標系を用いる。
+  local line_data = {
+    width = image_data:getWidth() + 1;
+    height = image_data:getHeight() + 1;
   }
+
+  for j = 0, image_data:getHeight() - 1 do
+    local line = { y1 = j, y2 = j + 1}
+    local x1
+
+    local u = false
+    for i = 0, image_data:getWidth() do
+      local v = false
+      if i < image_data:getWidth() then
+        v = fn(grayscale(image_data:getPixel(i, j)))
+      end
+
+      if v then
+        if not u then
+          assert(not x1)
+          x1 = i
+        end
+      elseif u then
+        line[#line + 1] = { x1 = x1, x2 = i }
+        x1 = nil
+      end
+
+      u = v
+    end
+
+    line_data[#line_data + 1] = line
+  end
+
+  return process_line_data(line_data)
 end
 
-function class.play(...)
-  game.frame = 0
-  game.silhouettes = {...}
-  for i, pathname in ipairs(game.silhouettes) do
-    game.silhouettes[i] = prepare_silhouette(pathname)
+--------------------------------------------------------------------------------
+
+local function write_line_data(line_data, result_pathname)
+  local W = line_data.width
+  local H = line_data.height
+
+  local handle = assert(io.open(result_pathname, "wb"))
+  handle:write(([[
+<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
+]]):format(line_data.width, line_data.height, line_data.width, line_data.height), [[
+<defs>
+  <radialGradient id="gradient">
+    <stop offset="0%" stop-color="#f00" stop-opacity="1" />
+    <stop offset="100%" stop-color="#f00" stop-opacity="0" />
+  </radialGradient>
+  <style>
+    rect {
+      fill: #666;
+    }
+    circle {
+      fill: url(#gradient);
+    }
+    line {
+      stroke: #000;
+    }
+  </style>
+</defs>
+]])
+
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      handle:write(([[
+<rect x="%.17g" y="%.17g" width="%.17g" height="%.17g"/>
+]]):format(x1, y1, x2 - x1, y2 - y1))
+    end
   end
-  game.font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
+
+  -- 行の重心
+  for _, line in ipairs(line_data) do
+    if line.gx then
+      handle:write(([[
+<circle cx="%.17g" cy="%.17g" r="2"/>
+]]):format(line.gx, line.gy))
+    end
+  end
+
+  -- 全体の重心
+  if line_data.gx then
+    handle:write(([[
+<circle cx="%.17g" cy="%.17g" r="8"/>
+]]):format(line_data.gx, line_data.gy))
+  end
+
+  -- 軸となる直線x=ay+b
+  if line_data.axis then
+    local a = line_data.axis.a
+    local b = line_data.axis.b
+    handle:write(([[
+<line x1="%.17g" y1="0" x2="%.17g" y2="%d"/>
+]]):format(a + b, a * line_data.height + b, line_data.height))
+  end
+
+  handle:write '</svg>\n'
+  handle:close()
 end
+
+--------------------------------------------------------------------------------
+
+local function blend_line(alpha, line1, line2)
+  local beta = 1 - alpha
+  if #line1 > #line2 then
+    return blend_line(beta, line2, line1)
+  end
+
+  local line = { y1 = line1.y1, y2 = line1.y2 }
+
+  if #line1 == 0 then
+    for _, segment2 in ipairs(line2) do
+      line[#line + 1] = {
+        x1 = line1.gx * beta + segment2.x1 * alpha;
+        x2 = line1.gx * beta + segment2.x2 * alpha;
+      }
+    end
+  else
+    local um = 0
+    for _, segment2 in ipairs(line2) do
+      local un = segment2.x2 - segment2.x1
+      local u1 = um / line2.n
+      local u2 = un / line2.n + u1
+
+      local mapping = {}
+      local mapping_start
+      local mapping_end
+      local mapping_n = 0
+
+      local vm = 0
+      for i, segment1 in ipairs(line1) do
+        local vn = segment1.x2 - segment1.x1
+        local v1 = vm / line1.n
+        local v2 = vn / line1.n + v1
+
+        if not mapping_start then
+          if v1 <= u1 and u1 < v2 then
+            mapping_start = (u1 - v1) / (v2 - v1) * vn + segment1.x1
+          end
+        end
+
+        if mapping_start then
+          local map = { x1 = mapping_start }
+          if v1 < u2 and u2 <= v2 then
+            mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
+            map.x2 = mapping_end
+          else
+            map.x2 = segment1.x2
+            mapping_start = line1[i + 1].x1
+          end
+
+          map.n = map.x2 - map.x1
+          mapping[#mapping + 1] = map
+          mapping_n = mapping_n + map.n
+
+          if mapping_end then
+            break
+          end
+        end
+
+        vm = vm + vn
+      end
+
+      local m = 0
+      for _, map in ipairs(mapping) do
+        local n = map.n
+        local t1 = m / mapping_n
+        local t2 = n / mapping_n + t1
+        line[#line + 1] = {
+          x1 = map.x1 * beta + (t1 * un + segment2.x1) * alpha;
+          x2 = map.x2 * beta + (t2 * un + segment2.x1) * alpha;
+        }
+        m = m + n
+      end
+
+      um = um + un
+    end
+  end
+
+  return line
+end
+
+local function blend_line_data(alpha, line_data1, line_data2)
+  if not line_data1 then
+    return blend_line_data(1 - alpha, assert(line_data2))
+  end
+
+  local line_data = {
+    width = line_data1.width;
+    height = line_data1.height;
+  }
+
+  for i, line1 in ipairs(line_data1) do
+    local line2
+    if line_data2 then
+      line2 = line_data2[i]
+    else
+      line2 = {
+        y1 = line1.y1;
+        y2 = line1.y2;
+        gx = line1.gx;
+        gy = line1.gy;
+        n = line1.n;
+      }
+    end
+    line_data[i] = blend_line(alpha, line1, line2)
+  end
+
+  return process_line_data(line_data)
+end
+
+--------------------------------------------------------------------------------
+
+local commands = {}
+
+function commands.binarize(expression, source_pathname, result_pathname)
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = binarize(source_image_data, parse_expression(expression))
+  write_image_data(result_image_data, result_pathname)
+end
+
+function commands.scanline(expression, source_pathname, result_pathname)
+  local image_data = new_image_data(source_pathname)
+  local line_data = scanline(image_data, parse_expression(expression))
+  write_line_data(line_data, result_pathname)
+end
+
+function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
+  local expression = parse_expression(expression)
+  local line_data1 = scanline(new_image_data(source_pathname1), expression)
+  local line_data2 = scanline(new_image_data(source_pathname2), expression)
+  local line_data = blend_line_data(tonumber(alpha), line_data1, line_data2)
+  write_line_data(line_data, result_pathname)
+end
+
+--------------------------------------------------------------------------------
+
+local font
+local line_dataset = {}
+
+local frame = 0
+local fps = true
+local running = false
+
+local noise_base_x = 0 -- love.math.random()
+local noise_base_y = 0 -- love.math.random()
+local noise_base_z = 0 -- love.math.random()
+local update_noise = true
+
+--------------------------------------------------------------------------------
 
 function love.load(arg)
-  -- love2dはLuaJITなのでtable.unpackでなくunpackを使う。
-  local f = assert(class[arg[1]])
-  if f(unpack(arg, 2)) then
+  local command = commands[arg[1]]
+  if command then
+    command(table_unpack(arg, 2))
     love.event.quit()
+    return
+  end
+
+  font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
+  for i = 2, #arg do
+    line_dataset[#line_dataset + 1] = scanline(new_image_data(arg[i]), function (a) return a > 0.5 end)
   end
 end
-
-local function compare_length(a, b)
-  local t = a.x2 - a.x1
-  local u = b.x2 - b.x1
-  if t == u then
-    return a.x1 < b.x1
-  else
-    return t < u
-  end
-end
-
-local function compare_x(a, b)
-  if a.x1 == b.x1 then
-    return a.x2 < b.x2
-  else
-    return a.x1 < b.x1
-  end
-end
-
-local seed_x = 1000 * love.math.random()
-local seed_y = 1000 * love.math.random()
-local seed_z = 1000 * love.math.random()
-local m = 2
-local reseed = true
 
 function love.draw()
-  local g = love.graphics
+  local M = 120
+  local N =  59
 
-  if reseed then
-    seed_x = 1000 * love.math.random()
-    seed_y = 1000 * love.math.random()
-    seed_z = 1000 * love.math.random()
+  local i = math.floor(frame / M) % (#line_dataset + 1)
+  local line_data1 = line_dataset[i]
+  local line_data2 = line_dataset[i + 1]
+
+  local f = frame % M
+  if f > N then
+    f = N
+  end
+  local t = f / N
+  local alpha = (1 - math.cos(math.pi * t)) * 0.5
+  local gamma = math.sin(math.pi * t)
+
+  local W, H = love.window.getMode()
+
+  local scale = 100
+
+  if update_noise_base then
+    noise_base_x = W * love.math.random()
+    noise_base_y = W * love.math.random()
+    noise_base_z = W * love.math.random()
   end
 
-  local silhouettes = {
-    -- { 0, 1 }; { 1, 2 }; { 2, 1 };
-
-    { 0, 1 };
-    { 1, 1 };
-    { 1, 2 };
-    { 2, 2 };
-    { 2, 1 };
-    { 1, 0 };
-    { 0, 2 };
-    { 2, 0 };
-  }
-  local i = math.floor(game.frame / 120)
-  local j = i % #silhouettes + 1
-  local prev = silhouettes[j][1]
-  local this = silhouettes[j][2]
-  prev = game.silhouettes[prev]
-  this = game.silhouettes[this]
-
-  local t = math.min((game.frame % 120) / 79, 1)
-  local p = (1 - math.cos(math.pi * t)) * 0.5
-  local q = 1 - p
-  local scale = 400
-
   local colors = {
+    -- { 1, 1, 1 };
     { 1, 0, 0 };
     { 0, 1, 0 };
     { 0, 0, 1 };
   }
 
-  -- #029D93
-  -- local colors = {
-  --   { 0x02/0xFF, 0, 0 };
-  --   { 0, 0x9D/0xFF, 0 };
-  --   { 0, 0, 0x93/0xFF };
-  -- }
+  local line_data = blend_line_data(alpha, line_data1, line_data2)
 
-  -- local colors = {
-  --   { 1, 1, 1 };
-  -- }
-
-  local W, H = love.window.getMode()
-  g.push()
-  g.translate((W - game.silhouettes[1].image_data:getWidth()) * 0.5, (H - game.silhouettes[1].image_data:getHeight()) * 0.5)
-
+  local g = love.graphics
   g.clear()
-  g.setLineWidth(1)
-  g.setLineStyle "rough"
+
+  g.push()
+  g.translate((W - line_data.width) * 0.5, (H - line_data.height) * 0.5)
 
   local blend_mode = g.getBlendMode()
   g.setBlendMode "add"
-  if prev and this then
-    assert(#prev.line_data == #this.line_data)
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
 
-    if true then
-
-      for j = 1, #prev.line_data, m do
-        local prev_lines = prev.line_data[j]
-        local this_lines = this.line_data[j]
-        local y = this_lines.y
-
-        -- どちらかに線分がなければ、中点を基準とする。
-        if #this_lines == 0 then
-          for i, line in ipairs(prev_lines) do
-            for c, color in ipairs(colors) do
-              local x1 = line.x1
-              local x2 = line.x2
-              local x3 = (x1 + x2) * 0.5
-              x1 = x3 + (x1 - x3) * q
-              x2 = x3 + (x2 - x3) * q
-              x1 = x1 + scale * (1 - q) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-              x2 = x2 + scale * (1 - q) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-              g.setColor(color[1] * q, color[2] * q, color[3] * q)
-              -- g.setColor(color[1], color[2], color[3])
-              g.line(x1, y, x2, y)
-            end
-          end
-        elseif #prev_lines == 0 then
-          for i, line in ipairs(this_lines) do
-            for c, color in ipairs(colors) do
-              local x1 = line.x1
-              local x2 = line.x2
-              local x3 = (x1 + x2) * 0.5
-              x1 = x3 + (x1 - x3) * p
-              x2 = x3 + (x2 - x3) * p
-              x1 = x1 + scale * (1 - p) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-              x2 = x2 + scale * (1 - p) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-              g.setColor(color[1] * p, color[2] * p, color[3] * p)
-              -- g.setColor(color[1], color[2], color[3])
-              g.line(x1, y, x2, y)
-            end
-          end
-        else
-          local P = {}
-          local Q = {}
-          for i, line in ipairs(prev_lines) do
-            P[i] = { x1 = line.x1, x2 = line.x2 }
-          end
-          for i, line in ipairs(this_lines) do
-            Q[i] = { x1 = line.x1, x2 = line.x2 }
-          end
-
-          table.sort(P, compare_length)
-          table.sort(Q, compare_length)
-
-          -- 線分が少ないほうのいちばん長い線分を分割する
-          while #P < #Q do
-            local t = P[#P]
-            local x = (t.x1 + t.x2) * 0.5
-            local u = { x1 = x, x2 = t.x2 }
-            t.x2 = x
-            P[#P + 1] = u
-            table.sort(P, compare_length)
-          end
-
-          while #Q < #P do
-            local t = Q[#Q]
-            local x = (t.x1 + t.x2) * 0.5
-            local u = { x1 = x, x2 = t.x2 }
-            t.x2 = x
-            Q[#Q + 1] = u
-            table.sort(Q, compare_length)
-          end
-
-          table.sort(P, compare_x)
-          table.sort(Q, compare_x)
-
-          local r = (math.max(p, q) - 0.5) * 2
-          -- assert(r >= 0.5)
-
-          for i = 1, #P do
-            local prev_line = P[i]
-            local this_line = Q[i]
-
-            for c, color in ipairs(colors) do
-              local x1 = prev_line.x1 * q + this_line.x1 * p
-              local x2 = prev_line.x2 * q + this_line.x2 * p
-              x1 = x1 + scale * (1 - r) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-              x2 = x2 + scale * (1 - r) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-              g.setColor(color[1], color[2], color[3])
-              g.line(x1, y, x2, y)
-            end
-          end
-
-        end
-      end
-
-    else
-
-      for j = 1, #prev.line_data, m do
-        local lines = prev.line_data[j]
-        local y = lines.y
-        for i, line in ipairs(lines) do
-          for c, color in ipairs(colors) do
-            local x1 = line.x1
-            local x2 = line.x2
-            local x3 = (x1 + x2) * 0.5
-            x1 = x3 + (x1 - x3) * q
-            x2 = x3 + (x2 - x3) * q
-            x1 = x1 + scale * (1 - q) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-            x2 = x2 + scale * (1 - q) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-            g.setColor(color[1] * q, color[2] * q, color[3] * q)
-            -- g.setColor(color[1], color[2], color[3])
-            g.line(x1, y, x2, y)
-          end
-        end
-      end
-
-      for j = 1, #this.line_data, m do
-        local lines = this.line_data[j]
-        local y = lines.y
-        for i, line in ipairs(lines) do
-          for c, color in ipairs(colors) do
-            local x1 = line.x1
-            local x2 = line.x2
-            local x3 = (x1 + x2) * 0.5
-            x1 = x3 + (x1 - x3) * p
-            x2 = x3 + (x2 - x3) * p
-            x1 = x1 + scale * (1 - p) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-            x2 = x2 + scale * (1 - p) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-            g.setColor(color[1] * p, color[2] * p, color[3] * p)
-            g.line(x1, y, x2, y)
-          end
-        end
-      end
-
-    end
-
-  elseif prev then
-    for j = 1, #prev.line_data, m do
-      local lines = prev.line_data[j]
-      local y = lines.y
-      for i, line in ipairs(lines) do
-        for c, color in ipairs(colors) do
-          local x1 = line.x1
-          local x2 = line.x2
-          local x3 = (x1 + x2) * 0.5
-          x1 = x3 + (x1 - x3) * q
-          x2 = x3 + (x2 - x3) * q
-          x1 = x1 + scale * (1 - q) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-          x2 = x2 + scale * (1 - q) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-          g.setColor(color[1] * q, color[2] * q, color[3] * q)
-          g.line(x1, y, x2, y)
-        end
-      end
-    end
-  elseif this then
-    for j = 1, #this.line_data, m do
-      local lines = this.line_data[j]
-      local y = lines.y
-      for i, line in ipairs(lines) do
-        for c, color in ipairs(colors) do
-          local x1 = line.x1
-          local x2 = line.x2
-          local x3 = (x1 + x2) * 0.5
-          x1 = x3 + (x1 - x3) * p
-          x2 = x3 + (x2 - x3) * p
-          x1 = x1 + scale * (1 - p) * (love.math.noise(seed_x * x1, seed_y * y, seed_z * c) - 0.5) * 2
-          x2 = x2 + scale * (1 - p) * (love.math.noise(seed_x * x2, seed_y * y, seed_z * c) - 0.5) * 2
-          g.setColor(color[1] * p, color[2] * p, color[3] * p)
-          g.line(x1, y, x2, y)
+    for _, segment in ipairs(line) do
+      for c, color in ipairs(colors) do
+        local x1 = segment.x1
+        local x2 = segment.x2
+        -- local n1 = scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- local n2 = scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        -- local n1 = scale * gamma * (love.math.random() - 0.5) * 2
+        -- local n2 = scale * gamma * (love.math.random() - 0.5) * 2
+        local n1 = scale * gamma * love.math.randomNormal(0.5)
+        local n2 = scale * gamma * love.math.randomNormal(0.5)
+        x1 = x1 + n1
+        x2 = x2 + n1
+        if x1 < x2 then
+          g.setColor(color[1], color[2], color[3])
+          g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
         end
       end
     end
   end
   g.setBlendMode(blend_mode)
+
   g.pop()
 
-  if game.fps then
-    g.setColor(1, 1, 1)
-    g.print("FPS: "..love.timer.getFPS(), game.font, 20, 20)
+  local text_x = 20
+  local text_y = 20
+
+  g.setColor(1, 1, 1)
+  if fps then
+    g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
+    text_y = text_y + 30
+  end
+  if running then
+    g.print("running", font, text_x, text_y)
+    text_y = text_y + 30
   end
 
-  if game.running then
-    game.frame = game.frame + 1
-    -- if game.frame % 120 == 0 then
-    --   game.running = false
-    --   game.frame = game.frame - 1
-    --   local t = love.timer.getTime() - game.start
-    --   game.start = nil
-    --   print("elapsed: "..t)
-    -- end
+  if running then
+    frame = frame + 1
   end
 end
 
 function love.keypressed(key)
-  if key == "h" then
-    -- vi風のキーバインド
-    game.frame = game.frame - 1
-  elseif key == "l" then
-    -- vi風のキーバインド
-    game.frame = game.frame + 1
-  elseif key == "f" then
-    game.fps = not game.fps
-  elseif key == "s" then
-    game.running = not game.running
-    if game.running then
-      game.frame = math.floor((game.frame + 1) / 120) * 120
-      game.start = love.timer.getTime()
-    end
+  if key == "f" then
+    fps = not fps
+  elseif key == "space" then
+    running = not running
   end
-end
-
-function love.quit()
 end
