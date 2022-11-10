@@ -268,7 +268,7 @@ end
 
 --------------------------------------------------------------------------------
 
-local function blend_lines(alpha, alines, blines)
+local function blend_line(alpha, alines, blines)
   local beta = 1 - alpha
   local clines = { y1 = alines.y1, y2 = alines.y2 }
   assert(clines.y1 == blines.y1)
@@ -357,27 +357,24 @@ local function blend_lines(alpha, alines, blines)
   return clines
 end
 
-local function blend(alpha, A, B)
-  if B then
-    assert(#A == #B)
-  end
-
-  local C = {
-    width = A.width;
-    height = B.height;
+local function blend_line_data(alpha, line_data1, line_data2)
+  local line_data = {
+    width = line_data1.width;
+    height = line_data1.height;
   }
-  for i, a in ipairs(A) do
-    if B then
-      local b = B[i]
-      if #a < #b then
-        C[i] = blend_lines(alpha, a, b)
+
+  for i, line1 in ipairs(line_data1) do
+    if line_data2 then
+      local line2 = line_data2[i]
+      if #line1 < #line2 then
+        line_data[i] = blend_line(alpha, line1, line2)
       else
-        C[i] = blend_lines(1 - alpha, b, a)
+        line_data[i] = blend_line(1 - alpha, line2, line1)
       end
     end
   end
 
-  return C
+  return process_line_data(line_data)
 end
 
 --------------------------------------------------------------------------------
@@ -400,8 +397,7 @@ function commands.blend(expression, alpha, source_pathname1, source_pathname2, r
   local expression = parse_expression(expression)
   local line_data1 = scanline(new_image_data(source_pathname1), expression)
   local line_data2 = scanline(new_image_data(source_pathname2), expression)
-  local line_data = blend(tonumber(alpha), line_data1, line_data2)
-  process_line_data(line_data)
+  local line_data = blend_line_data(tonumber(alpha), line_data1, line_data2)
   write_line_data(line_data, result_pathname)
 end
 
@@ -457,7 +453,7 @@ function love.draw()
   local seed_y = 1000 * love.math.random()
   local seed_z = 1000 * love.math.random()
 
-  local line_data = blend(alpha, line_data1, line_data2)
+  local line_data = blend_line_data(alpha, line_data1, line_data2)
 
   local g = love.graphics
   g.clear()
