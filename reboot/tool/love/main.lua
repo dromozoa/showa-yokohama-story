@@ -268,41 +268,39 @@ end
 
 --------------------------------------------------------------------------------
 
-local function blend_line(alpha, alines, blines)
+local function blend_line(alpha, line1, line2)
   local beta = 1 - alpha
-  local clines = { y1 = alines.y1, y2 = alines.y2 }
-  assert(clines.y1 == blines.y1)
-  assert(clines.y2 == blines.y2)
+  local line = { y1 = line1.y1, y2 = line1.y2 }
 
-  if #alines == 0 then
-    for _, bline in ipairs(blines) do
-      local ax = alines.gx
+  if #line1 == 0 then
+    for _, bline in ipairs(line2) do
+      local ax = line1.gx
       local an = 0
       local bx = (bline.x1 + bline.x2) * 0.5
       local bn = bline.x2 - bline.x1
       local cx = ax * beta + bx * alpha
       local cn = an * beta + bn * alpha
-      clines[#clines + 1] = {
+      line[#line + 1] = {
         x1 = cx - cn * 0.5;
         x2 = cx + cn * 0.5;
       }
     end
   else
     local bm = 0
-    for _, bline in ipairs(blines) do
+    for _, bline in ipairs(line2) do
       local bn = bline.x2 - bline.x1
-      local bs = bm / blines.n
-      local be = bn / blines.n + bs
+      local bs = bm / line2.n
+      local be = bn / line2.n + bs
 
       local segments = {}
       local segment_start
       local segment_n = 0
 
       local am = 0
-      for i, aline in ipairs(alines) do
+      for i, aline in ipairs(line1) do
         local an = aline.x2 - aline.x1
-        local as = am / alines.n
-        local ae = an / alines.n + as
+        local as = am / line1.n
+        local ae = an / line1.n + as
 
         -- aがbの始点を含むかどうかを調べる
         if not segment_start then
@@ -325,7 +323,7 @@ local function blend_line(alpha, alines, blines)
             segments[#segments + 1] = segment
             segment.n = segment.ax2 - segment.ax1
             segment_n = segment_n + segment.n
-            segment_start = alines[i + 1].x1
+            segment_start = line1[i + 1].x1
           end
         end
 
@@ -342,7 +340,7 @@ local function blend_line(alpha, alines, blines)
 
         local x1 = segment.ax1 * beta + segment.bx1 * alpha
         local x2 = segment.ax2 * beta + segment.bx2 * alpha
-        clines[#clines + 1] = {
+        line[#line + 1] = {
           x1 = x1;
           x2 = x2;
         }
@@ -354,7 +352,7 @@ local function blend_line(alpha, alines, blines)
     end
   end
 
-  return clines
+  return line
 end
 
 local function blend_line_data(alpha, line_data1, line_data2)
