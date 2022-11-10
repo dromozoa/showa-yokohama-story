@@ -200,9 +200,6 @@ end
 --------------------------------------------------------------------------------
 
 local function write_line_data(line_data, result_pathname)
-  local W = line_data.width
-  local H = line_data.height
-
   local handle = assert(io.open(result_pathname, "wb"))
   handle:write(([[
 <svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
@@ -408,13 +405,25 @@ local font
 local line_dataset = {}
 
 local frame = 0
-local fps = true
+local show_fps = true
+local show_status = true
 local running = false
 
-local noise_base_x = 0 -- love.math.random()
-local noise_base_y = 0 -- love.math.random()
-local noise_base_z = 0 -- love.math.random()
-local update_noise = true
+local noise_base_update = false
+local noise_base_x = 0
+local noise_base_y = 0
+local noise_base_z = 0
+
+local noise_modes = {
+  "noise/1", "noise/2", "random/1", "random/2", "randomNormal/1", "randomNormal/2";
+}
+local noise_mode_index = 1
+
+local color_modes = {
+  { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+  { { 1, 1, 1 } };
+}
+local color_mode_index = 1
 
 --------------------------------------------------------------------------------
 
@@ -448,22 +457,18 @@ function love.draw()
   local alpha = (1 - math.cos(math.pi * t)) * 0.5
   local gamma = math.sin(math.pi * t)
 
-  local W, H = love.window.getMode()
+  local window_width, window_height = love.window.getMode()
 
   local scale = 100
 
-  if update_noise_base then
-    noise_base_x = W * love.math.random()
-    noise_base_y = W * love.math.random()
-    noise_base_z = W * love.math.random()
+  if noise_base_update then
+    noise_base_x = window_width * love.math.random()
+    noise_base_y = window_width * love.math.random()
+    noise_base_z = window_width * love.math.random()
   end
 
-  local colors = {
-    -- { 1, 1, 1 };
-    { 1, 0, 0 };
-    { 0, 1, 0 };
-    { 0, 0, 1 };
-  }
+  local noise_mode = noise_modes[noise_mode_index]
+  local color_mode = color_modes[color_mode_index]
 
   local line_data = blend_line_data(alpha, line_data1, line_data2)
 
@@ -471,7 +476,7 @@ function love.draw()
   g.clear()
 
   g.push()
-  g.translate((W - line_data.width) * 0.5, (H - line_data.height) * 0.5)
+  g.translate((window_width - line_data.width) * 0.5, (window_height - line_data.height) * 0.5)
 
   local blend_mode = g.getBlendMode()
   g.setBlendMode "add"
@@ -480,17 +485,32 @@ function love.draw()
     local y2 = line.y2
 
     for _, segment in ipairs(line) do
-      for c, color in ipairs(colors) do
+      for c, color in ipairs(color_mode) do
         local x1 = segment.x1
         local x2 = segment.x2
-        -- local n1 = scale * gamma * (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
-        -- local n2 = scale * gamma * (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
-        -- local n1 = scale * gamma * (love.math.random() - 0.5) * 2
-        -- local n2 = scale * gamma * (love.math.random() - 0.5) * 2
-        local n1 = scale * gamma * love.math.randomNormal(0.5)
-        local n2 = scale * gamma * love.math.randomNormal(0.5)
-        x1 = x1 + n1
-        x2 = x2 + n1
+        local n1
+        local n2
+        if noise_mode == "noise/1" then
+          n1 = (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+          n2 = n1
+        elseif noise_mode == "noise/2" then
+          n1 = (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+          n2 = (love.math.noise(noise_base_x + x2, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
+        elseif noise_mode == "random/1" then
+          n1 = (love.math.random() - 0.5) * 2
+          n2 = n1
+        elseif noise_mode == "random/2" then
+          n1 = (love.math.random() - 0.5) * 2
+          n2 = (love.math.random() - 0.5) * 2
+        elseif noise_mode == "randomNormal/1" then
+          n1 = love.math.randomNormal(0.5)
+          n2 = n1
+        elseif noise_mode == "randomNormal/2" then
+          n1 = love.math.randomNormal(0.5)
+          n2 = love.math.randomNormal(0.5)
+        end
+        x1 = x1 + scale * gamma * n1
+        x2 = x2 + scale * gamma * n2
         if x1 < x2 then
           g.setColor(color[1], color[2], color[3])
           g.rectangle("fill", x1, y1, x2 - x1, y2 - y1)
@@ -506,13 +526,15 @@ function love.draw()
   local text_y = 20
 
   g.setColor(1, 1, 1)
-  if fps then
+  if show_fps then
     g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
     text_y = text_y + 30
   end
-  if running then
-    g.print("running", font, text_x, text_y)
-    text_y = text_y + 30
+  if show_status then
+    if running then
+      g.print("running", font, text_x, text_y)
+      text_y = text_y + 30
+    end
   end
 
   if running then
@@ -521,8 +543,16 @@ function love.draw()
 end
 
 function love.keypressed(key)
-  if key == "f" then
-    fps = not fps
+  if key == "c" then
+    color_mode_index = color_mode_index % #color_modes + 1
+    print("color: "..color_mode_index)
+  elseif key == "f" then
+    show_fps = not show_fps
+  elseif key == "n" then
+    noise_mode_index = noise_mode_index % #noise_modes + 1
+    print("noise: "..noise_modes[noise_mode_index])
+  elseif key == "s" then
+    show_status = not show_status
   elseif key == "space" then
     running = not running
   end
