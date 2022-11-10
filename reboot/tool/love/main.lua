@@ -260,7 +260,48 @@ local function write_line_data(line_data, result_pathname)
 ]]):format(a + b, a * line_data.height + b, line_data.height))
   end
 
-  handle:write '</svg>\n'
+  handle:write "</svg>\n"
+  handle:close()
+end
+
+local function write_mapping_data(mapping_data, result_pathname)
+  local handle = assert(io.open(result_pathname, "wb"))
+  handle:write(([[
+<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
+]]):format(mapping_data.width, mapping_data.height, mapping_data.width, mapping_data.height), [[
+<defs>
+  <style>
+    path {
+      stroke: white;
+      stroke-width: 1;
+    }
+  </style>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="black"/>
+]])
+
+  for _, mapping in ipairs(mapping_data) do
+    if #mapping > 0 then
+      local y = (mapping.y1 + mapping.y2) * 0.5
+      handle:write '<path><animate begin="0s" dur="2s" repeatCount="indefinite" attributeName="d" calcMode="linear" from="'
+      for i, map in ipairs(mapping) do
+        if i > 1 then
+          handle:write " "
+        end
+        handle:write(([[M%.17g,%.17g H%.17g]]):format(map.u1, y, map.u2))
+      end
+      handle:write '" to="'
+      for i, map in ipairs(mapping) do
+        if i > 1 then
+          handle:write " "
+        end
+        handle:write(([[M%.17g,%.17g H%.17g]]):format(map.v1, y, map.v2))
+      end
+      handle:write '"/></path>\n'
+    end
+  end
+
+  handle:write "</svg>\n"
   handle:close()
 end
 
@@ -424,6 +465,14 @@ function commands.blend(expression, alpha, source_pathname1, source_pathname2, r
   local line_data2 = scanline(new_image_data(source_pathname2), expression)
   local line_data = blend_line_data(tonumber(alpha), line_data1, line_data2)
   write_line_data(line_data, result_pathname)
+end
+
+function commands.mapping(expression, source_pathname1, source_pathname2, result_pathname)
+  local expression = parse_expression(expression)
+  local line_data1 = scanline(new_image_data(source_pathname1), expression)
+  local line_data2 = scanline(new_image_data(source_pathname2), expression)
+  local mapping_data = mapping_line_data(line_data1, line_data2)
+  write_mapping_data(mapping_data, result_pathname)
 end
 
 --------------------------------------------------------------------------------
