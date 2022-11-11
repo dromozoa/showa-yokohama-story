@@ -17,6 +17,7 @@
 
 local basename = require "basename"
 local dirname = require "dirname"
+local quote_js = require "quote_js"
 
 assert(basename "usr" == "usr")
 assert(basename "usr/" == "usr")
@@ -39,3 +40,8 @@ assert(dirname "/usr/" == "/")
 assert(dirname "/usr/lib" == "/usr")
 assert(dirname "//usr//lib//" == "//usr")
 assert(dirname "/home//dwc//test" == "/home//dwc")
+
+assert(quote_js "\0\1\2\3\4\5\6\7\8\9\10\11\12\13\14\15\127" == [["\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000B\f\r\u000E\u000F\u007F"]])
+assert(quote_js [["'/\]] == [["\"'/\\"]])
+assert(quote_js "\226\128\168\226\128\169" == [["\u2028\u2029"]])
+assert(quote_js "昭和横濱物語" == [["昭和横濱物語"]])
