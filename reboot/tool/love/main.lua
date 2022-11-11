@@ -17,6 +17,7 @@
 
 package.path = "../?.lua;"..package.path
 local basename = require "basename"
+local write_json = require "write_json"
 local table_unpack = table.unpack or unpack
 
 --------------------------------------------------------------------------------
@@ -264,7 +265,7 @@ local function write_line_data(line_data, result_pathname)
   handle:close()
 end
 
-local function write_mapping_data(mapping_data, result_pathname)
+local function write_mapping_data_svg(mapping_data, result_pathname)
   local handle = assert(io.open(result_pathname, "wb"))
   handle:write(([[
 <svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
@@ -302,6 +303,22 @@ local function write_mapping_data(mapping_data, result_pathname)
   end
 
   handle:write "</svg>\n"
+  handle:close()
+end
+
+--------------------------------------------------------------------------------
+
+local function write_mapping_data_gltf(mapping_data, result_pathname)
+  local handle = assert(io.open(result_pathname, "wb"))
+  write_json(handle, {
+    asset = {
+      generator = "昭和横濱物語";
+      version = "2.0";
+    };
+    scene = 0;
+    scenes = { { nodes = { 0 } } };
+    nodes = { { mesh = 0 } };
+  })
   handle:close()
 end
 
@@ -472,7 +489,14 @@ function commands.mapping(expression, source_pathname1, source_pathname2, result
   local line_data1 = scanline(new_image_data(source_pathname1), expression)
   local line_data2 = scanline(new_image_data(source_pathname2), expression)
   local mapping_data = mapping_line_data(line_data1, line_data2)
-  write_mapping_data(mapping_data, result_pathname)
+
+  local format = assert(result_pathname:match "[^.]+$"):lower()
+  assert(format == "svg" or format == "gltf")
+  if format == "svg" then
+    write_mapping_data_svg(mapping_data, result_pathname)
+  else
+    write_mapping_data_gltf(mapping_data, result_pathname)
+  end
 end
 
 --------------------------------------------------------------------------------

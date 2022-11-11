@@ -59,6 +59,6 @@ local function write_json(handle, u)
 end
 
 return function (handle, u)
-  write_json(handle, u, 0)
+  write_json(handle, u)
   handle:write "\n"
 end
