@@ -16,6 +16,7 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 package.path = "../?.lua;"..package.path
+local ffi = require "ffi"
 local basename = require "basename"
 local write_json = require "write_json"
 local table_unpack = table.unpack or unpack
@@ -308,7 +309,69 @@ end
 
 --------------------------------------------------------------------------------
 
+local function generate_cube()
+  local faces = {
+    { n = {  1,  0,  0 }, p = { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 1 }, { 1, 1, 1 } } };
+    { n = {  0,  1,  0 }, p = { { 0, 1, 0 }, { 0, 1, 1 }, { 1, 1, 0 }, { 1, 1, 1 } } };
+    { n = {  0,  0,  1 }, p = { { 0, 0, 1 }, { 1, 0, 1 }, { 0, 1, 1 }, { 1, 1, 1 } } };
+    { n = { -1,  0,  0 }, p = { { 0, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 }, { 0, 1, 1 } } };
+    { n = {  0, -1,  0 }, p = { { 0, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 }, { 1, 0, 1 } } };
+    { n = {  0,  0, -1 }, p = { { 0, 0, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 1, 1, 0 } } };
+  }
+
+  local indices = {}
+  local positions = {}
+  local normals = {}
+
+  for _, face in ipairs(faces) do
+    local n = face.n
+    local normal = love.data.pack("string", "<fff", n[1], n[2], n[3])
+
+    local v = #positions
+    indices[#indices + 1] = love.data.pack("string", "BBB", v + 0, v + 1, v + 2)
+    indices[#indices + 1] = love.data.pack("string", "BBB", v + 2, v + 1, v + 3)
+    for _, p in ipairs(face.p) do
+      positions[#positions + 1] = love.data.pack("string", "<fff", p[1] - 0.5, p[2] - 0.5, p[3] - 0.5)
+      normals[#normals + 1] = normal
+    end
+  end
+
+  return {
+    indices = table.concat(indices);
+    positions = table.concat(positions);
+    normals = table.concat(normals);
+  }
+end
+
 local function write_mapping_data_gltf(mapping_data, result_pathname)
+  local cube = generate_cube()
+  local buffer = cube.indices..cube.positions..cube.normals
+
+  local nodes = {}
+  for _, mapping in ipairs(mapping_data) do
+    local ty = 0.5 - (mapping.y1 + mapping.y2) * 0.5 / mapping_data.height
+    local sy = 1 / mapping_data.height
+    for _, map in ipairs(mapping) do
+      nodes[#nodes + 1] = {
+        mesh = 0;
+        translation  = {
+          (map.u1 + map.u2) * 0.5 / mapping_data.width - 0.5;
+          ty;
+          (map.v1 + map.v2) * 0.5 / mapping_data.width - 0.5;
+        };
+        scale = {
+          (map.u2 - map.u1) / mapping_data.width;
+          sy;
+          (map.v2 - map.v1) / mapping_data.width;
+        };
+      }
+    end
+  end
+  local scene_nodes = {}
+  for i = 1, #nodes do
+    scene_nodes[i] = i - 1
+  end
+
   local handle = assert(io.open(result_pathname, "wb"))
   write_json(handle, {
     asset = {
@@ -316,8 +379,82 @@ local function write_mapping_data_gltf(mapping_data, result_pathname)
       version = "2.0";
     };
     scene = 0;
-    scenes = { { nodes = { 0 } } };
-    nodes = { { mesh = 0 } };
+    scenes = { { nodes = scene_nodes } };
+    nodes = nodes;
+    meshes = {
+      {
+        primitives = {
+          {
+            attributes = {
+              POSITION = 1;
+              NORMAL = 2;
+            };
+            indices = 0;
+            material = 0;
+          };
+        };
+      };
+    };
+    accessors = {
+      {
+        bufferView = 0;
+        byteOffset = 0;
+        componentType = 5121; -- unsigned byte
+        count = #cube.indices;
+        type = "SCALAR";
+        min = { 0 };
+        max = { #cube.positions / 12 - 1 };
+      };
+      {
+        bufferView = 1;
+        byteOffset = 0;
+        componentType = 5126; -- float
+        count = #cube.positions / 12;
+        type = "VEC3";
+        min = { -0.5, -0.5, -0.5 };
+        max = {  0.5,  0.5,  0.5 };
+      };
+      {
+        bufferView = 1;
+        byteOffset = #cube.positions;
+        componentType = 5126; -- float
+        count = #cube.normals / 12;
+        type = "VEC3";
+        min = { -1, -1, -1 };
+        max = {  1,  1,  1 };
+      };
+    };
+    materials = {
+      {
+        pbrMetallicRoughness = {
+          baseColorFactor = { 0.5, 0.5, 0.5, 0.05 };
+          metallicFactor = 0.75;
+          roughnessFactor = 0.25;
+        };
+      };
+    };
+    bufferViews = {
+      {
+        buffer = 0;
+        byteOffset = 0;
+        byteLength = #cube.indices;
+        target = 34963;
+      };
+      {
+        buffer = 0;
+        byteOffset = #cube.indices;
+        byteLength = #cube.positions + #cube.normals;
+        byteStride = 12;
+        target = 34962;
+      };
+    };
+    buffers = {
+      {
+        byteLength = #buffer;
+        uri = "data:application/octet-stream;base64,"..love.data.encode("string", "base64", buffer);
+
+      };
+    };
   })
   handle:close()
 end
