@@ -16,7 +16,9 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 package.path = "../?.lua;"..package.path
+local ffi = require "ffi"
 local basename = require "basename"
+local write_json = require "write_json"
 local table_unpack = table.unpack or unpack
 
 --------------------------------------------------------------------------------
@@ -260,116 +262,336 @@ local function write_line_data(line_data, result_pathname)
 ]]):format(a + b, a * line_data.height + b, line_data.height))
   end
 
-  handle:write '</svg>\n'
+  handle:write "</svg>\n"
+  handle:close()
+end
+
+local function write_mapping_data_svg(mapping_data, result_pathname)
+  local handle = assert(io.open(result_pathname, "wb"))
+  handle:write(([[
+<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
+]]):format(mapping_data.width, mapping_data.height, mapping_data.width, mapping_data.height), [[
+<defs>
+  <style>
+    path {
+      stroke: white;
+      stroke-width: 1;
+    }
+  </style>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="black"/>
+]])
+
+  for _, mapping in ipairs(mapping_data) do
+    if #mapping > 0 then
+      local y = (mapping.y1 + mapping.y2) * 0.5
+      handle:write '<path><animate begin="0s" dur="2s" repeatCount="indefinite" attributeName="d" calcMode="linear" from="'
+      for i, map in ipairs(mapping) do
+        if i > 1 then
+          handle:write " "
+        end
+        handle:write(([[M%.17g,%.17g H%.17g]]):format(map.u1, y, map.u2))
+      end
+      handle:write '" to="'
+      for i, map in ipairs(mapping) do
+        if i > 1 then
+          handle:write " "
+        end
+        handle:write(([[M%.17g,%.17g H%.17g]]):format(map.v1, y, map.v2))
+      end
+      handle:write '"/></path>\n'
+    end
+  end
+
+  handle:write "</svg>\n"
   handle:close()
 end
 
 --------------------------------------------------------------------------------
 
-local function blend_line(alpha, line1, line2)
-  local beta = 1 - alpha
-  if #line1 > #line2 then
-    return blend_line(beta, line2, line1)
-  end
-
-  local line = { y1 = line1.y1, y2 = line1.y2 }
-
-  if #line1 == 0 then
-    for _, segment2 in ipairs(line2) do
-      line[#line + 1] = {
-        x1 = line1.gx * beta + segment2.x1 * alpha;
-        x2 = line1.gx * beta + segment2.x2 * alpha;
-      }
-    end
-  else
-    local um = 0
-    for _, segment2 in ipairs(line2) do
-      local un = segment2.x2 - segment2.x1
-      local u1 = um / line2.n
-      local u2 = un / line2.n + u1
-
-      local mapping = {}
-      local mapping_start
-      local mapping_end
-      local mapping_n = 0
-
-      local vm = 0
-      for i, segment1 in ipairs(line1) do
-        local vn = segment1.x2 - segment1.x1
-        local v1 = vm / line1.n
-        local v2 = vn / line1.n + v1
-
-        if not mapping_start then
-          if v1 <= u1 and u1 < v2 then
-            mapping_start = (u1 - v1) / (v2 - v1) * vn + segment1.x1
-          end
-        end
-
-        if mapping_start then
-          local map = { x1 = mapping_start }
-          if v1 < u2 and u2 <= v2 then
-            mapping_end = (u2 - v2) / (v2 - v1) * vn + segment1.x2
-            map.x2 = mapping_end
-          else
-            map.x2 = segment1.x2
-            mapping_start = line1[i + 1].x1
-          end
-
-          map.n = map.x2 - map.x1
-          mapping[#mapping + 1] = map
-          mapping_n = mapping_n + map.n
-
-          if mapping_end then
-            break
-          end
-        end
-
-        vm = vm + vn
-      end
-
-      local m = 0
-      for _, map in ipairs(mapping) do
-        local n = map.n
-        local t1 = m / mapping_n
-        local t2 = n / mapping_n + t1
-        line[#line + 1] = {
-          x1 = map.x1 * beta + (t1 * un + segment2.x1) * alpha;
-          x2 = map.x2 * beta + (t2 * un + segment2.x1) * alpha;
-        }
-        m = m + n
-      end
-
-      um = um + un
-    end
-  end
-
-  return line
-end
-
-local function blend_line_data(alpha, line_data1, line_data2)
-  if not line_data1 then
-    return blend_line_data(1 - alpha, assert(line_data2))
-  end
-
-  local line_data = {
-    width = line_data1.width;
-    height = line_data1.height;
+local function generate_cube()
+  local faces = {
+    { n = {  1,  0,  0 }, p = { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 1 }, { 1, 1, 1 } } };
+    { n = {  0,  1,  0 }, p = { { 0, 1, 0 }, { 0, 1, 1 }, { 1, 1, 0 }, { 1, 1, 1 } } };
+    { n = {  0,  0,  1 }, p = { { 0, 0, 1 }, { 1, 0, 1 }, { 0, 1, 1 }, { 1, 1, 1 } } };
+    { n = { -1,  0,  0 }, p = { { 0, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 }, { 0, 1, 1 } } };
+    { n = {  0, -1,  0 }, p = { { 0, 0, 0 }, { 1, 0, 0 }, { 0, 0, 1 }, { 1, 0, 1 } } };
+    { n = {  0,  0, -1 }, p = { { 0, 0, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 1, 1, 0 } } };
   }
 
-  for i, line1 in ipairs(line_data1) do
-    local line2
-    if line_data2 then
-      line2 = line_data2[i]
-    else
-      line2 = {
+  local indices = {}
+  local positions = {}
+  local normals = {}
+
+  for _, face in ipairs(faces) do
+    local n = face.n
+    local normal = love.data.pack("string", "<fff", n[1], n[2], n[3])
+
+    local v = #positions
+    indices[#indices + 1] = love.data.pack("string", "BBB", v + 0, v + 1, v + 2)
+    indices[#indices + 1] = love.data.pack("string", "BBB", v + 2, v + 1, v + 3)
+    for _, p in ipairs(face.p) do
+      positions[#positions + 1] = love.data.pack("string", "<fff", p[1] - 0.5, p[2] - 0.5, p[3] - 0.5)
+      normals[#normals + 1] = normal
+    end
+  end
+
+  return {
+    indices = table.concat(indices);
+    positions = table.concat(positions);
+    normals = table.concat(normals);
+  }
+end
+
+local function write_mapping_data_gltf(mapping_data, result_pathname)
+  local cube = generate_cube()
+  local buffer = cube.indices..cube.positions..cube.normals
+
+  local nodes = {}
+  for _, mapping in ipairs(mapping_data) do
+    local ty = 0.5 - (mapping.y1 + mapping.y2) * 0.5 / mapping_data.height
+    local sy = 1 / mapping_data.height
+    for _, map in ipairs(mapping) do
+      nodes[#nodes + 1] = {
+        mesh = 0;
+        translation  = {
+          (map.u1 + map.u2) * 0.5 / mapping_data.width - 0.5;
+          ty;
+          (map.v1 + map.v2) * 0.5 / mapping_data.width - 0.5;
+        };
+        scale = {
+          (map.u2 - map.u1) / mapping_data.width;
+          sy;
+          (map.v2 - map.v1) / mapping_data.width;
+        };
+      }
+    end
+  end
+  local scene_nodes = {}
+  for i = 1, #nodes do
+    scene_nodes[i] = i - 1
+  end
+
+  local handle = assert(io.open(result_pathname, "wb"))
+  write_json(handle, {
+    asset = {
+      generator = "昭和横濱物語";
+      version = "2.0";
+    };
+    scene = 0;
+    scenes = { { nodes = scene_nodes } };
+    nodes = nodes;
+    meshes = {
+      {
+        primitives = {
+          {
+            attributes = {
+              POSITION = 1;
+              NORMAL = 2;
+            };
+            indices = 0;
+            material = 0;
+          };
+        };
+      };
+    };
+    accessors = {
+      {
+        bufferView = 0;
+        byteOffset = 0;
+        componentType = 5121; -- unsigned byte
+        count = #cube.indices;
+        type = "SCALAR";
+        min = { 0 };
+        max = { #cube.positions / 12 - 1 };
+      };
+      {
+        bufferView = 1;
+        byteOffset = 0;
+        componentType = 5126; -- float
+        count = #cube.positions / 12;
+        type = "VEC3";
+        min = { -0.5, -0.5, -0.5 };
+        max = {  0.5,  0.5,  0.5 };
+      };
+      {
+        bufferView = 1;
+        byteOffset = #cube.positions;
+        componentType = 5126; -- float
+        count = #cube.normals / 12;
+        type = "VEC3";
+        min = { -1, -1, -1 };
+        max = {  1,  1,  1 };
+      };
+    };
+    materials = {
+      {
+        pbrMetallicRoughness = {
+          baseColorFactor = { 0.5, 0.5, 0.5, 0.05 };
+          metallicFactor = 0.75;
+          roughnessFactor = 0.25;
+        };
+      };
+    };
+    bufferViews = {
+      {
+        buffer = 0;
+        byteOffset = 0;
+        byteLength = #cube.indices;
+        target = 34963;
+      };
+      {
+        buffer = 0;
+        byteOffset = #cube.indices;
+        byteLength = #cube.positions + #cube.normals;
+        byteStride = 12;
+        target = 34962;
+      };
+    };
+    buffers = {
+      {
+        byteLength = #buffer;
+        uri = "data:application/octet-stream;base64,"..love.data.encode("string", "base64", buffer);
+
+      };
+    };
+  })
+  handle:close()
+end
+
+--------------------------------------------------------------------------------
+
+local function mapping_line(line1, line2)
+  local mapping = { y1 = line1.y1, y2 = line1.y2 }
+
+  if #line1 == 0 then
+    local u = line1.gx
+    for _, segment2 in ipairs(line2) do
+      mapping[#mapping + 1] = { u1 = u, u2 = u, v1 = segment2.x1, v2 = segment2.x2 }
+    end
+    return mapping
+  end
+
+  if #line2 == 0 then
+    local v = line2.gx
+    for _, segment1 in ipairs(line1) do
+      mapping[#mapping + 1] = { u1 = segment1.x1, u2 = segment1.x2, v1 = v, v2 = v }
+    end
+    return mapping
+  end
+
+  local am = 0
+  for _, segment1 in ipairs(line1) do
+    local an = segment1.x2 - segment1.x1
+    local a1 = am / line1.n
+    local a2 = an / line1.n + a1
+
+    local mapping_start
+    local mapping_end
+    local mapping_i = #mapping + 1
+    local mapping_n = 0
+
+    local bm = 0
+    for i, segment2 in ipairs(line2) do
+      local bn = segment2.x2 - segment2.x1
+      local b1 = bm / line2.n
+      local b2 = bn / line2.n + b1
+
+      if not mapping_start then
+        if b1 <= a1 and a1 < b2 then
+          mapping_start = (a1 - b1) / (b2 - b1) * bn + segment2.x1
+        end
+      end
+
+      if mapping_start then
+        local map = { v1 = mapping_start }
+        if b1 < a2 and a2 <= b2 then
+          mapping_end = (a2 - b2) / (b2 - b1) * bn + segment2.x2
+          map.v2 = mapping_end
+        else
+          mapping_start = line2[i + 1].x1
+          map.v2 = segment2.x2
+        end
+        map.vn = map.v2 - map.v1
+        mapping[#mapping + 1] = map
+        mapping_n = mapping_n + map.vn
+        if mapping_end then
+          break
+        end
+      end
+
+      bm = bm + bn
+    end
+
+    local vm = 0
+    for i = mapping_i, #mapping do
+      local map = mapping[i]
+      local vn = map.vn
+      map.un = vn / mapping_n * an
+      map.u1 = vm / mapping_n * an + segment1.x1
+      map.u2 = map.u1 + map.un
+      vm = vm + vn
+    end
+
+    am = am + an
+  end
+
+  return mapping
+end
+
+local function mapping_line_data(line_data1, line_data2)
+  assert(line_data1 or line_data2)
+
+  if line_data1 then
+    local mapping_data = { width = line_data1.width, height = line_data1.height }
+    for i, line1 in ipairs(line_data1) do
+      local line2 = line_data2 and line_data2[i] or {
         y1 = line1.y1;
         y2 = line1.y2;
         gx = line1.gx;
         gy = line1.gy;
         n = line1.n;
       }
+      mapping_data[#mapping_data + 1] = mapping_line(line1, line2)
     end
-    line_data[i] = blend_line(alpha, line1, line2)
+    return mapping_data
+  else
+    local mapping_data = { width = line_data2.width, height = line_data2.height }
+    for _, line2 in ipairs(line_data2) do
+      local line1 = {
+        y1 = line2.y1;
+        y2 = line2.y2;
+        gx = line2.gx;
+        gy = line2.gy;
+        n = line2.n;
+      }
+      mapping_data[#mapping_data + 1] = mapping_line(line1, line2)
+    end
+    return mapping_data
+  end
+
+  return mapping_data
+end
+
+--------------------------------------------------------------------------------
+
+local function blend_line_data(alpha, line_data1, line_data2)
+  local beta = 1 - alpha
+  local mapping_data = mapping_line_data(line_data1, line_data2)
+  local line_data = {
+    width = mapping_data.width;
+    height = mapping_data.height;
+  }
+
+  for _, mapping in ipairs(mapping_data) do
+    local line = { y1 = mapping.y1, y2 = mapping.y2 }
+    for _, map in ipairs(mapping) do
+      line[#line + 1] = {
+        x1 = map.u1 * beta + map.v1 * alpha;
+        x2 = map.u2 * beta + map.v2 * alpha;
+      }
+    end
+    line_data[#line_data + 1] = line
   end
 
   return process_line_data(line_data)
@@ -399,6 +621,21 @@ function commands.blend(expression, alpha, source_pathname1, source_pathname2, r
   write_line_data(line_data, result_pathname)
 end
 
+function commands.mapping(expression, source_pathname1, source_pathname2, result_pathname)
+  local expression = parse_expression(expression)
+  local line_data1 = scanline(new_image_data(source_pathname1), expression)
+  local line_data2 = scanline(new_image_data(source_pathname2), expression)
+  local mapping_data = mapping_line_data(line_data1, line_data2)
+
+  local format = assert(result_pathname:match "[^.]+$"):lower()
+  assert(format == "svg" or format == "gltf")
+  if format == "svg" then
+    write_mapping_data_svg(mapping_data, result_pathname)
+  else
+    write_mapping_data_gltf(mapping_data, result_pathname)
+  end
+end
+
 --------------------------------------------------------------------------------
 
 local font
@@ -417,6 +654,7 @@ local noise_base_y = 0
 local noise_base_z = 0
 
 local noise_modes = {
+  "none";
   "noise/1";
   "noise/2";
   "random/1";
@@ -496,8 +734,8 @@ function love.draw()
       for c, color in ipairs(color_mode) do
         local x1 = segment.x1
         local x2 = segment.x2
-        local n1
-        local n2
+        local n1 = 0
+        local n2 = 0
         if noise_mode == "noise/1" then
           n1 = (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
           n2 = n1
