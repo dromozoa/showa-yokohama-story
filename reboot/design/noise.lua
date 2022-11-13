@@ -68,6 +68,7 @@ for x = 0, 15 do
   end
 end
 
+--[====[
 local handle = assert(io.open("test.pgm", "w"))
 
 handle:write [[
@@ -98,4 +99,32 @@ end
 handle:close()
 
 -- io.stderr:write(n, "\n")
+]====]
+
+local N = 16
+for x = 1, N do
+  for y = 1, N do
+    -- local v = math.floor(math.sqrt(x * y) + 0.5)
+    -- print(x, y, math.floor(math.sqrt(x * y) + 0.5))
+    -- local v = math.floor(math.sqrt(x * y) + 0.5)
+    -- local v = x ~ y
+    local v = x + y
+    -- print(bitstring(v - 1))
+    -- print(bitstring(x), bitstring(y), bitstring(v - 1))
+  end
+end
+
+--[[
+  x = 0..N
+  y = 0..N
+  z = x + y + 1
+]]
+
+for x = 0, 255 do
+  for y = 0, 255 do
+    local z = x + y + 1
+    print(bitstring(z, 0, 7))
+  end
+end
+
 
