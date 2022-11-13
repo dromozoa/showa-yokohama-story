@@ -26,7 +26,9 @@ float fract(const float v) {
 
 // https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float noise1(const float x, const float y) {
-  return fract(std::sin(x * 12.9898f + y * 78.233f) * 43758.5453f);
+  // return fract(std::sin(x * 12.9898f + y * 78.233f) * 43758.5453f);
+  // return fract(std::sin(x * 12.9898f + y * 78.233f) * (43758.0f / 256.0f));
+  return fract(std::sin(x * 12.9898f + y * 78.233f) * 43758.65625f);
 }
 
 // https://marc-b-reynolds.github.io/math/2016/03/29/weyl_hash.html
