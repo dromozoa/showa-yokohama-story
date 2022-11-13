@@ -126,5 +126,3 @@ for x = 0, 255 do
     print(bitstring(z, 0, 7))
   end
 end
-
-

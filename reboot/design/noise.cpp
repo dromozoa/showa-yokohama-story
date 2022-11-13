@@ -20,6 +20,9 @@
 #include <random>
 #include <vector>
 
+static constexpr int W = 1024;
+static constexpr int H = 1024;
+
 float fract(const float v) {
   return v - std::floor(v);
 }
@@ -40,10 +43,17 @@ float noise2(const float x, const float y) {
   return fract(u * v);
 }
 
-int main(int ac, char* av[]) {
-  static constexpr int W = 1024;
-  static constexpr int H = 1024;
+float noise3(const float x, const float y) {
+  // 16bitで計算する
+  static constexpr int32_t seed = 0; // 0xC64A;
+  const int32_t u = x * 65536.0f / static_cast<float>(W);
+  const int32_t v = y * 65536.0f / static_cast<float>(H);
+  int32_t z = (seed + u - 1) & 0xFFFF;
+  z = (z + v - 1) & 0xFFFF;
+  return z / 65536.0f;
+}
 
+int main(int ac, char* av[]) {
   std::vector<int> count(256);
 
   std::cout
