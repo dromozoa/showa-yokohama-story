@@ -26,6 +26,7 @@
 local f64 = 43758.5453123
 local f32 = string.unpack("<f", string.pack("<f", f64))
 
+--[[
 print(("43758.5453... => f32 %a"):format(f32)) -- 0x1.55dd18p+15
 print(("43758.5453... => f64 %a"):format(f64)) -- 0x1.55dd17318fc5p+15
 
@@ -43,8 +44,58 @@ for i = -3, 3 do
   local x = 0xaaee8b9 + i
   print(("0x%08x (%d) / 4096 => %.17g"):format(x, x, x / 4096))
 end
+]]
 
 -- 43758  = 0xAAEE       = 0b1010 1010 1110 1110
 -- 0.5453 = 0x8B98/65536 = 0b1000 1011 1001 1000 / 65536
 --
 -- 0x1010 1010 1110 1110 1010 1000
+
+local function bitstring(v, m, n)
+  local buffer = {}
+  for i = m or 0, n or 3 do
+    buffer[#buffer + 1] = (v >> i) & 1
+  end
+  return table.concat(buffer)
+end
+
+-- 4bit整数の演算の結果
+for x = 0, 15 do
+  for y = 0, 15 do
+    local v = x ~ y
+    -- print(bitstring(x), bitstring(y), bitstring(v))
+    -- print(bitstring((x*x)%209, 0, 3))
+  end
+end
+
+local handle = assert(io.open("test.pgm", "w"))
+
+handle:write [[
+P2
+256 256
+255
+]]
+
+-- a+b == a~b
+local n = 0
+for x = 0, 255 do
+  for y = 0, 255 do
+    -- local u = (x * y) >> 4 & 0xFF
+    local u = (x + y) >> 1
+    local v = x ~ y
+    if u == v then
+      handle:write "255 "
+      n = n + 1
+      print(bitstring(x, 0, 7))
+      -- print(bitstring(u, 0, 7), bitstring(x, 0, 7), bitstring(y, 0, 7))
+    else
+      handle:write "0 "
+    end
+  end
+  handle:write "\n"
+end
+
+handle:close()
+
+-- io.stderr:write(n, "\n")
+
