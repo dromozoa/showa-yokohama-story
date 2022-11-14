@@ -43,9 +43,10 @@ float noise2(const float x, const float y) {
   return fract(u * v);
 }
 
+// ノイズテクスチャを動かしているのと等価になる？
 float noise3(const float x, const float y) {
   // 16bitで計算する
-  static constexpr int32_t seed = 0; // 0xC64A;
+  static constexpr int32_t seed = 0xC64A;
   const int32_t u = x * 65536.0f / static_cast<float>(W);
   const int32_t v = y * 65536.0f / static_cast<float>(H);
   int32_t z = (seed + u - 1) & 0xFFFF;
@@ -63,10 +64,11 @@ int main(int ac, char* av[]) {
   int i = 0;
   for (int y = 0; y < H; ++y) {
     for (int x = 0; x < W; ++x) {
-      float v = noise1(x, y);
+      // float v = noise1(x, y);
       // float v = noise2(x, y);
       // float v = noise2(x + 100000.0f, y + 100000.f);
       // float v = noise2(x + 0.000001f, y + 0.000001f);
+      float v = noise3(x, y);
       if (v < 0 || v > 1) {
         std::cerr << x << " " << v << " " << v << "\n";
         return 1;
