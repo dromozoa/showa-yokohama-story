@@ -123,6 +123,36 @@ end
 for x = 0, 255 do
   for y = 0, 255 do
     local z = x + y + 1
-    print(bitstring(z, 0, 7))
+    -- print(bitstring(z, 0, 7))
   end
 end
+
+local handle = assert(io.open("test-xor.pgm", "w"))
+handle:write [[
+P2
+256 256
+255
+]]
+for y = 0, 255 do
+  for x = 0, 255 do
+    handle:write(x ~ y, " ")
+  end
+  handle:write "\n"
+end
+handle:close()
+
+local handle = assert(io.open("test-add.pgm", "w"))
+handle:write [[
+P2
+256 256
+255
+]]
+for y = 0, 255 do
+  for x = 0, 255 do
+    handle:write((x + y + 1) & 0xFF, " ")
+  end
+  handle:write "\n"
+end
+handle:close()
+
+
