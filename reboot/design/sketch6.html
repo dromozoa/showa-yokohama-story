@@ -13,6 +13,12 @@
 <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
 <title>実験</title>
 <style>
+/*
+body {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #000;
+}
+*/
 span, label, legend, button, input, output {
   font-family: "Share Tech", "BIZ UDPGothic";
 }
@@ -24,6 +30,12 @@ p {
 </style>
 </head>
 <body>
+
+<div style="background-color: #000; color: #029D93; font-family: 'VT323'">
+<div>SHOWA YOKOHAMA STORY</div>
+<div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
+<div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+</div>
 
 <p>
 昭和七十四年七月、ボクはキミに出逢った。<br>
@@ -98,6 +110,23 @@ p {
     <span style="display: inline-block; text-align: center">Boot<br>起動進捗</span>
   </label>
 </div>
+
+<div>
+  <select>
+    <option value="本牧大聖堂">本牧大聖堂</option>
+    <option value="資源循環局">資源循環局</option>
+    <option value="魚人港湾労働組合">魚人港湾労働組合</option>
+  </select>
+</div>
+
+<div>
+  <select multiple required>
+    <option value="本牧大聖堂">本牧大聖堂</option>
+    <option value="資源循環局">資源循環局</option>
+    <option value="魚人港湾労働組合">魚人港湾労働組合</option>
+  </select>
+</div>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
