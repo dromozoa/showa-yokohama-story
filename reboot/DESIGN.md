@@ -16,6 +16,17 @@ Google Fontsの指定をHTMLに直接書く。
 
 TyranoScript Ver520cではフォント名に空白があってもただしく解析される。
 
+Monoでない[Share Tech](https://fonts.google.com/specimen/Share+Tech)もよい。
+
+ローディング状況を調べるには、[WebFontLoader](https://github.com/typekit/webfontloader)を使うか、CSS Font Loading APIを直接使う。ページロード時は問題ないが、範囲指定つきのフォントフェイスで動的にダウンロードする場合はうまくイベントが拾えない。
+
+- WebFontLoaderはページロード時だけイベントが取れた。
+  - contextをつかえばいける？
+  - うまくいかなかった。
+- CSS Font Loading APIは、Safariで動的なダウンロードのイベントが取れなかった。
+  - タイマーをかけてdocument.fontsを監視すれば検出はできた。
+  - readyだとひろえたが、ロードが完了する前に戻っているようだ。
+
 ## テキスト表示
 
 計算に必要な情報があらかじめ定まっていれば、前計算することができる。すべてを完全に決定する必要はなく、たとえば、親文字とルビの配置関係だけ計算しておくのも有用かもしれない。
@@ -186,3 +197,4 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" \
   -define png:bit-depth=1 \
   source.png result.png
 ```
+
