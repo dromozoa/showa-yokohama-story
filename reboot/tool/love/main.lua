@@ -661,6 +661,7 @@ local noise_modes = {
   "random/2";
   "randomNormal/1";
   "randomNormal/2";
+  "randomNormal/line";
 }
 local noise_mode_index = 1
 
@@ -730,13 +731,22 @@ function love.draw()
     local y1 = line.y1
     local y2 = line.y2
 
+    local random_normals = {
+      love.math.randomNormal(0.5);
+      love.math.randomNormal(0.5);
+      love.math.randomNormal(0.5);
+    }
+
     for _, segment in ipairs(line) do
       for c, color in ipairs(color_mode) do
         local x1 = segment.x1
         local x2 = segment.x2
-        local n1 = 0
-        local n2 = 0
-        if noise_mode == "noise/1" then
+        local n1
+        local n2
+        if noise_mode == "none" then
+          n1 = 0
+          n2 = 0
+        elseif noise_mode == "noise/1" then
           n1 = (love.math.noise(noise_base_x + x1, noise_base_y + y1, noise_base_z + c) - 0.5) * 2
           n2 = n1
         elseif noise_mode == "noise/2" then
@@ -754,6 +764,9 @@ function love.draw()
         elseif noise_mode == "randomNormal/2" then
           n1 = love.math.randomNormal(0.5)
           n2 = love.math.randomNormal(0.5)
+        elseif noise_mode == "randomNormal/line" then
+          n1 = random_normals[c]
+          n2 = n1
         end
         x1 = x1 + scale * gamma * n1
         x2 = x2 + scale * gamma * n2
