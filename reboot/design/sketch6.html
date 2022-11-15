@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- https://fonts.google.com/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+<!-- https://github.com/goldfire/howler.js#quick-start -->
+<script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+<!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+<title>実験</title>
+<style>
+span, label, legend, button, input, output {
+  font-family: "Share Tech", "BIZ UDPGothic";
+}
+p {
+  width: 25rem;
+  font-family: "BIZ UDPMincho";
+  line-height: 2rem;
+}
+</style>
+</head>
+<body>
+
+<p>
+昭和七十四年七月、ボクはキミに出逢った。<br>
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。
+</p>
+<p>
+<ruby>破局<rt>カタストロフ</rt></ruby>から十年。<br>
+現在の世界人口は約二十億人と推定されている。<br>
+人類の生存圏は三十パーセントを下まわった。
+</div>
+<p>
+人類の大半は寒冷地に押しこめられた。<br>
+冬が<ruby>屍者<rt>ゾンビ</rt></ruby>の脳髄を凍りつかせるから。<br>
+海を要害に、封鎖と検疫に成功した島嶼もある。<br>
+総じて人類は、南極以外の五大陸を喪いつつある。
+</p>
+<p>
+日本国は国体を北海道以北に疎開した。<br>
+一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。<br>
+本州の生存者は四十万人内外と見られる。
+</p>
+
+<div>
+<button>Next Line<br>次の行</button>
+<button>Next Paragraph<br>次の段落</button>
+</div>
+
+<div>
+  <div><label><input type="checkbox"><span style="display: inline-block; text-align: center">Voice<br>音声</span></label>
+  <div><label><input type="checkbox"><span style="display: inline-block; text-align: center">Music<br>音楽</span></label>
+</div>
+
+<div>
+  <fieldset>
+    <legend>Audio</legend>
+    <label><input type="radio" name="audio">Web Audio API</label>
+    <label><input type="radio" name="audio">HTML5 Audio</label>
+  </fieldset>
+</div>
+
+<div>
+  <form name="range">
+  <div>
+    <label><input type="range" min="0" max="100" value="100" step="10" name="volume_input">
+      <span style="display: inline-block; text-align: center">Volume<br>音量</span>
+    </label>
+    <span>=<output id="volume_output">100</output></span>
+  </div>
+  <div>
+    <label><input type="range" min="-10" max="10" value="0" step="1" name="speed_input">
+      <span style="display: inline-block; text-align: center">Speed<br>再生速度</span>
+    </label>
+    <span>=<output name="speed_output">100</output>%</span>
+  </div>
+  </form>
+</div>
+
+<div>
+  <input type="month" min="1945-08" max="2038-01" value="1989-01" id="calendar_month">
+  <input type="date" min="1945-08-15" max="2038-01-19" value="1989-01-07" id="calendar_date">
+</div>
+
+<div>
+  <label>
+    <meter min="-1" low="-0.75" optimum="0" high="0.75" max="1" value="0" id="sin_meter">0</meter>
+    <span style="display: inline-block; text-align: center">Sin<br>正弦</span>
+  </label>
+</div>
+
+<div>
+    <progress id="boot_progress" max="100" value="0">0%</progress>
+    <span style="display: inline-block; text-align: center">Boot<br>起動進捗</span>
+  </label>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.forms.range.addEventListener("input", () => {
+    const form = document.forms.range;
+    form.volume_output.value = form.volume_input.value;
+    form.speed_output.value = Math.round(Math.pow(2, form.speed_input.value * 0.1) * 100);
+  });
+
+  document.getElementById("calendar_month").addEventListener("change", ev => {
+    console.log(ev.target.value);
+  });
+  document.getElementById("calendar_date").addEventListener("change", ev => {
+    console.log(ev.target.value);
+  });
+
+  const sin_meter = document.getElementById("sin_meter");
+  const boot_progress = document.getElementById("boot_progress");
+
+  let timestamp_start;
+  const draw = timestamp => {
+    if (timestamp_start === undefined) {
+      timestamp_start = timestamp;
+    }
+    const t = timestamp - timestamp_start;
+    sin_meter.value = Math.sin(Math.PI * 0.0005 * t);
+    boot_progress.value = Math.min(t * 0.04, 100);
+
+    if (t < 8000) {
+      window.requestAnimationFrame(draw);
+    } else {
+      timestamp_start = undefined;
+    }
+  };
+  window.requestAnimationFrame(draw);
+});
+</script>
+</html>

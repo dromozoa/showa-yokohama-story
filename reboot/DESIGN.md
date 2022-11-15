@@ -186,4 +186,3 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" \
   -define png:bit-depth=1 \
   source.png result.png
 ```
-
