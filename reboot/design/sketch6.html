@@ -3,36 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- https://github.com/typekit/webfontloader/blob/master/README.md#get-started -->
-<script>
-WebFontConfig = {
-  google: {
-    families: [
-      "BIZ UDPGothic",
-      "BIZ UDPMincho",
-      "Share Tech",
-      "VT323",
-    ],
-  },
-  classes: false,
-  fontloading: (family_name, fvd) => {
-    console.log("fontloading", family_name, fvd);
-  },
-  fontactive: (family_name, fvd) => {
-    console.log("fontactive", family_name, fvd);
-  },
-  fontinactive: (family_name, fvd) => {
-    console.log("fontinactive", family_name, fvd);
-  },
-};
-</script>
 <script defer src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script>
 <!-- https://fonts.google.com/ -->
-<!--
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
--->
 <!-- https://github.com/goldfire/howler.js#quick-start -->
 <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
@@ -215,32 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("after");
       dump_fonts();
     }, 200);
-  });
-
-  document.getElementById("load_fonts").addEventListener("click", ev => {
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    doc.open();
-    doc.close();
-    doc.body.innerHTML = '<div class="text" style="font-family: \'BIZ UDPMincho\'">' + document.getElementsByClassName("gothic")[0].innerHTML + '</div>';
-    WebFont.load({
-      google: {
-        families: [
-          "BIZ UDPMincho",
-        ],
-      },
-      classes: false,
-      fontloading: (family_name, fvd) => {
-        console.log("i fontloading", family_name, fvd);
-      },
-      fontactive: (family_name, fvd) => {
-        console.log("i fontactive", family_name, fvd);
-      },
-      fontinactive: (family_name, fvd) => {
-        console.log("i fontinactive", family_name, fvd);
-      },
-    });
   });
 
   document.forms.range.addEventListener("input", () => {
