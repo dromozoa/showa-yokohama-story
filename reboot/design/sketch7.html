@@ -3,31 +3,157 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-@font-face {
-  font-family: 'sys1';
-  font-display: swap;
-  src: url('./sys1.woff2') format('woff2');
-}
-</style>
 <!-- https://fonts.google.com/ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
 <!-- https://github.com/goldfire/howler.js#quick-start -->
 <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
 <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
 <title>実験</title>
+<style>
+.text span {
+  font-size: 40px;
+  vertical-align: middle;
+}
+
+button {
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.sansserif {
+  font-family: sans-serif;
+}
+
+.bizudpmincho {
+  font-family: 'BIZ UDPMincho';
+}
+
+#fontfaces {
+  border-collapse: collapse;
+}
+
+#fontfaces th, td {
+  border: 1px solid #000;
+}
+
+#fontfaces td {
+  white-space: nowrap;
+}
+</style>
 </head>
 <body>
 
-<div>
-  <span>abcd</span>
-  <span style="font-family: 'sys1'">abcd</span>
-  <span>abcd</span>
+<div class="text">
+  <div>
+    <span>U+814A U+FA10</span>
+    <span class="sansserif">&#x814A;&#xFA10;</span>
+    <button class="set_font">テキストに<br>フォント設定</button>
+    <button class="download_font" data-fontface="21">フォント#21を<br>ダウンロード</button>
+    <button class="download_font" data-fontface="3">フォント#3を<br>ダウンロード</button>
+  </div>
+
+  <div>
+    <span>U+9E8B U+9E8C</span>
+    <span class="sansserif">&#x9E8B;&#x9E8C;</span>
+    <button class="set_font">テキストに<br>フォント設定</button>
+    <button class="download_font" data-fontface="5">フォント#5を<br>ダウンロード</button>
+  </div>
+
+  <div>
+    <span>U+8DC2 U+8DD1</span>
+    <span class="sansserif">&#x8DC2;&#x8DD1;</span>
+    <button class="set_font">テキストに<br>フォント設定</button>
+    <button class="download_font" data-fontface="14">フォント#14を<br>ダウンロード</button>
+  </div>
 </div>
 
+<div>
+  <canvas width="120" height="160"></canvas>
+  <button id="draw">描画</button>
+</div>
+
+<table id="fontfaces">
+  <tr>
+    <th>#</th>
+    <th>family</th>
+    <th>status</th>
+    <th>unicode_range</th>
+  </tr>
+</table>
+
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const update_fontfaces = () => {
+    const table = document.getElementById("fontfaces");
+
+    let i = 0;
+    document.fonts.forEach(fontface => {
+      let tr = document.getElementById("fontface" + i);
+      if (tr) {
+        tr.querySelector("td:nth-child(3)").textContent = fontface.status;
+      } else {
+        const loaded = `loaded #${i}`;
+        fontface.loaded.then(() => {
+          console.log(loaded);
+        });
+
+        tr = document.createElement("tr");
+        tr.id = "fontface" + i;
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td>${fontface.family}</td>
+          <td>${fontface.status}</td>
+          <td>${fontface.unicodeRange}</td>
+        `;
+        document.getElementById("fontfaces").appendChild(tr);
+      }
+      ++i;
+    });
+  };
+
+  const set_font = ev => {
+    ev.target.previousElementSibling.className = "bizudpmincho";
+  };
+  Array.from(document.querySelectorAll(".set_font"), button => {
+    button.addEventListener("click", set_font);
+  });
+
+  const download_font = async ev => {
+    let i = ev.target.dataset.fontface;
+    let target_fontface;
+    document.fonts.forEach(fontface => {
+      if (i === 0) {
+        target_fontface = fontface;
+      }
+      --i;
+    });
+    i = ev.target.dataset.fontface;
+    console.log(`explicitly loading #${i}`);
+    await target_fontface.load();
+    console.log(`explicitly loaded #${i}`);
+  };
+  Array.from(document.querySelectorAll(".download_font")).forEach(button => {
+    button.addEventListener("click", download_font);
+  });
+
+  document.getElementById("draw").addEventListener("click", (ev) => {
+    const ctx = document.getElementsByTagName("canvas")[0].getContext("2d");
+    ctx.fillStyle = "#ccc";
+    ctx.fillRect(0, 0, 120, 160);
+    ctx.fillStyle = "#000";
+    ctx.font = "40px BIZ UDPMincho";
+    ctx.fillText("\u814A\uFA10", 20,  45);
+    ctx.fillText("\u9E8B\u9E8C", 20,  95);
+    ctx.fillText("\u8DC2\u8DD1", 20, 145);
+  });
+
+  update_fontfaces();
+  setInterval(update_fontfaces, 1000);
+});
+
 </script>
 </html>
