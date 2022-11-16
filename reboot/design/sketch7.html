@@ -72,7 +72,9 @@ button {
 
 <div>
   <canvas width="120" height="160"></canvas>
-  <button id="draw">描画</button>
+  <button id="draw">キャンバスに<br>描画</button>
+  <button id="download_fonts">すべてのフォントを<br>ダウンロード</button>
+  <output id="download_fonts_elapsed"></output>
 </div>
 
 <table id="fontfaces">
@@ -96,10 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tr) {
         tr.querySelector("td:nth-child(3)").textContent = fontface.status;
       } else {
-        const loaded = `loaded #${i}`;
-        fontface.loaded.then(() => {
-          console.log(loaded);
-        });
+        // const loaded = `loaded #${i}`;
+        // fontface.loaded.then(() => {
+        //   console.log(loaded);
+        // });
 
         tr = document.createElement("tr");
         tr.id = "fontface" + i;
@@ -140,7 +142,30 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", download_font);
   });
 
-  document.getElementById("draw").addEventListener("click", (ev) => {
+
+  document.getElementById("download_fonts").addEventListener("click", () => {
+    const start = performance.now();
+    let i = 0;
+    let n = 0;
+    document.fonts.forEach(fontface => {
+      if (fontface.status !== "loaded") {
+        // console.log(`explicitly loading #${i}`);
+        // const loaded = `explicitly loaded #${i}`;
+        fontface.load().then(() => {
+          // console.log(loaded);
+          --n;
+          if (n === 0) {
+            const elapsed = performance.now() - start;
+            document.getElementById("download_fonts_elapsed").value = `elapsed: ${elapsed}msec`;
+          }
+        });
+        ++n;
+      }
+      ++i;
+    });
+  });
+
+  document.getElementById("draw").addEventListener("click", () => {
     const ctx = document.getElementsByTagName("canvas")[0].getContext("2d");
     ctx.fillStyle = "#ccc";
     ctx.fillRect(0, 0, 120, 160);
