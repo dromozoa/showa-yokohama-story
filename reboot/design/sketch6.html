@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script defer src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script>
 <!-- https://fonts.google.com/ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,18 +14,36 @@
 <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
 <title>実験</title>
 <style>
+/*
+body {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #000;
+}
+*/
 span, label, legend, button, input, output {
   font-family: "Share Tech", "BIZ UDPGothic";
 }
 p {
   width: 25rem;
-  font-family: "BIZ UDPMincho";
   line-height: 2rem;
+}
+div.gothic > p {
+  font-family: "BIZ UDPGothic";
+}
+div.mincho > p {
+  font-family: "BIZ UDPMincho";
 }
 </style>
 </head>
 <body>
 
+<div style="background-color: #000; color: #029D93; font-family: 'VT323'">
+<div>SHOWA YOKOHAMA STORY</div>
+<div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
+<div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+</div>
+
+<div class="gothic">
 <p>
 昭和七十四年七月、ボクはキミに出逢った。<br>
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
@@ -33,7 +52,7 @@ p {
 <ruby>破局<rt>カタストロフ</rt></ruby>から十年。<br>
 現在の世界人口は約二十億人と推定されている。<br>
 人類の生存圏は三十パーセントを下まわった。
-</div>
+</p>
 <p>
 人類の大半は寒冷地に押しこめられた。<br>
 冬が<ruby>屍者<rt>ゾンビ</rt></ruby>の脳髄を凍りつかせるから。<br>
@@ -45,10 +64,16 @@ p {
 一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。<br>
 本州の生存者は四十万人内外と見られる。
 </p>
+</div>
 
 <div>
+<button id="mincho_button">Mincho<br>明朝</button>
 <button>Next Line<br>次の行</button>
 <button>Next Paragraph<br>次の段落</button>
+</div>
+
+<div>
+<button id="load_fonts">動的に書体をロードする</button>
 </div>
 
 <div>
@@ -99,8 +124,74 @@ p {
   </label>
 </div>
 
+<div>
+  <select>
+    <option value="本牧大聖堂">本牧大聖堂</option>
+    <option value="資源循環局">資源循環局</option>
+    <option value="魚人港湾労働組合">魚人港湾労働組合</option>
+  </select>
+</div>
+
+<div>
+  <select multiple required>
+    <option value="本牧大聖堂">本牧大聖堂</option>
+    <option value="資源循環局">資源循環局</option>
+    <option value="魚人港湾労働組合">魚人港湾労働組合</option>
+  </select>
+</div>
+
 <script>
+const dump_fonts = () => {
+  // console.log(document.fonts.status);
+
+  const t = new Map();
+  document.fonts.forEach((fontface) => {
+    const k = fontface.family + " " + fontface.status;
+    const n = t.get(k);
+    t.set(k, (n || 0) + 1);
+    // console.log(i++, fontface.family, fontface.status, fontface.unicodeRange);
+    // console.log(i++, fontface.family, fontface.status);
+  });
+  console.log(t);
+};
+// dump_fonts();
+
+const ready_fonts = async () => {
+  const fonts = await document.fonts.ready;
+  console.log("ready");
+  dump_fonts();
+};
+ready_fonts();
+
 document.addEventListener("DOMContentLoaded", () => {
+  /*
+  document.fonts.addEventListener("loading", ev => {
+    console.log("loading");
+    dump_fonts();
+  });
+  document.fonts.addEventListener("loadingdone", ev => {
+    console.log("loadingdone");
+    dump_fonts();
+  });
+
+  document.fonts.addEventListener("loadingerror", ev => {
+    console.log("loadingerror");
+    dump_fonts();
+  });
+  */
+
+  dump_fonts();
+
+  document.getElementById("mincho_button").addEventListener("click", ev => {
+    dump_fonts();
+    document.getElementsByClassName("gothic")[0].className = "mincho";
+    ready_fonts();
+    setTimeout(() => {
+      console.log("after");
+      dump_fonts();
+    }, 200);
+  });
+
   document.forms.range.addEventListener("input", () => {
     const form = document.forms.range;
     form.volume_output.value = form.volume_input.value;
