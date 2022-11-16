@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- https://fonts.google.com/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+
+<!-- https://github.com/goldfire/howler.js#quick-start -->
+<script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+<!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+<!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+<style>
+:root {
+  --main_background_color: #000000;
+  --main_color: #ffffff;
+  --main_font_family_western: 'Share Tech';
+  --main_font_family_japanese: 'BIZ UDPMincho';
+
+  --console_background_color: #000000;
+  --console_color: #029d93;
+  --console_font_family_western: 'VT323';
+  --console_font_family_japanese: 'BIZ UDGothic';
+}
+
+body {
+  margin: 0;
+  background-color: var(--main_background_color);
+  -webkit-text-size-adjust: 100%;
+}
+
+.main {
+  color: var(--main_color);
+  font-family: var(--main_font_family_western), var(--main_font_family_japanese);
+  font-size: 40px;
+  line-height: 200%;
+}
+
+.console {
+  color: var(--console_color);
+  font-family: var(--console_font_family_western), var(--console_font_family_japanese);
+  font-size: 40px;
+  line-height: 200%;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="main">
+  <span>Showa Yokohama Story</span><span>昭和横濱物語</span>
+</div>
+<div class="main">
+  <span><ruby>死んでくれる？<rt>Die  for  me ?</rt></ruby></span>
+</div>
+<div class="main">あいうえおA&#196;&#197;</div>
+
+<div class="console">
+  <div>H.H.C MONITOR VER 1.3</div>
+  <div>スティーブンによる福音書 第二節</div>
+  <div>EVANGELIUM SECUNDUM STEPHANUS verse II</div>
+  <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+  <div>あいうえおA&#196;&#197;</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  Array.from(document.querySelectorAll(".console > div"), X => {
+    const Y = document.createElement("div");
+    for (const c of X.textContent) {
+      const Z = document.createElement("span");
+      Z.textContent = c;
+      Y.appendChild(Z);
+    }
+    X.innerHTML = Y.innerHTML;
+  });
+
+});
+</script>
+
+</body>
+</html>
