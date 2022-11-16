@@ -26,6 +26,24 @@ Monoでない[Share Tech](https://fonts.google.com/specimen/Share+Tech)もよい
 - CSS Font Loading APIは、Safariで動的なダウンロードのイベントが取れなかった。
   - タイマーをかけてdocument.fontsを監視すれば検出はできた。
   - readyだとひろえたが、ロードが完了する前に戻っているようだ。
+  - FontFace.loadとFontFace.loadedを見るのが良いらしい。
+
+結論としては、
+
+- フォントフェイスをどのタイミングでロードするかはブラウザにまかせる。
+  - canvasに描く場合もloadはちゃんと発生する
+    - メモリキャッシュされていれば、そのフレームに間に合うっぽい
+    - ディスクキャッシュされているか、ネットワークが速ければ、数十ミリ秒でロードできるかも
+    - 毎フレーム描いてたら、そのうちうまくいく
+- あるテキストについて、対応するフォントフェイスがロードされているかどうかを動的に調べるのであれば、unicode-rangeを調べるのがよい
+- めんどうなので全部ロードしちゃってもよいかも
+  - 静的に計算しておくことはできるけど、それだったらDOMつくってもいっしょ
+  - 全部、つまり120種のフォントフェイスをダウンロードするのは、WiFi/4Gで数百秒
+  - ChromeのFast 3Gモードで15秒かかった。
+    - [プリセット値](https://github.com/ChromeDevTools/devtools-frontend/blob/a01c97fa2e97d21652b8fb2588ec9c794d707eb0/front_end/core/sdk/NetworkManager.ts#L383)はダウンロードが1.44Mbps (184.32KB/s) , レイテンシが0.5625ミリ秒らしい
+    - BIZ P明朝をひとつのwoff2にしたら2851276バイト
+    - 15.1秒なので計算はあう
+    - この帯域だと並列はきかない
 
 ## テキスト表示
 
