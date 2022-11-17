@@ -110,11 +110,13 @@ shutterstock_1867640776.eps  二刀流
 shutterstock_1888775401.eps  弓
 shutterstock_1896854332.eps  魔女
 shutterstock_1902971338.eps  HUD (bitmap?)
+shutterstock_2065246343.eps  ハルバード
 shutterstock_2067609683.eps  クレイモア
 shutterstock_2120043209.eps  HUD (bitmap?)
 shutterstock_2138204831.eps  HUD
 shutterstock_2146094129.eps  HUD (bitmap?)
 shutterstock_2171694161.eps  狐娘
+shutterstock_340495841.eps   円匙
 ```
 
 ## アニメーション案
