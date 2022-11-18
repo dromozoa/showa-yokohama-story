@@ -113,6 +113,25 @@ Share TechはTとe,o,qのあいだに70/1000のカーニングを定義してい
 
 </div>
 
+<div>
+  <div>テスト文字列「sTyToTwTa」を考える。</div>
+
+  <table border>
+    <tr><td></td><td>sT</td><td>65</td></tr>
+    <tr><td>Ty</td><td>yT</td><td>60</td></tr>
+    <tr><td>To</td><td>oT</td><td>70</td></tr>
+    <tr><td>Tw</td><td>wT</td><td>60</td></tr>
+    <tr><td>Ta</td><td></td><td>65</td></tr>
+  </table>
+
+  <div>合計で510/1000つめる</div>
+
+  <div style="font-size: 100px; line-height: 150px"><span id="kernn" style="font-kerning: none">sTyToTwTa</span></div>
+  <div><output id="kernn-out"></output></div>
+  <div style="font-size: 100px; line-height: 150px"><span id="kerny" >sTyToTwTa</span></div>
+  <div><output id="kerny-out"></output></div>
+</div>
+
 </div>
 
 <script>
@@ -154,6 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.getElementById("prohibisiton_rule_test").appendChild(fragment);
+
+  document.getElementById("kernn-out").value = document.getElementById("kernn").getClientRects()[0].width;
+  document.getElementById("kerny-out").value = document.getElementById("kerny").getClientRects()[0].width;
 
 
 });
