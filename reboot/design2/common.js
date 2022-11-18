@@ -20,7 +20,9 @@
   if (globalThis.dromozoa) {
     return;
   }
-  const D = globalThis.dromozoa = {};
+  const D = globalThis.dromozoa = {
+    features: {},
+  };
   let offscreen;
 
   const create_element = html => {
