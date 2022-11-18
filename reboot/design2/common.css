@@ -23,3 +23,11 @@
   src: url(ShowaYokohamaStory-Regular.woff2) format('woff2'), url(ShowaYokohamaStory-Regular.ttf) format('truetype');
   unicode-range: U+E000;
 }
+
+.dromozoa {
+  --main_font_family_western: 'Share Tech';
+  --main_font_family_japanese: 'BIZ UDPMincho';
+  --main_font_family: 'Showa Yokohama Story', var(--main_font_family_western), var(--main_font_family_japanese);
+  --main_font_size: 32px;
+  --main_line_height: 64px;
+}

@@ -22,11 +22,24 @@
   }
   const D = globalThis.dromozoa = {};
 
-  console.log("start");
+  // カーニングと両端揃えを考慮して、それぞれの「文字」の水平位置を求めたい。リ
+  // ガチャは無視することにする。
+  //
+  // <span>VA</span>と<span>V</span><span>A</span>の幅をくらべれば、<span>をま
+  // たいでカーニングしてくれるかどうかはわかる。
+  //
+  // Safariが<span>をまたぐカーニングをしてくれない。1文字ずつレイアウトして、
+  // 両端揃えを自前で計算すれば、求めることはできる。
+  //
+  // フォントが既知なので、フォントに設定されているカーニング情報は参照可能だが、
+  // 動的なカーニングに対応できない。
 
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOMContentLoaded");
-  });
+  // そもそも文字の位置をとる方法は？
+  // 1. spanで囲んで、その位置をとる
+  //    getClientRects()で取れた
+  //    ビューポート基準であることに注意。
+  // 2. SVGはどう？
+  //    Chromeは<tspan>をまたいでカーニングしてくれる
+  // 3. 直接文字の位置はとれないのか？
 
-  console.log("end");
 })();
