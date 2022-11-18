@@ -21,6 +21,52 @@
     return;
   }
   const D = globalThis.dromozoa = {};
+  let offscreen;
+
+  const create_element = html => {
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    return template.content.firstElementChild;
+  };
+
+  const get_offscreen = () => {
+    if (offscreen) {
+      return offscreen;
+    }
+    return offscreen = document.body.appendChild(create_element(`
+      <div class="dromozoa offscreen"></div>
+    `));
+  };
+
+  // feature_kerning
+  // feature_kerning_span
+  const check_kerning = () => {
+    const view = get_offscreen().appendChild(create_element(`
+      <div class="check_kerning">
+        <div><span class="case1">ToT</span></div>
+        <div><span class="case2">ToT</span></div>
+        <div><span class="case3"><span>T</span><span>o</span><span>T</span></span></div>
+      </div>
+    `));
+
+    const case1 = view.querySelector(".case1").getBoundingClientRect().width;;
+    const case2 = view.querySelector(".case2").getBoundingClientRect().width;;
+    const case3 = view.querySelector(".case3").getBoundingClientRect().width;;
+
+    console.log(case1);
+    console.log(case2);
+    console.log(case3);
+    console.log(check_kerning);
+
+    // get_offscreen().removeChild(view);
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    check_kerning();
+  });
+
+
+
 
   // カーニングと両端揃えを考慮して、それぞれの「文字」の水平位置を求めたい。リ
   // ガチャは無視することにする。

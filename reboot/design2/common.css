@@ -31,3 +31,28 @@
   --main_font_size: 32px;
   --main_line_height: 64px;
 }
+
+.dromozoa.offscreen {
+  display: block;
+  position: absolute;
+  /*
+  top: -9999px;
+  left: -9999px;
+  */
+}
+
+.dromozoa .check_kerning {
+  font-family: 'Share Tech', sans-serif;
+  font-size: 100px;
+  font-variant-ligatures: none;
+  white-space: nowrap;
+}
+
+.dromozoa .check_kerning .case1 {
+  font-kerning: none;
+};
+
+.dromozoa .check_kerning .case2,
+.dromozoa .check_kerning .case3 {
+  font-kerning: normal;
+};
