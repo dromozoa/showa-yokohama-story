@@ -218,3 +218,44 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" \
   source.png result.png
 ```
 
+## アイコン
+
+ベクトルデータをInkSpaceで作成した。作業時のキャンバスサイズは1024x1024とした。すべてのノードが連結されるように手作業した。また、直線で置き換えられる曲線を直線にした（これはスクリプト化も行なった）。
+
+Plain SVGで出力して、FontForgeで読みこむ。FontForgeのデフォルト設定に合わせて、1000x1000 (ascend: 800, descend: 200)で出力した。
+
+- 手作業でクリーンアップしたので、「単純化」は行う必要がなくなった。
+- 「問題点を発見」でくりかえし確認した。「パス」タブの項目だけ確認した。
+- 「極大点を追加」した。
+- 「座標を丸める/整数に」した。
+- 自己交差が発生する場合、InkSpaceで編集して対処した。
+- TrueTypeで出力した後、[woff2](https://github.com/google/woff2)で変換した。
+- 実際にテキストと合わせてみて、サイズと位置を微調整した。
+
+ベクトルデータから画像ファイルの出力も調整が必要だった。
+- 参考: https://coliss.com/articles/build-websites/operation/work/how-to-favicon.html
+- まず、Apple Touch Iconの角丸に合わせてサイズと位置を調整した。
+  - 無地のアイコンが表示させてガイドを作成した。
+  - ボディの正方形のサイズを800x800にした。余白は112px程度であった。
+  - これを180x180で出力した。
+- これをSVGとして出力した。
+  - すべてのパスを結合し、単純化した。
+  - 背景色のためにrectをおいた。
+  - Plain SVGで出力した。
+- ビットマップ画像の出力は、Apple Touch Icon用に調整したもので行なった。
+  - アンチエイリアスはデフォルトの2を用いた。
+- Web Application Manifest用のビットマップ画像はセーフエリアを考慮して余白を増やした。
+  - [Web Application Manifest](https://triple-underscore.github.io/appmanifest-ja.html)によればセーフエリアは直径819.2pxの円である。
+  - 800x800の正方形の対角線の長さが1132なので、
+- 32x32以下のビットマップ画像の出力では、余白を減らした。
+  - 1024x1024のキャンバスを900x900にクロップしたうえで、出力した。
+    - エクスポート設定で領域を設定した。
+  - アンチエイリアスは1を設定した。
+
+出力した画像ファイルの後処理は、SVGは自前で最適化し、PNGとICOはImageMagickを用いた。
+
+```
+env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert -quality 90 -strip source.png PNG8:result.png
+env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert favicon-32.png favicon-32.ico
+```
+
