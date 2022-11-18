@@ -15,17 +15,16 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
--- Inkspaceが出力したSVGをFontForgeが扱えるように変換する。
+-- 元はFontForgeで扱えるようなSVGの生成が目的だったが、favicon.svgのサイズを減
+-- らすことに目的が変わった。
 
--- 前提
--- 統合されたひとつのpathだけからなる
+-- 統合されたひとつのpathだけからなるという前提で、パスデータのサイズを減らす。
 
 local source_filename, result_filename = ...
 local handle = assert(io.open(source_filename))
 local source = handle:read "*a"
 handle:close()
 
--- データは統合されていて、ひとつの<path>だけからなるとする。
 local prologue, path_data_string, epilogue = assert(source:match [[^(.-<path[^>]*d=")([^"]+)("[^>]/>.*)$]])
 
 -- 手元のデータで出てきた命令だけ実装する。
@@ -81,6 +80,11 @@ for i, item in ipairs(path_data) do
     sx = px
     sy = py
   elseif command == "m" then
+    -- 先頭の相対mはMと同じ
+    if i == 1 then
+      px = 0
+      py = 0
+    end
     item[0] = "M"
     item[1] = px + item[1]
     item[2] = py + item[2]
@@ -149,73 +153,38 @@ end
 local handle = assert(io.open(result_filename, "w"))
 handle:write(prologue)
 
--- 交差をさけるために先頭のM831,0をM830,0に読みかえる
-assert(path_data[1][0] == "M")
-assert(path_data[1][1] == 831)
-assert(path_data[1][2] == 0)
-path_data[1][1] = 830
-
--- 重複を調べながら出力する
 local px
 local py
 for i, item in ipairs(path_data) do
   local command = item[0]
   local skip
-  if command == "Z" then
-    skip = px == item.sx and py == item.sy
+  if command == "M" then
+    assert(px ~= item[1] or py ~= item[2])
+    handle:write("M", item[1], ",", item[2])
+    px = item[1]
+    py = item[2]
+  elseif command == "Z" then
+    -- 始点と同一であれば閉じない
+    if px ~= item.sx or py ~= item.sy then
+      handle:write "Z"
+    end
     px = item.sx
     py = item.sy
+  elseif command == "L" then
+    assert(px ~= item[1] or py ~= item[2])
+    handle:write("L", item[1], ",", item[2])
+    px = item[1]
+    py = item[2]
+  elseif command == "V" then
+    assert(py ~= item[1])
+    handle:write("V", item[1])
+    py = item[1]
   elseif command == "C" then
     local ax, ay, bx, by, cx, cy = table.unpack(item)
     assert(px ~= cx or py ~= cy)
-    local same1 = px == ax and py == ay -- 始点と第一制御点が同じ
-    local same2 = bx == cx and by == cy -- 終点と第二制御点が同じ
-
-    if same1 then
-      if same2 then
-        item[0] = "L"
-        item[1] = cx
-        item[2] = cy
-        item[3] = nil
-        item[4] = nil
-        item[5] = nil
-        item[6] = nil
-      else
-        item[0] = "Q"
-        item[1] = bx
-        item[2] = by
-        item[3] = cx
-        item[4] = cy
-        item[5] = nil
-        item[6] = nil
-      end
-    elseif same2 then
-      item[0] = "Q"
-      item[1] = ax
-      item[2] = ay
-      item[3] = cx
-      item[4] = cy
-      item[5] = nil
-      item[6] = nil
-    end
-
+    handle:write("C", ax, ",", ay, " ", bx, ",", by, " ", cx, ",", cy)
     px = cx
     py = cy
-  elseif command == "V" then
-    skip = py == item[1]
-    py = item[1]
-  else
-    assert(px ~= item[1] or py ~= item[2])
-    px = item[1]
-    py = item[2]
-  end
-
-  if not skip then
-    handle:write(item[0])
-    for _, param in ipairs(item) do
-      handle:write((" %.17g"):format(param))
-    end
-    handle:write "\n"
   end
 end
 
