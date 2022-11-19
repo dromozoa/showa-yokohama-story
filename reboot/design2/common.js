@@ -45,9 +45,9 @@
   const check_kerning = () => {
     const view = get_offscreen().appendChild(create_element(`
       <div class="check_kerning">
-        <div><span class="case1">ToT</span></div>
-        <div><span class="case2">ToT</span></div>
-        <div><span class="case3"><span>T</span><span>o</span><span>T</span></span></div>
+        <div><span class="case1">&#xE001;&#xE002;</span></div>
+        <div><span class="case2">&#xE001;&#xE002;</span></div>
+        <div><span class="case3"><span>&#xE001;</span><span>&#xE002;</span></span></div>
       </div>
     `));
 
