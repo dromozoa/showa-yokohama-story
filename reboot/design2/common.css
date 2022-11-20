@@ -32,6 +32,13 @@
   --main_line_height: 64px;
 }
 
+.dromozoa_test {
+  font-family: var(--main_font_family);
+  font-size: 100px;
+  line-height: 100px;
+  white-space: nowrap;
+};
+
 .dromozoa.offscreen {
   display: block;
   position: absolute;
@@ -45,6 +52,7 @@
   font-family: 'Showa Yokohama Story';
   font-size: 100px;
   font-variant-ligatures: none;
+  line-height: 100px;
   white-space: nowrap;
 }
 
@@ -56,3 +64,4 @@
 .dromozoa .check_kerning .case3 {
   font-kerning: normal;
 };
+

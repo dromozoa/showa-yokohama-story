@@ -42,11 +42,35 @@ if (globalThis.dromozoa) {
   return;
 }
 
+const escape_html = s => {
+  return s.replace(/[&<>"']/g, match => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&apos;",
+  })[match]);
+};
+
+const create_element = html => {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  return template.content.firstElementChild;
+};
+
+const create_elements = html => {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  return template.content.children;
+};
+
 const root = globalThis.dromozoa = new class {
   #boot_exception;
   #booted;
   #booted_futures = [];
   #offscreen;
+  feature_kerning;
+  feature_kerning_span;
 
   async boot() {
     this.#booted = false;
@@ -79,18 +103,22 @@ const root = globalThis.dromozoa = new class {
     });
   }
 
-  create_element(html) {
-    const template = document.createElement("template");
-    template.innerHTML = html;
-    return template.content.firstElementChild;
-  }
-
   get offscreen() {
-    return this.#offscreen ||= document.body.appendChild(this.create_element(`
+    return this.#offscreen ||= document.body.appendChild(create_element(`
       <div class="dromozoa offscreen"></div>
     `));
   }
 
+  // Showa Yokohama Storyフォントは下記の寸法を持つ。
+  //   U+E0001:  800/1000
+  //   U+E0002:  900/1000
+  //   Kerning: -300/1000
+  // フォントサイズ100pxでレンダリングすると、
+  //   カーニング無効: 幅170px
+  //   カーニング有効: 幅140px
+  // になる。
+  //
+  // Safariは<span>をまたいでカーニングしないので、これを検出する。
   async check_kerning() {
     const fontface = Array.from(document.fonts).find(fontface => /Showa Yokohama Story/.test(fontface.family));
     if (!fontface) {
@@ -98,7 +126,7 @@ const root = globalThis.dromozoa = new class {
     }
     await fontface.load();
 
-    const view = this.offscreen.appendChild(this.create_element(`
+    const view = this.offscreen.appendChild(create_element(`
       <div class="check_kerning">
         <div><span class="case1">&#xE001;&#xE002;</span></div>
         <div><span class="case2">&#xE001;&#xE002;</span></div>
@@ -110,9 +138,51 @@ const root = globalThis.dromozoa = new class {
     const case2 = view.querySelector(".case2").getBoundingClientRect().width;;
     const case3 = view.querySelector(".case3").getBoundingClientRect().width;;
 
-    console.log(case1);
-    console.log(case2);
-    console.log(case3);
+    console.log(case1, case2, case3);
+
+    if (this.feature_kerning = case1 > case2) {
+      this.feature_kerning_span = Math.abs(case1 - case3) > Math.abs(case2 - case3);
+    }
+
+    view.remove();
+    // this.offscreen.removeChild(view);
+  }
+
+  layout_text(text, class_name) {
+    // const view = this.offscreen.appendChild(create_element(`
+    //   <div><div class="layout_text"></div></div>
+    // `));
+    // view.className = class_name;
+
+    if (this.feature_kerning_span) {
+    } else {
+      const view = document.createElement("div");
+      if (class_name !== undefined) {
+        view.classList.add(class_name);
+      }
+
+      const escaped_chars = [...text].map(escape_html);
+
+      for (let i = 1; i < escaped_chars.length; ++i) {
+        const a = escaped_chars.slice(0, i).join("");
+        const b = escaped_chars[i];
+        view.append(...create_elements(`
+          <div><span><span>${a}${b}</span></span></div>
+          <div><span><span>${a}</span><span>${b}</span></div>
+        `));
+      }
+
+      this.offscreen.append(view);
+
+      const result = [];
+      for (let i = 1; i < escaped_chars.length; ++i) {
+        const a = view.children[i * 2 - 2].firstElementChild.getBoundingClientRect().width;
+        const b = view.children[i * 2 - 1].firstElementChild.getBoundingClientRect().width;
+        console.log(b-a, a, b)
+        result.push(b - a);
+      }
+      console.log(result);
+    }
   }
 
 };
