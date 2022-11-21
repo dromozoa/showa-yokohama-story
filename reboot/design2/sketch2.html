@@ -122,6 +122,91 @@
 
 </div>
 
+<!--
+
+  ルビのアルゴリズムを考える。
+  ルビの長さが親文字の長さより長い場合、前後のはみだしと親文字グループ内のアキを考慮する必要がある。
+
+  はみだし可能かどうか
+  ・前後の文字
+  ・行頭かどうか
+  ・行末かどうか
+
+  b1..bn
+  r1..rn
+
+  ・前にはみだせるかどうかは、行頭かどうかと前の文字から判定できる。
+  ・後にはみだせるかどうかは、後の文字がはみだせそうであれば、行末になるかどうかを判定してみる。
+
+  「春は<ruby>曙<rt>あけぼの</rt></ruby>と」
+
+  「曙」は前後にはみだせるので、行頭や行末に来なければ
+
+  行中では
+        は    1.0em
+    あ  |
+    け  曙    1.0em
+    ぼ  |
+    の  と    1.0em
+        |
+
+  行頭では
+        ^
+    あ  曙    1.0em
+    け  |
+    ぼ  ENSP  0.5em
+    の  と    1.0em
+        |
+
+  行末では
+        は    1.0em
+    あ  |
+    け  ENSP  0.5em
+    ぼ  曙    1.0em
+    の  |
+        $
+
+
+  [確定][1.0em][次の文字]
+  [確定][1.5em][次の文字]
+  [確定][2.0em][次の文字]
+
+  現在が行頭であるというのは、
+    文頭であるか、
+
+
+  1. 現在が行頭でなければ、
+    2. 幅1.0emでレイアウトしてみる。
+       後の文字が同じ行にきてくれれば、後にはみだせる。
+       => 行中レイアウト
+    3. 幅1.5emでレイアウトしてみる。
+       次の行におりかえされていなければ、行末である。
+       => 行末レイアウト
+  4. 幅1.5emでレイアウトしてみる。（1からくる場合もある）
+     後の文字が同じ行にきてくれれば、後にはみだせる。
+     => 行中レイアウト
+  5. 幅2emでレイアウトするしかない。
+
+-->
+
+
+<div style="
+  background-color: #ccc;
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 20px;
+  text-align: left;
+  width: 10em;
+  word-break: break-word;
+">
+  <div><span><ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>ああ</span></div>
+  <div><span>ああ<ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby></span></div>
+  <div><span>あ<ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>あ</span></div>
+  <div><span><ruby style="background-color: #fff">屍者<rt>ゾンビ</rt></ruby></span></div>
+  <div><span>は<ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby>と</span></div>
+  <div><span>は<ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby></span></div>
+  <div><span><ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby>と</span></div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   const D = globalThis.dromozoa
