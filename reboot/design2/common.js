@@ -105,20 +105,32 @@ const root = globalThis.dromozoa = new class {
 
   get offscreen() {
     return this.#offscreen ||= document.body.appendChild(create_element(`
-      <div class="dromozoa offscreen"></div>
+      <div style="
+        display: block;
+        position: absolute;
+        /*
+        top: -9999px;
+        left: -9999px;
+        */
+      "></div>
     `));
   }
 
   // Showa Yokohama Storyフォントは下記の寸法を持つ。
-  //   U+E0001:  800/1000
-  //   U+E0002:  900/1000
-  //   Kerning: -300/1000
-  // フォントサイズ100pxでレンダリングすると、
-  //   カーニング無効: 幅170px
-  //   カーニング有効: 幅140px
+  //   U+E001:  800/1000
+  //   U+E002:  900/1000
+  //   字間:   -300/1000
+  //
+  // フォントサイズ100pxで(U+E001,E+E0002)をレイアウトすると、
+  //   カーニング無効時: 幅170px
+  //   カーニング有効時: 幅140px
   // になる。
   //
-  // Safariは<span>をまたいでカーニングしないので、これを検出する。
+  // feature_kerning
+  //   カーニングが有効化どうか。
+  // feature_kerning_span
+  //   <span>をまたいでカーニングするかどうか。Safari 16は<span>をまたいでカー
+  //   ニングしない。
   async check_kerning() {
     const fontface = Array.from(document.fonts).find(fontface => /Showa Yokohama Story/.test(fontface.family));
     if (!fontface) {
@@ -127,61 +139,85 @@ const root = globalThis.dromozoa = new class {
     await fontface.load();
 
     const view = this.offscreen.appendChild(create_element(`
-      <div class="check_kerning">
-        <div><span class="case1">&#xE001;&#xE002;</span></div>
-        <div><span class="case2">&#xE001;&#xE002;</span></div>
-        <div><span class="case3"><span>&#xE001;</span><span>&#xE002;</span></span></div>
+      <div style="
+        font-family: 'Showa Yokohama Story';
+        font-size: 100px;
+        font-variant-ligatures: none;
+        line-height: 100px;
+        white-space: nowrap;
+      ">
+        <div><span style="font-kerning: none"><span>&#xE001;&#xE002;</span></span></div>
+        <div><span style="font-kerning: normal"><span>&#xE001;&#xE002;</span></span></div>
+        <div><span style="font-kerning: normal"><span>&#xE001;</span><span>&#xE002;</span></span></div>
       </div>
     `));
 
-    const case1 = view.querySelector(".case1").getBoundingClientRect().width;;
-    const case2 = view.querySelector(".case2").getBoundingClientRect().width;;
-    const case3 = view.querySelector(".case3").getBoundingClientRect().width;;
-
-    console.log(case1, case2, case3);
-
+    const case1 = view.children[0].firstElementChild.getBoundingClientRect().width;
+    const case2 = view.children[1].firstElementChild.getBoundingClientRect().width;
+    const case3 = view.children[2].firstElementChild.getBoundingClientRect().width;
     if (this.feature_kerning = case1 > case2) {
       this.feature_kerning_span = Math.abs(case1 - case3) > Math.abs(case2 - case3);
     }
 
-    view.remove();
-    // this.offscreen.removeChild(view);
+    // view.remove();
   }
 
   layout_text(text, class_name) {
-    // const view = this.offscreen.appendChild(create_element(`
-    //   <div><div class="layout_text"></div></div>
-    // `));
-    // view.className = class_name;
+    const view = create_element(`
+      <div style="
+        font-size: 100px;
+        font-variant-ligatures: none;
+        line-height: 100px;
+        white-space: nowrap;
+      "></div>
+    `);
+    if (class_name !== undefined) {
+      view.classList.add(class_name);
+    }
+    const chars = [...text].map(escape_html);
 
     if (this.feature_kerning_span) {
-    } else {
-      const view = document.createElement("div");
-      if (class_name !== undefined) {
-        view.classList.add(class_name);
-      }
-
-      const escaped_chars = [...text].map(escape_html);
-
-      for (let i = 1; i < escaped_chars.length; ++i) {
-        const a = escaped_chars.slice(0, i).join("");
-        const b = escaped_chars[i];
-        view.append(...create_elements(`
-          <div><span><span>${a}${b}</span></span></div>
-          <div><span><span>${a}</span><span>${b}</span></div>
-        `));
-      }
-
+      view.append(create_element("<div>" + chars.map(c => `<span>${c}</span>`).join("") + "</div>"));
       this.offscreen.append(view);
 
       const result = [];
-      for (let i = 1; i < escaped_chars.length; ++i) {
-        const a = view.children[i * 2 - 2].firstElementChild.getBoundingClientRect().width;
-        const b = view.children[i * 2 - 1].firstElementChild.getBoundingClientRect().width;
-        console.log(b-a, a, b)
-        result.push(b - a);
+      for (let i = 0; i < chars.length; ++i) {
+        result[i] = {
+          progress: view.firstElementChild.children[i].getBoundingClientRect().width,
+        };
       }
+
       console.log(result);
+
+    } else {
+      chars.forEach((b, i) => {
+        const a = chars.slice(0, i).join("");
+        const u = a === "" ? "" : `<span>${a}</span>`;
+        const c = chars.slice(i + 1).join("");
+        const v = c === "" ? "" : `<span>${c}</span>`;
+        view.append(...create_elements(`
+          <div><span><span>${a}${b}</span></span>${v}</div>
+          <div><span>${u}<span>${b}</span></span>${v}</div>
+        `));
+      });
+
+      this.offscreen.append(view);
+
+      let case1 = view.firstElementChild.firstElementChild.getBoundingClientRect().width;
+      const result = [ { progress: case1 } ];
+      for (let i = 1; i < chars.length; ++i) {
+        const case2 = view.children[i * 2 + 0].firstElementChild.getBoundingClientRect().width;
+        const case3 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
+        const prev = result[i - 1]
+        prev.progress += case2 - case3;
+        result.push({ progress: case3 - case1 });
+        case1 = case2;
+      }
+
+      // view.remove();
+      console.log(result);
+
+
     }
   }
 

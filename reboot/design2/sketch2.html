@@ -51,9 +51,15 @@
 <body>
 
 <div class="dromozoa" style="font-family: var(--main_font_family); font-size: var(--main_font_size); line-height: var(--main_line_height);">
+  <!--
   <div>&#xE000;</div>
   <div>&#xE001;&#xE002;</div>
   <div>&#xE002;&#xE001;</div>
+  -->
+</div>
+
+<div class="dromozoa_test">
+  <span>あい、「うえ」を。</span>
 </div>
 
 <script>
@@ -61,10 +67,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const D = globalThis.dromozoa
 
   await D.booted;
+  await Array.from(document.fonts).find(fontface => /Share Tech/.test(fontface.family)).load();
+
+
   console.log("feature_kerning: " + D.feature_kerning);
   console.log("feature_kerning_span: " + D.feature_kerning_span);
-  // D.layout_text("sTaTuTe sTaTuTe sTaTuTe sTaTuTe sTaTuTe sTaTuTe", "dromozoa_test");
-  // D.layout_text("昭和七十四年七月、ボクはキミに出逢った。");
+  D.layout_text("sTaTuTe sTaTuTe", "dromozoa_test");
+  // D.layout_text("eTeTeTe eTeTeTe", "dromozoa_test");
+  // D.layout_text("昭和七十四年七月、ボクはキミに出逢った。", "dromozoa_test");
+  // D.layout_text("あい、「うえ」を。", "dromozoa_test");
 });
 </script>
 
