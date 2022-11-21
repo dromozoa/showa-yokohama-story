@@ -56,15 +56,27 @@
   font-size: 20px;
   text-align: left;
   width: 5em;
+  /*
   word-break: break-word;
+  overflow-wrap: anywhere;
+  */
+  overflow-wrap: break-word;
 
 ">
-  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>abcdef ghijkl mnopqr stuvwxyz</div>
   <div>あいうえ」おかきくけこ</div>
   <div>abcdefghijklmnopqrstuvwxyz</div>
   <div>あいうえお」かきくけこ</div>
   <div>abcdefghijklmnopqrstuvwxyz</div>
   <div>あいうえおか」きくけこ</div>
+
+  <div>----------------</div>
+
+  <div>あいうえ」おかきくけこabcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえお」かきくけこabcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえおか」きくけこabcdefghijklmnopqrstuvwxyz</div>
+
+  <div>----------------</div>
 
   <div      ><span style="display: inline"
     >a</span><span style="display: inline"
@@ -187,6 +199,10 @@
      => 行中レイアウト
   5. 幅2emでレイアウトするしかない。
 
+
+
+
+
 -->
 
 
@@ -198,13 +214,13 @@
   width: 10em;
   word-break: break-word;
 ">
-  <div><span><ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>ああ</span></div>
-  <div><span>ああ<ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby></span></div>
-  <div><span>あ<ruby style="background-color: #fff">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>あ</span></div>
-  <div><span><ruby style="background-color: #fff">屍者<rt>ゾンビ</rt></ruby></span></div>
-  <div><span>は<ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby>と</span></div>
-  <div><span>は<ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby></span></div>
-  <div><span><ruby style="background-color: #fff">曙<rt>あけぼの</rt></ruby>と</span></div>
+  <div><span><ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>ああ</span></div>
+  <div><span>ああ<ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby></span></div>
+  <div><span>あ<ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>あ</span></div>
+  <div><span><ruby style="background-color: #fcc">屍者<rt>ゾンビ</rt></ruby></span></div>
+  <div><span>は<ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby>と</span></div>
+  <div><span>は<ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby></span></div>
+  <div><span><ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby>と</span></div>
 </div>
 
 <script>
