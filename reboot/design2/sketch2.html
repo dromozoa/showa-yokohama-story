@@ -50,16 +50,76 @@
 </head>
 <body>
 
-<div class="dromozoa" style="font-family: var(--main_font_family); font-size: var(--main_font_size); line-height: var(--main_line_height);">
-  <!--
-  <div>&#xE000;</div>
-  <div>&#xE001;&#xE002;</div>
-  <div>&#xE002;&#xE001;</div>
-  -->
-</div>
+<div style="
+  background-color: #ccc;
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 20px;
+  text-align: left;
+  width: 5em;
+  word-break: break-word;
 
-<div class="dromozoa_test">
-  <span>あい、「うえ」を。</span>
+">
+  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえ」おかきくけこ</div>
+  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえお」かきくけこ</div>
+  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえおか」きくけこ</div>
+
+  <div      ><span style="display: inline"
+    >a</span><span style="display: inline"
+    >b</span><span style="display: inline"
+    >c</span><span style="display: inline"
+    >d</span><span style="display: inline"
+    >e</span><span style="display: inline"
+    >f</span><span style="display: inline"
+    >g</span><span style="display: inline"
+    >h</span><span style="display: inline"
+    >i</span><span style="display: inline"
+    >j</span><span style="display: inline"
+    >k</span><span style="display: inline"
+    >l</span><span style="display: inline"
+    >m</span><span style="display: inline"
+    >n</span><span style="display: inline"
+    >o</span><span style="display: inline"
+    >p</span><span style="display: inline"
+    >q</span><span style="display: inline"
+    >r</span><span style="display: inline; letter-spacing: 0.2em"
+    >s</span><span style="display: inline"
+    >t</span><span style="display: inline"
+    >u</span><span style="display: inline"
+    >v</span><span style="display: inline"
+    >w</span><span style="display: inline"
+    >x</span><span style="display: inline"
+    >y</span><span style="display: inline"
+    >z</span></div>
+
+  <div       ><span style="display: inline"
+    >あ</span><span style="display: inline"
+    >い</span><span style="display: inline"
+    >う</span><span style="display: inline"
+    >え</span><span style="display: inline"
+    >お</span><span style="display: inline"
+    >」</span><span style="display: inline"
+    >か</span><span style="display: inline"
+    >き</span><span style="display: inline"
+    >く</span><span style="display: inline"
+    >け</span><span style="display: inline"
+    >こ</span></div>
+
+  <div       ><ruby
+    >あ</ruby><ruby
+    >い</ruby><ruby
+    >う</ruby><ruby
+    >え</ruby><ruby
+    >お</ruby><ruby
+    >」</ruby><ruby
+    >か</ruby><ruby
+    >き</ruby><ruby
+    >く</ruby><ruby
+    >け</ruby><ruby
+    >こ</ruby></div>
+
 </div>
 
 <script>
@@ -68,11 +128,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await D.booted;
   await Array.from(document.fonts).find(fontface => /Share Tech/.test(fontface.family)).load();
-
-
   console.log("feature_kerning: " + D.feature_kerning);
   console.log("feature_kerning_span: " + D.feature_kerning_span);
-  D.layout_text("sTaTuTe sTaTuTe", "dromozoa_test");
+  // D.layout_text("sTaTuTe sTaTuTe", "dromozoa_test");
   // D.layout_text("eTeTeTe eTeTeTe", "dromozoa_test");
   // D.layout_text("昭和七十四年七月、ボクはキミに出逢った。", "dromozoa_test");
   // D.layout_text("あい、「うえ」を。", "dromozoa_test");
