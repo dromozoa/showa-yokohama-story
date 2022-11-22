@@ -50,6 +50,20 @@
 </head>
 <body>
 
+<template id="tmpl">
+<div style="
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 50px;
+  line-height: 2;
+  width: 9em;
+  text-align: justify;
+  /*
+  font-kerning: normal;
+  */
+"><span><ruby>取り替え子<rt>チェンジリング</rt></ruby>。ToToToToT ToToToToT<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。油をそそがれなかった者たち。──遡及的に。</span><br><ruby>死んでくれる？<rt>Die For Me ?</rt></ruby></div>
+</template>
+
+<!--
 <div style="
   background-color: #ccc;
   font-family: 'Share Tech', 'BIZ UDPMincho';
@@ -57,8 +71,12 @@
   text-align: left;
   width: 5em;
   /*
+  overflow-wrap: break-word;
   word-break: break-word;
-  overflow-wrap: anywhere;
+
+  ルビの場合はこちらで計算するのもよいかもしれない。
+  word-break: break-all;
+
   */
   overflow-wrap: break-word;
 
@@ -134,7 +152,6 @@
 
 </div>
 
-<!--
 
   ルビのアルゴリズムを考える。
   ルビの長さが親文字の長さより長い場合、前後のはみだしと親文字グループ内のアキを考慮する必要がある。
@@ -203,8 +220,6 @@
 
 
 
--->
-
 
 <div style="
   background-color: #ccc;
@@ -222,6 +237,8 @@
   <div><span>は<ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby></span></div>
   <div><span><ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby>と</span></div>
 </div>
+-->
+
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
@@ -231,6 +248,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   await Array.from(document.fonts).find(fontface => /Share Tech/.test(fontface.family)).load();
   console.log("feature_kerning: " + D.feature_kerning);
   console.log("feature_kerning_span: " + D.feature_kerning_span);
+
+  // load font all?
+
+  const x = document.getElementById("tmpl").content.firstElementChild.cloneNode(true);
+  document.body.append(x.cloneNode(true));
+
+  setTimeout(() => D.layout_paragraph(x), 500);
+
+  // D.layout_text(document.getElementById("test"));
   // D.layout_text("sTaTuTe sTaTuTe", "dromozoa_test");
   // D.layout_text("eTeTeTe eTeTeTe", "dromozoa_test");
   // D.layout_text("昭和七十四年七月、ボクはキミに出逢った。", "dromozoa_test");

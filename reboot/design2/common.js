@@ -134,7 +134,7 @@ const root = globalThis.dromozoa = new class {
   async check_kerning() {
     const fontface = Array.from(document.fonts).find(fontface => /Showa Yokohama Story/.test(fontface.family));
     if (!fontface) {
-      throw new Error("font 'Showa Yokohama Story' not found");
+      throw new Error("fontface 'Showa Yokohama Story' not found");
     }
     await fontface.load();
 
@@ -143,7 +143,7 @@ const root = globalThis.dromozoa = new class {
         font-family: 'Showa Yokohama Story';
         font-size: 100px;
         font-variant-ligatures: none;
-        line-height: 100px;
+        line-height: 1;
         white-space: nowrap;
       ">
         <div><span style="font-kerning: none"><span>&#xE001;&#xE002;</span></span></div>
@@ -152,210 +152,113 @@ const root = globalThis.dromozoa = new class {
       </div>
     `));
 
-    const case1 = view.children[0].firstElementChild.getBoundingClientRect().width;
-    const case2 = view.children[1].firstElementChild.getBoundingClientRect().width;
-    const case3 = view.children[2].firstElementChild.getBoundingClientRect().width;
-    if (this.feature_kerning = case1 > case2) {
-      this.feature_kerning_span = Math.abs(case1 - case3) > Math.abs(case2 - case3);
+    const width1 = view.children[0].firstElementChild.getBoundingClientRect().width;
+    const width2 = view.children[1].firstElementChild.getBoundingClientRect().width;
+    const width3 = view.children[2].firstElementChild.getBoundingClientRect().width;
+    if (this.feature_kerning = width1 > width2) {
+      this.feature_kerning_span = Math.abs(width1 - width3) > Math.abs(width2 - width3);
     }
 
-    // view.remove();
+    view.remove();
   }
 
-  layout_text(text, class_name) {
-    const view = create_element(`
+  layout_kerning(source, text, size) {
+    const container = source.cloneNode(false);
+    container.removeAttribute("id");
+    container.style.width = "auto";
+
+    const view = container.appendChild(create_element(`
       <div style="
-        font-size: 100px;
+        font-size: ${size * 100}%;
         font-variant-ligatures: none;
-        line-height: 100px;
         white-space: nowrap;
       "></div>
-    `);
-    if (class_name !== undefined) {
-      view.classList.add(class_name);
-    }
-    const chars = [...text].map(escape_html);
+    `));
 
     if (this.feature_kerning_span) {
-      view.append(create_element("<div>" + chars.map(c => `<span>${c}</span>`).join("") + "</div>"));
-      this.offscreen.append(view);
+      const html = text.map(item => `<span>${escape_html(item.text)}</span>`).join("");
+      view.append(...create_elements(`
+        <div style="font-kerning: none">${html}</div>
+        <div style="font-kerning: normal">${html}</div>
+      `));
+      this.offscreen.append(container);
 
-      const result = [];
-      for (let i = 0; i < chars.length; ++i) {
-        result[i] = {
-          progress: view.firstElementChild.children[i].getBoundingClientRect().width,
-        };
-      }
-
-      console.log(result);
-
-    } else {
-      chars.forEach((b, i) => {
-        const a = chars.slice(0, i).join("");
-        const u = a === "" ? "" : `<span>${a}</span>`;
-        const c = chars.slice(i + 1).join("");
-        const v = c === "" ? "" : `<span>${c}</span>`;
-        view.append(...create_elements(`
-          <div><span><span>${a}${b}</span></span>${v}</div>
-          <div><span>${u}<span>${b}</span></span>${v}</div>
-        `));
+      text.forEach((item, i) => {
+        item.width = view.firstElementChild.children[i].getBoundingClientRect().width;
+        item.progress = view.children[1].children[i].getBoundingClientRect().width;
       });
 
-      this.offscreen.append(view);
+    } else {
+      text.forEach((item, i) => {
+        const head = text.slice(0, i).map(item => escape_html(item.text)).join("");
+        const head_html = head == "" ? "" : `<span>${head}</span>`;
+        const body = escape_html(item.text);
+        const tail = text.slice(i + 1).map(item => escape_html(item.text)).join("");
+        const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
+        view.append(...create_elements(`
+          <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
+          <div style="font-kerning: normal"><span>${head_html}<span>${body}</span></span>${tail_html}</div>
+        `));
+      });
+      this.offscreen.append(container);
 
-      let case1 = view.firstElementChild.firstElementChild.getBoundingClientRect().width;
-      const result = [ { progress: case1 } ];
-      for (let i = 1; i < chars.length; ++i) {
-        const case2 = view.children[i * 2 + 0].firstElementChild.getBoundingClientRect().width;
-        const case3 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
-        const prev = result[i - 1]
-        prev.progress += case2 - case3;
-        result.push({ progress: case3 - case1 });
-        case1 = case2;
-      }
-
-      // view.remove();
-      console.log(result);
-
-
+      let prev = 0;
+      text.forEach((item, i) => {
+        const width1 = view.children[i * 2].firstElementChild.getBoundingClientRect().width;
+        const width2 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
+        item.width = item.progress = width2 - prev;
+        if (i > 0) {
+          text[i - 1].progress += width1 - width2;
+        }
+        prev = width1;
+      });
     }
+
+    container.remove();
   }
 
+  layout_paragraph(source) {
+    const paragraph = [];
+    let line;
+    let text;
+
+    const parse = node => {
+      switch (node.nodeType) {
+        case Node.ELEMENT_NODE:
+          switch (node.tagName) {
+            case "BR":
+              line = undefined;
+              break;
+            case "DIV":
+              node.childNodes.forEach(parse);
+              line = undefined;
+              break;
+            case "RT":
+              text.ruby = [ ...node.textContent ].map(text => ({ text: text }));
+              break;
+            default:
+              node.childNodes.forEach(parse);
+              break;
+          }
+          break;
+        case Node.TEXT_NODE:
+          if (line === undefined) {
+            paragraph.push(line = []);
+          }
+          line.push(text = { text: [ ...node.textContent ].map(text => ({ text: text })) });
+          break;
+      }
+    };
+    parse(source);
+
+    paragraph.forEach(line => {
+      this.layout_kerning(source, line.map(item => item.text).flat(), 1);
+      line.filter(item => item.ruby !== undefined).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+    });
+
+    console.log(JSON.stringify(paragraph, undefined, 2));
+  }
 };
 
 document.addEventListener("DOMContentLoaded", () => root.boot(), { once: true });
 })();
-
-/*
-globalThis.dromozoa ||= new class {
-  #boot_exception;
-  #booted;
-  #booted_futures = [];
-
-  constructor() {
-    document.addEventListener("DOMContentLoaded", () => this.boot());
-  }
-
-  boot() {
-    this.#booted = false;
-
-    this.#booted = true;
-  }
-
-  set_booted_future(future) {
-  }
-
-  get booted() {
-    if (this.#booted) {
-      return new Promise(resolve => {
-        resolve(this.boot_status);
-      });
-    } else {
-      return new Promise(resolve => {
-        this.booted_futures.push(resolve);
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-
-      if (this.boot_status) {
-        resolve();
-      } else {
-        this.add_on_booted(resolve);
-      }
-    });
-  }
-
-};
-
-
-globalThis.dromozoa || document.addEventListener("DOMContentLoaded", (globalThis.dromozoa = new class {
-  create_element(html) {
-    const template = document.createElement("template");
-    template.innerHTML = html;
-    return template.content.firstElementChild;
-  }
-
-  #offscreen;
-
-  get offscreen() {
-    return this.#offscreen ||= document.body.appendChild(this.create_element(`
-      <div class="dromozoa offscreen"></div>
-    `));
-  }
-
-  boot() {
-    const view = this.offscreen.appendChild(this.create_element(`
-      <div class="check_kerning">
-        <div><span class="case1">&#xE001;&#xE002;</span></div>
-        <div><span class="case2">&#xE001;&#xE002;</span></div>
-        <div><span class="case3"><span>&#xE001;</span><span>&#xE002;</span></span></div>
-      </div>
-    `));
-
-    const case1 = view.querySelector(".case1").getBoundingClientRect().width;;
-    const case2 = view.querySelector(".case2").getBoundingClientRect().width;;
-    const case3 = view.querySelector(".case3").getBoundingClientRect().width;;
-
-    console.log(case1);
-    console.log(case2);
-    console.log(case3);
-  }
-
-  get bootloader() {
-    return () => this.boot();
-  }
-
-}).bootloader);
-
-/*
-const D = globalThis.dromozoa = {
-  features: {},
-};
-let offscreen;
-
-const create_element = html => {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  return template.content.firstElementChild;
-};
-
-const get_offscreen = () => {
-  if (offscreen) {
-    return offscreen;
-  }
-  return offscreen = document.body.appendChild(create_element(`
-    <div class="dromozoa offscreen"></div>
-  `));
-};
-
-// feature_kerning
-// feature_kerning_span
-const check_kerning = () => {
-  const view = get_offscreen().appendChild(create_element(`
-    <div class="check_kerning">
-      <div><span class="case1">&#xE001;&#xE002;</span></div>
-      <div><span class="case2">&#xE001;&#xE002;</span></div>
-      <div><span class="case3"><span>&#xE001;</span><span>&#xE002;</span></span></div>
-    </div>
-  `));
-
-  const case1 = view.querySelector(".case1").getBoundingClientRect().width;;
-  const case2 = view.querySelector(".case2").getBoundingClientRect().width;;
-  const case3 = view.querySelector(".case3").getBoundingClientRect().width;;
-
-  console.log(case1);
-  console.log(case2);
-  console.log(case3);
-  console.log(check_kerning);
-
-  // get_offscreen().removeChild(view);
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  check_kerning();
-});
-
-D.booted = () {
-};
-*/
