@@ -20,9 +20,9 @@
 -- https://github.com/w3c/jlreq
 --
 -- ルビのはみ出しで使うのは cl-01,02,05,06,07,08,10,11,15,16,19
--- 漢字等 (cl-19) は "CJK Ideographic" 以外が列挙されている。
--- CJK Ideographicは定義がわからないのでブロックを使う。
---
+-- 漢字等 (cl-19) は "CJK Ideographs" 以外が列挙されている。定義がよくわからな
+-- いので。UnicodeのCJK Unified / Compatibility Ideographsを採用する。
+
 -- https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt
 --   3400..4DBF; CJK Unified Ideographs Extension A
 --   4E00..9FFF; CJK Unified Ideographs
@@ -35,7 +35,7 @@
 --   2F800..2FA1F; CJK Compatibility Ideographs Supplement
 --   30000..3134F; CJK Unified Ideographs Extension G
 --   31350..323AF; CJK Unified Ideographs Extension H
---
+
 -- https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt
 --   2E80..2E99    ; Han # So  [26] CJK RADICAL REPEAT..CJK RADICAL RAP
 --   2E9B..2EF3    ; Han # So  [89] CJK RADICAL CHOKE..CJK RADICAL C-SIMPLIFIED TURTLE
@@ -66,7 +66,7 @@ for _, id in ipairs { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16, 19 } do
   ids_for_ruby[id] = true
 end
 
--- Unicode 15のUCDから引用
+-- Unicode 15.0.0のUCDから引用
 local cjk_ideographs = [[
 3400..4DBF; CJK Unified Ideographs Extension A
 4E00..9FFF; CJK Unified Ideographs
@@ -82,6 +82,10 @@ F900..FAFF; CJK Compatibility Ideographs
 ]]
 
 local source_filename, result_filename = ...
+local options = {}
+for i = 3, #arg do
+  options[arg[i]] = true
+end
 
 local handle = assert(io.open(source_filename))
 local source = handle:read "*a"
@@ -122,7 +126,7 @@ for id, data in pairs(dataset) do
   end
 end
 
--- cl-19に漢字を追加する
+-- cl-19にCJK Unified / Compatibility Ideographsを追加する
 for a, b in cjk_ideographs:gmatch [[(%x+)%.%.(%x+); CJK]] do
   local a = assert(tonumber(a, 16))
   local b = assert(tonumber(b, 16))
@@ -164,6 +168,8 @@ local function construct(data)
   end
 end
 
+local tree = construct(ranges)
+
 local handle = assert(io.open(result_filename, "w"))
 
 handle:write [[
@@ -178,12 +184,17 @@ const root = globalThis.dromozoa_jlreq = {};
 root.character_class = c => {
 ]]
 
-local tree = construct(ranges)
 
 local function code(node, depth)
-  -- local indent = ("  "):rep(depth)
-  -- depth = depth + 1
   local indent = ""
+  if options.enable_indent then
+    indent = ("  "):rep(depth)
+  end
+  depth = depth + 1
+  local sp = ""
+  if options.enable_space then
+    sp = " "
+  end
 
   if #node == 2 then
     local a = node[1]
@@ -191,18 +202,17 @@ local function code(node, depth)
 
     if #a == 0 or #b == 0 then
       if #a == 0 and #b == 0 then
-        handle:write(indent, ("return c<%d?%d:%d;\n"):format(b.i, a.id, b.id));
+        handle:write(indent, "return c", sp, "<", sp, b.i, sp, "?", sp, a.id, sp, ":", sp, b.id, ";\n")
       else
         assert(#a == 0 and #b == 2)
         local c = b[1]
         local d = b[2]
-        handle:write(indent, ("return c<%d?%d:c<%d?%d:%d;\n"):format(b.i, a.id, d.i, c.id, d.id))
-
+        handle:write(indent, "return c", sp, "<", sp, b.i, sp, "?", sp, a.id, sp, ":", sp, "c", sp, "<", sp, d.i, sp, "?", sp, c.id, sp, ":", sp, d.id, ";\n")
       end
     else
-      handle:write(indent, ("if(c<%d){\n"):format(b.i))
+      handle:write(indent, "if", sp, "(c", sp, "<", sp, b.i, ")", sp, "{\n")
       code(a, depth)
-      handle:write(indent, "}else{\n")
+      handle:write(indent, "}", sp, "else", sp, "{\n")
       code(b, depth)
       handle:write(indent, "}\n")
     end
@@ -216,34 +226,31 @@ handle:write [[
 };
 ]]
 
-if false then
+if options.enable_test then
   handle:write [[
 
-const test_character_class_data = [
-]];
+root.test_character_class = () => {
+  const ranges = [
+]]
+
   for _, range in ipairs(ranges) do
-    handle:write(([[
-  { i: 0x%04X, j: 0x%04X, id: %d },
-]]):format(range.i, range.j, range.id))
+    handle:write(("    { i: 0x%04X, j: 0x%04X, id: %d },\n"):format(range.i, range.j, range.id))
   end
 
   handle:write [[
-];
-root.test_character_class = () => {
+  ];
   console.log("start");
   let n = 0;
-  test_character_class_data.forEach(range => {
-    const i = range.i;
-    const j = range.j;
-    const id = range.id;
-    for (let code = i; code <= j; ++code) {
-      if (root.character_class(code) !== id) {
-        throw new Error("code " + code + " id " + id);
-      }
+  ranges.forEach(range => {
+    for (let code = range.i; code <= range.j; ++code) {
+      const id = root.character_class(code)
+      console.assert(id === range.id, range, code, id);
       ++n;
     }
   });
-  console.log("end", n);
+  console.log(n);
+  console.assert(n === 0x110000, ranges);
+  console.log("end");
 };
 ]]
 end
@@ -254,19 +261,3 @@ handle:write [[
 ]]
 
 handle:close()
-
-for code = 0, 0x10FFFF do
-  local id = dataset_for_ruby[code] or 0
-  if range and range.j == code - 1 and range.id == id then
-    range.j = code
-  else
-    range = {
-      i = code;
-      j = code;
-      id = id;
-    }
-    ranges[#ranges + 1] = range
-  end
-end
-
-
