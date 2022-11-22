@@ -66,6 +66,9 @@ const create_elements = html => {
 
 const root = globalThis.dromozoa = new class {
   jlreq = globalThis.dromozoa_jlreq;
+  escape_html = escape_html;
+  create_element = create_element;
+  create_elements = create_elements;
 
   #boot_exception;
   #booted;

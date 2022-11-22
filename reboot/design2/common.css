@@ -21,7 +21,9 @@
   font-family: 'Showa Yokohama Story';
   font-display: swap;
   src: url(ShowaYokohamaStory-Regular.woff2) format('woff2'), url(ShowaYokohamaStory-Regular.ttf) format('truetype');
+  /*
   unicode-range: U+E000-E002;
+  */
 }
 
 .dromozoa {
