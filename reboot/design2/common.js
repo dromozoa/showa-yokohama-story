@@ -121,9 +121,9 @@ const root = globalThis.dromozoa = new class {
   //   U+E002:  900/1000
   //   字間:   -300/1000
   //
-  // フォントサイズ100pxで(U+E001,E+E0002)をレイアウトすると、
-  //   カーニング無効時: 幅170px
-  //   カーニング有効時: 幅140px
+  // (U+E001,E+E0002)をレイアウトすると
+  //   カーニング無効時: 1700/1000
+  //   カーニング有効時: 1400/1000
   // になる。
   //
   // feature_kerning
@@ -141,9 +141,8 @@ const root = globalThis.dromozoa = new class {
     const view = this.offscreen.appendChild(create_element(`
       <div style="
         font-family: 'Showa Yokohama Story';
-        font-size: 100px;
+        font-size: 50px;
         font-variant-ligatures: none;
-        line-height: 1;
         white-space: nowrap;
       ">
         <div><span style="font-kerning: none"><span>&#xE001;&#xE002;</span></span></div>
@@ -166,6 +165,7 @@ const root = globalThis.dromozoa = new class {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.width = "auto";
+    container.style.height = "auto";
 
     const view = container.appendChild(create_element(`
       <div style="
@@ -220,7 +220,7 @@ const root = globalThis.dromozoa = new class {
   layout_paragraph(source) {
     const paragraph = [];
     let line;
-    let text;
+    let item;
 
     const parse = node => {
       switch (node.nodeType) {
@@ -234,7 +234,7 @@ const root = globalThis.dromozoa = new class {
               line = undefined;
               break;
             case "RT":
-              text.ruby = [ ...node.textContent ].map(text => ({ text: text }));
+              item.ruby = [ ...node.textContent ].map(text => ({ text: text }));
               break;
             default:
               node.childNodes.forEach(parse);
@@ -245,18 +245,18 @@ const root = globalThis.dromozoa = new class {
           if (line === undefined) {
             paragraph.push(line = []);
           }
-          line.push(text = { text: [ ...node.textContent ].map(text => ({ text: text })) });
+          line.push(item = { main: [ ...node.textContent ].map(text => ({ text: text })) });
           break;
       }
     };
     parse(source);
 
     paragraph.forEach(line => {
-      this.layout_kerning(source, line.map(item => item.text).flat(), 1);
+      this.layout_kerning(source, line.map(item => item.main).flat(), 1);
       line.filter(item => item.ruby !== undefined).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
 
-    console.log(JSON.stringify(paragraph, undefined, 2));
+    // console.log(JSON.stringify(paragraph, undefined, 2));
   }
 };
 
