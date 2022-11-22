@@ -42,6 +42,8 @@ if (globalThis.dromozoa) {
   return;
 }
 
+const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+
 const escape_html = s => {
   return s.replace(/[&<>"']/g, match => ({
     "&": "&amp;",
@@ -66,6 +68,7 @@ const create_elements = html => {
 
 const root = globalThis.dromozoa = new class {
   jlreq = globalThis.dromozoa_jlreq;
+  sleep = sleep;
   escape_html = escape_html;
   create_element = create_element;
   create_elements = create_elements;
@@ -121,6 +124,53 @@ const root = globalThis.dromozoa = new class {
     `));
   }
 
+  // Firefox 107でFontFace.load()が止まる場合があったので、HTMLからロードして
+  // statusを監視する。
+  async load_font_face(font_face, timeout) {
+    const n = 4;
+    const test = [];
+
+    // unicode-rangeが指定されていないとU+0-10FFFFになる
+    L:
+    for (let range of font_face.unicodeRange.split(/,\s*/)) {
+      const match = range.match(/^U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$/);
+      const a = Number.parseInt(match[1], 16);
+      const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
+      for (let code = a; code <= b; ++code) {
+        if (code > 0x20) {
+          if (test.push("&#" + code + ";") === n) {
+            break L;
+          }
+        }
+      }
+    }
+
+    const view = this.offscreen.appendChild(create_element(`
+      <div style="
+        font-family: ${escape_html(font_face.family)};
+        font-size: 50px;
+        white-space: nowrap;
+      ">${test.join("")}</div>
+    `));
+
+    const start = performance.now();
+    let elapsed;
+    while (true) {
+      elapsed = performance.now() - start;
+      if (timeout && timeout > 0 && timeout < elapsed) {
+        break;
+      }
+      if (font_face.status === "loaded") {
+        break;
+      }
+      await sleep(50);
+    }
+
+    view.remove();
+
+    return elapsed;
+  }
+
   // Showa Yokohama Storyフォントは下記の寸法を持つ。
   //   U+E001:  800/1000
   //   U+E002:  900/1000
@@ -137,11 +187,14 @@ const root = globalThis.dromozoa = new class {
   //   <span>をまたいでカーニングするかどうか。Safari 16は<span>をまたいでカー
   //   ニングしない。
   async check_kerning() {
-    const fontface = Array.from(document.fonts).find(fontface => /Showa Yokohama Story/.test(fontface.family));
-    if (!fontface) {
-      throw new Error("fontface 'Showa Yokohama Story' not found");
+    const font_face = Array.from(document.fonts).find(font_face => /Showa Yokohama Story/.test(font_face.family));
+    if (!font_face) {
+      throw new Error("font-face 'Showa Yokohama Story' not found");
     }
-    await fontface.load();
+    await this.load_font_face(font_face, 1000);
+    if (font_face.status !== "loaded") {
+      throw new Error("font-face 'Showa Yokohama Story' not loaded");
+    }
 
     const view = this.offscreen.appendChild(create_element(`
       <div style="

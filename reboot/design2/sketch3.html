@@ -62,7 +62,7 @@
 </head>
 <body>
 
-<button id="set_font_family">フォントファミリーを設定する</button>
+<button id="load_font_family">フォントファミリーをロードする</button>
 
 <table id="fontfaces">
   <tr>
@@ -79,6 +79,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   const D = globalThis.dromozoa;
+  await D.booted;
 
   const create_fontfaces = () => {
     const table = document.getElementById("fontfaces");
@@ -112,8 +113,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   };
 
-  const timeout = () => new Promise((resolve, reject) => { setTimeout(resolve, 100); });
-
   const update_fontfaces = async () => {
     let start = Date.now();
 
@@ -141,15 +140,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (map.get("loaded") === i) {
         break;
       }
-      await timeout();
+      await D.sleep(100);
     }
   };
 
-  document.getElementById("set_font_family").addEventListener("click", () => {
-    document.querySelectorAll(".char").forEach(span => {
-      span.style.fontFamily = span.dataset.font_family;
-    });
+  document.getElementById("load_font_family").addEventListener("click", async () => {
     update_fontfaces();
+    const result = await Promise.all(Array.from(document.fonts).map(font_face => D.load_font_face(font_face)));
+    result.forEach((v, i) => console.log(i, v));
   });
 
   create_fontfaces();
