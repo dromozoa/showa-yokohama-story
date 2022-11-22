@@ -147,8 +147,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("load_font_family").addEventListener("click", async () => {
     update_fontfaces();
-    const result = await Promise.all(Array.from(document.fonts).map(font_face => D.load_font_face(font_face)));
-    result.forEach((v, i) => console.log(i, v));
+    console.log("load font faces: start");
+    const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+    console.log("load font faces: end", result);
   });
 
   create_fontfaces();

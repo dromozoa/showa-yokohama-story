@@ -28,8 +28,9 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
 
+  <link href="font_face.css" rel="stylesheet">
   <link href="common.css" rel="stylesheet">
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
@@ -249,13 +250,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("feature_kerning: " + D.feature_kerning);
   console.log("feature_kerning_span: " + D.feature_kerning_span);
 
-  console.log("font loader start");
-  const fontfaces = Array.from(document.fonts);
-  // fontfaces.forEach(fontface => console.log(fontface.family, fontface.status));
-  const font_loader = fontfaces.filter(fontface => fontface.status === "unloaded").map(fontface => fontface.load());
-  console.log(font_loader);
-  await Promise.all(font_loader);
-  console.log("font loader end", fontfaces.length, font_loader.length);
+  console.log("load font faces: start");
+  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+  console.log("load font faces: end", result);
 
   const x = document.getElementById("tmpl").content.firstElementChild.cloneNode(true);
   document.body.append(x.cloneNode(true));

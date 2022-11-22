@@ -124,9 +124,10 @@ const root = globalThis.dromozoa = new class {
     `));
   }
 
-  // Firefox 107でFontFace.load()が止まる場合があったので、HTMLからロードして
-  // statusを監視する。
-  async load_font_face(font_face, timeout) {
+  // Firefox 107でFontFace.load()が止まる場合があった。loadingをloadedに変更す
+  // るタイミングで、FontFaceが異なるオブジェクトになってしまうようだ。
+  async load_font_face(index, timeout) {
+    const font_face = [...document.fonts][index];
     const n = 4;
     const test = [];
 
@@ -137,10 +138,8 @@ const root = globalThis.dromozoa = new class {
       const a = Number.parseInt(match[1], 16);
       const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
       for (let code = a; code <= b; ++code) {
-        if (code > 0x20) {
-          if (test.push("&#" + code + ";") === n) {
-            break L;
-          }
+        if (code > 0x20 && test.push("&#" + code + ";") === n) {
+          break L;
         }
       }
     }
@@ -160,6 +159,7 @@ const root = globalThis.dromozoa = new class {
       if (timeout && timeout > 0 && timeout < elapsed) {
         break;
       }
+      const font_face = [...document.fonts][index];
       if (font_face.status === "loaded") {
         break;
       }
@@ -187,13 +187,12 @@ const root = globalThis.dromozoa = new class {
   //   <span>をまたいでカーニングするかどうか。Safari 16は<span>をまたいでカー
   //   ニングしない。
   async check_kerning() {
-    const font_face = Array.from(document.fonts).find(font_face => /Showa Yokohama Story/.test(font_face.family));
-    if (!font_face) {
+    const index = [...document.fonts].findIndex(font_face => /Showa Yokohama Story/.test(font_face.family));
+    if (index === -1) {
       throw new Error("font-face 'Showa Yokohama Story' not found");
     }
-    const elapsed = await this.load_font_face(font_face, 1000);
-    console.log(elapsed);
-    if (font_face.status !== "loaded") {
+    await this.load_font_face(index, 1000);
+    if ([...document.fonts][index].status !== "loaded") {
       throw new Error("font-face 'Showa Yokohama Story' not loaded");
     }
 
@@ -213,6 +212,7 @@ const root = globalThis.dromozoa = new class {
     const width1 = view.children[0].firstElementChild.getBoundingClientRect().width;
     const width2 = view.children[1].firstElementChild.getBoundingClientRect().width;
     const width3 = view.children[2].firstElementChild.getBoundingClientRect().width;
+    console.log(width1, width2, width3);
     if (this.feature_kerning = width1 > width2) {
       this.feature_kerning_span = Math.abs(width1 - width3) > Math.abs(width2 - width3);
     }
@@ -242,6 +242,9 @@ const root = globalThis.dromozoa = new class {
       `));
       this.offscreen.append(container);
 
+      const em = getComputedStyle(view).fontSize;
+      console.log("em", em, getComputedStyle(view).lineHeight);
+
       text.forEach((item, i) => {
         item.width = view.firstElementChild.children[i].getBoundingClientRect().width;
         item.progress = view.children[1].children[i].getBoundingClientRect().width;
@@ -260,6 +263,9 @@ const root = globalThis.dromozoa = new class {
         `));
       });
       this.offscreen.append(container);
+
+      const em = getComputedStyle(view).fontSize;
+      console.log("em", em, getComputedStyle(view).lineHeight);
 
       let prev = 0;
       text.forEach((item, i) => {
@@ -293,7 +299,7 @@ const root = globalThis.dromozoa = new class {
               line = undefined;
               break;
             case "RT":
-              item.ruby = [ ...node.textContent ].map(text => ({ text: text }));
+              item.ruby = [...node.textContent].map(text => ({ text: text }));
               break;
             default:
               node.childNodes.forEach(parse);
@@ -304,7 +310,7 @@ const root = globalThis.dromozoa = new class {
           if (line === undefined) {
             paragraph.push(line = []);
           }
-          line.push(item = { main: [ ...node.textContent ].map(text => ({ text: text })) });
+          line.push(item = { main: [...node.textContent].map(text => ({ text: text })) });
           break;
       }
     };
