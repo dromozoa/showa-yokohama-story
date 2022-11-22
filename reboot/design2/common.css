@@ -17,13 +17,6 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@font-face {
-  font-family: 'Showa Yokohama Story';
-  font-display: swap;
-  src: url(ShowaYokohamaStory-Regular.woff2) format('woff2'), url(ShowaYokohamaStory-Regular.ttf) format('truetype');
-  unicode-range: U+E000-E002;
-}
-
 .dromozoa {
   --main_font_family_western: 'Share Tech';
   --main_font_family_japanese: 'BIZ UDPMincho';

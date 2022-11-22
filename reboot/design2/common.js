@@ -191,7 +191,8 @@ const root = globalThis.dromozoa = new class {
     if (!font_face) {
       throw new Error("font-face 'Showa Yokohama Story' not found");
     }
-    await this.load_font_face(font_face, 1000);
+    const elapsed = await this.load_font_face(font_face, 1000);
+    console.log(elapsed);
     if (font_face.status !== "loaded") {
       throw new Error("font-face 'Showa Yokohama Story' not loaded");
     }

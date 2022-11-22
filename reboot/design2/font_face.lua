@@ -68,6 +68,7 @@ local handle = assert(io.open(result_filename, "w"))
 handle:write([[
 @font-face {
   font-family: 'Showa Yokohama Story';
+  font-display: swap;
   src: url(data:font/woff2;base64,]], table.concat(buffer), [[) format('woff2');
   unicode-range: U+E000-E002;
 }
