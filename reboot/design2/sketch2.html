@@ -246,11 +246,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const D = globalThis.dromozoa
 
   await D.booted;
-  await Array.from(document.fonts).find(fontface => /Share Tech/.test(fontface.family)).load();
   console.log("feature_kerning: " + D.feature_kerning);
   console.log("feature_kerning_span: " + D.feature_kerning_span);
 
-  // load font all?
+  console.log("font loader start");
+  const fontfaces = Array.from(document.fonts);
+  // fontfaces.forEach(fontface => console.log(fontface.family, fontface.status));
+  const font_loader = fontfaces.filter(fontface => fontface.status === "unloaded").map(fontface => fontface.load());
+  console.log(font_loader);
+  await Promise.all(font_loader);
+  console.log("font loader end", fontfaces.length, font_loader.length);
 
   const x = document.getElementById("tmpl").content.firstElementChild.cloneNode(true);
   document.body.append(x.cloneNode(true));
