@@ -203,7 +203,7 @@ const root = globalThis.dromozoa = new class {
     view.remove();
   }
 
-  layout_kerning(source, text, size) {
+  layout_kerning(source, chars, size) {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.width = "auto";
@@ -218,24 +218,24 @@ const root = globalThis.dromozoa = new class {
     `));
 
     if (this.feature_kerning_span) {
-      const html = text.map(item => `<span>${escape_html(item.text)}</span>`).join("");
+      const html = chars.map(char => `<span>${escape_html(char.char)}</span>`).join("");
       view.append(...create_elements(`
         <div style="font-kerning: none">${html}</div>
         <div style="font-kerning: normal">${html}</div>
       `));
       this.offscreen.append(container);
 
-      text.forEach((item, i) => {
-        item.width = view.firstElementChild.children[i].getBoundingClientRect().width;
-        item.progress = view.children[1].children[i].getBoundingClientRect().width;
+      chars.forEach((char, i) => {
+        char.width = view.firstElementChild.children[i].getBoundingClientRect().width;
+        char.progress = view.children[1].children[i].getBoundingClientRect().width;
       });
 
     } else {
-      text.forEach((item, i) => {
-        const head = text.slice(0, i).map(item => escape_html(item.text)).join("");
+      chars.forEach((char, i) => {
+        const head = chars.slice(0, i).map(char => escape_html(char.char)).join("");
         const head_html = head == "" ? "" : `<span>${head}</span>`;
-        const body = escape_html(item.text);
-        const tail = text.slice(i + 1).map(item => escape_html(item.text)).join("");
+        const body = escape_html(char.char);
+        const tail = chars.slice(i + 1).map(char => escape_html(char.char)).join("");
         const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
         view.append(...create_elements(`
           <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
@@ -245,12 +245,12 @@ const root = globalThis.dromozoa = new class {
       this.offscreen.append(container);
 
       let prev = 0;
-      text.forEach((item, i) => {
+      chars.forEach((char, i) => {
         const width1 = view.children[i * 2].firstElementChild.getBoundingClientRect().width;
         const width2 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
-        item.width = item.progress = width2 - prev;
+        char.width = char.progress = width2 - prev;
         if (i > 0) {
-          text[i - 1].progress += width1 - width2;
+          chars[i - 1].progress += width1 - width2;
         }
         prev = width1;
       });
@@ -260,6 +260,29 @@ const root = globalThis.dromozoa = new class {
   }
 
   layout_paragraph(source) {
+    // Paragraph
+    //   { Text+ }
+    //
+    // Text
+    //   { Item+ }
+    //
+    // Item
+    //   {
+    //     main: Chars, // 本文
+    //     ruby: Chars, // ルビ
+    //   }
+    //
+    // Chars
+    //   { Char+ }
+    //
+    // Char
+    //   {
+    //     char: String,
+    //     width: Number,    // 文字の幅 [px]
+    //     progress: Number, // 文字送り [px]
+    //   }
+    //
+    // (width - progress)がカーニングによる左方向への移動量となる。
     const paragraph = [];
     let text;
     let item;
@@ -276,7 +299,7 @@ const root = globalThis.dromozoa = new class {
               text = undefined;
               break;
             case "RT":
-              item.ruby = [...node.textContent].map(text => ({ text: text }));
+              item.ruby = [...node.textContent].map(char => ({ char: char }));
               break;
             default:
               node.childNodes.forEach(parse);
@@ -287,7 +310,7 @@ const root = globalThis.dromozoa = new class {
           if (text === undefined) {
             paragraph.push(text = []);
           }
-          text.push(item = { main: [...node.textContent].map(text => ({ text: text })) });
+          text.push(item = { main: [...node.textContent].map(char => ({ char: char })) });
           break;
       }
     };
@@ -309,15 +332,20 @@ const root = globalThis.dromozoa = new class {
     `));
     paragraph.forEach(text => {
       text.forEach(item => {
-        item.main.forEach(item => {
+        item.main.forEach(char => {
           view.append(create_element(`
-            <span style="letter-spacing: ${item.progress - item.width}px">${escape_html(item.text)}</span>
+            <span style="letter-spacing: ${char.progress - char.width}px">${escape_html(char.char)}</span>
           `));
         });
       });
       view.append(document.createElement("br"));
     });
     this.offscreen.append(container);
+
+
+
+
+
 
     // console.log(JSON.stringify(paragraph, undefined, 2));
   }
