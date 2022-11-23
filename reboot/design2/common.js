@@ -15,26 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-// カーニングと両端揃えを考慮して、それぞれの「文字」の水平位置を求めたい。リ
-// ガチャは無視することにする。
-//
-// <span>VA</span>と<span>V</span><span>A</span>の幅をくらべれば、<span>をま
-// たいでカーニングしてくれるかどうかはわかる。
-//
-// Safariが<span>をまたぐカーニングをしてくれない。1文字ずつレイアウトして、
-// 両端揃えを自前で計算すれば、求めることはできる。
-//
-// フォントが既知なので、フォントに設定されているカーニング情報は参照可能だが、
-// 動的なカーニングに対応できない。
-
-// そもそも文字の位置をとる方法は？
-// 1. spanで囲んで、その位置をとる
-//    getClientRects()で取れた
-//    ビューポート基準であることに注意。
-// 2. SVGはどう？
-//    Chromeは<tspan>をまたいでカーニングしてくれる
-// 3. 直接文字の位置はとれないのか？
-
 (() => {
 "use strict";
 
@@ -124,10 +104,13 @@ const root = globalThis.dromozoa = new class {
     `));
   }
 
-  // Firefox 107でFontFace.load()が止まる場合があった。loadingをloadedに変更す
-  // るタイミングで、FontFaceが異なるオブジェクトになってしまうようだ。
+  // Firefox 107でFontFace.load()が止まる場合があった。どこかの時点（loadingを
+  // loadedに変更するタイミング？）で、FontFaceが別の新しいオブジェクトに変わっ
+  // たように見えた。
   async load_font_face(index, timeout) {
     const font_face = [...document.fonts][index];
+
+    // unicode-rangeから4文字のテスト文字列を作成する。
     const n = 4;
     const test = [];
 
@@ -242,8 +225,8 @@ const root = globalThis.dromozoa = new class {
       `));
       this.offscreen.append(container);
 
-      const em = getComputedStyle(view).fontSize;
-      console.log("em", em, getComputedStyle(view).lineHeight);
+      // const em = getComputedStyle(view).fontSize;
+      // console.log("em", em, getComputedStyle(view).lineHeight);
 
       text.forEach((item, i) => {
         item.width = view.firstElementChild.children[i].getBoundingClientRect().width;
@@ -264,8 +247,8 @@ const root = globalThis.dromozoa = new class {
       });
       this.offscreen.append(container);
 
-      const em = getComputedStyle(view).fontSize;
-      console.log("em", em, getComputedStyle(view).lineHeight);
+      // const em = getComputedStyle(view).fontSize;
+      // console.log("em", em, getComputedStyle(view).lineHeight);
 
       let prev = 0;
       text.forEach((item, i) => {
