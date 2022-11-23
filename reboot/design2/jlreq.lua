@@ -101,6 +101,12 @@ local hang_after = {
   [7] = 0.5;
 }
 
+-- 結局、cl-19以外のすべてではみ出せることにする。
+local can_overhang = {}
+for _, id in ipairs { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16 } do
+  can_overhang[id] = true
+end
+
 -- Unicode 15.0.0のUCDから引用
 local cjk_ideographs = [[
 3400..4DBF; CJK Unified Ideographs Extension A
@@ -176,13 +182,14 @@ local ranges = {}
 
 for code = 0, 0x10FFFF do
   local id = dataset_for_ruby[code] or 0
-  if range and range.j == code - 1 and range.id == id then
+  local v = not not can_overhang[id]
+  if range and range.j == code - 1 and range.v == v then
     range.j = code
   else
     range = {
       i = code;
       j = code;
-      id = id;
+      v = v;
     }
     ranges[#ranges + 1] = range
   end
@@ -216,7 +223,7 @@ if (globalThis.dromozoa_jlreq) {
 }
 
 const root = globalThis.dromozoa_jlreq = {};
-root.character_class = c => {
+root.ruby_overhang = c => {
 ]]
 
 
@@ -237,12 +244,39 @@ local function code(node, depth)
 
     if #a == 0 or #b == 0 then
       if #a == 0 and #b == 0 then
-        handle:write(indent, "return c", sp, "<", sp, b.i, sp, "?", sp, a.id, sp, ":", sp, b.id, ";\n")
+        -- true, falseかfalse, trueの組となる
+        assert(a.v ~= b.v)
+        assert(a.j == b.i - 1)
+        if a.v then
+          -- c < b.i
+          handle:write(indent, "return c", sp, "<", sp, b.i, ";\n")
+        else
+          -- !(c < b.i)
+          -- c >= b.i
+          -- c > b.i - 1
+          -- c > a.j
+          handle:write(indent, "return c", sp, ">", sp, a.j, ";\n")
+        end
       else
         assert(#a == 0 and #b == 2)
         local c = b[1]
         local d = b[2]
-        handle:write(indent, "return c", sp, "<", sp, b.i, sp, "?", sp, a.id, sp, ":", sp, "c", sp, "<", sp, d.i, sp, "?", sp, c.id, sp, ":", sp, d.id, ";\n")
+        assert(a.v ~= c.v and c.v ~= d.v)
+        if a.v then
+          -- c < b.i ? a.v : c < d.i ? c.v : d.v
+          -- c < b.i ? true : c < d.i ? false : true
+          -- c < b.i ? true : c > c.j
+          -- c < b.i || c > c.j
+          handle:write(indent, "return c", sp, "<", sp, b.i, sp, "||", sp, "c", sp, ">", sp, c.j, ";\n")
+        else
+          -- c < b.i ? a.v : c < d.i ? c.v : d.v
+          -- c < b.i ? false : c < d.i ? true : false
+          -- c < b.i ? false : c < d.i
+          -- !(c < b.i) ? c < d.i : false
+          -- !(c < b.i) && c < d.i
+          -- c > a.j && c < d.i
+          handle:write(indent, "return c", sp, ">", sp, a.j, sp, "&&", sp, "c", sp, "<", sp, d.i, ";\n")
+        end
       end
     else
       handle:write(indent, "if", sp, "(c", sp, "<", sp, b.i, ")", sp, "{\n")
@@ -252,7 +286,7 @@ local function code(node, depth)
       handle:write(indent, "}\n")
     end
   else
-    handle:write(indent, "return ", node.id, ";\n")
+    handle:write(indent, "return ", node.v, ";\n")
   end
 end
 code(tree, 1)
@@ -264,12 +298,12 @@ handle:write [[
 if options.enable_test then
   handle:write [[
 
-root.test_character_class = () => {
+root.test_ruby_overhang = () => {
   const ranges = [
 ]]
 
   for _, range in ipairs(ranges) do
-    handle:write(("    { i: 0x%04X, j: 0x%04X, id: %d },\n"):format(range.i, range.j, range.id))
+    handle:write(("    { i: 0x%04X, j: 0x%04X, v: %s },\n"):format(range.i, range.j, range.v))
   end
 
   handle:write [[
@@ -278,8 +312,8 @@ root.test_character_class = () => {
   let n = 0;
   ranges.forEach(range => {
     for (let code = range.i; code <= range.j; ++code) {
-      const id = root.character_class(code)
-      console.assert(id === range.id, range, code, id);
+      const v = root.ruby_overhang(code)
+      console.assert(v === range.v, range, code, v);
       ++n;
     }
   });

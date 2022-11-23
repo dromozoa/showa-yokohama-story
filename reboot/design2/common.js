@@ -274,6 +274,33 @@ const root = globalThis.dromozoa = new class {
   }
 
   layout_text(source, text) {
+    text.forEach((item, i) => {
+      item.main_width = item.main.reduce((width, char) => width + char.progress, 0);
+      item.ruby_width = 0;
+      item.ruby_overhang_before = 0;
+      item.ruby_overhang_after = 0;
+
+      if (item.ruby) {
+        item.ruby_width = item.ruby.reduce((width, char) => width + char.progress, 0);
+        if (item.main_width < item.ruby_width) {
+          const before = text[i - 1];
+          if (before && !before.ruby) {
+            const char = before.main[before.main.length - 1];
+            if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
+              item.ruby_overhang_before = char.progress * 0.5;
+            }
+          }
+          const after = text[i + 1];
+          if (after && !after.ruby) {
+            const char = after.main[0];
+            if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
+              item.ruby_overhang_after = char.progress * 0.5;
+            }
+          }
+        }
+      }
+    });
+
     const container = source.cloneNode(false);
     container.removeAttribute("id");
 
@@ -283,38 +310,22 @@ const root = globalThis.dromozoa = new class {
         font-variant-ligatures: none;
       "><span></span></div>
     `));
-
     const ruby_views = [];
-
-    // 1 2 5 6 7 8 10 11 15 16 19
-    const overhang_before_table = [
-    ];
-    const overhang_after_table = [ ];
 
     text.forEach((item, i) => {
       if (item.ruby) {
-        const main_width = item.main.reduce((width, char) => width + char.progress, 0);
-        const ruby_width = item.ruby.reduce((width, char) => width + char.progress, 0);
+        const main_width = item.main_width;
+        const ruby_width = item.ruby_width;
 
         let main_spacing = 0;
         let ruby_spacing = 0;
-        let overhang_before = 0; // 前のはみ出し量
-        let overhang_after = 0;  // 後のはみ出し量
-        if (main_width < ruby_width) {
-          if (i > 0) {
-            const prev_item = item[i - 1];
-            const prev_char = prev_item[prev_item.length - 1];
-            const prev_class = this.jlreq.character_class(prev_char.char);
-            // 10, 11, 15, 16   08, 05
-            // 02, 06, 07
-            // 01
+        if (item.main_width < item.ruby_width) {
+          const ruby_width = item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after;
+          if (item.main_width < ruby_width) {
+            main_spacing = (ruby_width - item.main_width) / item.main.length;
           }
-
-
-
-          main_spacing = (ruby_width - main_width) / item.main.length;
         } else {
-          ruby_spacing = (main_width - ruby_width) / item.ruby.length;
+          ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
         }
 
         const ruby_view = container.appendChild(create_element(`
@@ -341,7 +352,6 @@ const root = globalThis.dromozoa = new class {
           `));
         });
 
-
       } else {
         item.main.forEach(char => {
           main_view.firstElementChild.append(create_element(`
@@ -354,6 +364,11 @@ const root = globalThis.dromozoa = new class {
     });
 
     this.offscreen.append(container);
+
+
+
+
+
   }
 
   layout_paragraph(source) {
@@ -365,8 +380,12 @@ const root = globalThis.dromozoa = new class {
     //
     // Item
     //   {
-    //     main: Chars, // 本文
-    //     ruby: Chars, // ルビ
+    //     main: Chars,
+    //     main_width: Number,
+    //     ruby: Chars,
+    //     ruby_width: Number,
+    //     ruby_overhang_before: Number,
+    //     ruby_overhang_after: Number,
     //   }
     //
     // Chars
@@ -374,9 +393,9 @@ const root = globalThis.dromozoa = new class {
     //
     // Char
     //   {
-    //     char: String,
-    //     width: Number,    // 文字の幅 [px]
-    //     progress: Number, // 文字送り [px]
+    //     char:     String,
+    //     width:    Number, // 文字の幅
+    //     progress: Number, // 文字送り
     //   }
     //
     // (width - progress)がカーニングによる左方向への移動量となる。
