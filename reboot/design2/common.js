@@ -46,12 +46,23 @@ const create_elements = html => {
   return template.content.children;
 };
 
+const number_to_css_string = v => {
+  // Math.log2(Math.abs(v)) < Math.log2(0.00005)
+  if (-0.00005 < v && v < 0.00005) {
+    return "0";
+  }
+  // 小数部が4桁の文字列に変換して末尾の0を除去する。指数表記の場合は変更しない。
+  return v.toFixed(4).replace(/\.?0+$/, "")
+
+};
+
 const root = globalThis.dromozoa = new class {
   jlreq = globalThis.dromozoa_jlreq;
   sleep = sleep;
   escape_html = escape_html;
   create_element = create_element;
   create_elements = create_elements;
+  number_to_css_string = number_to_css_string;
 
   #boot_exception;
   #booted;
@@ -106,21 +117,23 @@ const root = globalThis.dromozoa = new class {
 
   // Firefox 107でFontFace.load()が止まる場合があった。どこかの時点（loadingを
   // loadedに変更するタイミング？）で、FontFaceが別の新しいオブジェクトに変わっ
-  // たように見えた。
+  // たのではないかと推測する。
   async load_font_face(index, timeout) {
     const font_face = [...document.fonts][index];
 
-    // unicode-rangeから4文字のテスト文字列を作成する。
+    // unicode-rangeからテスト文字列を作成する。
     const n = 4;
     const test = [];
 
-    // unicode-rangeが指定されていないとU+0-10FFFFになる
+    // unicode-rangeが指定されていないとU+0-10FFFFになる。
     L:
     for (let range of font_face.unicodeRange.split(/,\s*/)) {
       const match = range.match(/^U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$/);
       const a = Number.parseInt(match[1], 16);
       const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
       for (let code = a; code <= b; ++code) {
+        // 空白文字は除去されてフォントロードにたどりつかない可能性があるので、
+        // テスト文字列に含めない。
         if (code > 0x20 && test.push("&#" + code + ";") === n) {
           break L;
         }
@@ -130,7 +143,6 @@ const root = globalThis.dromozoa = new class {
     const view = this.offscreen.appendChild(create_element(`
       <div style="
         font-family: ${escape_html(font_face.family)};
-        font-size: 50px;
         white-space: nowrap;
       ">${test.join("")}</div>
     `));
@@ -142,15 +154,13 @@ const root = globalThis.dromozoa = new class {
       if (timeout && timeout > 0 && timeout < elapsed) {
         break;
       }
-      const font_face = [...document.fonts][index];
-      if (font_face.status === "loaded") {
+      if ([...document.fonts][index].status === "loaded") {
         break;
       }
       await sleep(50);
     }
 
     view.remove();
-
     return elapsed;
   }
 
@@ -159,7 +169,7 @@ const root = globalThis.dromozoa = new class {
   //   U+E002:  900/1000
   //   字間:   -300/1000
   //
-  // (U+E001,E+E0002)をレイアウトすると
+  // (U+E001, U+E002)をレイアウトすると
   //   カーニング無効時: 1700/1000
   //   カーニング有効時: 1400/1000
   // になる。
@@ -182,7 +192,7 @@ const root = globalThis.dromozoa = new class {
     const view = this.offscreen.appendChild(create_element(`
       <div style="
         font-family: 'Showa Yokohama Story';
-        font-size: 50px;
+        font-size: 20px;
         font-variant-ligatures: none;
         white-space: nowrap;
       ">
@@ -195,9 +205,10 @@ const root = globalThis.dromozoa = new class {
     const width1 = view.children[0].firstElementChild.getBoundingClientRect().width;
     const width2 = view.children[1].firstElementChild.getBoundingClientRect().width;
     const width3 = view.children[2].firstElementChild.getBoundingClientRect().width;
-    console.log(width1, width2, width3);
     if (this.feature_kerning = width1 > width2) {
-      this.feature_kerning_span = Math.abs(width1 - width3) > Math.abs(width2 - width3);
+      // フォントサイズ指定によるが、計算誤差を考慮すると(width2 === width3)は
+      // 成立しない可能性がある。
+      this.feature_kerning_span = Math.abs(width2 - width3) < 1;
     }
 
     view.remove();
@@ -225,6 +236,9 @@ const root = globalThis.dromozoa = new class {
       `));
       this.offscreen.append(container);
 
+      // カーニングがなければ(width === progress)が期待されるが、微小な誤差が発
+      // 生する場合がある。"TiTiTiT"という文字列をShare Tech 16pxでレイアウトし
+      // たところ、Firefox 107において±0x1p-16の誤差が発生した。
       chars.forEach((char, i) => {
         char.width = view.firstElementChild.children[i].getBoundingClientRect().width;
         char.progress = view.children[1].children[i].getBoundingClientRect().width;
@@ -257,6 +271,89 @@ const root = globalThis.dromozoa = new class {
     }
 
     container.remove();
+  }
+
+  layout_text(source, text) {
+    const container = source.cloneNode(false);
+    container.removeAttribute("id");
+
+    const main_view = container.appendChild(create_element(`
+      <div style="
+        font-kerning: none;
+        font-variant-ligatures: none;
+      "><span></span></div>
+    `));
+
+    const ruby_views = [];
+
+    // 1 2 5 6 7 8 10 11 15 16 19
+    const overhang_before_table = [
+    ];
+    const overhang_after_table = [ ];
+
+    text.forEach((item, i) => {
+      if (item.ruby) {
+        const main_width = item.main.reduce((width, char) => width + char.progress, 0);
+        const ruby_width = item.ruby.reduce((width, char) => width + char.progress, 0);
+
+        let main_spacing = 0;
+        let ruby_spacing = 0;
+        let overhang_before = 0; // 前のはみ出し量
+        let overhang_after = 0;  // 後のはみ出し量
+        if (main_width < ruby_width) {
+          if (i > 0) {
+            const prev_item = item[i - 1];
+            const prev_char = prev_item[prev_item.length - 1];
+            const prev_class = this.jlreq.character_class(prev_char.char);
+            // 10, 11, 15, 16   08, 05
+            // 02, 06, 07
+            // 01
+          }
+
+
+
+          main_spacing = (ruby_width - main_width) / item.main.length;
+        } else {
+          ruby_spacing = (main_width - ruby_width) / item.ruby.length;
+        }
+
+        const ruby_view = container.appendChild(create_element(`
+          <div style="
+            font-kerning: none;
+            font-size: 50%;
+            font-variant-ligatures: none;
+          "><span>&#xFEFF;</span><span></span></div>
+        `));
+        item.ruby.forEach(char => {
+          ruby_view.children[1].append(create_element(`
+            <span style="
+              letter-spacing: ${number_to_css_string(char.progress - char.width + ruby_spacing)}px;
+            ">${escape_html(char.char)}</span>
+          `));
+        });
+        ruby_views[i] = ruby_view;
+
+        item.main.forEach(char => {
+          main_view.firstElementChild.append(create_element(`
+            <span style="
+              letter-spacing: ${number_to_css_string(char.progress - char.width + main_spacing)}px;
+            ">${escape_html(char.char)}</span>
+          `));
+        });
+
+
+      } else {
+        item.main.forEach(char => {
+          main_view.firstElementChild.append(create_element(`
+            <span style="
+              letter-spacing: ${number_to_css_string(char.progress - char.width)}px;
+            ">${escape_html(char.char)}</span>
+          `));
+        });
+      }
+    });
+
+    this.offscreen.append(container);
   }
 
   layout_paragraph(source) {
@@ -318,34 +415,10 @@ const root = globalThis.dromozoa = new class {
 
     paragraph.forEach(text => {
       this.layout_kerning(source, text.map(item => item.main).flat(), 1);
-      text.filter(item => item.ruby !== undefined).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+      text.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
 
-    const container = source.cloneNode(false);
-    container.removeAttribute("id");
-
-    const view = container.appendChild(create_element(`
-      <div style="
-        font-kerning: none;
-        font-variant-ligatures: none;
-      "></div>
-    `));
-    paragraph.forEach(text => {
-      text.forEach(item => {
-        item.main.forEach(char => {
-          view.append(create_element(`
-            <span style="letter-spacing: ${char.progress - char.width}px">${escape_html(char.char)}</span>
-          `));
-        });
-      });
-      view.append(document.createElement("br"));
-    });
-    this.offscreen.append(container);
-
-
-
-
-
+    paragraph.forEach(text => this.layout_text(source, text));
 
     // console.log(JSON.stringify(paragraph, undefined, 2));
   }
