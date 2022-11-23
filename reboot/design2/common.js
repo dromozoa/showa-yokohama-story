@@ -225,9 +225,6 @@ const root = globalThis.dromozoa = new class {
       `));
       this.offscreen.append(container);
 
-      // const em = getComputedStyle(view).fontSize;
-      // console.log("em", em, getComputedStyle(view).lineHeight);
-
       text.forEach((item, i) => {
         item.width = view.firstElementChild.children[i].getBoundingClientRect().width;
         item.progress = view.children[1].children[i].getBoundingClientRect().width;
@@ -247,9 +244,6 @@ const root = globalThis.dromozoa = new class {
       });
       this.offscreen.append(container);
 
-      // const em = getComputedStyle(view).fontSize;
-      // console.log("em", em, getComputedStyle(view).lineHeight);
-
       let prev = 0;
       text.forEach((item, i) => {
         const width1 = view.children[i * 2].firstElementChild.getBoundingClientRect().width;
@@ -267,7 +261,7 @@ const root = globalThis.dromozoa = new class {
 
   layout_paragraph(source) {
     const paragraph = [];
-    let line;
+    let text;
     let item;
 
     const parse = node => {
@@ -275,11 +269,11 @@ const root = globalThis.dromozoa = new class {
         case Node.ELEMENT_NODE:
           switch (node.tagName) {
             case "BR":
-              line = undefined;
+              text = undefined;
               break;
             case "DIV":
               node.childNodes.forEach(parse);
-              line = undefined;
+              text = undefined;
               break;
             case "RT":
               item.ruby = [...node.textContent].map(text => ({ text: text }));
@@ -290,19 +284,40 @@ const root = globalThis.dromozoa = new class {
           }
           break;
         case Node.TEXT_NODE:
-          if (line === undefined) {
-            paragraph.push(line = []);
+          if (text === undefined) {
+            paragraph.push(text = []);
           }
-          line.push(item = { main: [...node.textContent].map(text => ({ text: text })) });
+          text.push(item = { main: [...node.textContent].map(text => ({ text: text })) });
           break;
       }
     };
     parse(source);
 
-    paragraph.forEach(line => {
-      this.layout_kerning(source, line.map(item => item.main).flat(), 1);
-      line.filter(item => item.ruby !== undefined).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+    paragraph.forEach(text => {
+      this.layout_kerning(source, text.map(item => item.main).flat(), 1);
+      text.filter(item => item.ruby !== undefined).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
+
+    const container = source.cloneNode(false);
+    container.removeAttribute("id");
+
+    const view = container.appendChild(create_element(`
+      <div style="
+        font-kerning: none;
+        font-variant-ligatures: none;
+      "></div>
+    `));
+    paragraph.forEach(text => {
+      text.forEach(item => {
+        item.main.forEach(item => {
+          view.append(create_element(`
+            <span style="letter-spacing: ${item.progress - item.width}px">${escape_html(item.text)}</span>
+          `));
+        });
+      });
+      view.append(document.createElement("br"));
+    });
+    this.offscreen.append(container);
 
     // console.log(JSON.stringify(paragraph, undefined, 2));
   }
