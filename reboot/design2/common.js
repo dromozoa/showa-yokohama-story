@@ -419,13 +419,11 @@ const root = globalThis.dromozoa = new class {
               width: ${number_to_css_string(width)}px;
             "><span><span>&#xFEFF;&#x200B;</span></span></div>
           `);
-          item.ruby.forEach(char => {
-            map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
-              <span style="
-                letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
-              ">${escape_html(char.char)}</span>
-            `)));
-          });
+          item.ruby.forEach(char => map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
+            <span style="
+              letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
+            ">${escape_html(char.char)}</span>
+          `))));
           container.append(ruby_view);
 
           let k = 0;
