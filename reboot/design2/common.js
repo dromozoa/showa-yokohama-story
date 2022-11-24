@@ -311,6 +311,7 @@ const root = globalThis.dromozoa = new class {
       "><span></span></div>
     `));
     const ruby_views = [];
+    const map = new Map();
 
     text.forEach((item, i) => {
       if (item.ruby) {
@@ -328,77 +329,144 @@ const root = globalThis.dromozoa = new class {
           ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
         }
 
+        // TODO ruby_viewは遅延可能か？
         const ruby_view = container.appendChild(create_element(`
           <div style="
             font-kerning: none;
             font-size: 50%;
             font-variant-ligatures: none;
-          "><span>&#xFEFF;</span><span></span></div>
+          "><span><span>&#xFEFF;&#x200B;</span></span></div>
         `));
         item.ruby.forEach(char => {
-          ruby_view.children[1].append(create_element(`
+          char.ruby_spacing = ruby_spacing;
+          map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
             <span style="
               letter-spacing: ${number_to_css_string(char.progress - char.width + ruby_spacing)}px;
             ">${escape_html(char.char)}</span>
-          `));
+          `)));
         });
         ruby_views[i] = ruby_view;
 
         item.main.forEach(char => {
-          main_view.firstElementChild.append(create_element(`
+          char.ruby_spacing = main_spacing;
+          map.set(char, main_view.firstElementChild.appendChild(create_element(`
             <span style="
               letter-spacing: ${number_to_css_string(char.progress - char.width + main_spacing)}px;
             ">${escape_html(char.char)}</span>
-          `));
+          `)));
         });
 
       } else {
         item.main.forEach(char => {
-          main_view.firstElementChild.append(create_element(`
+          char.ruby_spacing = 0;
+          map.set(char, main_view.firstElementChild.appendChild(create_element(`
             <span style="
               letter-spacing: ${number_to_css_string(char.progress - char.width)}px;
             ">${escape_html(char.char)}</span>
-          `));
+          `)));
         });
       }
     });
 
     this.offscreen.append(container);
 
+    const get_line_number = node => {
+      const origin_y = node.parentElement.getBoundingClientRect().y;
+      const line_height = parseFloat(getComputedStyle(node).lineHeight);
+      const bbox = node.getBoundingClientRect();
+      return Math.floor((bbox.y - origin_y + bbox.height * 0.5) / line_height);
+    };
 
+    const is_line_start = node => {
+      const prev = node.previousElementSibling;
+      return !prev || get_line_number(prev) !== get_line_number(node);
+    };
 
+    const is_line_end = node => {
+      const next = node.nextElementSibling;
+      return !next || get_line_number(next) !== get_line_number(node);
+    };
 
+    const origin = main_view.getBoundingClientRect();
+    text.forEach((item, i) => {
+      if (item.ruby) {
+        // ルビが行頭にある場合、前のはみ出し量をキャンセルする。
+        if (item.ruby_overhang_before > 0 && is_line_start(map.get(item.main[0]))) {
+          const main_spacing = (item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
+          item.main.forEach(char => {
+            char.ruby_spacing = main_spacing;
+            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+          });
+          item.ruby_overhang_before = 0;
+        }
 
+        // ルビが行末にある場合、前後のはみ出し量のうち、大きい方をキャンセルして
+        // レイアウトする。結果の改行位置から、はみ出し量の割り当てを決定する。
+        if (item.ruby_overhang_after > 0 && is_line_end(map.get(item.main[item.main.length - 1]))) {
+          const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
+          const main_spacing = (item.ruby_width - ruby_overhang - item.main_width) / item.main.length;
+          item.main.forEach(char => {
+            char.ruby_spacing = main_spacing;
+            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+          });
+          if (is_line_start(map.get(item.main[0]))) {
+            item.ruby_overhang_before = 0;
+            item.ruby_overhang_after = ruby_overhang;
+          } else {
+            item.ruby_overhang_before = ruby_overhang;
+            item.ruby_overhang_after = 0;
+          }
+        }
+
+        // 本文内に改行がある場合、ルビも改行する。改行位置までの本文の幅を求める。
+        let width = item.ruby_overhang_before;
+        for (let j = 0; j < item.main.length - 1; ++j) {
+          const char = item.main[j];
+          width += char.progress + char.ruby_spacing;
+          if (is_line_end(map.get(char))) {
+            // 本文の幅でルビをレイアウトする。
+            const ruby_view = ruby_views[i];
+            ruby_view.style.width = number_to_css_string(width) + "px";
+            // 何文字めの前で改行したかを調べる。
+            break;
+          }
+        }
+      }
+    });
   }
 
   layout_paragraph(source) {
-    // Paragraph
-    //   { Text+ }
     //
-    // Text
-    //   { Item+ }
+    // Paragraph {
+    //   Text+
+    // }
     //
-    // Item
-    //   {
-    //     main: Chars,
-    //     main_width: Number,
-    //     ruby: Chars,
-    //     ruby_width: Number,
-    //     ruby_overhang_before: Number,
-    //     ruby_overhang_after: Number,
-    //   }
+    // Text {
+    //   Item+
+    // }
     //
-    // Chars
-    //   { Char+ }
+    // Item {
+    //   main:                  Chars,  // 本文文字列
+    //   main_width:            Number, // 本文文字列の合計幅
+    //   ruby:                  Chars,  // ルビ文字列
+    //   ruby_width:            Number, // ルビ文字列の合計幅
+    //   ruby_overhang_before:  Number, // 前のはみ出し量
+    //   ruby_overhang_after:   Number, // 後のはみ出し量
+    // }
     //
-    // Char
-    //   {
-    //     char:     String,
-    //     width:    Number, // 文字の幅
-    //     progress: Number, // 文字送り
-    //   }
+    // Chars {
+    //   Char+
+    // }
+    //
+    // Char {
+    //   char:                  String, // 文字の値
+    //   width:                 Number, // 文字の幅
+    //   progress:              Number, // 文字送り
+    //   ruby_spacing:          Number, // ルビのための調整幅
+    // }
     //
     // (width - progress)がカーニングによる左方向への移動量となる。
+    //
     const paragraph = [];
     let text;
     let item;
