@@ -262,6 +262,18 @@ const root = globalThis.dromozoa = new class {
     container.remove();
   }
 
+  // ブラウザの組版機能を用いて禁則処理や均等割り付けを実現するため、文字の位置
+  // が定まるまでインライン要素として扱い、letter-spacingで幅を調整する。
+  //
+  // letter-spacingによる指定とgetBoundingClientRect()で取得した幅の関係を調べ
+  // た。こまかく指定しても、1/60〜1/64で丸められるように見える。また、Firefox
+  // とSafariでは、実際の幅が指定よりも狭くなった。
+  //
+  //                符号  最大の差   周期     推定
+  //      Edge 107   +    0.016      0.0157   1/64
+  //   Firefox 107   +/-  0.0083     0.0167   1/60
+  //    Chrome 107   +    0.0079     0.0079   1/128
+  //    Safari  16   +/-  0.0000028  N/A      N/A
   layout_text(source, text) {
     text.items.forEach((item, i) => {
       item.main_width = item.main.reduce((width, char) => width + char.progress, 0);
@@ -330,10 +342,10 @@ const root = globalThis.dromozoa = new class {
     this.offscreen.append(container);
 
     const get_line_number = node => {
-      const origin_top = node.parentElement.parentElement.getBoundingClientRect().top;
+      const origin_y = node.parentElement.parentElement.getBoundingClientRect().top;
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
-      return Math.floor((bbox.top - origin_top + bbox.height * 0.5) / line_height);
+      return Math.floor((bbox.top - origin_y + bbox.height * 0.5) / line_height);
     };
 
     const is_line_start = node => {
@@ -466,6 +478,7 @@ const root = globalThis.dromozoa = new class {
           });
 
           result.items.push(item1, item2);
+          ruby_view.remove();
           return;
         }
       }
@@ -478,14 +491,56 @@ const root = globalThis.dromozoa = new class {
     result.number_of_lines = get_line_number(map.get(char)) + 1;
 
     const origin = main_view.getBoundingClientRect();
-    result.items.forEach(item => {
-      item.main.forEach(char => {
-        const bbox = map.get(char).getBoundingClientRect();
-        char.result_left = bbox.left - origin.left;
-        char.result_top = bbox.top - origin.top;
-        char.result_width = bbox.width;
-        char.result_height = bbox.height;
-      });
+    result.items.forEach(item => item.main.forEach(char => {
+      const bbox = map.get(char).getBoundingClientRect();
+      char.result_x = bbox.left - origin.left;
+      char.result_y = bbox.top - origin.top;
+      char.result_width = bbox.width;
+      char.result_height = bbox.height;
+    }));
+
+    result.items.forEach((item, i) => {
+      if (item.ruby) {
+        let start = item.main[0].result_x;
+
+        const char = item.main[item.main.length - 1];
+        let end = char.result_x + char.result_width;
+
+        if (item.main_width < item.ruby_width) {
+          const ruby_overhang_sum = item.ruby_overhang_before + item.ruby_overhang_after;
+          if (ruby_overhang_sum > 0) {
+            const ruby_overhang = Math.min(item.ruby_width - item.main_width, ruby_overhang_sum);
+            const ruby_overhang_before = ruby_overhang * item.ruby_overhang_before / ruby_overhang_sum;
+            const ruby_overhang_after = ruby_overhang - ruby_overhang_before;
+            start -= ruby_overhang_before;
+            end += ruby_overhang_after;
+          }
+        }
+
+        const width = end - start;
+        console.log(item.ruby_width, width);
+
+        // let start;
+        // if (item.ruby_overhang_before > 0) {
+        //   const before = result.items[i - 1];
+        //   const char = before.main[before.main.length - 1];
+        //   start = char.result_x + char.result_width * 0.5;
+        // } else {
+        //   const char = item.main[0];
+        //   start = char.result_x;
+        // }
+
+        // let end;
+        // if (item.ruby_overhang_after > 0) {
+        //   const after = result.items[i + 1];
+        //   const char = after.main[0];
+        // }
+
+        // let start = item.main[0].result_x;
+        // 親文字の開始点と終了点を得る。
+        // はみ出し量を計算する。
+
+      }
     });
 
     // container.remove();
@@ -521,8 +576,8 @@ const root = globalThis.dromozoa = new class {
     //   width:                 Number, // 文字の幅
     //   progress:              Number, // 文字送り
     //   ruby_spacing:          Number, // ルビのための調整幅
-    //   result_left:           Number, // レイアウト結果のX座標
-    //   result_top:            Number, // レイアウト結果のY座標
+    //   result_x:              Number, // レイアウト結果のX座標
+    //   result_y:              Number, // レイアウト結果のY座標
     //   result_width:          Number, // レイアウト結果の幅
     //   result_height:         Number, // レイアウト結果の高さ
     // }
