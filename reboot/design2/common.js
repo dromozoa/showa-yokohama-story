@@ -290,6 +290,7 @@ const root = globalThis.dromozoa = new class {
             item.ruby_overhang_before = char.progress * 0.5;
           }
         }
+
         const after = text[i + 1];
         if (after && !after.ruby) {
           const char = after.main[0];
@@ -309,46 +310,29 @@ const root = globalThis.dromozoa = new class {
         font-variant-ligatures: none;
       "><span></span></div>
     `));
-    const ruby_views = [];
     const map = new Map();
 
     text.forEach((item, i) => {
       let main_spacing = 0;
 
       if (item.ruby) {
-        let ruby_spacing = 0;
         if (item.main_width < item.ruby_width) {
           const hung_width = item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after;
           if (item.main_width < hung_width) {
             main_spacing = (hung_width - item.main_width) / item.main.length;
           }
+          item.ruby.forEach(char => char.ruby_spacing = 0);
         } else {
-          ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
+          const ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
+          item.ruby.forEach(char => char.ruby_spacing = ruby_spacing);
         }
-
-        const ruby_view = container.appendChild(create_element(`
-          <div style="
-            font-kerning: none;
-            font-size: 50%;
-            font-variant-ligatures: none;
-          "><span><span>&#xFEFF;&#x200B;</span></span></div>
-        `));
-        item.ruby.forEach(char => {
-          char.ruby_spacing = ruby_spacing;
-          map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
-            <span style="
-              letter-spacing: ${number_to_css_string(char.progress - char.width + ruby_spacing)}px;
-            ">${escape_html(char.char)}</span>
-          `)));
-        });
-        ruby_views[i] = ruby_view;
       }
 
       item.main.forEach(char => {
         char.ruby_spacing = main_spacing;
         map.set(char, main_view.firstElementChild.appendChild(create_element(`
           <span style="
-            letter-spacing: ${number_to_css_string(char.progress - char.width + main_spacing)}px;
+            letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
           ">${escape_html(char.char)}</span>
         `)));
       });
@@ -373,7 +357,7 @@ const root = globalThis.dromozoa = new class {
       return !next || get_line_number(next) !== get_line_number(node);
     };
 
-    // 改行により、ルビが分割される場合がある。
+    // ルビの途中で本文が改行する場合、ルビを分割する。
     const result = [];
 
     text.forEach((item, i) => {
@@ -387,7 +371,7 @@ const root = globalThis.dromozoa = new class {
               const main_spacing = (hung_width - item.main_width) / item.main.length;
               item.main.forEach(char => {
                 char.ruby_spacing = main_spacing;
-                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
               });
             }
           }
@@ -406,7 +390,7 @@ const root = globalThis.dromozoa = new class {
               const main_spacing = (hung_width - item.main_width) / item.main.length;
               item.main.forEach(char => {
                 char.ruby_spacing = main_spacing;
-                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
               });
             }
           }
@@ -421,8 +405,6 @@ const root = globalThis.dromozoa = new class {
 
         // ルビの途中で本文が改行する場合、ルビを分割する。
         if (get_line_number(map.get(item.main[0])) !== get_line_number(map.get(item.main[item.main.length - 1]))) {
-          const ruby_view = ruby_views[i];
-
           let width = 0;
           if (item.main_width < item.ruby_width) {
             width += Math.min(item.ruby_width - item.main_width, item.ruby_overhang_before);
@@ -437,7 +419,22 @@ const root = globalThis.dromozoa = new class {
             width += char.progress + char.ruby_spacing;
           }
 
-          ruby_view.style.width = number_to_css_string(width) + "px";
+          const ruby_view = create_element(`
+            <div style="
+              font-kerning: none;
+              font-size: 50%;
+              font-variant-ligatures: none;
+              width: ${number_to_css_string(width)}px;
+            "><span><span>&#xFEFF;&#x200B;</span></span></div>
+          `);
+          item.ruby.forEach(char => {
+            map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
+              <span style="
+                letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
+              ">${escape_html(char.char)}</span>
+            `)));
+          });
+          container.append(ruby_view);
 
           let k = 0;
           for (; k < item.ruby.length; ++k) {
@@ -484,8 +481,6 @@ const root = globalThis.dromozoa = new class {
             map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
           });
 
-          console.log(j, k, item1, item2);
-
           result.push(item1, item2);
           return;
         }
@@ -494,6 +489,7 @@ const root = globalThis.dromozoa = new class {
       result.push(item);
     });
 
+    container.remove();
     return result;
   }
 
@@ -568,7 +564,6 @@ const root = globalThis.dromozoa = new class {
     });
 
     paragraph = paragraph.map(text => this.layout_text(source, text));
-    // paragraph.forEach(text => this.layout_text(source, text));
 
     console.log(JSON.stringify(paragraph, undefined, 2));
   }
