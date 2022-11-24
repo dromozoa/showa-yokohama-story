@@ -51,7 +51,6 @@ const number_to_css_string = v => {
   if (-0.00005 < v && v < 0.00005) {
     return "0";
   }
-  // 小数部が4桁の文字列に変換して末尾の0を除去する。指数表記の場合は変更しない。
   return v.toFixed(4).replace(/\.?0+$/, "")
 
 };
@@ -115,9 +114,9 @@ const root = globalThis.dromozoa = new class {
     `));
   }
 
-  // Firefox 107でFontFace.load()が止まる場合があった。どこかの時点（loadingを
-  // loadedに変更するタイミング？）で、FontFaceが別の新しいオブジェクトに変わっ
-  // たのではないかと推測する。
+  // Firefox 107でFontFace.load()の完了が観測できない場合があった。どこかの時点
+  // （loadingをloadedに変更するタイミング？）で、FontFaceが別の新しいオブジェ
+  // クトに変わり、Promiseがちゅうぶらりんになったのではないかと推測する。
   async load_font_face(index, timeout) {
     const font_face = [...document.fonts][index];
 
@@ -125,15 +124,13 @@ const root = globalThis.dromozoa = new class {
     const n = 4;
     const test = [];
 
-    // unicode-rangeが指定されていないとU+0-10FFFFになる。
+    // unicode-rangeの初期値はU+0-10FFFF
     L:
     for (let range of font_face.unicodeRange.split(/,\s*/)) {
       const match = range.match(/^U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$/);
       const a = Number.parseInt(match[1], 16);
       const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
       for (let code = a; code <= b; ++code) {
-        // 空白文字は除去されてフォントロードにたどりつかない可能性があるので、
-        // テスト文字列に含めない。
         if (code > 0x20 && test.push("&#" + code + ";") === n) {
           break L;
         }
@@ -206,8 +203,6 @@ const root = globalThis.dromozoa = new class {
     const width2 = view.children[1].firstElementChild.getBoundingClientRect().width;
     const width3 = view.children[2].firstElementChild.getBoundingClientRect().width;
     if (this.feature_kerning = width1 > width2) {
-      // フォントサイズ指定によるが、計算誤差を考慮すると(width2 === width3)は
-      // 成立しない可能性がある。
       this.feature_kerning_span = Math.abs(width2 - width3) < 1;
     }
 
@@ -357,14 +352,12 @@ const root = globalThis.dromozoa = new class {
       return !next || get_line_number(next) !== get_line_number(node);
     };
 
-    // ルビの途中で本文が改行する場合、ルビを分割する。
     const result = [];
 
     text.forEach((item, i) => {
       if (item.ruby) {
         // ルビが行頭にある場合、前のはみ出し可能量をキャンセルする。
         if (is_line_start(map.get(item.main[0])) && item.ruby_overhang_before > 0) {
-          // 実際にはみ出していた場合、本文の幅を増やす。
           if (item.main_width < item.ruby_width) {
             const hung_width = item.ruby_width - item.ruby_overhang_after;
             if (item.main_width < hung_width) {
@@ -383,7 +376,6 @@ const root = globalThis.dromozoa = new class {
         // 能量を割り当てるか決定する。
         if (is_line_end(map.get(item.main[item.main.length - 1])) && item.ruby_overhang_before + item.ruby_overhang_after > 0) {
           const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
-          // 実際にはみ出していた場合、本文の幅を増やす。
           if (item.main_width < item.ruby_width) {
             const hung_width = item.ruby_width - ruby_overhang;
             if (item.main_width < hung_width) {
@@ -489,7 +481,7 @@ const root = globalThis.dromozoa = new class {
       result.push(item);
     });
 
-    container.remove();
+    // container.remove();
     return result;
   }
 
