@@ -282,20 +282,19 @@ const root = globalThis.dromozoa = new class {
 
       if (item.ruby) {
         item.ruby_width = item.ruby.reduce((width, char) => width + char.progress, 0);
-        if (item.main_width < item.ruby_width) {
-          const before = text[i - 1];
-          if (before && !before.ruby) {
-            const char = before.main[before.main.length - 1];
-            if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
-              item.ruby_overhang_before = char.progress * 0.5;
-            }
+
+        const before = text[i - 1];
+        if (before && !before.ruby) {
+          const char = before.main[before.main.length - 1];
+          if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
+            item.ruby_overhang_before = char.progress * 0.5;
           }
-          const after = text[i + 1];
-          if (after && !after.ruby) {
-            const char = after.main[0];
-            if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
-              item.ruby_overhang_after = char.progress * 0.5;
-            }
+        }
+        const after = text[i + 1];
+        if (after && !after.ruby) {
+          const char = after.main[0];
+          if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
+            item.ruby_overhang_after = char.progress * 0.5;
           }
         }
       }
@@ -314,16 +313,14 @@ const root = globalThis.dromozoa = new class {
     const map = new Map();
 
     text.forEach((item, i) => {
-      if (item.ruby) {
-        const main_width = item.main_width;
-        const ruby_width = item.ruby_width;
+      let main_spacing = 0;
 
-        let main_spacing = 0;
+      if (item.ruby) {
         let ruby_spacing = 0;
         if (item.main_width < item.ruby_width) {
-          const ruby_width = item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after;
-          if (item.main_width < ruby_width) {
-            main_spacing = (ruby_width - item.main_width) / item.main.length;
+          const hung_width = item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after;
+          if (item.main_width < hung_width) {
+            main_spacing = (hung_width - item.main_width) / item.main.length;
           }
         } else {
           ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
@@ -345,26 +342,16 @@ const root = globalThis.dromozoa = new class {
           `)));
         });
         ruby_views[i] = ruby_view;
-
-        item.main.forEach(char => {
-          char.ruby_spacing = main_spacing;
-          map.set(char, main_view.firstElementChild.appendChild(create_element(`
-            <span style="
-              letter-spacing: ${number_to_css_string(char.progress - char.width + main_spacing)}px;
-            ">${escape_html(char.char)}</span>
-          `)));
-        });
-
-      } else {
-        item.main.forEach(char => {
-          char.ruby_spacing = 0;
-          map.set(char, main_view.firstElementChild.appendChild(create_element(`
-            <span style="
-              letter-spacing: ${number_to_css_string(char.progress - char.width)}px;
-            ">${escape_html(char.char)}</span>
-          `)));
-        });
       }
+
+      item.main.forEach(char => {
+        char.ruby_spacing = main_spacing;
+        map.set(char, main_view.firstElementChild.appendChild(create_element(`
+          <span style="
+            letter-spacing: ${number_to_css_string(char.progress - char.width + main_spacing)}px;
+          ">${escape_html(char.char)}</span>
+        `)));
+      });
     });
 
     this.offscreen.append(container);
@@ -389,28 +376,40 @@ const root = globalThis.dromozoa = new class {
     // 改行により、ルビが分割される場合がある。
     const result = [];
 
-    const origin = main_view.getBoundingClientRect();
     text.forEach((item, i) => {
       if (item.ruby) {
-        // ルビが行頭にある場合、前のはみ出し量をキャンセルする。
-        if (item.ruby_overhang_before > 0 && is_line_start(map.get(item.main[0]))) {
-          const main_spacing = (item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
-          item.main.forEach(char => {
-            char.ruby_spacing = main_spacing;
-            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
-          });
+        // ルビが行頭にある場合、前のはみ出し可能量をキャンセルする。
+        if (is_line_start(map.get(item.main[0])) && item.ruby_overhang_before > 0) {
+          // 実際にはみ出していた場合、本文の幅を増やす。
+          if (item.main_width < item.ruby_width) {
+            const hung_width = item.ruby_width - item.ruby_overhang_after;
+            if (item.main_width < hung_width) {
+              const main_spacing = (hung_width - item.main_width) / item.main.length;
+              item.main.forEach(char => {
+                char.ruby_spacing = main_spacing;
+                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+              });
+            }
+          }
           item.ruby_overhang_before = 0;
         }
 
-        // ルビが行末にある場合、前後のはみ出し量のうち、大きい方をキャンセルして
-        // レイアウトする。結果の改行位置から、はみ出し量の割り当てを決定する。
-        if (item.ruby_overhang_after > 0 && is_line_end(map.get(item.main[item.main.length - 1]))) {
+        // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
+        // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
+        // 能量を割り当てるか決定する。
+        if (is_line_end(map.get(item.main[item.main.length - 1])) && item.ruby_overhang_before + item.ruby_overhang_after > 0) {
           const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
-          const main_spacing = (item.ruby_width - ruby_overhang - item.main_width) / item.main.length;
-          item.main.forEach(char => {
-            char.ruby_spacing = main_spacing;
-            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
-          });
+          // 実際にはみ出していた場合、本文の幅を増やす。
+          if (item.main_width < item.ruby_width) {
+            const hung_width = item.ruby_width - ruby_overhang;
+            if (item.main_width < hung_width) {
+              const main_spacing = (hung_width - item.main_width) / item.main.length;
+              item.main.forEach(char => {
+                char.ruby_spacing = main_spacing;
+                map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+              });
+            }
+          }
           if (is_line_start(map.get(item.main[0]))) {
             item.ruby_overhang_before = 0;
             item.ruby_overhang_after = ruby_overhang;
@@ -420,34 +419,75 @@ const root = globalThis.dromozoa = new class {
           }
         }
 
-        // ルビの途中に改行がある場合、改行の前後で分割する。
-        let width = item.ruby_overhang_before;
-        for (let j = 0; j < item.main.length - 1; ++j) {
-          const char = item.main[j];
-          width += char.progress + char.ruby_spacing;
-          if (is_line_end(map.get(char))) {
-            // 改行前の幅でルビをレイアウトして改行位置を調べる。
-            const ruby_view = ruby_views[i];
-            ruby_view.style.width = number_to_css_string(width) + "px";
-            let k = 0;
-            for (; k < item.ruby.length; ++k) {
-              const char = item.ruby[k];
-              if (is_line_start(char)) {
-                break;
-              }
-            }
+        // ルビの途中で本文が改行する場合、ルビを分割する。
+        if (get_line_number(map.get(item.main[0])) !== get_line_number(map.get(item.main[item.main.length - 1]))) {
+          const ruby_view = ruby_views[i];
 
-            // main1: 0   .. j
-            // main2: j+1 .. #
-            // ruby1: 0   .. k-1  空になることがある
-            // ruby2: k   .. #
-
-            // itemを分割する
-            // result.push(item1);
-            // result.push(item2);
-            // return; // forEachを抜ける。
-            break;
+          let width = 0;
+          if (item.main_width < item.ruby_width) {
+            width += Math.min(item.ruby_width - item.main_width, item.ruby_overhang_before);
           }
+
+          let j = 0;
+          for (; j < item.main.length; ++j) {
+            const char = item.main[j];
+            if (j > 0 && is_line_start(map.get(char))) {
+              break;
+            }
+            width += char.progress + char.ruby_spacing;
+          }
+
+          ruby_view.style.width = number_to_css_string(width) + "px";
+
+          let k = 0;
+          for (; k < item.ruby.length; ++k) {
+            if (is_line_start(map.get(item.ruby[k]))) {
+              break;
+            }
+          }
+
+          const item1 = {
+            main: item.main.slice(0, j),
+            ruby_width: 0,
+            ruby_overhang_before: 0,
+            ruby_overhang_after: 0,
+          };
+          item1.main_width = item1.main.reduce((width, char) => width + char.progress, 0);
+          if (k > 0) {
+            item1.ruby = item.ruby.slice(0, k);
+            item1.ruby_width = item1.ruby.reduce((width, char) => width + char.progress, 0);
+            item1.ruby_overhang_before = item.ruby_overhang_before;
+          }
+
+          const item2 = {
+            main: item.main.slice(j),
+            ruby_width: 0,
+            ruby_overhang_before: 0,
+            ruby_overhang_after: 0,
+          };
+          item2.main_width = item2.main.reduce((width, char) => width + char.progress, 0);
+          if (k < item.ruby.length) {
+            item2.ruby = item.ruby.slice(k);
+            item2.ruby_width = item2.ruby.reduce((width, char) => width + char.progress, 0);
+            item2.ruby_overhang_after = item.ruby_overhang_after;
+          }
+
+          let main_spacing = 0;
+          if (item2.main_width < item2.ruby_width) {
+            const hung_width = item2.ruby_width - item2.ruby_overhang_before - item2.ruby_overhang_after;
+            if (item2.main_width < hung_width) {
+              main_spacing = (hung_width - item2.main_width) / item2.main.length;
+            }
+          }
+          item2.main.forEach(char => {
+            char.ruby_spacing = main_spacing;
+            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
+          });
+
+          console.log(j, k, item1, item2);
+
+          result.push(item1, item2);
+          return;
         }
       }
 
@@ -469,11 +509,11 @@ const root = globalThis.dromozoa = new class {
     //
     // Item {
     //   main:                  Chars,  // 本文文字列
-    //   main_width:            Number, // 本文文字列の合計幅
+    //   main_width:            Number, // 本文文字列の幅
     //   ruby:                  Chars,  // ルビ文字列
-    //   ruby_width:            Number, // ルビ文字列の合計幅
-    //   ruby_overhang_before:  Number, // 前のはみ出し量
-    //   ruby_overhang_after:   Number, // 後のはみ出し量
+    //   ruby_width:            Number, // ルビ文字列の幅
+    //   ruby_overhang_before:  Number, // 前のはみ出し可能量
+    //   ruby_overhang_after:   Number, // 後のはみ出し可能量
     // }
     //
     // Chars {
@@ -489,7 +529,7 @@ const root = globalThis.dromozoa = new class {
     //
     // (width - progress)がカーニングによる左方向への移動量となる。
     //
-    const paragraph = [];
+    let paragraph = [];
     let text;
     let item;
 
@@ -527,9 +567,10 @@ const root = globalThis.dromozoa = new class {
       text.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
 
-    paragraph.forEach(text => this.layout_text(source, text));
+    paragraph = paragraph.map(text => this.layout_text(source, text));
+    // paragraph.forEach(text => this.layout_text(source, text));
 
-    // console.log(JSON.stringify(paragraph, undefined, 2));
+    console.log(JSON.stringify(paragraph, undefined, 2));
   }
 };
 
