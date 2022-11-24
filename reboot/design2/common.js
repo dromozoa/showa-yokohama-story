@@ -387,6 +387,9 @@ const root = globalThis.dromozoa = new class {
       return !next || get_line_number(next) !== get_line_number(node);
     };
 
+    // 改行により、ルビが分割される場合がある。
+    const result = [];
+
     const origin = main_view.getBoundingClientRect();
     text.forEach((item, i) => {
       if (item.ruby) {
@@ -418,6 +421,8 @@ const root = globalThis.dromozoa = new class {
           }
         }
 
+        // ルビの途中に改行がある場合、改行の前後で分割する。
+
         // 本文内に改行がある場合、ルビも改行する。改行位置までの本文の幅を求める。
         let width = item.ruby_overhang_before;
         for (let j = 0; j < item.main.length - 1; ++j) {
@@ -428,11 +433,20 @@ const root = globalThis.dromozoa = new class {
             const ruby_view = ruby_views[i];
             ruby_view.style.width = number_to_css_string(width) + "px";
             // 何文字めの前で改行したかを調べる。
+
+            // itemを分割する
+            // result.push(item1);
+            // result.push(item2);
+            // return; // forEachを抜ける。
             break;
           }
         }
       }
+
+      result.push(item);
     });
+
+    return result;
   }
 
   layout_paragraph(source) {
