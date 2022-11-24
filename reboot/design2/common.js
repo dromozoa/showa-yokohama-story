@@ -329,7 +329,6 @@ const root = globalThis.dromozoa = new class {
           ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
         }
 
-        // TODO ruby_viewは遅延可能か？
         const ruby_view = container.appendChild(create_element(`
           <div style="
             font-kerning: none;
@@ -422,17 +421,26 @@ const root = globalThis.dromozoa = new class {
         }
 
         // ルビの途中に改行がある場合、改行の前後で分割する。
-
-        // 本文内に改行がある場合、ルビも改行する。改行位置までの本文の幅を求める。
         let width = item.ruby_overhang_before;
         for (let j = 0; j < item.main.length - 1; ++j) {
           const char = item.main[j];
           width += char.progress + char.ruby_spacing;
           if (is_line_end(map.get(char))) {
-            // 本文の幅でルビをレイアウトする。
+            // 改行前の幅でルビをレイアウトして改行位置を調べる。
             const ruby_view = ruby_views[i];
             ruby_view.style.width = number_to_css_string(width) + "px";
-            // 何文字めの前で改行したかを調べる。
+            let k = 0;
+            for (; k < item.ruby.length; ++k) {
+              const char = item.ruby[k];
+              if (is_line_start(char)) {
+                break;
+              }
+            }
+
+            // main1: 0   .. j
+            // main2: j+1 .. #
+            // ruby1: 0   .. k-1  空になることがある
+            // ruby2: k   .. #
 
             // itemを分割する
             // result.push(item1);
