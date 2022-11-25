@@ -304,6 +304,7 @@ const root = globalThis.dromozoa = new class {
 
     const container = source.cloneNode(false);
     container.removeAttribute("id");
+    container.style.position = "relative";
 
     const main_view = container.appendChild(create_element(`
       <div style="
@@ -491,13 +492,21 @@ const root = globalThis.dromozoa = new class {
     result.number_of_lines = get_line_number(map.get(char)) + 1;
 
     const origin = main_view.getBoundingClientRect();
-    result.items.forEach(item => item.main.forEach(char => {
+    const update_result = char => {
       const bbox = map.get(char).getBoundingClientRect();
       char.result_x = bbox.left - origin.left;
       char.result_y = bbox.top - origin.top;
       char.result_width = bbox.width;
       char.result_height = bbox.height;
-    }));
+    };
+
+    result.items.forEach(item => item.main.forEach(update_result));
+
+    // ルビのレイアウト時に行の高さを本文と同じにする。行送りの基準点は天地中央
+    // なので、ルビを本文の文字サイズの3/4上に移動する。
+    const style = getComputedStyle(main_view);
+    const font_size = parseFloat(style.fontSize);
+    const line_height = parseFloat(style.lineHeight);
 
     result.items.forEach((item, i) => {
       if (item.ruby) {
@@ -507,39 +516,44 @@ const root = globalThis.dromozoa = new class {
         let end = char.result_x + char.result_width;
 
         if (item.main_width < item.ruby_width) {
-          const ruby_overhang_sum = item.ruby_overhang_before + item.ruby_overhang_after;
-          if (ruby_overhang_sum > 0) {
-            const ruby_overhang = Math.min(item.ruby_width - item.main_width, ruby_overhang_sum);
-            const ruby_overhang_before = ruby_overhang * item.ruby_overhang_before / ruby_overhang_sum;
-            const ruby_overhang_after = ruby_overhang - ruby_overhang_before;
-            start -= ruby_overhang_before;
-            end += ruby_overhang_after;
+          const sum = item.ruby_overhang_before + item.ruby_overhang_after;
+          if (sum > 0) {
+            const scale = Math.min(item.ruby_width - item.main_width, sum) / sum;
+            start -= item.ruby_overhang_before * scale;
+            end += item.ruby_overhang_after * scale;
           }
         }
 
         const width = end - start;
-        console.log(item.ruby_width, width);
 
-        // let start;
-        // if (item.ruby_overhang_before > 0) {
-        //   const before = result.items[i - 1];
-        //   const char = before.main[before.main.length - 1];
-        //   start = char.result_x + char.result_width * 0.5;
-        // } else {
-        //   const char = item.main[0];
-        //   start = char.result_x;
-        // }
+        let ruby_spacing = 0;
+        if (width > item.ruby_width) {
+          ruby_spacing = (width - item.ruby_width) / item.ruby.length;
+        }
 
-        // let end;
-        // if (item.ruby_overhang_after > 0) {
-        //   const after = result.items[i + 1];
-        //   const char = after.main[0];
-        // }
+        const line_number = get_line_number(map.get(item.main[0]));
+        const ruby_view = create_element(`
+          <div style="
+            font-kerning: none;
+            font-size: 50%;
+            font-variant-ligatures: none;
+            line-height: ${number_to_css_string(line_height)}px;
+            position: absolute;
+            top: ${number_to_css_string(line_number * line_height - font_size * 0.75)}px;
+            left: ${number_to_css_string(start)}px;
+          "><span></span></div>
+        `);
+        item.ruby.forEach(char => {
+          char.ruby_spacing = ruby_spacing;
+          map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
+            <span style="
+              letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
+            ">${escape_html(char.char)}</span>
+          `)));
+        });
+        container.append(ruby_view);
 
-        // let start = item.main[0].result_x;
-        // 親文字の開始点と終了点を得る。
-        // はみ出し量を計算する。
-
+        item.ruby.forEach(update_result);
       }
     });
 

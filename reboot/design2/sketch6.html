@@ -54,6 +54,7 @@
 <body>
 
 <div>
+  <!--
   <div id="view" class="view" style="
     background-color: #ccc;
     font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
@@ -83,6 +84,86 @@
     <div>あああ<span style="letter-spacing: 11.5em">x</span></div>
     <div>ああああ<span style="letter-spacing: 11.5em">x</span></div>
   </div>
+  -->
+
+  <div style="
+    position: relative;
+    width: 480px;
+    height: 576px;
+  ">
+
+    <div id="a" style="
+      position: absolute;
+      width: 240px;
+      height: 576px;
+      top: 0px;
+      left: 0px;
+
+      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+      font-size: 24px;
+      line-height: 48px;
+    ">
+      <span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span>
+    </div>
+
+    <div id="b" style="
+      position: absolute;
+      width: 240px;
+      height: 576px;
+      top: -18px;
+      left: 0px;
+
+      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+      font-size: 12px;
+      line-height: 48px;
+    ">
+      <span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
+      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span>
+    </div>
+
+    <div id="c" style="
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      top: 0px;
+      left: 240px;
+
+      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+      font-size: 24px;
+      line-height: 48px;
+    "><span id="x" style="
+      color: rgba(255, 0, 0, 0.5);
+    ">永遠</span><br><span id ="y" style="
+      display: inline-block;
+      position: absolute;
+      width: 48px;
+      top: 0px;
+      color: rgba(0, 255, 0, 0.5);
+      padding-left: 24px;
+    "><span>遠</span></span><br><span id ="z" style="
+      display: block;
+      position: absolute;
+      width: 48px;
+      top: 0px;
+      color: rgba(0, 0, 255, 0.5);
+      padding-right: 24px;
+    "><span>永</span></div>
+
+  </div>
 </div>
 
 <script>
@@ -93,7 +174,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("load font faces: start");
   const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
   console.log("load font faces: end", result);
-
 });
 </script>
 
