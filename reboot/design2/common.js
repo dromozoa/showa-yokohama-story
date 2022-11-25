@@ -575,7 +575,6 @@ const root = globalThis.dromozoa = new class {
           }),
           ...item.ruby.map((char, i) => ({ ruby_index: i, x: char.result_x + char.result_width * 0.5 })),
         ].sort((a, b) => a.x - b.x).forEach(order => {
-          console.log(order);
           if (order.main_index !== undefined) {
             if (ruby_index !== undefined) {
               item.main[order.main_index].ruby_connection = ruby_index;
