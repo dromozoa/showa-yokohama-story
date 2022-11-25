@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("update").addEventListener("click", () => {
     const view = document.getElementById("view");
     view.innerHTML = document.getElementById("editor").value;
-    D.layout_paragraph(view);
+    console.log(D.layout_paragraph(view));
   });
 
   document.getElementById("remove").addEventListener("click", () => {

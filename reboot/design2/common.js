@@ -102,7 +102,6 @@ const root = globalThis.dromozoa = new class {
   get offscreen() {
     return this.#offscreen ||= document.body.appendChild(create_element(`
       <div style="
-        display: block;
         position: absolute;
         /*
         top: -9999px;
@@ -402,7 +401,7 @@ const root = globalThis.dromozoa = new class {
           }
         }
 
-        // ルビの途中で本文が改行する場合、ルビを分割する。
+        // ルビの途中で親文字が改行する場合、ルビを分割する。
         if (get_line_number(map.get(item.main[0])) !== get_line_number(map.get(item.main[item.main.length - 1]))) {
           let width = 0;
           if (item.main_width < item.ruby_width) {
@@ -491,24 +490,35 @@ const root = globalThis.dromozoa = new class {
     const char = item.main[item.main.length - 1];
     result.number_of_lines = get_line_number(map.get(char)) + 1;
 
+    let min_x = +Infinity;
+    let min_y = +Infinity;
+    let max_x = -Infinity;
+    let max_y = -Infinity;
+
     const origin = main_view.getBoundingClientRect();
     const update_result = char => {
-      const bbox = map.get(char).getBoundingClientRect();
+      const node = map.get(char);
+      const bbox = node.getBoundingClientRect();
+      char.result_line_number = get_line_number(node);
       char.result_x = bbox.left - origin.left;
       char.result_y = bbox.top - origin.top;
       char.result_width = bbox.width;
       char.result_height = bbox.height;
+      min_x = Math.min(min_x, char.result_x);
+      min_y = Math.min(min_y, char.result_y);
+      max_x = Math.max(max_x, char.result_x + char.result_width);
+      max_y = Math.max(max_y, char.result_y + char.result_height);
     };
 
     result.items.forEach(item => item.main.forEach(update_result));
 
-    // ルビのレイアウト時に行の高さを本文と同じにする。行送りの基準点は天地中央
-    // なので、ルビを本文の文字サイズの3/4上に移動する。
+    // ルビのレイアウト時に行の高さを親文字と同じにする。行送りの基準点は天地中
+    // 央なので、ルビを親文字の文字サイズの3/4上に移動する。
     const style = getComputedStyle(main_view);
     const font_size = parseFloat(style.fontSize);
     const line_height = parseFloat(style.lineHeight);
 
-    result.items.forEach((item, i) => {
+    result.items.forEach(item => {
       if (item.ruby) {
         let start = item.main[0].result_x;
 
@@ -534,13 +544,14 @@ const root = globalThis.dromozoa = new class {
         const line_number = get_line_number(map.get(item.main[0]));
         const ruby_view = create_element(`
           <div style="
+            position: absolute;
+            top: ${number_to_css_string(line_number * line_height - font_size * 0.75)}px;
+            left: ${number_to_css_string(start)}px;
             font-kerning: none;
             font-size: 50%;
             font-variant-ligatures: none;
             line-height: ${number_to_css_string(line_height)}px;
-            position: absolute;
-            top: ${number_to_css_string(line_number * line_height - font_size * 0.75)}px;
-            left: ${number_to_css_string(start)}px;
+            white-space: nowrap;
           "><span></span></div>
         `);
         item.ruby.forEach(char => {
@@ -554,8 +565,37 @@ const root = globalThis.dromozoa = new class {
         container.append(ruby_view);
 
         item.ruby.forEach(update_result);
+
+        let main_index = 0;
+        let ruby_index;
+        [
+          ...item.main.map((char, i) => {
+            const next = item.main[i + 1];
+            return { main_index: i, x: next ? (char.result_x + char.result_width + next.result_x) * 0.5 : Infinity };
+          }),
+          ...item.ruby.map((char, i) => ({ ruby_index: i, x: char.result_x + char.result_width * 0.5 })),
+        ].sort((a, b) => a.x - b.x).forEach(order => {
+          console.log(order);
+          if (order.main_index !== undefined) {
+            if (ruby_index !== undefined) {
+              item.main[order.main_index].ruby_connection = ruby_index;
+              ruby_index = undefined;
+            }
+            ++main_index;
+          } else {
+            item.ruby[order.ruby_index].ruby_connection = main_index;
+            if (ruby_index === undefined) {
+              ruby_index = order.ruby_index;
+            }
+          }
+        });
       }
     });
+
+    result.min_x = min_x;
+    result.min_y = min_y;
+    result.max_x = max_x;
+    result.max_y = max_y;
 
     // container.remove();
     return result;
@@ -570,11 +610,15 @@ const root = globalThis.dromozoa = new class {
     // Text {
     //   items:                 Item+,
     //   number_of_lines:       Number, // 行数
+    //   min_x:                 Number, // X座標の最小値
+    //   min_y:                 Number, // Y座標の最小値
+    //   max_x:                 Number, // X座標の最大値
+    //   max_y:                 Number, // Y座標の最大値
     // }
     //
     // Item {
-    //   main:                  Chars,  // 本文文字列
-    //   main_width:            Number, // 本文文字列の幅
+    //   main:                  Chars,  // 親文字列
+    //   main_width:            Number, // 親文字列の幅
     //   ruby:                  Chars,  // ルビ文字列
     //   ruby_width:            Number, // ルビ文字列の幅
     //   ruby_overhang_before:  Number, // 前のはみ出し可能量
@@ -590,6 +634,8 @@ const root = globalThis.dromozoa = new class {
     //   width:                 Number, // 文字の幅
     //   progress:              Number, // 文字送り
     //   ruby_spacing:          Number, // ルビのための調整幅
+    //   ruby_connection:       Number, // 親文字とルビ文字の対応づけ
+    //   result_line_number     Number, // 行番号
     //   result_x:              Number, // レイアウト結果のX座標
     //   result_y:              Number, // レイアウト結果のY座標
     //   result_width:          Number, // レイアウト結果の幅
@@ -597,6 +643,10 @@ const root = globalThis.dromozoa = new class {
     // }
     //
     // (width - progress)がカーニングによる左方向への移動量となる。
+    //
+    // 親文字のCharの場合、ruby_connectionは対応する最初のルビ文字のインデック
+    // スとなる。対応するルビ文字がない場合は定義されない。ルビ文字のCharの場合、
+    // ruby_connectionは対応する親文字のインデックスであり、常に定義される。
     //
     let paragraph = [];
     let text;
@@ -635,9 +685,9 @@ const root = globalThis.dromozoa = new class {
       this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
       text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
-
     paragraph = paragraph.map(text => this.layout_text(source, text));
-    console.log(paragraph);
+
+    return paragraph;
   }
 };
 
