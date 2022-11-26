@@ -109,8 +109,8 @@ const root = globalThis.dromozoa = new class {
       <div style="
         position: absolute;
         /*
-        top: -9999px;
-        left: -9999px;
+        top: -6400px;
+        left: -1989px;
         */
       "></div>
     `));
@@ -305,6 +305,7 @@ const root = globalThis.dromozoa = new class {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.position = "relative";
+    container.style.height = "auto";
 
     const main_view = container.appendChild(create_element(`
       <div style="
@@ -318,7 +319,7 @@ const root = globalThis.dromozoa = new class {
       item.main.forEach(char => {
         char.ruby_spacing = main_spacing;
         map.set(char, main_view.firstElementChild.appendChild(create_element(`
-          <span style="
+          <span data-type="char" style="
             letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
           ">${escape_html(char.char)}</span>
         `)));
@@ -331,8 +332,42 @@ const root = globalThis.dromozoa = new class {
 
     this.offscreen.append(container);
 
+    const get_next_char = node => {
+      const next = node.nextElementSibling;
+      if (next) {
+        if (next.dataset.type === "group") {
+          return next.firstElementChild;
+        } else {
+          return next;
+        }
+      } else {
+        if (node.parentElement.dataset.type === "group") {
+          return get_next_char(node.parentElement);
+        } else {
+          return null;
+        }
+      }
+    };
+
+    const get_prev_char = node => {
+      const prev = node.previousElementSibling;
+      if (prev) {
+        if (prev.dataset.type === "group") {
+          return prev.lastElementChild;
+        } else {
+          return prev;
+        }
+      } else {
+        if (node.parentElement.dataset.type === "group") {
+          return get_prev_char(node.parentElement);
+        } else {
+          return null;
+        }
+      }
+    };
+
     const get_line_number = node => {
-      const origin_top = node.parentElement.parentElement.getBoundingClientRect().top;
+      const origin_top = node.closest("div").getBoundingClientRect().top;
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
       return Math.floor((bbox.top - origin_top + bbox.height * 0.5) / line_height);
@@ -340,24 +375,26 @@ const root = globalThis.dromozoa = new class {
 
     const is_line_start = node => {
       // 最初の文字である場合、行頭であるとする。
-      if (!node.previousElementSibling) {
+      let prev_node = get_prev_char(node);
+      if (!prev_node) {
         return true;
       }
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
-      const prev = node.previousElementSibling.getBoundingClientRect();
+      const prev = prev_node.getBoundingClientRect();
       // 文字の天地中央の距離が行の高さの半分より大きい場合、行頭であるとする。
       return ((bbox.top - prev.top) * 2 + bbox.height - prev.height) > line_height;
     };
 
     const is_line_end = node => {
       // 最後の文字である場合、行末でないとする。
-      if (!node.nextElementSibling) {
+      let next_node = get_next_char(node);
+      if (!next_node) {
         return false;
       }
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
-      const next = node.nextElementSibling.getBoundingClientRect();
+      const next = next_node.getBoundingClientRect();
       // 文字の天地中央の距離が行の高さの半分より大きい場合、行末であるとする。
       return ((next.top - bbox.top) * 2 + next.height - bbox.height) > line_height;
     };
@@ -383,6 +420,80 @@ const root = globalThis.dromozoa = new class {
 
       const ruby_overhang_after = item.ruby_overhang_after;
 
+      // ルビが行末にある場合、後のはみ出し可能量をキャンセルしてレイアウトする。
+      // 改行位置以降をの文字をまとめて折り返しを禁止してレイアウトを固定する。
+      // その後、改行位置にしたがってはみ出し可能量の調整を行う。
+      if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_after > 0) {
+        const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_before - item.main_width) / item.main.length;
+        item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
+          char.ruby_spacing = main_spacing;
+          map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
+        });
+        if (is_line_end(map.get(item.main.slice(-1)[0]))) {
+          // 改行位置が行末のままであれば確定
+          console.log("mode A");
+          item.ruby_overhang_after = 0;
+        } else if (is_line_start(map.get(item.main[0]))) {
+          // 改行位置が行頭に来た場合、文字をグループ化する。
+          console.log("mode B");
+
+          // とりあえず、2文字グループ化する。
+          const node1 = map.get(item.main[0]);
+          const node2 = node1.nextElementSibling;
+          const node = node1.parentElement.insertBefore(create_element(`
+            <span data-type="group" style="
+              white-space: nowrap;
+            "></span>
+          `), node1);
+          node.append(node1, node2);
+
+          item.ruby_overhang_before = 0;
+          item.ruby_overhang_after = ruby_overhang_after;
+
+          const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
+          item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
+            char.ruby_spacing = main_spacing;
+            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
+          });
+        } else {
+          // 改行位置がルビの途中にある。
+          console.log("mode C");
+
+          const main_index = item.main.findIndex(char => is_line_start(map.get(char)));
+          console.log(main_index !== -1);
+
+          // とりあえず、2文字グループ化する。
+          const node1 = map.get(item.main[main_index]);
+          const node2 = node1.nextElementSibling;
+          const node = node1.parentElement.insertBefore(create_element(`
+            <span data-type="group" style="
+              white-space: nowrap;
+            "></span>
+          `), node1);
+          node.append(node1, node2);
+
+          const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
+          item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
+            char.ruby_spacing = main_spacing;
+            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
+          });
+        }
+
+      }
+
+      /*
+          <span>あ</span>
+          <span>い</span>
+          <span>う</span>
+          <span>本</span>
+          <!-- 改行 -->
+          <span class="dromozoa_nowrap" data-nowrap style="white-space: nowrap>
+            <span>文</span>
+            <span>え</span>
+          </span>
+          <span>お</span>
+       */
+
       // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
       // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
       // 能量を割り当てるか決定する。
@@ -398,6 +509,7 @@ const root = globalThis.dromozoa = new class {
           item.ruby_overhang_after = ruby_overhang;
         } else {
           // ルビの途中に改行がある場合、ルビの分割時に後のはみ出し可能量を復元する。
+          // TODO 戻したら、改行位置が変わってしまうかもしれない。
           item.ruby_overhang_before = ruby_overhang;
           item.ruby_overhang_after = 0;
         }
@@ -430,7 +542,7 @@ const root = globalThis.dromozoa = new class {
         "><span><span>&#xFEFF;&#x200B;</span></span></div>
       `);
       item.ruby.forEach(char => map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
-        <span style="
+        <span data-type="char" style="
           letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
         ">${escape_html(char.char)}</span>
       `))));
@@ -464,7 +576,7 @@ const root = globalThis.dromozoa = new class {
       if (ruby_index < item.ruby.length) {
         item2.ruby = item.ruby.slice(ruby_index);
         item2.ruby_width = item2.ruby.reduce((width, char) => width + char.progress, 0);
-        item2.ruby_overhang_after = ruby_overhang_after;
+        item2.ruby_overhang_after = item.ruby_overhang_after;
       }
 
       const main_spacing = Math.max(0, item2.ruby_width - item2.ruby_overhang_before - item2.ruby_overhang_after - item2.main_width) / item2.main.length;
@@ -525,6 +637,8 @@ const root = globalThis.dromozoa = new class {
 
     result.items.forEach(item => {
       item.main.forEach(update_result);
+      item.is_line_start = is_line_start(map.get(item.main[0]));
+      item.is_line_end = is_line_end(map.get(item.main.slice(-1)[0]));
       if (!item.ruby) {
         return;
       }
@@ -590,100 +704,66 @@ const root = globalThis.dromozoa = new class {
       });
     });
 
-    container.remove();
+    // container.remove();
     return result;
   }
 
   layout_paragraph(source, paragraph) {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
+    container.style.height = "auto";
     this.offscreen.append(container);
 
-    const style = getComputedStyle(container);
-    const font_size = parseFloat(style.fontSize);
-    const line_height = parseFloat(style.lineHeight);
+    const line_height = parseFloat(getComputedStyle(container).lineHeight);
+
+    const create_char_element = (parent_node, char, text_align) => {
+      const node = parent_node.appendChild(create_element(`
+        <span style="
+          display: inline-block;
+          position: absolute;
+          left: ${number_to_css_string(char.result.x)}px;
+          width: ${char.result.width}px;
+          text-align: ${text_align};
+        "><span style="display: inline;">${escape_html(char.char)}</span></span>
+      `));
+      node.style.top = number_to_css_string(char.result.y
+        + node.getBoundingClientRect().top
+        - node.firstElementChild.getBoundingClientRect().top) + "px";
+      return node;
+    };
 
     paragraph.texts.forEach(text => {
       const view = container.appendChild(create_element(`
         <div style="
           position: relative;
+          height: ${number_to_css_string(text.number_of_lines * line_height)}px;
           font-kerning: none;
           font-variant-ligatures: none;
           line-height: normal;
-          width: auto;
-          height: ${number_to_css_string(text.number_of_lines * line_height)}px;
+          white-space: nowrap;
         "></div>
       `));
 
-      text.items.forEach((item, index) => {
-        let align = "center";
-        const prev = text.items[index - 1];
-        if (!prev || prev.main[prev.main.length - 1].result.line_number !== item.main[0].result.line_number) {
-          align = "left";
-        }
-        const next = text.items[index + 1];
-        if (!next || next.main[0].result.line_number !== item.main[item.main.length - 1].result.line_number) {
-          align = "right";
-        }
+      text.items.forEach(item => {
+        const text_align = item.is_line_start ? "left" : item.is_line_end ? "right" : "center";
 
         item.main.forEach((char, i) => {
-
           if (char.ruby_connection === undefined) {
-            const node = view.appendChild(create_element(`
-              <span style="
-                display: inline-block;
-                position: absolute;
-                left: ${number_to_css_string(char.result.x)}px;
-                width: ${char.result.width}px;
-                text-align: ${align};
-              "><span style="
-                  display: inline;
-                ">${escape_html(char.char)}</span></span>
-            `));
-            const iy = node.firstElementChild.getBoundingClientRect().top;
-            const by = node.getBoundingClientRect().top;
-            // iyをresult.yにする
-            // byをresult.y+by-iyにする
-            node.style.top = number_to_css_string(char.result.y + by - iy) + "px";
+            create_char_element(view, char, text_align);
           } else {
             const node = view.appendChild(create_element(`
-              <ruby style="block"><span style="
-                display: inline-block;
-                position: absolute;
-                left: ${number_to_css_string(char.result.x)}px;
-                width: ${char.result.width}px;
-                text-align: ${align};
-              "><span style="
-                  display: inline;
-                ">${escape_html(char.char)}</span></span><rt style="
-                  display: block;
-                "></rt></ruby>
+              <ruby style="display: block"></ruby>
             `));
-            const iy = node.firstElementChild.firstElementChild.getBoundingClientRect().top;
-            const by = node.firstElementChild.getBoundingClientRect().top;
-            node.firstElementChild.style.top = number_to_css_string(char.result.y + by - iy) + "px";
-            const rt = node.children[1];
+            create_char_element(node, char, text_align);
+            const rt = node.appendChild(create_element(`
+              <rt style="display: block"></rt>
+            `));
             for (let j = char.ruby_connection; item.ruby[j] && item.ruby[j].ruby_connection === i; ++j) {
-              const char = item.ruby[j];
-              const node = rt.appendChild(create_element(`
-                <span style="
-                  display: inline-block;
-                  position: absolute;
-                  left: ${number_to_css_string(char.result.x)}px;
-                  width: ${char.result.width}px;
-                  text-align: ${align};
-                "><span style="
-                  display: inline;
-                  ">${escape_html(char.char)}</span></span>
-              `));
-              const iy = node.firstElementChild.getBoundingClientRect().top;
-              const by = node.getBoundingClientRect().top;
-              node.style.top = number_to_css_string(char.result.y + by - iy) + "px";
+              create_char_element(rt, item.ruby[j], text_align);
             }
           }
         });
       });
-
     });
 
     return paragraph;
@@ -693,21 +773,23 @@ const root = globalThis.dromozoa = new class {
     //
     // Paragraph {
     //   texts:                 Text+,
-    //   result:                Element,
+    //   result:                Element, // レイアウト結果のHTML要素
     // }
     //
     // Text {
     //   items:                 Item+,
-    //   number_of_lines:       Number, // 行数
+    //   number_of_lines:       Number,  // 行数
     // }
     //
     // Item {
-    //   main:                  Chars,  // 本文／親文字列
-    //   main_width:            Number, // 本文／親文字列の幅
-    //   ruby:                  Chars,  // ルビ文字列
-    //   ruby_width:            Number, // ルビ文字列の幅
-    //   ruby_overhang_before:  Number, // 前のはみ出し可能量
-    //   ruby_overhang_after:   Number, // 後のはみ出し可能量
+    //   main:                  Chars,   // 本文／親文字列
+    //   main_width:            Number,  // 本文／親文字列の幅
+    //   ruby:                  Chars,   // ルビ文字列
+    //   ruby_width:            Number,  // ルビ文字列の幅
+    //   ruby_overhang_before:  Number,  // 前のはみ出し可能量
+    //   ruby_overhang_after:   Number,  // 後のはみ出し可能量
+    //   is_line_start:         Boolean, // 行頭であるかどうか
+    //   is_line_end:           Boolean, // 行末であるかどうか
     // }
     //
     // Chars {
@@ -715,12 +797,12 @@ const root = globalThis.dromozoa = new class {
     // }
     //
     // Char {
-    //   char:                  String, // 文字の値
-    //   width:                 Number, // 文字の幅
-    //   progress:              Number, // 文字送り
-    //   ruby_spacing:          Number, // ルビのための調整幅
-    //   ruby_connection:       Number, // 親文字とルビ文字の対応づけ
-    //   result:                Result, // レイアウト結果
+    //   char:                  String,  // 文字の値
+    //   width:                 Number,  // 文字の幅
+    //   progress:              Number,  // 文字送り
+    //   ruby_spacing:          Number,  // ルビのための調整幅
+    //   ruby_connection:       Number,  // 親文字とルビ文字の対応づけ
+    //   result:                Result,  // レイアウト結果
     // }
     //
     // (width - progress)がカーニングによる左方向への移動量となる。
@@ -730,11 +812,11 @@ const root = globalThis.dromozoa = new class {
     // 親文字のインデックスで、常にただひとつ定義される。
     //
     // Result {
-    //   line_number            Number, // 行番号
-    //   x:                     Number, // レイアウト結果のX座標
-    //   y:                     Number, // レイアウト結果のY座標
-    //   width:                 Number, // レイアウト結果の幅
-    //   height:                Number, // レイアウト結果の高さ
+    //   line_number            Number,  // 行番号
+    //   x:                     Number,  // レイアウト結果のX座標
+    //   y:                     Number,  // レイアウト結果のY座標
+    //   width:                 Number,  // レイアウト結果の幅
+    //   height:                Number,  // レイアウト結果の高さ
     // }
     //
     //
@@ -775,7 +857,8 @@ const root = globalThis.dromozoa = new class {
       this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
       text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
-    return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
+    return { texts: texts.map(text => this.layout_text(source, text)) };
+    // return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
   }
 };
 
