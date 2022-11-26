@@ -65,7 +65,12 @@ const root = globalThis.dromozoa = new class {
   #booted;
   #booted_futures = [];
   #offscreen;
+
+  // カーニングが有効化どうか。
   feature_kerning;
+
+  // <span>をまたいでカーニングするかどうか。Safari 16は<span>をまたいでカーニ
+  // ングしない。
   feature_kerning_span;
 
   async boot() {
@@ -111,14 +116,15 @@ const root = globalThis.dromozoa = new class {
     `));
   }
 
-  // Firefox 107でFontFace.load()が返すプロミスが決定されない場合があった。どこ
-  // かの時点でFontFaceが別の新しいオブジェクトにさしかえられ、プロミスが迷子に
-  // なったように見えた。そこでdocument.facesをポーリングして監視する。
+  // Firefox 107でFontFace.load()の返り値およびFontFace.loadedが決定されない場
+  // 合があった。どこかの時点でFontFaceが新しい別のオブジェクトにさしかえられ、
+  // プロミスが迷子になるらしい。そこで、ポーリングしてdocument.facesを監視する
+  // することにした。
   async load_font_face(index, timeout) {
     const font_face = [...document.fonts][index];
 
     // unicode-rangeからテスト文字列を作成する。
-    const n = 4;
+    const test_size_max = 4;
     const test = [];
 
     L:
@@ -127,7 +133,7 @@ const root = globalThis.dromozoa = new class {
       const a = Number.parseInt(match[1], 16);
       const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
       for (let code = a; code <= b; ++code) {
-        if (code > 0x20 && test.push("&#" + code + ";") === n) {
+        if (code > 0x20 && test.push("&#" + code + ";") === test_size_max) {
           break L;
         }
       }
@@ -157,21 +163,14 @@ const root = globalThis.dromozoa = new class {
     return elapsed;
   }
 
-  // Showa Yokohama Storyフォントは下記の寸法を持つ。
+  // Showa Yokohama Storyフォントは下記の寸法を持つ
   //   U+E001:  800/1000
   //   U+E002:  900/1000
   //   字間:   -300/1000
-  //
-  // (U+E001, U+E002)をレイアウトすると
+  // ので、(U+E001, U+E002)をレイアウトすると
   //   カーニング無効時: 1700/1000
   //   カーニング有効時: 1400/1000
-  // になる。
-  //
-  // feature_kerning
-  //   カーニングが有効化どうか。
-  // feature_kerning_span
-  //   <span>をまたいでカーニングするかどうか。Safari 16は<span>をまたいでカー
-  //   ニングしない。
+  // の幅を得る。
   async check_kerning() {
     const index = [...document.fonts].findIndex(font_face => /Showa Yokohama Story/.test(font_face.family));
     if (index === -1) {
@@ -261,12 +260,12 @@ const root = globalThis.dromozoa = new class {
     container.remove();
   }
 
-  // ブラウザの組版機能を用いて禁則処理や均等割り付けを実現するため、文字の位置
-  // が定まるまでインライン要素として扱い、letter-spacingで幅を調整する。
+  // ブラウザの組版機能を用いて禁則処理や均等割り付けを実現する。それぞれの文字
+  // を行内要素として扱い、letter-spacingで幅を調整する。
   //
-  // letter-spacingによる指定とgetBoundingClientRect()で取得した幅の関係を調べ
-  // た。こまかく指定しても、1/60〜1/64で丸められるように見える。また、Firefox
-  // とSafariでは、実際の幅が指定よりも狭くなった。
+  // 調整した幅をgetBoundingClientRect()で取得した幅と比較した。こまかく指定し
+  // ても1/60〜1/64で丸められるように見えた。また、FirefoxとSafariで調整した幅
+  // よりも狭くなった。
   //
   //                符号  最大の差   周期     推定
   //      Edge 107   +    0.016      0.0157   1/64
@@ -285,7 +284,7 @@ const root = globalThis.dromozoa = new class {
 
         const before = text.items[i - 1];
         if (before && !before.ruby) {
-          const char = before.main[before.main.length - 1];
+          const char = before.main.slice(-1)[0];
           if (this.jlreq.ruby_overhang(char.char.codePointAt(0))) {
             item.ruby_overhang_before = char.progress * 0.5;
           }
@@ -301,6 +300,8 @@ const root = globalThis.dromozoa = new class {
       }
     });
 
+    const map = new Map();
+
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.position = "relative";
@@ -311,7 +312,6 @@ const root = globalThis.dromozoa = new class {
         font-variant-ligatures: none;
       "><span></span></div>
     `));
-    const map = new Map();
 
     text.items.forEach(item => {
       let main_spacing = 0;
@@ -342,20 +342,34 @@ const root = globalThis.dromozoa = new class {
     this.offscreen.append(container);
 
     const get_line_number = node => {
-      const origin_y = node.parentElement.parentElement.getBoundingClientRect().top;
+      const origin_top = node.parentElement.parentElement.getBoundingClientRect().top;
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
-      return Math.floor((bbox.top - origin_y + bbox.height * 0.5) / line_height);
+      return Math.floor((bbox.top - origin_top + bbox.height * 0.5) / line_height);
     };
 
     const is_line_start = node => {
-      const prev = node.previousElementSibling;
-      return !prev || get_line_number(prev) !== get_line_number(node);
+      // 最初の文字である場合、行頭であるとする。
+      if (!node.previousElementSibling) {
+        return true;
+      }
+      const line_height = parseFloat(getComputedStyle(node).lineHeight);
+      const bbox = node.getBoundingClientRect();
+      const prev = node.previousElementSibling.getBoundingClientRect();
+      // 文字の天地中央の距離が行の高さの半分より大きい場合、行頭であるとする。
+      return ((bbox.top - prev.top) * 2 + bbox.height - prev.height) > line_height;
     };
 
     const is_line_end = node => {
-      const next = node.nextElementSibling;
-      return !next || get_line_number(next) !== get_line_number(node);
+      // 最後の文字である場合、行末でないとする。
+      if (!node.nextElementSibling) {
+        return false;
+      }
+      const line_height = parseFloat(getComputedStyle(node).lineHeight);
+      const bbox = node.getBoundingClientRect();
+      const next = node.nextElementSibling.getBoundingClientRect();
+      // 文字の天地中央の距離が行の高さの半分より大きい場合、行末であるとする。
+      return ((next.top - bbox.top) * 2 + next.height - bbox.height) > line_height;
     };
 
     const result = { items: [] };
@@ -380,7 +394,8 @@ const root = globalThis.dromozoa = new class {
         // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
         // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
         // 能量を割り当てるか決定する。
-        if (is_line_end(map.get(item.main[item.main.length - 1])) && item.ruby_overhang_before + item.ruby_overhang_after > 0) {
+        if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_before + item.ruby_overhang_after > 0) {
+          console.log(item.main.slice(-1)[0].char, "line end");
           const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
           if (item.main_width < item.ruby_width) {
             const hung_width = item.ruby_width - ruby_overhang;
@@ -396,13 +411,15 @@ const root = globalThis.dromozoa = new class {
             item.ruby_overhang_before = 0;
             item.ruby_overhang_after = ruby_overhang;
           } else {
+            // ルビの途中に改行がある場合、ルビの分割時に後のはみ出し可能量を再
+            // 計算する。
             item.ruby_overhang_before = ruby_overhang;
             item.ruby_overhang_after = 0;
           }
         }
 
-        // ルビの途中で親文字が改行する場合、ルビを分割する。
-        if (get_line_number(map.get(item.main[0])) !== get_line_number(map.get(item.main[item.main.length - 1]))) {
+        // ルビの途中に改行がある場合、ルビを分割する。
+        if (get_line_number(map.get(item.main[0])) !== get_line_number(map.get(item.main.slice(-1)[0]))) {
           let width = 0;
           if (item.main_width < item.ruby_width) {
             width += Math.min(item.ruby_width - item.main_width, item.ruby_overhang_before);
@@ -417,6 +434,9 @@ const root = globalThis.dromozoa = new class {
             width += char.progress + char.ruby_spacing;
           }
 
+          // 禁則処理のためにゼロ幅空白を先行する。
+          //   U+FEFF  ZERO-WIDTH NO-BREAK SPACE
+          //   U+200B  ZERO-WIDTH SPACE
           const ruby_view = create_element(`
             <div style="
               font-kerning: none;
@@ -609,8 +629,6 @@ const root = globalThis.dromozoa = new class {
     const font_size = parseFloat(style.fontSize);
     const line_height = parseFloat(style.lineHeight);
 
-    console.log(font_size, line_height);
-
     paragraph.texts.forEach(text => {
       const view = container.appendChild(create_element(`
         <div style="
@@ -633,8 +651,6 @@ const root = globalThis.dromozoa = new class {
         if (!next || next.main[0].result_line_number !== item.main[item.main.length - 1].result_line_number) {
           align = "right";
         }
-        console.log(item.main[0].result_line_number);
-        console.log(item.main[item.main.length - 1].result_line_number);
 
         item.main.forEach((char, i) => {
 
