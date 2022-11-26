@@ -375,6 +375,8 @@ const root = globalThis.dromozoa = new class {
     const result = { items: [] };
 
     text.items.forEach(item => {
+      result.items.push(item);
+
       if (item.ruby) {
         // ルビが行頭にある場合、前のはみ出し可能量をキャンセルする。
         if (is_line_start(map.get(item.main[0])) && item.ruby_overhang_before > 0) {
@@ -390,6 +392,9 @@ const root = globalThis.dromozoa = new class {
           }
           item.ruby_overhang_before = 0;
         }
+
+        // ルビの途中に改行がある場合、後のはみ出し可能量を復元する。
+        const ruby_overhang_after = item.ruby_overhang_after;
 
         // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
         // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
@@ -411,8 +416,6 @@ const root = globalThis.dromozoa = new class {
             item.ruby_overhang_before = 0;
             item.ruby_overhang_after = ruby_overhang;
           } else {
-            // ルビの途中に改行がある場合、ルビの分割時に後のはみ出し可能量を再
-            // 計算する。
             item.ruby_overhang_before = ruby_overhang;
             item.ruby_overhang_after = 0;
           }
@@ -425,10 +428,10 @@ const root = globalThis.dromozoa = new class {
             width += Math.min(item.ruby_width - item.main_width, item.ruby_overhang_before);
           }
 
-          let i = 0;
-          for (; i < item.main.length; ++i) {
-            const char = item.main[i];
-            if (i > 0 && is_line_start(map.get(char))) {
+          let main_index = 0;
+          for (; main_index < item.main.length; ++main_index) {
+            const char = item.main[main_index];
+            if (main_index > 0 && is_line_start(map.get(char))) {
               break;
             }
             width += char.progress + char.ruby_spacing;
@@ -452,37 +455,35 @@ const root = globalThis.dromozoa = new class {
           `))));
           container.append(ruby_view);
 
-          let j = 0;
-          for (; j < item.ruby.length; ++j) {
-            if (is_line_start(map.get(item.ruby[j]))) {
-              break;
-            }
+          let ruby_index = item.ruby.findIndex(char => is_line_start(map.get(char)));
+          if (ruby_index === -1) {
+            ruby_index = item.ruby.length;
           }
 
           const item1 = {
-            main: item.main.slice(0, i),
+            main: item.main.slice(0, main_index),
             ruby_width: 0,
             ruby_overhang_before: 0,
             ruby_overhang_after: 0,
           };
           item1.main_width = item1.main.reduce((width, char) => width + char.progress, 0);
-          if (j > 0) {
-            item1.ruby = item.ruby.slice(0, j);
+          if (ruby_index > 0) {
+            item1.ruby = item.ruby.slice(0, ruby_index);
             item1.ruby_width = item1.ruby.reduce((width, char) => width + char.progress, 0);
             item1.ruby_overhang_before = item.ruby_overhang_before;
           }
 
           const item2 = {
-            main: item.main.slice(i),
+            main: item.main.slice(main_index),
             ruby_width: 0,
             ruby_overhang_before: 0,
             ruby_overhang_after: 0,
           };
           item2.main_width = item2.main.reduce((width, char) => width + char.progress, 0);
-          if (j < item.ruby.length) {
-            item2.ruby = item.ruby.slice(j);
+          if (ruby_index < item.ruby.length) {
+            item2.ruby = item.ruby.slice(ruby_index);
             item2.ruby_width = item2.ruby.reduce((width, char) => width + char.progress, 0);
-            item2.ruby_overhang_after = item.ruby_overhang_after;
+            item2.ruby_overhang_after = ruby_overhang_after;
           }
 
           let main_spacing = 0;
@@ -497,13 +498,11 @@ const root = globalThis.dromozoa = new class {
             map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
           });
 
+          result.items.pop();
           result.items.push(item1, item2);
           ruby_view.remove();
-          return;
         }
       }
-
-      result.items.push(item);
     });
 
     const item = result.items[result.items.length - 1];
