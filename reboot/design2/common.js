@@ -127,17 +127,14 @@ const root = globalThis.dromozoa = new class {
     const test_size_max = 4;
     const test = [];
 
-    L:
-    for (let range of font_face.unicodeRange.split(/,\s*/)) {
+    font_face.unicodeRange.split(/,\s*/).some(range => {
       const match = range.match(/^U\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$/);
-      const a = Number.parseInt(match[1], 16);
-      const b = match[2] === undefined ? a : Number.parseInt(match[2], 16);
+      const a = parseInt(match[1], 16);
+      const b = match[2] === undefined ? a : parseInt(match[2], 16);
       for (let code = a; code <= b; ++code) {
-        if (code > 0x20 && test.push("&#" + code + ";") === test_size_max) {
-          break L;
-        }
+        return code > 0x20 && test.push("&#" + code + ";") === test_size_max;
       }
-    }
+    });
 
     const view = this.offscreen.appendChild(create_element(`
       <div style="
@@ -319,7 +316,7 @@ const root = globalThis.dromozoa = new class {
       item.main.forEach(char => {
         char.ruby_spacing = main_spacing;
         map.set(char, main_view.firstElementChild.appendChild(create_element(`
-          <span data-type="char" style="
+          <span style="
             letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
           ">${escape_html(char.char)}</span>
         `)));
@@ -332,77 +329,49 @@ const root = globalThis.dromozoa = new class {
 
     this.offscreen.append(container);
 
-    const get_next_char = node => {
-      const next = node.nextElementSibling;
-      if (next) {
-        if (next.dataset.type === "group") {
-          return next.firstElementChild;
-        } else {
-          return next;
-        }
-      } else {
-        if (node.parentElement.dataset.type === "group") {
-          return get_next_char(node.parentElement);
-        } else {
-          return null;
-        }
-      }
-    };
-
-    const get_prev_char = node => {
-      const prev = node.previousElementSibling;
-      if (prev) {
-        if (prev.dataset.type === "group") {
-          return prev.lastElementChild;
-        } else {
-          return prev;
-        }
-      } else {
-        if (node.parentElement.dataset.type === "group") {
-          return get_prev_char(node.parentElement);
-        } else {
-          return null;
-        }
-      }
-    };
-
     const get_line_number = node => {
-      const origin_top = node.closest("div").getBoundingClientRect().top;
-      const line_height = parseFloat(getComputedStyle(node).lineHeight);
       const bbox = node.getBoundingClientRect();
-      return Math.floor((bbox.top - origin_top + bbox.height * 0.5) / line_height);
+      return Math.floor((bbox.top - node.closest("div").getBoundingClientRect().top + bbox.height * 0.5) / parseFloat(getComputedStyle(node).lineHeight));
     };
 
     const is_line_start = node => {
-      // 最初の文字である場合、行頭であるとする。
-      let prev_node = get_prev_char(node);
-      if (!prev_node) {
+      // 最初の文字は行頭である。
+      let prev = node.previousElementSibling || node.parentElement.dataset.type === "group" && node.parentElement.previousElementSibling;
+      if (!prev) {
         return true;
       }
+      if (prev.dataset.type === "group") {
+        prev = prev.lastElementChild;
+      }
+
+      // 文字の天地中央の距離が行の高さの半分より大きければ改行している。
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
-      const bbox = node.getBoundingClientRect();
-      const prev = prev_node.getBoundingClientRect();
-      // 文字の天地中央の距離が行の高さの半分より大きい場合、行頭であるとする。
-      return ((bbox.top - prev.top) * 2 + bbox.height - prev.height) > line_height;
+      const bbox1 = node.getBoundingClientRect();
+      const bbox2 = prev.getBoundingClientRect();
+      return ((bbox1.top - bbox2.top) * 2 + bbox1.height - bbox2.height) > line_height;
     };
 
     const is_line_end = node => {
-      // 最後の文字である場合、行末でないとする。
-      let next_node = get_next_char(node);
-      if (!next_node) {
+      // 最後の文字は行末でない。
+      let next = node.nextElementSibling || node.parentElement.dataset.type === "group" && node.parentElement.nextElementSibling;
+      if (!next) {
         return false;
       }
+      if (next.dataset.type === "group") {
+        next = next.firstElementChild;
+      }
+
+      // 文字の天地中央の距離が行の高さの半分より大きければ改行している。
       const line_height = parseFloat(getComputedStyle(node).lineHeight);
-      const bbox = node.getBoundingClientRect();
-      const next = next_node.getBoundingClientRect();
-      // 文字の天地中央の距離が行の高さの半分より大きい場合、行末であるとする。
-      return ((next.top - bbox.top) * 2 + next.height - bbox.height) > line_height;
+      const bbox1 = next.getBoundingClientRect();
+      const bbox2 = node.getBoundingClientRect();
+      return ((bbox1.top - bbox2.top) * 2 + bbox1.height - bbox2.height) > line_height;
     };
 
     const result = { items: [] };
 
     // TODO 改行処理を再帰する
-    text.items.forEach(item => {
+    text.items.forEach((item, i) => {
       result.items.push(item);
       if (!item.ruby) {
         return;
@@ -418,11 +387,7 @@ const root = globalThis.dromozoa = new class {
         item.ruby_overhang_before = 0;
       }
 
-      const ruby_overhang_after = item.ruby_overhang_after;
-
       // ルビが行末にある場合、後のはみ出し可能量をキャンセルしてレイアウトする。
-      // 改行位置以降をの文字をまとめて折り返しを禁止してレイアウトを固定する。
-      // その後、改行位置にしたがってはみ出し可能量の調整を行う。
       if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_after > 0) {
         const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_before - item.main_width) / item.main.length;
         item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
@@ -430,88 +395,36 @@ const root = globalThis.dromozoa = new class {
           map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
         });
         if (is_line_end(map.get(item.main.slice(-1)[0]))) {
-          // 改行位置が行末のままであれば確定
-          console.log("mode A");
+          // 後のはみ出し可能量をキャンセルする。
           item.ruby_overhang_after = 0;
-        } else if (is_line_start(map.get(item.main[0]))) {
-          // 改行位置が行頭に来た場合、文字をグループ化する。
-          console.log("mode B");
-
-          // とりあえず、2文字グループ化する。
-          const node1 = map.get(item.main[0]);
-          const node2 = node1.nextElementSibling;
-          const node = node1.parentElement.insertBefore(create_element(`
+        } else {
+          // 改行位置が変更された場合、改行以降の文字をグループ化してレイアウト
+          // を固定する。
+          const index = item.main.findIndex(char => is_line_start(map.get(char)));
+          const node = map.get(item.main[index]);
+          const group = node.parentElement.insertBefore(create_element(`
             <span data-type="group" style="
               white-space: nowrap;
             "></span>
-          `), node1);
-          node.append(node1, node2);
+          `), node);
+          group.append(node);
 
-          item.ruby_overhang_before = 0;
-          item.ruby_overhang_after = ruby_overhang_after;
+          let width = item.ruby_overhang_after;
+          [ ...item.main.slice(index + 1), text.items[i + 1].main[0] ].some(char => {
+            group.append(map.get(char));
+            return (width -= char.progress) < 0;
+          });
 
-          const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
+          // ルビが行頭にある場合、前のはみ出し量をキャンセルする。
+          if (index === 0) {
+            item.ruby_overhang_before = 0;
+          }
+
+          const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after - item.main_width) / item.main.length;
           item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
             char.ruby_spacing = main_spacing;
             map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
           });
-        } else {
-          // 改行位置がルビの途中にある。
-          console.log("mode C");
-
-          const main_index = item.main.findIndex(char => is_line_start(map.get(char)));
-          console.log(main_index !== -1);
-
-          // とりあえず、2文字グループ化する。
-          const node1 = map.get(item.main[main_index]);
-          const node2 = node1.nextElementSibling;
-          const node = node1.parentElement.insertBefore(create_element(`
-            <span data-type="group" style="
-              white-space: nowrap;
-            "></span>
-          `), node1);
-          node.append(node1, node2);
-
-          const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
-          item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
-            char.ruby_spacing = main_spacing;
-            map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
-          });
-        }
-
-      }
-
-      /*
-          <span>あ</span>
-          <span>い</span>
-          <span>う</span>
-          <span>本</span>
-          <!-- 改行 -->
-          <span class="dromozoa_nowrap" data-nowrap style="white-space: nowrap>
-            <span>文</span>
-            <span>え</span>
-          </span>
-          <span>お</span>
-       */
-
-      // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
-      // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
-      // 能量を割り当てるか決定する。
-      if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_after > 0) {
-        const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
-        const main_spacing = Math.max(0, item.ruby_width - ruby_overhang - item.main_width) / item.main.length;
-        item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
-          char.ruby_spacing = main_spacing;
-          map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
-        });
-        if (is_line_start(map.get(item.main[0]))) {
-          item.ruby_overhang_before = 0;
-          item.ruby_overhang_after = ruby_overhang;
-        } else {
-          // ルビの途中に改行がある場合、ルビの分割時に後のはみ出し可能量を復元する。
-          // TODO 戻したら、改行位置が変わってしまうかもしれない。
-          item.ruby_overhang_before = ruby_overhang;
-          item.ruby_overhang_after = 0;
         }
       }
 
@@ -520,15 +433,10 @@ const root = globalThis.dromozoa = new class {
         return;
       }
 
-      let width = Math.min(Math.max(0, item.ruby_width - item.main_width), item.ruby_overhang_before);
-      let main_index = 0;
-      for (; main_index < item.main.length; ++main_index) {
-        const char = item.main[main_index];
-        if (main_index > 0 && is_line_start(map.get(char))) {
-          break;
-        }
-        width += char.progress + char.ruby_spacing;
-      }
+      const main_index = item.main.findIndex(char => is_line_end(map.get(char))) + 1;
+      const width = item.main.slice(0, main_index).reduce((width, char) => {
+        return width + char.progress + char.ruby_spacing;
+      }, Math.min(Math.max(0, item.ruby_width - item.main_width), item.ruby_overhang_before));
 
       // 禁則処理のためにゼロ幅空白を先行する。
       //   U+FEFF  ZERO-WIDTH NO-BREAK SPACE
@@ -542,7 +450,7 @@ const root = globalThis.dromozoa = new class {
         "><span><span>&#xFEFF;&#x200B;</span></span></div>
       `);
       item.ruby.forEach(char => map.set(char, ruby_view.firstElementChild.appendChild(create_element(`
-        <span data-type="char" style="
+        <span style="
           letter-spacing: ${number_to_css_string(char.progress - char.width + char.ruby_spacing)}px;
         ">${escape_html(char.char)}</span>
       `))));
