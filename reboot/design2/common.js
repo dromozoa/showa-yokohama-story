@@ -314,21 +314,7 @@ const root = globalThis.dromozoa = new class {
     `));
 
     text.items.forEach(item => {
-      let main_spacing = 0;
-
-      if (item.ruby) {
-        if (item.main_width < item.ruby_width) {
-          const hung_width = item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after;
-          if (item.main_width < hung_width) {
-            main_spacing = (hung_width - item.main_width) / item.main.length;
-          }
-          item.ruby.forEach(char => char.ruby_spacing = 0);
-        } else {
-          const ruby_spacing = (item.main_width - item.ruby_width) / item.ruby.length;
-          item.ruby.forEach(char => char.ruby_spacing = ruby_spacing);
-        }
-      }
-
+      const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_before - item.ruby_overhang_after - item.main_width) / item.main.length;
       item.main.forEach(char => {
         char.ruby_spacing = main_spacing;
         map.set(char, main_view.firstElementChild.appendChild(create_element(`
@@ -337,6 +323,10 @@ const root = globalThis.dromozoa = new class {
           ">${escape_html(char.char)}</span>
         `)));
       });
+      if (item.ruby) {
+        const ruby_spacing = Math.max(0, item.main_width - item.ruby_width) / item.ruby.length;
+        item.ruby.forEach(char => char.ruby_spacing = ruby_spacing);
+      }
     });
 
     this.offscreen.append(container);
@@ -377,23 +367,17 @@ const root = globalThis.dromozoa = new class {
     // TODO 改行処理を再帰する
     text.items.forEach(item => {
       result.items.push(item);
-
       if (!item.ruby) {
         return;
       }
 
       // ルビが行頭にある場合、前のはみ出し可能量をキャンセルする。
       if (is_line_start(map.get(item.main[0])) && item.ruby_overhang_before > 0) {
-        if (item.main_width < item.ruby_width) {
-          const hung_width = item.ruby_width - item.ruby_overhang_after;
-          if (item.main_width < hung_width) {
-            const main_spacing = (hung_width - item.main_width) / item.main.length;
-            item.main.forEach(char => {
-              char.ruby_spacing = main_spacing;
-              map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
-            });
-          }
-        }
+        const main_spacing = Math.max(0, item.ruby_width - item.ruby_overhang_after - item.main_width) / item.main.length;
+        item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
+          char.ruby_spacing = main_spacing;
+          map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
+        });
         item.ruby_overhang_before = 0;
       }
 
@@ -402,18 +386,13 @@ const root = globalThis.dromozoa = new class {
       // ルビが行末にある場合、前後のはみ出し可能量のうち、大きいほうをキャン
       // セルしてレイアウトする。結果の改行位置から、前後のどちらにはみ出し可
       // 能量を割り当てるか決定する。
-      if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_before + item.ruby_overhang_after > 0) {
+      if (is_line_end(map.get(item.main.slice(-1)[0])) && item.ruby_overhang_after > 0) {
         const ruby_overhang = Math.min(item.ruby_overhang_before, item.ruby_overhang_after);
-        if (item.main_width < item.ruby_width) {
-          const hung_width = item.ruby_width - ruby_overhang;
-          if (item.main_width < hung_width) {
-            const main_spacing = (hung_width - item.main_width) / item.main.length;
-            item.main.forEach(char => {
-              char.ruby_spacing = main_spacing;
-              map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
-            });
-          }
-        }
+        const main_spacing = Math.max(0, item.ruby_width - ruby_overhang - item.main_width) / item.main.length;
+        item.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
+          char.ruby_spacing = main_spacing;
+          map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + char.ruby_spacing) + "px";
+        });
         if (is_line_start(map.get(item.main[0]))) {
           item.ruby_overhang_before = 0;
           item.ruby_overhang_after = ruby_overhang;
@@ -488,14 +467,8 @@ const root = globalThis.dromozoa = new class {
         item2.ruby_overhang_after = ruby_overhang_after;
       }
 
-      let main_spacing = 0;
-      if (item2.main_width < item2.ruby_width) {
-        const hung_width = item2.ruby_width - item2.ruby_overhang_before - item2.ruby_overhang_after;
-        if (item2.main_width < hung_width) {
-          main_spacing = (hung_width - item2.main_width) / item2.main.length;
-        }
-      }
-      item2.main.forEach(char => {
+      const main_spacing = Math.max(0, item2.ruby_width - item2.ruby_overhang_before - item2.ruby_overhang_after - item2.main_width) / item2.main.length;
+      item2.main.filter(char => char.ruby_spacing !== main_spacing).forEach(char => {
         char.ruby_spacing = main_spacing;
         map.get(char).style.letterSpacing = number_to_css_string(char.progress - char.width + main_spacing) + "px";
       });
@@ -552,7 +525,6 @@ const root = globalThis.dromozoa = new class {
 
     result.items.forEach(item => {
       item.main.forEach(update_result);
-
       if (!item.ruby) {
         return;
       }
@@ -560,7 +532,6 @@ const root = globalThis.dromozoa = new class {
       let start = item.main[0].result.x;
       const char = item.main.slice(-1)[0];
       let width = char.result.x + char.result.width - start;
-
       if (item.main_width < item.ruby_width) {
         const ruby_overhang_sum = item.ruby_overhang_before + item.ruby_overhang_after;
         if (ruby_overhang_sum > 0) {
@@ -569,10 +540,8 @@ const root = globalThis.dromozoa = new class {
           width += ruby_overhang;
         }
       }
-
-      const ruby_spacing = Math.max(0, (width - item.ruby_width) / item.ruby.length);
-
       const line_number = get_line_number(map.get(item.main[0]));
+      const ruby_spacing = Math.max(0, (width - item.ruby_width) / item.ruby.length);
       const ruby_view = create_element(`
         <div style="
           position: absolute;
