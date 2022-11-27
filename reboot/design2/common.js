@@ -22,7 +22,8 @@ if (globalThis.dromozoa) {
   return;
 }
 
-const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+const set_timeout = delay => new Promise(resolve => setTimeout(resolve, delay));
+const request_animation_frame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 const escape_html = s => {
   return s.replace(/[&<>"']/g, match => ({
@@ -55,7 +56,8 @@ const number_to_css_string = v => {
 
 const root = globalThis.dromozoa = new class {
   jlreq = dromozoa_jlreq;
-  sleep = sleep;
+  set_timeout = set_timeout;
+  request_animation_frame = request_animation_frame;
   escape_html = escape_html;
   create_element = create_element;
   create_elements = create_elements;
@@ -108,10 +110,8 @@ const root = globalThis.dromozoa = new class {
     return this.#offscreen ||= document.body.appendChild(create_element(`
       <div style="
         position: absolute;
-        /*
         top: -6400px;
         left: -1989px;
-        */
       "></div>
     `));
   }
@@ -153,18 +153,18 @@ const root = globalThis.dromozoa = new class {
       if ([...document.fonts][index].status === "loaded") {
         break;
       }
-      await sleep(50);
+      await set_timeout(50);
     }
 
     view.remove();
     return elapsed;
   }
 
-  // Showa Yokohama Storyフォントは下記の寸法を持つ
+  // Showa Yokohama Storyフォントの寸法は
   //   U+E001:  800/1000
   //   U+E002:  900/1000
   //   字間:   -300/1000
-  // ので、(U+E001, U+E002)をレイアウトすると
+  // (U+E001, U+E002)をレイアウトすると
   //   カーニング無効時: 1700/1000
   //   カーニング有効時: 1400/1000
   // の幅を得る。
@@ -616,7 +616,7 @@ const root = globalThis.dromozoa = new class {
       });
     });
 
-    // container.remove();
+    container.remove();
     return result;
   }
 
@@ -678,6 +678,8 @@ const root = globalThis.dromozoa = new class {
       });
     });
 
+    paragraph.result = container;
+    container.remove();
     return paragraph;
   }
 
@@ -765,21 +767,12 @@ const root = globalThis.dromozoa = new class {
     };
     parse(source);
 
-    const start = performance.now();
-    // const promises = [ ...texts.map(text => this.layout_kerning(source, text.items.map(item => item.main).flat(), 1)) ];
-    // texts.forEach(text => {
-    //   text.items.filter(item => item.ruby).forEach(item => promises.push(this.layout_kerning(source, item.ruby, 0.5)));
-    // });
-    // await Promise.all(promises);
-
     texts.forEach(text => {
       this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
       text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
     });
-    console.log("kerning", performance.now() - start);
 
-    return { texts: texts.map(text => this.layout_text(source, text)) };
-    // return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
+    return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
   }
 };
 

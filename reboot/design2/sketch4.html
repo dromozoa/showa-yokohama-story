@@ -82,6 +82,7 @@
     <button id="update">更新</button>
     <button id="remove">削除</button>
   </div>
+  <div id="result"></div>
 </div>
 
 <script>
@@ -95,24 +96,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("editor").value = document.getElementById("view").innerHTML;
 
-  document.getElementById("update").addEventListener("click", async () => {
+  const update = () => {
     const view = document.getElementById("view");
     view.innerHTML = document.getElementById("editor").value;
     const start = performance.now();
-    console.log(D.layout(view));
+    const result = D.layout(view);
     console.log(performance.now() - start);
-  });
+    document.getElementById("result").append(result.result);
+  };
+
+  document.getElementById("update").addEventListener("click", update);
 
   document.getElementById("remove").addEventListener("click", () => {
-    [...D.offscreen.querySelectorAll(".view")].forEach(node => node.remove());
+    [...document.getElementById("result").children].forEach(node => node.remove());
   });
 
-  const view = document.getElementById("view");
-  view.innerHTML = document.getElementById("editor").value;
-  const start = performance.now();
-  console.log(D.layout(view));
-  console.log(performance.now() - start);
-
+  update();
 });
 </script>
 

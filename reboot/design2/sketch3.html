@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (map.get("loaded") === i) {
         break;
       }
-      await D.sleep(100);
+      await D.set_timeout(100);
     }
   };
 

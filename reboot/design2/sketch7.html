@@ -89,8 +89,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
   console.log("load font faces: end", result);
 
-  const source = [..."TaTi TuTe  To   U".repeat(1)];
-  // const source = [..."本文あいうえおかきくけこさしすせそ本文たちつてと。本文なにぬねの。ながいながいながいながいながい本文たちつてと。".repeat(4)];
+  // const source = [..."TaTi TuTe  To   U".repeat(1)];
+  const source = [..."本文あいうえおかきくけこさしすせそ本文たちつてと。本文なにぬねの。ながいながいながいながいながい本文たちつてと。".repeat(8)];
 
   const data_html = document.getElementById("data_html");
   data_html.remove();
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // const tail = source.slice(i + 1).map(D.escape_html).join("");
       const head = source.slice(i - 1, i).map(D.escape_html).join("");
       const body = D.escape_html(char);
-      const tail = source.slice(i + 1, i + 2).map(D.escape_html).join("");
+      const tail = ""; // source.slice(i + 1, i + 2).map(D.escape_html).join("");
 
       data_html.append(...D.create_elements(`
         <div style="font-kerning: normal"><span>&#xFEFF;<span>${head}${body}</span></span><span>${tail}&#xFEFF;</span></div>
@@ -114,11 +114,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     D.offscreen.append(data_html);
     console.log("create", performance.now() - start);
 
-    // getBoundingClientRect()すると、毎回レイアウトが計算されるみたい。
-    await D.sleep(0);
-
-
-
+    start = performance.now();
+    // await D.set_timeout(0);
+    await D.request_animation_frame();
+    console.log("wait", performance.now() - start);
 
     start = performance.now();
     let width = 0;
@@ -129,8 +128,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     console.log("test", performance.now() - start, width);
   });
-
-
 });
 </script>
 
