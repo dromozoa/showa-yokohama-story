@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="font_face.css" rel="stylesheet">
+  <link href="common.css" rel="stylesheet">
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="jlreq.js"></script>
+  <script defer src="common.js"></script>
+
+  <style>
+    #fontfaces {
+      border-collapse: collapse;
+    }
+    #fontfaces th,
+    #fontfaces td {
+      border: 1px solid #000;
+      padding: 0.25em;
+    }
+  </style>
+</head>
+<body>
+
+<button id="load_font_family">フォントファミリーをロードする</button>
+
+<table id="fontfaces">
+  <tr>
+    <th>#</th>
+    <th>family</th>
+    <th>status</th>
+    <th>range[0]</th>
+    <th>char</th>
+  </tr>
+</table>
+
+<div id="log"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = globalThis.dromozoa;
+  await D.booted;
+
+  const create_fontfaces = () => {
+    const table = document.getElementById("fontfaces");
+
+    let i = 0;
+    document.fonts.forEach(f => {
+      const range = f.unicodeRange.split(/,\s*/);
+      let r = range[0];
+      if (r === "U+20") {
+        r = range[1];
+      }
+
+      let match = r.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
+      if (!match) {
+        match = r.match(/^U\+([0-9A-F]+)$/i);
+      }
+      const a = Number.parseInt(match[1], 16);
+      const b = match[2] !== undefined ? Number.parseInt(match[2], 16) : a;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i}</td>
+        <td>${f.family}</td>
+        <td>${f.status}</td>
+        <td>${r}</td>
+        <td><span class="char" style="background-color: #ccc" data-font_family="${D.escape_html(f.family)}">&#${a};</span></td>
+      `;
+      table.appendChild(tr);
+
+      ++i;
+    });
+  };
+
+  const update_fontfaces = async () => {
+    let start = Date.now();
+
+    for (let i = 0; i < 50; ++i) {
+      const map = new Map;
+
+      const trows = document.getElementById("fontfaces").querySelectorAll("tr");
+      let i = 0;
+      document.fonts.forEach(f => {
+        const tr = trows[i + 1];
+        tr.children[2].textContent = f.status;
+        map.set(f.status, (map.get(f.status) || 0) + 1);
+
+        ++i;
+      });
+
+      const buffer = [ Date.now() - start ];
+      map.forEach((v, k) => {
+        buffer.push(" ", k, ":", v);
+      });
+      const div = document.createElement("div");
+      div.textContent = buffer.join("");
+      document.getElementById("log").appendChild(div);
+
+      if (map.get("loaded") === i) {
+        break;
+      }
+      await D.set_timeout(100);
+    }
+  };
+
+  document.getElementById("load_font_family").addEventListener("click", async () => {
+    update_fontfaces();
+    console.log("load font faces: start");
+    const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+    console.log("load font faces: end", result);
+  });
+
+  create_fontfaces();
+
+});
+</script>
+
+</body>
+</html>

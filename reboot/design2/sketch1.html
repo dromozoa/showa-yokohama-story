@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+
+  <link href="common.css" rel="stylesheet">
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="common.js"></script>
+</head>
+
+<body>
+<div class="dromozoa" style="font-family: var(--main_font_family); font-size: var(--main_font_size); line-height: var(--main_line_height);">
+
+<p>
+Share TechはTとe,o,qのあいだに70/1000のカーニングを定義している。
+</p>
+
+<div><span><span>TeToTqT</span></span></div>
+<div><span><span id="x">T</span><span id="y">e</span><span id="z">T</span><span>o</span><span>T</span><span>q</span><span>T</span></span></div>
+
+<div><svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg" fill="black">
+  <text x="0" y="48">TeToTqT</text>
+  <text x="0" y="112"><tspan>T</tspan><tspan>e</tspan><tspan>T</tspan><tspan>o</tspan><tspan>T</tspan><tspan>q</tspan><tspan>T</tspan></text>
+</svg></div>
+
+<p>
+行頭禁則と行末禁則は1文字ごとに&lt;span&gt;で囲んでもただしく判定してくれる。両端揃えも行われる。
+</p>
+
+<div id="prohibisiton_rule_test" style="width: calc(var(--main_font_size)*6); text-align: justify"></div>
+
+<div style="width: calc(var(--main_font_size)*7); text-align: justify">
+  <div><span>
+    <span>TeToTqT TeToTqT TeToTqT TeToTqT</span>
+  </span></div>
+  <div><span>
+    <span>T</span><span>e</span><span>T</span><span>o</span><span>T</span><span>q</span><span>T</span>
+    <span>T</span><span>e</span><span>T</span><span>o</span><span>T</span><span>q</span><span>T</span>
+    <span>T</span><span>e</span><span>T</span><span>o</span><span>T</span><span>q</span><span>T</span>
+    <span>T</span><span>e</span><span>T</span><span>o</span><span>T</span><span>q</span><span>T</span>
+  </span></div>
+</div>
+
+<div>
+  <!--
+    ((((T,
+        e),
+       T),
+      o),
+     T)
+
+  -->
+  <div style="width: 400px; text-align: justify; background-color: #ccc"
+    ><span style="letter-spacing: 256px"
+    ><span style="letter-spacing: 128px"
+    ><span style="letter-spacing: 64px"
+    ><span style="letter-spacing: 32px"
+    ><span>あ</span
+    ><span>あ</span></span
+    ><span>あ</span></span
+    ><span>あ</span></span
+    ><span>あ</span></span></div>
+
+  <div style="width: 400px; text-align: justify; background-color: #ccc"
+    ><span style="letter-spacing: 16px">あ</span
+    ><span style="letter-spacing: 32px">い</span
+    ><span style="letter-spacing: 64px">う</span
+    ><span style="letter-spacing: 128px">え</span
+    ><span style="letter-spacing: 256px">お</span
+    >
+  </div>
+
+</div>
+
+<div>
+  <div>テスト文字列「sTyToTwTa」を考える。</div>
+
+  <table border>
+    <tr><td></td><td>sT</td><td>65</td></tr>
+    <tr><td>Ty</td><td>yT</td><td>60</td></tr>
+    <tr><td>To</td><td>oT</td><td>70</td></tr>
+    <tr><td>Tw</td><td>wT</td><td>60</td></tr>
+    <tr><td>Ta</td><td></td><td>65</td></tr>
+  </table>
+
+  <div>合計で510/1000つめる</div>
+
+  <div style="font-size: 100px; line-height: 150px"><span id="kernn" style="font-kerning: none">sTyToTwTa</span></div>
+  <div><output id="kernn-out"></output></div>
+  <div style="font-size: 100px; line-height: 150px"><span id="kerny" >sTyToTwTa</span></div>
+  <div><output id="kerny-out"></output></div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 行頭禁則と行末禁則のテスト
+
+  const wrap = c => {
+    return "<span>" + c + "</span>";
+  };
+
+  const chars = [ ..."あいうえおかきくけこ" ];
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < chars.length; ++i) {
+    let s = "";
+    for (let j = 0; j < chars.length; ++j) {
+      s += wrap(chars[j]);
+      if (i === j) {
+        s += wrap("。");
+      }
+    }
+    const div = document.createElement("div");
+    div.innerHTML = s;
+    fragment.appendChild(div);
+  }
+
+  for (let i = 0; i < chars.length; ++i) {
+    let s = "";
+    for (let j = 0; j < chars.length; ++j) {
+      if (i === j) {
+        s += wrap("（");
+      }
+      s += wrap(chars[j]);
+    }
+    s += wrap("）");
+    const div = document.createElement("div");
+    div.innerHTML = s;
+    fragment.appendChild(div);
+  }
+
+  document.getElementById("prohibisiton_rule_test").appendChild(fragment);
+
+  document.getElementById("kernn-out").value = document.getElementById("kernn").getClientRects()[0].width;
+  document.getElementById("kerny-out").value = document.getElementById("kerny").getClientRects()[0].width;
+
+
+});
+</script>
+
+</body>
+</html>

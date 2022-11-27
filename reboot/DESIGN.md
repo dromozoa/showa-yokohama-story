@@ -26,6 +26,24 @@ Monoでない[Share Tech](https://fonts.google.com/specimen/Share+Tech)もよい
 - CSS Font Loading APIは、Safariで動的なダウンロードのイベントが取れなかった。
   - タイマーをかけてdocument.fontsを監視すれば検出はできた。
   - readyだとひろえたが、ロードが完了する前に戻っているようだ。
+  - FontFace.loadとFontFace.loadedを見るのが良いらしい。
+
+結論としては、
+
+- フォントフェイスをどのタイミングでロードするかはブラウザにまかせる。
+  - canvasに描く場合もloadはちゃんと発生する
+    - メモリキャッシュされていれば、そのフレームに間に合うっぽい
+    - ディスクキャッシュされているか、ネットワークが速ければ、数十ミリ秒でロードできるかも
+    - 毎フレーム描いてたら、そのうちうまくいく
+- あるテキストについて、対応するフォントフェイスがロードされているかどうかを動的に調べるのであれば、unicode-rangeを調べるのがよい
+- めんどうなので全部ロードしちゃってもよいかも
+  - 静的に計算しておくことはできるけど、それだったらDOMつくってもいっしょ
+  - 全部、つまり120種のフォントフェイスをダウンロードするのは、WiFi/4Gで数百秒
+  - ChromeのFast 3Gモードで15秒かかった。
+    - [プリセット値](https://github.com/ChromeDevTools/devtools-frontend/blob/a01c97fa2e97d21652b8fb2588ec9c794d707eb0/front_end/core/sdk/NetworkManager.ts#L383)はダウンロードが1.44Mbps (184.32KB/s) , レイテンシが0.5625ミリ秒らしい
+    - BIZ P明朝をひとつのwoff2にしたら2851276バイト
+    - 15.1秒なので計算はあう
+    - この帯域だと並列はきかない
 
 ## テキスト表示
 
@@ -92,11 +110,13 @@ shutterstock_1867640776.eps  二刀流
 shutterstock_1888775401.eps  弓
 shutterstock_1896854332.eps  魔女
 shutterstock_1902971338.eps  HUD (bitmap?)
+shutterstock_2065246343.eps  ハルバード
 shutterstock_2067609683.eps  クレイモア
 shutterstock_2120043209.eps  HUD (bitmap?)
 shutterstock_2138204831.eps  HUD
 shutterstock_2146094129.eps  HUD (bitmap?)
 shutterstock_2171694161.eps  狐娘
+shutterstock_340495841.eps   円匙
 ```
 
 ## アニメーション案
@@ -196,5 +216,46 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" \
   -define png:color-type=0 \
   -define png:bit-depth=1 \
   source.png result.png
+```
+
+## アイコン
+
+ベクトルデータをInkspaceで作成した。作業時のキャンバスサイズは1024x1024とした。すべてのノードが連結されるように手作業した。また、直線で置き換えられる曲線を直線にした（これはスクリプト化も行なった）。
+
+Plain SVGで出力して、FontForgeで読みこむ。FontForgeのデフォルト設定に合わせて、1000x1000 (ascend: 800, descend: 200)で出力した。
+
+- 手作業でクリーンアップしたので、「単純化」は行う必要がなくなった。
+- 「問題点を発見」でくりかえし確認した。「パス」タブの項目だけ確認した。
+- 「極大点を追加」した。
+- 「座標を丸める/整数に」した。
+- 自己交差が発生する場合、Inkspaceで編集して対処した。
+- TrueTypeで出力した後、[woff2](https://github.com/google/woff2)で変換した。
+- 実際にテキストと合わせてみて、サイズと位置を微調整した。
+
+ベクトルデータから画像ファイルの出力も調整が必要だった。
+- 参考: https://coliss.com/articles/build-websites/operation/work/how-to-favicon.html
+- まず、Apple Touch Iconの角丸に合わせてサイズと位置を調整した。
+  - 無地のアイコンが表示させてガイドを作成した。
+  - ボディの正方形のサイズを800x800にした。余白は112px程度であった。
+  - これを180x180で出力した。
+- これをSVGとして出力した。
+  - すべてのパスを結合し、単純化した。
+  - 背景色のためにrectをおいた。
+  - Plain SVGで出力した。
+- ビットマップ画像の出力は、Apple Touch Icon用に調整したもので行なった。
+  - アンチエイリアスはデフォルトの2を用いた。
+- Web Application Manifest用のビットマップ画像はセーフエリアを考慮して余白を増やした。
+  - [Web Application Manifest](https://triple-underscore.github.io/appmanifest-ja.html)によればセーフエリアは直径819.2pxの円である。
+  - 800x800の正方形の対角線の長さが1132なので、
+- 32x32以下のビットマップ画像の出力では、余白を減らした。
+  - 1024x1024のキャンバスを900x900にクロップしたうえで、出力した。
+    - エクスポート設定で領域を設定した。
+  - アンチエイリアスは1を設定した。
+
+出力した画像ファイルの後処理は、SVGは自前で最適化し、PNGとICOはImageMagickを用いた。
+
+```
+env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert -quality 90 -strip source.png PNG8:result.png
+env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert favicon-32.png favicon-32.ico
 ```
 

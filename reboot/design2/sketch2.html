@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="font_face.css" rel="stylesheet">
+  <link href="common.css" rel="stylesheet">
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="jlreq.js"></script>
+  <script defer src="common.js"></script>
+</head>
+<body>
+
+<template id="tmpl">
+<div style="
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 50px;
+  line-height: 2;
+  width: 9em;
+  text-align: left;
+  /*
+  font-kerning: normal;
+  */
+"><span><ruby>取り替え子<rt>チェンジリング</rt></ruby>。ToToToToT ToToToToT<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。油をそそがれなかった者たち。──遡及的に。</span><br><ruby>死んでくれる？<rt>Die For Me ?</rt></ruby></div>
+</template>
+
+<!--
+<div style="
+  background-color: #ccc;
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 20px;
+  text-align: left;
+  width: 5em;
+  /*
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  ルビの場合はこちらで計算するのもよいかもしれない。
+  word-break: break-all;
+
+  */
+  overflow-wrap: break-word;
+
+">
+  <div>abcdef ghijkl mnopqr stuvwxyz</div>
+  <div>あいうえ」おかきくけこ</div>
+  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえお」かきくけこ</div>
+  <div>abcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえおか」きくけこ</div>
+
+  <div>----------------</div>
+
+  <div>あいうえ」おかきくけこabcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえお」かきくけこabcdefghijklmnopqrstuvwxyz</div>
+  <div>あいうえおか」きくけこabcdefghijklmnopqrstuvwxyz</div>
+
+  <div>----------------</div>
+
+  <div      ><span style="display: inline"
+    >a</span><span style="display: inline"
+    >b</span><span style="display: inline"
+    >c</span><span style="display: inline"
+    >d</span><span style="display: inline"
+    >e</span><span style="display: inline"
+    >f</span><span style="display: inline"
+    >g</span><span style="display: inline"
+    >h</span><span style="display: inline"
+    >i</span><span style="display: inline"
+    >j</span><span style="display: inline"
+    >k</span><span style="display: inline"
+    >l</span><span style="display: inline"
+    >m</span><span style="display: inline"
+    >n</span><span style="display: inline"
+    >o</span><span style="display: inline"
+    >p</span><span style="display: inline"
+    >q</span><span style="display: inline"
+    >r</span><span style="display: inline; letter-spacing: 0.2em"
+    >s</span><span style="display: inline"
+    >t</span><span style="display: inline"
+    >u</span><span style="display: inline"
+    >v</span><span style="display: inline"
+    >w</span><span style="display: inline"
+    >x</span><span style="display: inline"
+    >y</span><span style="display: inline"
+    >z</span></div>
+
+  <div       ><span style="display: inline"
+    >あ</span><span style="display: inline"
+    >い</span><span style="display: inline"
+    >う</span><span style="display: inline"
+    >え</span><span style="display: inline"
+    >お</span><span style="display: inline"
+    >」</span><span style="display: inline"
+    >か</span><span style="display: inline"
+    >き</span><span style="display: inline"
+    >く</span><span style="display: inline"
+    >け</span><span style="display: inline"
+    >こ</span></div>
+
+  <div       ><ruby
+    >あ</ruby><ruby
+    >い</ruby><ruby
+    >う</ruby><ruby
+    >え</ruby><ruby
+    >お</ruby><ruby
+    >」</ruby><ruby
+    >か</ruby><ruby
+    >き</ruby><ruby
+    >く</ruby><ruby
+    >け</ruby><ruby
+    >こ</ruby></div>
+
+</div>
+
+
+  ルビのアルゴリズムを考える。
+  ルビの長さが親文字の長さより長い場合、前後のはみだしと親文字グループ内のアキを考慮する必要がある。
+
+  はみだし可能かどうか
+  ・前後の文字
+  ・行頭かどうか
+  ・行末かどうか
+
+  b1..bn
+  r1..rn
+
+  ・前にはみだせるかどうかは、行頭かどうかと前の文字から判定できる。
+  ・後にはみだせるかどうかは、後の文字がはみだせそうであれば、行末になるかどうかを判定してみる。
+
+  「春は<ruby>曙<rt>あけぼの</rt></ruby>と」
+
+  「曙」は前後にはみだせるので、行頭や行末に来なければ
+
+  行中では
+        は    1.0em
+    あ  |
+    け  曙    1.0em
+    ぼ  |
+    の  と    1.0em
+        |
+
+  行頭では
+        ^
+    あ  曙    1.0em
+    け  |
+    ぼ  ENSP  0.5em
+    の  と    1.0em
+        |
+
+  行末では
+        は    1.0em
+    あ  |
+    け  ENSP  0.5em
+    ぼ  曙    1.0em
+    の  |
+        $
+
+
+  [確定][1.0em][次の文字]
+  [確定][1.5em][次の文字]
+  [確定][2.0em][次の文字]
+
+  現在が行頭であるというのは、
+    文頭であるか、
+
+
+  1. 現在が行頭でなければ、
+    2. 幅1.0emでレイアウトしてみる。
+       後の文字が同じ行にきてくれれば、後にはみだせる。
+       => 行中レイアウト
+    3. 幅1.5emでレイアウトしてみる。
+       次の行におりかえされていなければ、行末である。
+       => 行末レイアウト
+  4. 幅1.5emでレイアウトしてみる。（1からくる場合もある）
+     後の文字が同じ行にきてくれれば、後にはみだせる。
+     => 行中レイアウト
+  5. 幅2emでレイアウトするしかない。
+
+
+
+
+
+
+<div style="
+  background-color: #ccc;
+  font-family: 'Share Tech', 'BIZ UDPMincho';
+  font-size: 20px;
+  text-align: left;
+  width: 10em;
+  word-break: break-word;
+">
+  <div><span><ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>ああ</span></div>
+  <div><span>ああ<ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby></span></div>
+  <div><span>あ<ruby style="background-color: #fcc">現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>あ</span></div>
+  <div><span><ruby style="background-color: #fcc">屍者<rt>ゾンビ</rt></ruby></span></div>
+  <div><span>は<ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby>と</span></div>
+  <div><span>は<ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby></span></div>
+  <div><span><ruby style="background-color: #fcc">曙<rt>あけぼの</rt></ruby>と</span></div>
+</div>
+-->
+
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = globalThis.dromozoa
+
+  await D.booted;
+  console.log("feature_kerning: " + D.feature_kerning);
+  console.log("feature_kerning_span: " + D.feature_kerning_span);
+
+  console.log("load font faces: start");
+  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+  console.log("load font faces: end", result);
+
+  const x = document.getElementById("tmpl").content.firstElementChild.cloneNode(true);
+  document.body.append(x.cloneNode(true));
+
+  setTimeout(() => D.layout_paragraph(x), 500);
+
+  // D.layout_text(document.getElementById("test"));
+  // D.layout_text("sTaTuTe sTaTuTe", "dromozoa_test");
+  // D.layout_text("eTeTeTe eTeTeTe", "dromozoa_test");
+  // D.layout_text("昭和七十四年七月、ボクはキミに出逢った。", "dromozoa_test");
+  // D.layout_text("あい、「うえ」を。", "dromozoa_test");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="font_face.css" rel="stylesheet">
+  <link href="common.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="jlreq.js"></script>
+  <script defer src="common.js"></script>
+</head>
+<body>
+
+<div>
+  <div id="view" class="view" style="
+    /*
+    width: 24em;
+    */
+    width: 478px;
+    height: 12em;
+    font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+    font-size: 24px;
+    line-height: 2;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-align: justify;
+    resize: both;
+  "><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。</div>
+
+  <!--
+  <ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。
+
+  <span><ruby>取り替え子<rt>チェンジリング</rt></ruby>。<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。油をそそがれなかった者たち。──遡及的に。</span><br><ruby>死んでくれる<rt>DIE FOR ME</rt></ruby>？<br>    傷つけられ、虐げられた、<ruby>幼子<rt>おさなご</rt></ruby>よ。<br>天国の門は開かれている。<ruby>現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>と種や属が異なろうと、キリスト者でなかろうと。だが、しかし、——
+  -->
+
+  <div>
+    <textarea id="editor" cols="80" rows="10"></textarea>
+  </div>
+  <div>
+    <button id="update">更新</button>
+    <button id="remove">削除</button>
+  </div>
+  <div id="result"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = globalThis.dromozoa;
+  await D.booted;
+
+  console.log("load font faces: start");
+  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+  console.log("load font faces: end", result);
+
+  document.getElementById("editor").value = document.getElementById("view").innerHTML;
+
+  const update = () => {
+    const view = document.getElementById("view");
+    view.innerHTML = document.getElementById("editor").value;
+    const start = performance.now();
+    const result = D.layout(view);
+    console.log(performance.now() - start);
+    document.getElementById("result").append(result.result);
+  };
+
+  document.getElementById("update").addEventListener("click", update);
+
+  document.getElementById("remove").addEventListener("click", () => {
+    [...document.getElementById("result").children].forEach(node => node.remove());
+  });
+
+  update();
+});
+</script>
+
+</body>
+</html>
