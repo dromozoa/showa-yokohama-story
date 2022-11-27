@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
   console.log("load font faces: end", result);
 
-  const source = [..."TaTaTaT TiTiTiT TuTuTuT TeTeTeT ToToToT ".repeat(5)];
+  const source = [..."TaTi TuTe  To   U".repeat(1)];
   // const source = [..."本文あいうえおかきくけこさしすせそ本文たちつてと。本文なにぬねの。ながいながいながいながいながい本文たちつてと。".repeat(4)];
 
   const data_html = document.getElementById("data_html");
@@ -99,13 +99,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("test_html").addEventListener("click", async () => {
     let start = performance.now();
     source.forEach((char, i) => {
-      const head = source.slice(0, i).map(D.escape_html).join("");
+      // const head = source.slice(0, i).map(D.escape_html).join("");
+      // const body = D.escape_html(char);
+      // const tail = source.slice(i + 1).map(D.escape_html).join("");
+      const head = source.slice(i - 1, i).map(D.escape_html).join("");
       const body = D.escape_html(char);
-      const tail = source.slice(i + 1).map(D.escape_html).join("");
+      const tail = source.slice(i + 1, i + 2).map(D.escape_html).join("");
 
       data_html.append(...D.create_elements(`
-        <div style="font-kerning: normal"><span><span>${head}${body}</span></span><span>${tail}</span></div>
-        <div style="font-kerning: normal"><span><span>${head}</span><span>${body}</span></span><span>${tail}</span></div>
+        <div style="font-kerning: normal"><span>&#xFEFF;<span>${head}${body}</span></span><span>${tail}&#xFEFF;</span></div>
+        <div style="font-kerning: normal"><span>&#xFEFF;<span>${head}</span><span>${body}</span></span><span>${tail}&#xFEFF;</span></div>
       `));
     });
     D.offscreen.append(data_html);

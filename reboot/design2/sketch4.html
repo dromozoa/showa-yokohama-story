@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const view = document.getElementById("view");
     view.innerHTML = document.getElementById("editor").value;
     const start = performance.now();
-    console.log(await D.layout(view));
+    console.log(D.layout(view));
     console.log(performance.now() - start);
   });
 
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const view = document.getElementById("view");
   view.innerHTML = document.getElementById("editor").value;
   const start = performance.now();
-  console.log(await D.layout(view));
+  console.log(D.layout(view));
   console.log(performance.now() - start);
 
 });

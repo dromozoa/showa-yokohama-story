@@ -201,7 +201,7 @@ const root = globalThis.dromozoa = new class {
     view.remove();
   }
 
-  async layout_kerning(source, chars, size) {
+  layout_kerning(source, chars, size) {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.width = "auto";
@@ -211,16 +211,16 @@ const root = globalThis.dromozoa = new class {
       <div style="
         font-size: ${number_to_css_string(size * 100)}%;
         font-variant-ligatures: none;
+        text-align: normal;
         white-space: nowrap;
       "></div>
     `));
 
-    // if (this.feature_kerning_span) {
-    if (false) {
-      const html = chars.map(char => `<span>${escape_html(char.char)}</span>`).join("");
+    if (this.feature_kerning_span) {
+      const body = chars.map(char => `<span>${escape_html(char.char)}</span>`).join("");
       view.append(...create_elements(`
-        <div style="font-kerning: none">${html}</div>
-        <div style="font-kerning: normal">${html}</div>
+        <div style="font-kerning: none">${body}</div>
+        <div style="font-kerning: normal">${body}</div>
       `));
       this.offscreen.append(container);
 
@@ -230,56 +230,29 @@ const root = globalThis.dromozoa = new class {
       });
 
     } else {
-      let start = performance.now();
-      // chars.forEach((char, i) => {
-      //   const head = chars.slice(0, i).map(char => escape_html(char.char)).join("");
-      //   const head_html = head == "" ? "" : `<span>${head}</span>`;
-      //   const body = escape_html(char.char);
-      //   const tail = chars.slice(i + 1).map(char => escape_html(char.char)).join("");
-      //   const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
-      //   view.append(...create_elements(`
-      //     <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
-      //     <div style="font-kerning: normal"><span>${head_html}<span>${body}</span></span>${tail_html}</div>
-      //   `));
-      // });
-      chars.forEach((char, i) => {
-        const head = chars.slice(i - 1, i).map(char => escape_html(char.char)).join("");
-        const head_html = head == "" ? "" : `<span>${head}</span>`;
+      const first = chars[0];
+
+      // 行頭行末の空白削除を避けるためにゼロ幅空白を用いる。
+      view.append(create_element(`
+        <div style="font-kerning: none">&#xFEFF;<span><span>${escape_html(first.char)}</span></span>&#xFEFF;</div>
+      `));
+      chars.slice(1).forEach((char, i) => {
+        const head = escape_html(chars[i].char);
         const body = escape_html(char.char);
-        const tail = chars.slice(i + 1, i + 2).map(char => escape_html(char.char)).join("");
-        const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
         view.append(...create_elements(`
-          <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
-          <div style="font-kerning: normal"><span>${head_html}<span>${body}</span></span>${tail_html}</div>
+          <div style="font-kerning: normal">&#xFEFF;<span><span>${head}${body}</span></span>&#xFEFF;</div>
+          <div style="font-kerning: none">&#xFEFF;<span><span>${head}</span><span>${body}</span></span>&#xFEFF;</div>
         `));
       });
-      console.log("create", performance.now() - start);
-
-      start = performance.now();
       this.offscreen.append(container);
-      console.log("append", performance.now() - start);
 
-      // レイアウトがおわるのを待つ。
-      // console.log("waiting", performance.now());
-      start = performance.now();
-      await sleep(0);
-      console.log("wait", performance.now() - start);
-
-      start = performance.now();
-      // console.log("start", );
-
-      let prev = 0;
-      chars.forEach((char, i) => {
-        const width1 = view.children[i * 2].firstElementChild.getBoundingClientRect().width;
-        const width2 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
-        char.width = char.progress = width2 - prev;
-        if (i > 0) {
-          chars[i - 1].progress += width1 - width2;
-        }
-        prev = width1;
+      first.width = first.progress = view.firstElementChild.firstElementChild.getBoundingClientRect().width;
+      chars.slice(1).forEach((char, i) => {
+        const prev = chars[i];
+        const width = view.children[i * 2 + 2].firstElementChild.getBoundingClientRect().width;
+        char.width = char.progress = width - prev.width;
+        prev.progress += view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width - width;
       });
-
-      console.log("fetch", performance.now() - start);
     }
 
     container.remove();
@@ -708,7 +681,7 @@ const root = globalThis.dromozoa = new class {
     return paragraph;
   }
 
-  async layout(source) {
+  layout(source) {
     //
     // Paragraph {
     //   texts:                 Text+,
@@ -792,16 +765,19 @@ const root = globalThis.dromozoa = new class {
     };
     parse(source);
 
-    const promises = [ ...texts.map(text => this.layout_kerning(source, text.items.map(item => item.main).flat(), 1)) ];
-    texts.forEach(text => {
-      text.items.filter(item => item.ruby).forEach(item => promises.push(this.layout_kerning(source, item.ruby, 0.5)));
-    });
-    await Promise.all(promises);
-
+    const start = performance.now();
+    // const promises = [ ...texts.map(text => this.layout_kerning(source, text.items.map(item => item.main).flat(), 1)) ];
     // texts.forEach(text => {
-    //   this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
-    //   text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+    //   text.items.filter(item => item.ruby).forEach(item => promises.push(this.layout_kerning(source, item.ruby, 0.5)));
     // });
+    // await Promise.all(promises);
+
+    texts.forEach(text => {
+      this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
+      text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+    });
+    console.log("kerning", performance.now() - start);
+
     return { texts: texts.map(text => this.layout_text(source, text)) };
     // return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
   }
