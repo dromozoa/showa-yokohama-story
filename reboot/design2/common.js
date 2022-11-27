@@ -201,7 +201,7 @@ const root = globalThis.dromozoa = new class {
     view.remove();
   }
 
-  layout_kerning(source, chars, size) {
+  async layout_kerning(source, chars, size) {
     const container = source.cloneNode(false);
     container.removeAttribute("id");
     container.style.width = "auto";
@@ -215,7 +215,8 @@ const root = globalThis.dromozoa = new class {
       "></div>
     `));
 
-    if (this.feature_kerning_span) {
+    // if (this.feature_kerning_span) {
+    if (false) {
       const html = chars.map(char => `<span>${escape_html(char.char)}</span>`).join("");
       view.append(...create_elements(`
         <div style="font-kerning: none">${html}</div>
@@ -229,18 +230,43 @@ const root = globalThis.dromozoa = new class {
       });
 
     } else {
+      let start = performance.now();
+      // chars.forEach((char, i) => {
+      //   const head = chars.slice(0, i).map(char => escape_html(char.char)).join("");
+      //   const head_html = head == "" ? "" : `<span>${head}</span>`;
+      //   const body = escape_html(char.char);
+      //   const tail = chars.slice(i + 1).map(char => escape_html(char.char)).join("");
+      //   const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
+      //   view.append(...create_elements(`
+      //     <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
+      //     <div style="font-kerning: normal"><span>${head_html}<span>${body}</span></span>${tail_html}</div>
+      //   `));
+      // });
       chars.forEach((char, i) => {
-        const head = chars.slice(0, i).map(char => escape_html(char.char)).join("");
+        const head = chars.slice(i - 1, i).map(char => escape_html(char.char)).join("");
         const head_html = head == "" ? "" : `<span>${head}</span>`;
         const body = escape_html(char.char);
-        const tail = chars.slice(i + 1).map(char => escape_html(char.char)).join("");
+        const tail = chars.slice(i + 1, i + 2).map(char => escape_html(char.char)).join("");
         const tail_html = tail == "" ? "" : `<span>${tail}</span>`;
         view.append(...create_elements(`
           <div style="font-kerning: normal"><span><span>${head}${body}</span></span>${tail_html}</div>
           <div style="font-kerning: normal"><span>${head_html}<span>${body}</span></span>${tail_html}</div>
         `));
       });
+      console.log("create", performance.now() - start);
+
+      start = performance.now();
       this.offscreen.append(container);
+      console.log("append", performance.now() - start);
+
+      // レイアウトがおわるのを待つ。
+      // console.log("waiting", performance.now());
+      start = performance.now();
+      await sleep(0);
+      console.log("wait", performance.now() - start);
+
+      start = performance.now();
+      // console.log("start", );
 
       let prev = 0;
       chars.forEach((char, i) => {
@@ -252,6 +278,8 @@ const root = globalThis.dromozoa = new class {
         }
         prev = width1;
       });
+
+      console.log("fetch", performance.now() - start);
     }
 
     container.remove();
@@ -680,7 +708,7 @@ const root = globalThis.dromozoa = new class {
     return paragraph;
   }
 
-  layout(source) {
+  async layout(source) {
     //
     // Paragraph {
     //   texts:                 Text+,
@@ -764,10 +792,16 @@ const root = globalThis.dromozoa = new class {
     };
     parse(source);
 
+    const promises = [ ...texts.map(text => this.layout_kerning(source, text.items.map(item => item.main).flat(), 1)) ];
     texts.forEach(text => {
-      this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
-      text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+      text.items.filter(item => item.ruby).forEach(item => promises.push(this.layout_kerning(source, item.ruby, 0.5)));
     });
+    await Promise.all(promises);
+
+    // texts.forEach(text => {
+    //   this.layout_kerning(source, text.items.map(item => item.main).flat(), 1);
+    //   text.items.filter(item => item.ruby).forEach(item => this.layout_kerning(source, item.ruby, 0.5));
+    // });
     return { texts: texts.map(text => this.layout_text(source, text)) };
     // return this.layout_paragraph(source, { texts: texts.map(text => this.layout_text(source, text)) });
   }
