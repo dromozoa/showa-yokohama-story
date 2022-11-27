@@ -370,8 +370,7 @@ const root = globalThis.dromozoa = new class {
 
     const result = { items: [] };
 
-    // TODO 改行処理を再帰する
-    text.items.forEach((item, i) => {
+    const process_line = (item, next) => {
       result.items.push(item);
       if (!item.ruby) {
         return;
@@ -410,7 +409,7 @@ const root = globalThis.dromozoa = new class {
           group.append(node);
 
           let width = item.ruby_overhang_after;
-          [ ...item.main.slice(index + 1), text.items[i + 1].main[0] ].some(char => {
+          [ ...item.main.slice(index + 1), next.main[0] ].some(char => {
             group.append(map.get(char));
             return (width -= char.progress) < 0;
           });
@@ -428,7 +427,7 @@ const root = globalThis.dromozoa = new class {
         }
       }
 
-      // ルビの途中に改行がある場合、ルビを分割する。
+      // 途中に改行がある場合、ルビを分割する。
       if (get_line_number(map.get(item.main[0])) === get_line_number(map.get(item.main.slice(-1)[0]))) {
         return;
       }
@@ -494,12 +493,16 @@ const root = globalThis.dromozoa = new class {
       });
 
       result.items.pop();
-      result.items.push(item1, item2);
+      result.items.push(item1);
       ruby_view.remove();
-    });
 
-    // ルビのレイアウト時に行の高さを親文字と同じにする。行送りの基準点は天地中
-    // 央なので、ルビを親文字の文字サイズの3/4上に移動する。
+      return process_line(item2, next);
+    };
+
+    text.items.forEach((item, i) => process_line(item, text.items[i + 1]));
+
+    // ルビ文字の行の高さを親文字と同じにしてレイアウトする。行送りの基準点は天
+    // 地中央なので、ルビを親文字の文字サイズの3/4上に移動してそろえる。
     const style = getComputedStyle(main_view);
     const font_size = parseFloat(style.fontSize);
     const line_height = parseFloat(style.lineHeight);
