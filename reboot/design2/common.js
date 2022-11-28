@@ -121,7 +121,7 @@ const root = globalThis.dromozoa = new class {
   // Firefox 107でFontFace.load()の返り値およびFontFace.loadedが決定されない場
   // 合があった。どこかの時点でFontFaceが新しい別のオブジェクトにさしかえられ、
   // プロミスが迷子になるらしい。そこで、ポーリングしてdocument.facesを監視する
-  // することにした。
+  // ことにした。
   async load_font_face(index, timeout) {
     const font_face = [...document.fonts][index];
 
