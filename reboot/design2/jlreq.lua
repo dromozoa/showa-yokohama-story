@@ -19,6 +19,9 @@
 -- https://www.w3.org/TR/jlreq/
 -- https://github.com/w3c/jlreq
 --
+-- 行頭禁則で使うのは cl-02,03,04,05,06,07,09,10,11,29
+-- 行末禁則で使うのは cl-01,28
+--
 -- ルビのはみ出しで使うのは cl-01,02,05,06,07,08,10,11,15,16,19
 -- 漢字等 (cl-19) は "CJK Ideographs" 以外が列挙されている。定義がよくわからな
 -- いので。UnicodeのCJK Unified / Compatibility Ideographsを採用する。
