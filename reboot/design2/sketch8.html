@@ -82,6 +82,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     <div>elapsed: ${result.elapsed}</div>
   `));
 
+  start = performance.now();
+  const chars = D.construct_chars("32px 'Share Tech'", "TaTiTuTeTo".repeat(40));
+  console.log(performance.now() - start);
+  console.log(chars);
+
 
 
 });

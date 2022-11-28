@@ -201,4 +201,27 @@ D.loadFontFaces = async (timeout) => {
 
 //-------------------------------------------------------------------------
 
+const construct_chars = (font, source) => {
+  const context = internalCanvas.getContext("2d");
+  context.font = font;
+
+  const result = [...source].map(char => {
+    const width = context.measureText(char).width;
+    return { char: char, width: width, advance: width };
+  });
+
+  if (D.featureKerning) {
+    result.slice(1).forEach((second, i) => {
+      const first = result[i];
+      first.advance = context.measureText(first.char + second.char).width - second.width;
+    });
+  }
+
+  return result;
+};
+
+D.construct_chars = construct_chars;
+
+//-------------------------------------------------------------------------
+
 })();
