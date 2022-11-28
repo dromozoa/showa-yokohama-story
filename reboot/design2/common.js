@@ -110,8 +110,10 @@ const root = globalThis.dromozoa = new class {
     return this.#offscreen ||= document.body.appendChild(create_element(`
       <div style="
         position: absolute;
+        /*
         top: -6400px;
         left: -1989px;
+        */
       "></div>
     `));
   }
