@@ -54,7 +54,9 @@
 <body>
 
 <div style="
+  /*
   font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+  */
   font-kerning: normal;
   font-size: 24px;
   font-variant-ligatures: none;
@@ -68,10 +70,13 @@
 
   <div>
     <button id="test_html">実験: getBoundingClientRect()</button>
+    <button id="test_measure_text">measureTextでフォントがロードされるか？</button>
   </div>
 
   <div id="view" style="
+    /*
     font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+    */
     font-kerning: normal;
     font-size: 24px;
     font-variant-ligatures: none;
@@ -86,9 +91,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const D = globalThis.dromozoa;
   await D.booted;
 
-  console.log("load font faces: start");
-  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
-  console.log("load font faces: end", result);
+  // console.log("load font faces: start");
+  // const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
+  // console.log("load font faces: end", result);
 
   const source = [..."TaTi TuTe  To   U".repeat(32)];
   // const source = [..."本文あいうえおかきくけこさしすせそ本文たちつてと。本文なにぬねの。ながいながいながいながいながい本文たちつてと。".repeat(16)];
@@ -96,20 +101,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   const view = document.getElementById("view");
   const style = getComputedStyle(view);
 
+  const canvas_width = 320;
+  const canvas_height = 240;
+
   const canvas = D.create_element(`
-    <canvas width="120" height="160"></canvas>
+    <canvas
+      width="${Math.floor(canvas_width * devicePixelRatio)}"
+      height="${Math.floor(canvas_height * devicePixelRatio)}"
+      style="
+        width: ${canvas_width}px;
+        height: ${canvas_height}px;
+      "></canvas>
   `);
   D.offscreen.append(canvas);
+  console.log(canvas.width, canvas.height, devicePixelRatio);
 
   const ctx = canvas.getContext("2d");
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
   console.log(ctx.font);
-  ctx.font = style.fontSize + " " + style.fontFamily;
-  // ctx.font = `32px "Share Tech"`;
+  // ctx.font = style.fontSize + " " + style.fontFamily;
+  ctx.font = "32px 'Showa Yokohama Story', sans-serif";
   console.log(ctx.font);
 
   // await D.request_animation_frame();
   ctx.clearRect(0, 0, 120, 160);
-  ctx.fillText("TaTiTuTeTo日本語", 0, 80);
+  ctx.fillText("TaTiTuTeTo日本語\uE001\uE002", 0, 80);
 
   view.remove();
 
@@ -159,14 +176,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("test_html").addEventListener("click", action);
   let start;
 
-  start = performance.now();
-  action_canvas();
-  console.log("action_canvas", performance.now() - start);
+  document.getElementById("test_measure_text").addEventListener("click", () => {
+    ctx.font = "32px 'Share Tech', 'BIZ UDPMincho', 'Showa Yokohama Story'";
+    console.log("test_measure_text", ctx.measureText("TaTiTuTeTo昭和横濱物語\uE000"));
+  });
 
-  start = performance.now();
-  action();
-  console.log("action", performance.now() - start);
-});
+  // start = performance.now();
+  // action_canvas();
+  // console.log("action_canvas", performance.now() - start);
+
+  // start = performance.now();
+  // action();
+  // console.log("action", performance.now() - start);
+})// ;
 </script>
 
 </body>
