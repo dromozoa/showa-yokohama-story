@@ -221,14 +221,15 @@ handle:write [[
 (() => {
 "use strict";
 
-if (globalThis.dromozoa_jlreq) {
+const root = globalThis.demeter ||= {};
+if (root.jlreq) {
   return;
 }
+const D = root.jlreq = {};
 
 const root = globalThis.dromozoa_jlreq = {};
-root.ruby_overhang = c => {
+root.canRubyOverhang = c => {
 ]]
-
 
 local function code(node, depth)
   local indent = ""

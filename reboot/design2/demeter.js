@@ -35,6 +35,7 @@ const escapeHTMLTable = {
   '"': "&quot;",
   "'": "&apos;",
 };
+
 D.escapeHTML = source => source.replace(/[&<>"']/g, match => escapeHTMLTable[match]);
 
 D.createElement = html => {
@@ -47,6 +48,14 @@ D.createElements = html => {
   const template = document.createElement("template");
   template.innerHTML = html;
   return template.content.children;
+};
+
+D.numberToCssString = source => {
+  if (-0.00005 < source && source < 0.00005) {
+    return "0";
+  } else {
+    return source.toFixed(4).replace(/\.?0$/, "");
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -125,6 +134,7 @@ const initializeInternalRoot = () => {
 //   Kerning: -300/1000
 // という寸法を持つ。フォントサイズが100pxのとき、カーニングが効いていれば、文
 // 字列"\uE001\uE0002"の幅は140pxになる。
+
 const checkKerning = async () => {
   const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
   if (index === -1) {
@@ -145,6 +155,7 @@ const checkKerning = async () => {
 // があった。FontFaceが新しい別のオブジェクトにさしかえられ、プロミスが迷子にな
 // っているように見えた。そのため、ポーリングしてdocument.facesを監視することに
 // した。
+
 D.loadFontFace = async (index, timeout) => {
   const fontFace = [...document.fonts][index];
   if (fontFace.status === "loaded") {
@@ -201,9 +212,9 @@ D.loadFontFaces = async (timeout) => {
 
 //-------------------------------------------------------------------------
 
-const construct_chars = (font, source) => {
+const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = font;
+  context.font = `${D.numberToCssString(fontSize)}px ${font}`;
 
   const result = [...source].map(char => {
     const width = context.measureText(char).width;
@@ -220,7 +231,52 @@ const construct_chars = (font, source) => {
   return result;
 };
 
-D.construct_chars = construct_chars;
+const parseParagraphBreakTable = {
+  "BR": true,
+  "DIV": true,
+  "P": true,
+};
+
+D.parseParagraph = (source, fontSize, font) => {
+  const result = [];
+  let text;
+  let item;
+
+  const parse = node => {
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        if (node.tagName === "RT") {
+          item.ruby = parseChars(node.textContent, fontSize * 0.5, font);
+        } else {
+          node.childNodes.forEach(parse);
+          if (parseParagraphBreakTable[node.tagName]) {
+            text = undefined;
+          }
+        }
+        break;
+      case Node.TEXT_NODE:
+        if (!text) {
+          result.push(text = { items: [], fontSize: fontSize, font: font });
+        }
+        text.items.push(item = { main: parseChars(node.textContent, fontSize, font) });
+        break;
+    };
+  };
+  parse(source);
+
+  return result;
+};
+
+D.composeText = (source, maxWidth) => {
+  // ルビを考慮して文字のスペースをいれる。
+  source.items.forEach((item, i) => {
+    item.mainWidth = item.main.reduce((width, char) => width + char.advance, 0);
+    item.rubyWidth = 0;
+    if (item.ruby) {
+      item.rubyWidth = item.ruby.reduce((width, char) => width + char.advance, 0);
+    }
+  });
+};
 
 //-------------------------------------------------------------------------
 
