@@ -268,14 +268,76 @@ D.parseParagraph = (source, fontSize, font) => {
 };
 
 D.composeText = (source, maxWidth) => {
-  // ルビを考慮して文字のスペースをいれる。
+
+  // 愚直に一文字ずつ処理していく
+
+  let line = [];
+  const result = [ line ];
+  let advance = 0;
+
   source.items.forEach((item, i) => {
-    item.mainWidth = item.main.reduce((width, char) => width + char.advance, 0);
-    item.rubyWidth = 0;
+    let rubySpacing = 0;
     if (item.ruby) {
-      item.rubyWidth = item.ruby.reduce((width, char) => width + char.advance, 0);
+      const mainWidth = item.main.reduce((width, char) => width + char.advance, 0);
+      const rubyWidth = item.ruby.reduce((width, char) => width + char.advance, 0);
+      if (mainWidth < rubyWidth) {
+        let rubyOverhangBefore = 0;
+        const before = source.items[i - 1];
+        if (before && !before.ruby) {
+          const char = before.main.slice(-1)[0];
+          if (D.jlreq.canRubyOverhang(char.char.codePointAt(0))) {
+            rubyOverhangBefore = char.advance * 0.5;
+          }
+        }
+
+        let rubyOverhangAfter = 0;
+        const after = source.items[i + 1];
+        if (after && !after.ruby) {
+          const char = after.main[0];
+          if (D.jlreq.canRubyOverhang(char.char.codePointAt(0))) {
+            rubyOverhangAfter = char.advance * 0.5;
+          }
+        }
+
+        rubySpacing = Math.max(0, rubyWidth - (rubyOverhangBefore + mainWidth + rubyOverhangAfter)) / item.main.length;
+      }
     }
+
+    item.main.forEach(char => {
+      char.rubySpacing = rubySpacing;
+
+      const a = advance + char.advance + rubySpacing;
+      if (a <= maxWidth) {
+        line.push(char);
+        advance = a;
+      } else {
+        // この文字の前で改行できるか？
+        // この文字が行頭禁則でない。
+
+        // この文字の前で改行できるか？
+        // 改行できたとして、後はみ出しありのルビの終端だったらキャンセルする必要がある
+        // ルビを分割したら、長さを再計算する
+        result.push(line = [ char ]);
+        advance = char.advance + rubySpacing;
+      }
+    });
   });
+
+  const element = D.createElement(`<div></div>`);
+  result.forEach(line => {
+    const div = D.createElement(`<div></div>`);
+    line.forEach(char => {
+      div.append(D.createElement(`
+        <span style="
+          display: inline-block;
+          letter-spacing: ${D.numberToCssString(char.advance - char.width)}px;
+          padding-right: ${D.numberToCssString(char.rubySpacing)}px;
+        ">${D.escapeHTML(char.char)}</span>
+      `));
+    });
+    element.append(div);
+  });
+  return element;
 };
 
 //-------------------------------------------------------------------------

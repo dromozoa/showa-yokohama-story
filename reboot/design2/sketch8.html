@@ -50,6 +50,11 @@
 <div><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。</div>
 </template>
 
+<div id="output" style="
+  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+  font-size: 24px;
+"></div>
+
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   let start;
@@ -94,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log(p);
 
   const t = p[0];
-  D.composeText(t, t.fontSize * 20);
+  document.getElementById("output").append(D.composeText(t, t.fontSize * 24));
 
 
 });
