@@ -76,7 +76,6 @@ D.jlreq.canRubyOverhang = c => {
 };
 
 D.jlreq.testCanRubyOverhang = () => {
-  const fn = D.jlreq.canRubyOverhang
   const ranges = [
     { i: 0x0000, j: 0x0027, v: false },
     { i: 0x0028, j: 0x0029, v: true },
@@ -132,7 +131,7 @@ D.jlreq.testCanRubyOverhang = () => {
   let n = 0;
   ranges.forEach(range => {
     for (let code = range.i; code <= range.j; ++code) {
-      const v = fn(code)
+      const v = D.jlreq.canRubyOverhang(code)
       console.assert(v === range.v, range, code, v);
       ++n;
     }

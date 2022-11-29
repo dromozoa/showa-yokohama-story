@@ -79,8 +79,15 @@ F900..FAFF; CJK Compatibility Ideographs
 31350..323AF; CJK Unified Ideographs Extension H
 ]]
 
--- ルビはcl-19以外にはみ出すことができる。アキの調整のかわりに、プロポーショナ
--- ルフォントを使うため、はみ出し量を詳細に計算しない。
+local rules = {
+  -- ルビはcl-19以外にはみ出すことができる。アキの調整のかわりに、プロポーショ
+  -- ナルフォントを使うため、はみ出し量を詳細に計算しない。
+  {
+    name = "canRubyOverhang";
+    1, 2, 5, 6, 7, 8, 10, 11, 15, 16;
+  };
+}
+
 local can_ruby_overhang_ids = { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16 }
 
 local source_filename, result_filename = ...
@@ -226,20 +233,20 @@ local function generate_code(handle, node, depth)
   end
 end
 
-local function generate_test(handle, ranges)
+local function generate_test(handle, ranges, name)
   handle:write [[
   const ranges = [
 ]]
   for _, range in ipairs(ranges) do
     handle:write(("    { i: 0x%04X, j: 0x%04X, v: %s },\n"):format(range.i, range.j, range.v))
   end
-  handle:write [[
+  handle:write(([[
   ];
   console.log("start");
   let n = 0;
   ranges.forEach(range => {
     for (let code = range.i; code <= range.j; ++code) {
-      const v = fn(code)
+      const v = D.jlreq.%s(code)
       console.assert(v === range.v, range, code, v);
       ++n;
     }
@@ -247,7 +254,12 @@ local function generate_test(handle, ranges)
   console.log(n);
   console.assert(n === 0x110000, ranges);
   console.log("end");
-]]
+]]):format(name));
+end
+
+for _, rule in ipairs(rules) do
+  rule.ranges = make_ranges(rule)
+  rule.tree = make_tree(rule.ranges)
 end
 
 local can_ruby_overhang_ranges = make_ranges(can_ruby_overhang_ids)
@@ -264,20 +276,22 @@ if (D.jlreq) {
   return;
 }
 D.jlreq = {};
-
-D.jlreq.canRubyOverhang = c => {
 ]]
-generate_code(handle, can_ruby_overhang_tree, 1)
-handle:write "};\n"
 
-if options.enable_test then
-  handle:write [[
+for _, rule in ipairs(rules) do
+  local ranges = make_ranges(rule)
+  local tree = make_tree(rule.ranges)
 
-D.jlreq.testCanRubyOverhang = () => {
-  const fn = D.jlreq.canRubyOverhang
-]]
-  generate_test(handle, can_ruby_overhang_ranges)
+  handle:write(("\nD.jlreq.%s = c => {\n"):format(rule.name))
+  generate_code(handle, can_ruby_overhang_tree, 1)
   handle:write "};\n"
+
+  if options.enable_test then
+    local name = rule.name:gsub("^(.)", function (s) return "test"..s:upper() end)
+    handle:write(("\nD.jlreq.%s = () => {\n"):format(name))
+    generate_test(handle, can_ruby_overhang_ranges, rule.name)
+    handle:write "};\n"
+  end
 end
 
 handle:write [[
