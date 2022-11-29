@@ -319,18 +319,6 @@ return c>12316&&c<12318;
 }
 };
 
-D.jlreq.isInseparable = c => {
-if(c<8229){
-return c>8211&&c<8213;
-}else{
-if(c<12339){
-return c<8231;
-}else{
-return c<12342;
-}
-}
-};
-
 D.jlreq.isPrefixedAbbreviation = c => {
 if(c<164){
 if(c<37){
@@ -416,6 +404,518 @@ if(c<13259){
 return c<13253;
 }else{
 return c<13260;
+}
+}
+}
+}
+}
+};
+
+D.jlreq.isWesternCharacter = c => {
+if(c<8218){
+if(c<645){
+if(c<403){
+if(c<308){
+if(c<273){
+if(c<181){
+if(c<127){
+return c>32;
+}else{
+return c>159;
+}
+}else{
+if(c<266){
+return c>181;
+}else{
+return c>267&&c<272;
+}
+}
+}else{
+if(c<294){
+if(c<280){
+return c<276;
+}else{
+return c<286||c>291;
+}
+}else{
+if(c<296){
+return c>294;
+}else{
+return c>297&&c<300;
+}
+}
+}
+}else{
+if(c<331){
+if(c<319){
+if(c<313){
+return c<310;
+}else{
+return c<315||c>316;
+}
+}else{
+if(c<325){
+return c>320;
+}else{
+return c>326&&c<329;
+}
+}
+}else{
+if(c<358){
+if(c<336){
+return c<334;
+}else{
+return c<342||c>343;
+}
+}else{
+if(c<370){
+return c>361;
+}else{
+return c>376&&c<383;
+}
+}
+}
+}
+}else{
+if(c<506){
+if(c<469){
+if(c<461){
+if(c<450){
+return c<404;
+}else{
+return c<451;
+}
+}else{
+if(c<464){
+return c<463;
+}else{
+return c<467||c>467;
+}
+}
+}else{
+if(c<474){
+if(c<471){
+return c>469;
+}else{
+return c>471&&c<473;
+}
+}else{
+if(c<476){
+return c<475;
+}else{
+return c<477||c>503;
+}
+}
+}
+}else{
+if(c<617){
+if(c<604){
+if(c<510){
+return c>508;
+}else{
+return c>591&&c<603;
+}
+}else{
+if(c<606){
+return c<605;
+}else{
+return c<610||c>611;
+}
+}
+}else{
+if(c<633){
+if(c<628){
+return c>619;
+}else{
+return c>628&&c<630;
+}
+}else{
+if(c<637){
+return c<636;
+}else{
+return c<639||c>640;
+}
+}
+}
+}
+}
+}else{
+if(c<796){
+if(c<728){
+if(c<669){
+if(c<659){
+if(c<655){
+return c>647;
+}else{
+return c>655;
+}
+}else{
+if(c<662){
+return c>659;
+}else{
+return c>663&&c<665;
+}
+}
+}else{
+if(c<713){
+if(c<673){
+return c<670;
+}else{
+return c<675||c>710;
+}
+}else{
+if(c<717){
+return c>715;
+}else{
+return c>719&&c<722;
+}
+}
+}
+}else{
+if(c<774){
+if(c<735){
+if(c<731){
+return c<730;
+}else{
+return c<732||c>732;
+}
+}else{
+if(c<746){
+return c>740;
+}else{
+return c>767&&c<773;
+}
+}
+}else{
+if(c<781){
+if(c<776){
+return c<775;
+}else{
+return c<777||c>778;
+}
+}else{
+if(c<784){
+return c>782;
+}else{
+return c>791&&c<795;
+}
+}
+}
+}
+}else{
+if(c<938){
+if(c<817){
+if(c<809){
+if(c<804){
+return c<801;
+}else{
+return c<806;
+}
+}else{
+if(c<812){
+return c<811;
+}else{
+return c<813||c>814;
+}
+}
+}else{
+if(c<865){
+if(c<821){
+return c>819;
+}else{
+return c>824&&c<830;
+}
+}else{
+if(c<913){
+return c<866;
+}else{
+return c<930||c>930;
+}
+}
+}
+}else{
+if(c<7744){
+if(c<1040){
+if(c<970){
+return c>944;
+}else{
+return c>1024&&c<1026;
+}
+}else{
+if(c<1105){
+return c<1104;
+}else{
+return c<1106||c>7741;
+}
+}
+}else{
+if(c<8211){
+if(c<8052){
+return c>8047;
+}else{
+return c>8207&&c<8209;
+}
+}else{
+if(c<8214){
+return c<8213;
+}else{
+return c<8215||c>8215;
+}
+}
+}
+}
+}
+}
+}else{
+if(c<8812){
+if(c<8678){
+if(c<8463){
+if(c<8242){
+if(c<8227){
+if(c<8222){
+return c>8219;
+}else{
+return c>8223;
+}
+}else{
+if(c<8231){
+return c>8228;
+}else{
+return c>8239&&c<8241;
+}
+}
+}else{
+if(c<8259){
+if(c<8254){
+return c<8244;
+}else{
+return c<8256||c>8257;
+}
+}else{
+if(c<8274){
+return c>8272;
+}else{
+return c>8363&&c<8365;
+}
+}
+}
+}else{
+if(c<8592){
+if(c<8492){
+if(c<8487){
+return c<8464;
+}else{
+return c<8488||c>8490;
+}
+}else{
+if(c<8502){
+return c>8500;
+}else{
+return c>8530&&c<8534;
+}
+}
+}else{
+if(c<8645){
+if(c<8598){
+return c<8597;
+}else{
+return c<8602||c>8643;
+}
+}else{
+if(c<8659){
+return c>8657;
+}else{
+return c>8659&&c<8661;
+}
+}
+}
+}
+}else{
+if(c<8749){
+if(c<8714){
+if(c<8706){
+if(c<8704){
+return c<8682;
+}else{
+return c<8705;
+}
+}else{
+if(c<8709){
+return c<8708;
+}else{
+return c<8710||c>8710;
+}
+}
+}else{
+if(c<8730){
+if(c<8716){
+return c>8714;
+}else{
+return c>8721&&c<8724;
+}
+}else{
+if(c<8733){
+return c<8731;
+}else{
+return c<8737||c>8740;
+}
+}
+}
+}else{
+if(c<8774){
+if(c<8765){
+if(c<8751){
+return c>8749;
+}else{
+return c>8755&&c<8758;
+}
+}else{
+if(c<8771){
+return c<8766;
+}else{
+return c<8772||c>8772;
+}
+}
+}else{
+if(c<8800){
+if(c<8777){
+return c>8775;
+}else{
+return c>8785&&c<8787;
+}
+}else{
+if(c<8806){
+return c<8803;
+}else{
+return c<8808||c>8809;
+}
+}
+}
+}
+}
+}else{
+if(c<9670){
+if(c<9166){
+if(c<8869){
+if(c<8840){
+if(c<8824){
+return c>8821;
+}else{
+return c>8833;
+}
+}else{
+if(c<8844){
+return c>8841;
+}else{
+return c>8852&&c<8856;
+}
+}
+}else{
+if(c<8967){
+if(c<8922){
+return c<8870;
+}else{
+return c<8924||c>8964;
+}
+}else{
+if(c<8979){
+return c>8977;
+}else{
+return c>8983&&c<8985;
+}
+}
+}
+}else{
+if(c<9632){
+if(c<9332){
+if(c<9251){
+return c<9167;
+}else{
+return c<9252||c>9311;
+}
+}else{
+if(c<9450){
+return c>9423;
+}else{
+return c>9450&&c<9471;
+}
+}
+}else{
+if(c<9656){
+if(c<9649){
+return c<9634;
+}else{
+return c<9652||c>9653;
+}
+}else{
+if(c<9662){
+return c>9659;
+}else{
+return c>9663&&c<9666;
+}
+}
+}
+}
+}else{
+if(c<9794){
+if(c<9728){
+if(c<9684){
+if(c<9675){
+return c<9672;
+}else{
+return c<9676||c>9677;
+}
+}else{
+if(c<9703){
+return c>9701;
+}else{
+return c>9710&&c<9712;
+}
+}
+}else{
+if(c<9743){
+if(c<9733){
+return c<9732;
+}else{
+return c<9735||c>9741;
+}
+}else{
+if(c<9759){
+return c>9757;
+}else{
+return c>9791&&c<9793;
+}
+}
+}
+}else{
+if(c<10102){
+if(c<9840){
+if(c<9824){
+return c<9795;
+}else{
+return c<9832||c>9832;
+}
+}else{
+if(c<10004){
+return c>10002;
+}else{
+return c>10069&&c<10071;
+}
+}
+}else{
+if(c<10748){
+if(c<10548){
+return c<10112;
+}else{
+return c<10550||c>10745;
+}
+}else{
+if(c<12896){
+return c>12880;
+}else{
+return c>12976&&c<12992;
+}
+}
 }
 }
 }
