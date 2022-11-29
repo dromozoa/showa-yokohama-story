@@ -320,17 +320,17 @@ return c>12316&&c<12318;
 };
 
 D.jlreq.isPrefixedAbbreviation = c => {
-if(c<164){
+if(c<165){
 if(c<37){
 return c>34;
 }else{
-return c>162;
+return c>162&&c<164;
 }
 }else{
-if(c<166){
-return c>164;
+if(c<8365){
+return c<166||c>8363;
 }else{
-return c>8363&&c<8365;
+return c>8469&&c<8471;
 }
 }
 };

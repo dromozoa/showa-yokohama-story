@@ -94,10 +94,10 @@ local rules = {
     name = "isLineEndProhibited";
     1, 28;
   };
-  {
-    name = "isInseparable";
-    8;
-  };
+  -- {
+  --   name = "isInseparable";
+  --   8;
+  -- };
   {
     name = "isPrefixedAbbreviation";
     12;
@@ -105,6 +105,10 @@ local rules = {
   {
     name = "isPostfixedAbbreviation";
     13;
+  };
+  {
+    name = "isWesternCharacter";
+    27;
   };
 }
 
@@ -126,7 +130,7 @@ for id, s in source:gmatch [[<section>%s*<h3 id="cl%-(%d+)">.-</h3>(.-)</section
   if t then
     local id = assert(tonumber(id))
     local data = {}
-    for code in t:gmatch [[<tr>%s*<td class="character">.-</td>%s*<td>(.-)</td>]] do
+    for code in t:gmatch [[<tr>%s*<td class="character.-</td>%s*<td>(.-)</td>]] do
       if code:find [[^%x%x%x%x$]] then
         -- cl-19でU+216Bが重複しているのを避ける
         local code = assert(tonumber(code, 16))
