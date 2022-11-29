@@ -86,26 +86,32 @@ local rules = {
     name = "canRubyOverhang";
     1, 2, 5, 6, 7, 8, 10, 11, 15, 16;
   };
+
   {
     name = "isLineStartProhibited";
     2, 3, 4, 5, 6, 7, 9, 10, 11, 29;
   };
+
   {
     name = "isLineEndProhibited";
     1, 28;
   };
+
   -- {
   --   name = "isInseparable";
   --   8;
   -- };
+
   {
     name = "isPrefixedAbbreviation";
     12;
   };
+
   {
     name = "isPostfixedAbbreviation";
     13;
   };
+
   {
     name = "isWesternCharacter";
     27;

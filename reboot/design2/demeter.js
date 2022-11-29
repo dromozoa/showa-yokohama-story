@@ -218,13 +218,13 @@ const parseChars = (source, fontSize, font) => {
 
   const result = [...source].map(char => {
     const width = context.measureText(char).width;
-    return { char: char, width: width, advance: width };
+    return { char: char, code: char.codePointAt(0), width: width, advance: width };
   });
 
   if (D.featureKerning) {
-    result.slice(1).forEach((second, i) => {
-      const first = result[i];
-      first.advance = context.measureText(first.char + second.char).width - second.width;
+    result.slice(1).forEach((v, i) => {
+      const u = result[i];
+      u.advance = context.measureText(u.char + v.char).width - v.width;
     });
   }
 
@@ -267,58 +267,74 @@ D.parseParagraph = (source, fontSize, font) => {
   return result;
 };
 
+//-------------------------------------------------------------------------
+
+const getRubyOverhang = u => D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
+
+const isUnbreakable = (u, v) => {
+  const a = u.code;
+  const b = v.code;
+
+  // 行頭禁則と行末禁則
+  return D.jlreq.isLineStartProhibited(b) || D.jlreq.isLineEndProhibited(a)
+    // 連続するダッシュ・三点リーダ・二点リーダ
+    || a === b && (a === 0x2014 || a === 0x2026 || a === 0x2025)
+    // くの字
+    || (a === 0x3033 || a === 0x3034) && b === 0x3035
+    // 前置省略記号とアラビア数字
+    || D.jlreq.isPrefixedAbbreviation(a) && 0x30 <= b && b <= 0x39
+    // アラビア数字と後置省略記号
+    || 0x30 <= a && a <= 0x39 && D.jlreq.isPostfixedAbbreviation(b)
+    // 連続する欧文用文字
+    || D.jlreq.isWesternCharacter(a) && D.jlreq.isWesternCharacter(b);
+};
+
+const isWhiteSpace = u => u.code === 0x20 || u.code === 0x09 || u.code === 0x0A || u.code === 0x0D;
+
 D.composeText = (source, maxWidth) => {
-
-  // 愚直に一文字ずつ処理していく
-
   let line = [];
   const result = [ line ];
-  let advance = 0;
 
   source.items.forEach((item, i) => {
     let rubySpacing = 0;
     if (item.ruby) {
-      const mainWidth = item.main.reduce((width, char) => width + char.advance, 0);
-      const rubyWidth = item.ruby.reduce((width, char) => width + char.advance, 0);
+      const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
+      const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0);
       if (mainWidth < rubyWidth) {
         let rubyOverhangBefore = 0;
         const before = source.items[i - 1];
         if (before && !before.ruby) {
-          const char = before.main.slice(-1)[0];
-          if (D.jlreq.canRubyOverhang(char.char.codePointAt(0))) {
-            rubyOverhangBefore = char.advance * 0.5;
-          }
+          rubyOverhangBefore = getRubyOverhang(before.main.slice(-1)[0]);
         }
 
         let rubyOverhangAfter = 0;
         const after = source.items[i + 1];
         if (after && !after.ruby) {
-          const char = after.main[0];
-          if (D.jlreq.canRubyOverhang(char.char.codePointAt(0))) {
-            rubyOverhangAfter = char.advance * 0.5;
-          }
+          rubyOverhangAfter = getRubyOverhang(after.main[0]);
         }
 
         rubySpacing = Math.max(0, rubyWidth - (rubyOverhangBefore + mainWidth + rubyOverhangAfter)) / item.main.length;
       }
     }
 
-    item.main.forEach(char => {
-      char.rubySpacing = rubySpacing;
+    item.main.forEach(u => {
+      u.rubySpacing = rubySpacing;
 
-      const a = advance + char.advance + rubySpacing;
-      if (a <= maxWidth) {
-        line.push(char);
-        advance = a;
+      const width = line.reduce((width, u) => width + u.advance + u.rubySpacing, 0) + u.width + u.rubySpacing;
+      if (width <= maxWidth) {
+        line.push(u);
       } else {
-        // この文字の前で改行できるか？
-        // この文字が行頭禁則でない。
+        line.push(u);
+        const index = line.slice(0, -1).findLastIndex((u, i) => {
+          const v = line[i + 1];
+          return !isUnbreakable(u, v);
+        });
 
-        // この文字の前で改行できるか？
-        // 改行できたとして、後はみ出しありのルビの終端だったらキャンセルする必要がある
-        // ルビを分割したら、長さを再計算する
-        result.push(line = [ char ]);
-        advance = char.advance + rubySpacing;
+        if (index === -1) {
+          result.push(line = line.splice(-1));
+        } else {
+          result.push(line = line.splice(index + 1));
+        }
       }
     });
   });
@@ -326,13 +342,13 @@ D.composeText = (source, maxWidth) => {
   const element = D.createElement(`<div></div>`);
   result.forEach(line => {
     const div = D.createElement(`<div></div>`);
-    line.forEach(char => {
+    line.forEach(u => {
       div.append(D.createElement(`
         <span style="
           display: inline-block;
-          letter-spacing: ${D.numberToCssString(char.advance - char.width)}px;
-          padding-right: ${D.numberToCssString(char.rubySpacing)}px;
-        ">${D.escapeHTML(char.char)}</span>
+          width: ${D.numberToCssString(u.advance)}px;
+          margin-right: ${D.numberToCssString(u.rubySpacing)}px;
+        ">${D.escapeHTML(u.char)}</span>
       `));
     });
     element.append(div);
