@@ -265,7 +265,11 @@ D.parseParagraph = (source, fontSize, font) => {
         if (!text) {
           result.push(text = { items: [], fontSize: fontSize, font: font });
         }
-        text.items.push(item = { main: parseChars(node.textContent, fontSize, font) });
+        text.items.push(item = {
+          main: parseChars(node.textContent, fontSize, font),
+          rubyOverhangPrev: 0,
+          rubyOverhangNext: 0,
+        });
         break;
     };
   };
@@ -294,7 +298,6 @@ const canBreak = (u, v) =>
   // 連続する欧文用文字
   || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
 
-
 // 改行直後の文字の位置を返す。
 const breakLine = (source, maxWidth) => {
   let advance = 0;
@@ -304,22 +307,33 @@ const breakLine = (source, maxWidth) => {
 };
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
-const getRubyOverhangBefore = item => getRubyOverhang(item && !item.ruby && item.main.slice(-1)[0]);
-const getRubyOverhangAfter = item => getRubyOverhang(item && !item.ruby && item.main[0]);
 
-const updateSpacing = source => {
-  return source.map((item, i) => {
+const updateLayout = source => {
+  source.forEach((item, i) => {
     if (item.ruby) {
       const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
       const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
-      const rubyOverhangBefore = getRubyOverhangBefore(source[i - 1]);
-      const rubyOverhangAfter = getRubyOverhangAfter(source[i + 1]);
-      const spacing = Math.max(0, rubyWidth - (rubyOverhangBefore + mainWidth + rubyOverhangAfter)) / item.main.length;
-      item.main.forEach(u => u.spacing = spacing);
-      return spacing > 0 && rubyOverhangAfter > 0;
+
+      const prev = source[i - 1];
+      const next = source[i + 1];
+      const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
+      const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
+      const rubyOverhangSum = rubyOverhangPrev + rubyOverhangNext;
+      const rubyOverhang = Math.max(0, Math.min(rubyWidth - mainWidth, rubyOverhangSum));
+      const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
+
+      const mainSpacing = Math.max(0, rubyWidth - (mainWidth + rubyOverhang)) / item.main.length;
+      const rubySpacing = Math.max(0, (mainWidth + rubyOverhang) - rubyWidth) / item.main.length;
+
+      item.main.forEach(u => u.spacing = mainSpacing);
+      item.ruby.forEach(u => u.spacing = rubySpacing);
+      item.ruby[0].spacing = Math.max(0, (rubySpacing - item.ruby[0].advance) * 0.5);
+      item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
+      item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
     } else {
       item.main.forEach(u => u.spacing = 0);
-      return false;
+      item.rubyOverhangPrev = 0;
+      item.rubyOverhangNext = 0;
     }
   });
 };
@@ -330,67 +344,50 @@ D.composeText = (source, maxWidth) => {
   let lines = [];
 
   while (true) {
-    const rubyOverhangAfter = updateSpacing(items1);
-    let index = breakLine(items1.map(item => item.main).flat(), maxWidth);
-    if (index === -1) {
-      lines.push(items1);
-      // items2が空ならば終了。
-      if (items2.length === 0) {
-        break;
-      } else {
-        items1 = items2;
-        items2 = [];
-        continue;
-      }
-    }
-    index = index === 0 ? 1 : index - 1;
+    updateLayout(items1);
+    const index = breakLine(items1.map(item => item.main).flat(), maxWidth);
+    if (index !== -1) {
+      // 改行直前の文字の位置とし、最低でも1文字は行に残るものとする。
+      let mainIndex = Math.max(0, index - 1);
+      const itemIndex = items1.findIndex(item => {
+        if (mainIndex < item.main.length) {
+          return true;
+        } else {
+          mainIndex -= item.main.length;
+          return false;
+        }
+      });
 
-    let mainIndex = index;
-    const itemIndex = items1.findIndex(item => {
-      if (mainIndex < item.main.length) {
-        return true;
-      } else {
-        mainIndex -= item.main.length;
-        return false;
-      }
-    });
-
-    const item = items1[itemIndex];
-    if (mainIndex === item.main.length - 1) {
-      if (rubyOverhangAfter[itemIndex]) {
+      const item = items1[itemIndex];
+      if (mainIndex === item.main.length - 1) {
         items2 = [ ...items1.splice(itemIndex + 1), ...items2 ];
-        continue;
+        if (item.rubyOverhangPrev > 0) {
+          continue;
+        }
       } else {
-        items2 = [ ...items1.splice(itemIndex + 1), ...items2 ];
-      }
-    } else {
-      // itemの途中で改行している場合、分割する
-      if (item.ruby) {
-        // ルビの割り当てをしないとダメ
-        const item1 = {
-          main: item.main.slice(0, mainIndex + 1),
-        };
-        const item2 = {
-          main: item.main.slice(mainIndex + 1),
-        };
-
-        // ルビの改行を計算する
-        // ルビのほうが長い場合、はみ出せる量も考える必要がある。
-        // const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
-        // const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
-
-
-
-
-
-        items2 = [ item2, ...items1.slice(itemIndex + 1), ...items2 ];
-        items1 = [ ...items1.slice(0, itemIndex), item1 ];
-      } else {
-        // rubyでなければ、spacingの更新は不要
+        // itemの途中で改行している場合、分割する
         const item1 = { main: item.main.slice(0, mainIndex + 1) };
         const item2 = { main: item.main.slice(mainIndex + 1) };
         items2 = [ item2, ...items1.slice(itemIndex + 1), ...items2 ];
         items1 = [ ...items1.slice(0, itemIndex), item1 ];
+
+        if (item.ruby) {
+          const width = item1.main.reduce((width, u) => width + u.advance + u.spacing, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev;
+          const index = breakLine(item.ruby, width);
+          console.log("ruby breakLine", index);
+          if (index === -1) {
+            item1.ruby = item.ruby;
+          } else if (index === 0) {
+            item2.ruby = item.ruby;
+          } else {
+            item1.ruby = item.ruby.slice(0, index);
+            item2.ruby = item.ruby.slice(index);
+          }
+          // ルビの割り当てを計算する
+          // 第一行の幅を決める
+          // mainWidth rubyOberhangBefore + width(item1.main)
+          // ruby.spacingも定まっている
+        }
       }
     }
 
