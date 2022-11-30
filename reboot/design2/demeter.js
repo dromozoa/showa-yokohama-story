@@ -132,8 +132,8 @@ const initializeInternalRoot = () => {
 //   U+E001:   800/1000
 //   U+E002:   900/1000
 //   Kerning: -300/1000
-// という寸法を持つ。フォントサイズが100pxのとき、カーニングが効いていれば、文
-// 字列"\uE001\uE0002"の幅は140pxになる。
+// という寸法を持つ。フォントサイズが100pxのとき、カーニングが有効ならば、文字
+// 列"\uE001\uE0002"の幅は140pxになる。
 
 const checkKerning = async () => {
   const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
@@ -218,13 +218,20 @@ const parseChars = (source, fontSize, font) => {
 
   const result = [...source].map(char => {
     const width = context.measureText(char).width;
-    return { char: char, code: char.codePointAt(0), width: width, advance: width };
+    return {
+      char: char,
+      code: char.codePointAt(0),
+      width: width,
+      advance: width,
+      kerning: 0,
+      spacing: 0,
+    };
   });
 
   if (D.featureKerning) {
     result.slice(1).forEach((v, i) => {
       const u = result[i];
-      u.advance = context.measureText(u.char + v.char).width - v.width;
+      u.kerning = u.width - (u.advance = context.measureText(u.char + v.char).width - v.width);
     });
   }
 
@@ -269,87 +276,190 @@ D.parseParagraph = (source, fontSize, font) => {
 
 //-------------------------------------------------------------------------
 
-const getRubyOverhang = u => D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
+// const isWhiteSpace = u => u.code === 0x20 || u.code === 0x09 || u.code === 0x0A || u.code === 0x0D;
 
-const isUnbreakable = (u, v) => {
-  const a = u.code;
-  const b = v.code;
+const canBreak = (u, v) =>
+  // 行頭禁則
+  !( D.jlreq.isLineStartProhibited(v)
+  // 行末禁則
+  || D.jlreq.isLineEndProhibited(u)
+  // 連続するダッシュ・三点リーダ・二点リーダ
+  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
+  // くの字
+  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  // 前置省略記号とアラビア数字
+  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  // アラビア数字と後置省略記号
+  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  // 連続する欧文用文字
+  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
 
-  // 行頭禁則と行末禁則
-  return D.jlreq.isLineStartProhibited(b) || D.jlreq.isLineEndProhibited(a)
-    // 連続するダッシュ・三点リーダ・二点リーダ
-    || a === b && (a === 0x2014 || a === 0x2026 || a === 0x2025)
-    // くの字
-    || (a === 0x3033 || a === 0x3034) && b === 0x3035
-    // 前置省略記号とアラビア数字
-    || D.jlreq.isPrefixedAbbreviation(a) && 0x30 <= b && b <= 0x39
-    // アラビア数字と後置省略記号
-    || 0x30 <= a && a <= 0x39 && D.jlreq.isPostfixedAbbreviation(b)
-    // 連続する欧文用文字
-    || D.jlreq.isWesternCharacter(a) && D.jlreq.isWesternCharacter(b);
+
+// 改行直後の文字の位置を返す。
+const breakLine = (source, maxWidth) => {
+  let advance = 0;
+  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
+  return index === -1 ? limit : index + 1;
 };
 
-const isWhiteSpace = u => u.code === 0x20 || u.code === 0x09 || u.code === 0x0A || u.code === 0x0D;
+const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
+const getRubyOverhangBefore = item => getRubyOverhang(item && !item.ruby && item.main.slice(-1)[0]);
+const getRubyOverhangAfter = item => getRubyOverhang(item && !item.ruby && item.main[0]);
 
-D.composeText = (source, maxWidth) => {
-  let line = [];
-  const result = [ line ];
-
-  source.items.forEach((item, i) => {
-    let rubySpacing = 0;
+const updateSpacing = source => {
+  return source.map((item, i) => {
     if (item.ruby) {
       const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
-      const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0);
-      if (mainWidth < rubyWidth) {
-        let rubyOverhangBefore = 0;
-        const before = source.items[i - 1];
-        if (before && !before.ruby) {
-          rubyOverhangBefore = getRubyOverhang(before.main.slice(-1)[0]);
-        }
+      const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+      const rubyOverhangBefore = getRubyOverhangBefore(source[i - 1]);
+      const rubyOverhangAfter = getRubyOverhangAfter(source[i + 1]);
+      const spacing = Math.max(0, rubyWidth - (rubyOverhangBefore + mainWidth + rubyOverhangAfter)) / item.main.length;
+      item.main.forEach(u => u.spacing = spacing);
+      return spacing > 0 && rubyOverhangAfter > 0;
+    } else {
+      item.main.forEach(u => u.spacing = 0);
+      return false;
+    }
+  });
+};
 
-        let rubyOverhangAfter = 0;
-        const after = source.items[i + 1];
-        if (after && !after.ruby) {
-          rubyOverhangAfter = getRubyOverhang(after.main[0]);
-        }
+D.composeText = (source, maxWidth) => {
+  let items1 = [...source.items];
+  let items2 = [];
+  let lines = [];
 
-        rubySpacing = Math.max(0, rubyWidth - (rubyOverhangBefore + mainWidth + rubyOverhangAfter)) / item.main.length;
+  while (true) {
+    const rubyOverhangAfter = updateSpacing(items1);
+    let index = breakLine(items1.map(item => item.main).flat(), maxWidth);
+    if (index === -1) {
+      lines.push(items1);
+      // items2が空ならば終了。
+      if (items2.length === 0) {
+        break;
+      } else {
+        items1 = items2;
+        items2 = [];
+        continue;
+      }
+    }
+    index = index === 0 ? 1 : index - 1;
+
+    let mainIndex = index;
+    const itemIndex = items1.findIndex(item => {
+      if (mainIndex < item.main.length) {
+        return true;
+      } else {
+        mainIndex -= item.main.length;
+        return false;
+      }
+    });
+
+    const item = items1[itemIndex];
+    if (mainIndex === item.main.length - 1) {
+      if (rubyOverhangAfter[itemIndex]) {
+        items2 = [ ...items1.splice(itemIndex + 1), ...items2 ];
+        continue;
+      } else {
+        items2 = [ ...items1.splice(itemIndex + 1), ...items2 ];
+      }
+    } else {
+      // itemの途中で改行している場合、分割する
+      if (item.ruby) {
+        // ルビの割り当てをしないとダメ
+        const item1 = {
+          main: item.main.slice(0, mainIndex + 1),
+        };
+        const item2 = {
+          main: item.main.slice(mainIndex + 1),
+        };
+
+        // ルビの改行を計算する
+        // ルビのほうが長い場合、はみ出せる量も考える必要がある。
+        // const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
+        // const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+
+
+
+
+
+        items2 = [ item2, ...items1.slice(itemIndex + 1), ...items2 ];
+        items1 = [ ...items1.slice(0, itemIndex), item1 ];
+      } else {
+        // rubyでなければ、spacingの更新は不要
+        const item1 = { main: item.main.slice(0, mainIndex + 1) };
+        const item2 = { main: item.main.slice(mainIndex + 1) };
+        items2 = [ item2, ...items1.slice(itemIndex + 1), ...items2 ];
+        items1 = [ ...items1.slice(0, itemIndex), item1 ];
       }
     }
 
-    item.main.forEach(u => {
-      u.rubySpacing = rubySpacing;
+    lines.push(items1);
+    if (items2.length === 0) {
+      break;
+    } else {
+      items1 = items2;
+      items2 = [];
+    }
+  }
 
-      const width = line.reduce((width, u) => width + u.advance + u.rubySpacing, 0) + u.width + u.rubySpacing;
-      if (width <= maxWidth) {
-        line.push(u);
-      } else {
-        line.push(u);
-        const index = line.slice(0, -1).findLastIndex((u, i) => {
-          const v = line[i + 1];
-          return !isUnbreakable(u, v);
-        });
+/*
+  const items = [...source.items];
+  const rubyOverhangAfter = updateSpacing(items);
+  const chars = items.map(item => item.main).flat();
+  console.log(rubyOverhangAfter);
 
-        if (index === -1) {
-          result.push(line = line.splice(-1));
-        } else {
-          result.push(line = line.splice(index + 1));
-        }
-      }
+  const index = breakLine(chars, maxWidth);
+  if (index === -1) {
+    // 改行が不要。処理終わり。
+  } else {
+    // 改行がどのitemで行われるか調べる。
+    let offset = 0;
+    let y;
+    const x = items.findIndex(item => {
+      y = index - offset;
+      offset += item.main.length;
+      return y < item.main.length;
     });
-  });
+
+    const item = items[x];
+    if (y === item.main.length - 1) {
+      let new_items = items.slice(0, x + 1);
+      // new_itemsで改行を調べる
+      // goto!
+    }
+
+    // 改行によって分けられるitemを分割して、行にわりふる。
+
+  }
+
+  const result = [];
+  while (true) {
+    const index = breakLine(chars, maxWidth);
+    if (index === -1) {
+      result.push(chars);
+      break;
+    } else {
+      result.push(chars.splice(0, index + 1));
+    }
+  }
+*/
+
+  // 改行位置が仮決めされたら、ルビのぶら下げにともなう調整を行う。
 
   const element = D.createElement(`<div></div>`);
-  result.forEach(line => {
+  lines.forEach(line => {
     const div = D.createElement(`<div></div>`);
-    line.forEach(u => {
-      div.append(D.createElement(`
-        <span style="
-          display: inline-block;
-          width: ${D.numberToCssString(u.advance)}px;
-          margin-right: ${D.numberToCssString(u.rubySpacing)}px;
-        ">${D.escapeHTML(u.char)}</span>
-      `));
+    line.forEach(item => {
+      item.main.forEach(u => {
+        div.append(D.createElement(`
+          <span style="
+            display: inline-block;
+            width: ${D.numberToCssString(u.advance)}px;
+            margin-right: ${D.numberToCssString(u.spacing)}px;
+          ">${D.escapeHTML(u.char)}</span>
+        `));
+      });
     });
     element.append(div);
   });
