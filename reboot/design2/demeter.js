@@ -133,7 +133,7 @@ const initializeInternalRoot = () => {
 //   U+E002:   900/1000
 //   Kerning: -300/1000
 // という寸法を持つ。フォントサイズが100pxのとき、カーニングが有効ならば、文字
-// 列"\uE001\uE0002"の幅は140pxになる。
+// 列"\uE001\uE0002"は幅140pxになる。
 
 const checkKerning = async () => {
   const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
@@ -339,17 +339,17 @@ const updateLayout = source => {
 };
 
 D.composeText = (source, maxWidth) => {
-  let items1 = [...source.items];
-  let items2 = [];
-  let lines = [];
+  const lines = [];
+  let line1 = [...source.items];
+  let line2 = [];
 
   while (true) {
-    updateLayout(items1);
-    const index = breakLine(items1.map(item => item.main).flat(), maxWidth);
+    updateLayout(line1);
+
+    const index = breakLine(line1.map(item => item.main).flat(), maxWidth);
     if (index !== -1) {
-      // 改行直前の文字の位置とし、最低でも1文字は行に残るものとする。
       let mainIndex = Math.max(0, index - 1);
-      const itemIndex = items1.findIndex(item => {
+      const itemIndex = line1.findIndex(item => {
         if (mainIndex < item.main.length) {
           return true;
         } else {
@@ -358,23 +358,29 @@ D.composeText = (source, maxWidth) => {
         }
       });
 
-      const item = items1[itemIndex];
+      const item = line1[itemIndex];
       if (mainIndex === item.main.length - 1) {
-        items2 = [ ...items1.splice(itemIndex + 1), ...items2 ];
-        if (item.rubyOverhangPrev > 0) {
+        line2 = [ ...line1.splice(itemIndex + 1), ...line2 ];
+        if (item.rubyOverhangNext > 0) {
           continue;
         }
       } else {
-        // itemの途中で改行している場合、分割する
-        const item1 = { main: item.main.slice(0, mainIndex + 1) };
-        const item2 = { main: item.main.slice(mainIndex + 1) };
-        items2 = [ item2, ...items1.slice(itemIndex + 1), ...items2 ];
-        items1 = [ ...items1.slice(0, itemIndex), item1 ];
+        const item1 = {
+          main: item.main.slice(0, mainIndex + 1),
+          rubyOverhangPrev: item.rubyOverhangPrev,
+          rubyOverhangNext: 0,
+        };
+        const item2 = {
+          main: item.main.slice(mainIndex + 1),
+          rubyOverhangPrev: 0,
+          rubyOverhangNext: item.rubyOverhangNext,
+        };
+
+        line2 = [ item2, ...line1.slice(itemIndex + 1), ...line2 ];
+        line1 = [ ...line1.slice(0, itemIndex), item1 ];
 
         if (item.ruby) {
-          const width = item1.main.reduce((width, u) => width + u.advance + u.spacing, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev;
-          const index = breakLine(item.ruby, width);
-          console.log("ruby breakLine", index);
+          const index = breakLine(item.ruby, item1.main.reduce((width, u) => width + u.advance + u.spacing, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev);
           if (index === -1) {
             item1.ruby = item.ruby;
           } else if (index === 0) {
@@ -383,66 +389,25 @@ D.composeText = (source, maxWidth) => {
             item1.ruby = item.ruby.slice(0, index);
             item2.ruby = item.ruby.slice(index);
           }
-          // ルビの割り当てを計算する
-          // 第一行の幅を決める
-          // mainWidth rubyOberhangBefore + width(item1.main)
-          // ruby.spacingも定まっている
         }
       }
     }
 
-    lines.push(items1);
-    if (items2.length === 0) {
+    lines.push(line1);
+    if (line2.length === 0) {
       break;
     } else {
-      items1 = items2;
-      items2 = [];
+      line1 = line2;
+      line2 = [];
     }
   }
 
-/*
-  const items = [...source.items];
-  const rubyOverhangAfter = updateSpacing(items);
-  const chars = items.map(item => item.main).flat();
-  console.log(rubyOverhangAfter);
 
-  const index = breakLine(chars, maxWidth);
-  if (index === -1) {
-    // 改行が不要。処理終わり。
-  } else {
-    // 改行がどのitemで行われるか調べる。
-    let offset = 0;
-    let y;
-    const x = items.findIndex(item => {
-      y = index - offset;
-      offset += item.main.length;
-      return y < item.main.length;
-    });
 
-    const item = items[x];
-    if (y === item.main.length - 1) {
-      let new_items = items.slice(0, x + 1);
-      // new_itemsで改行を調べる
-      // goto!
-    }
 
-    // 改行によって分けられるitemを分割して、行にわりふる。
 
-  }
 
-  const result = [];
-  while (true) {
-    const index = breakLine(chars, maxWidth);
-    if (index === -1) {
-      result.push(chars);
-      break;
-    } else {
-      result.push(chars.splice(0, index + 1));
-    }
-  }
-*/
-
-  // 改行位置が仮決めされたら、ルビのぶら下げにともなう調整を行う。
+  // 文字の位置を確定させる。
 
   const element = D.createElement(`<div></div>`);
   lines.forEach(line => {
