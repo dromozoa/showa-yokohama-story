@@ -212,26 +212,6 @@ D.loadFontFaces = async (timeout) => {
 
 //-------------------------------------------------------------------------
 
-const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
-
-const canBreak = (u, v) =>
-  // 行頭禁則
-  !( D.jlreq.isLineStartProhibited(v)
-  // 行末禁則
-  || D.jlreq.isLineEndProhibited(u)
-  // 連続するダッシュ・三点リーダ・二点リーダ
-  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
-  // くの字
-  || (u === 0x3033 || u === 0x3034) && v === 0x3035
-  // 前置省略記号とアラビア数字
-  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
-  // アラビア数字と後置省略記号
-  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
-  // 連続する欧文用文字
-  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
-
-//-------------------------------------------------------------------------
-
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
   context.font = `${D.numberToCssString(fontSize)}px ${font}`;
@@ -255,27 +235,16 @@ const parseChars = (source, fontSize, font) => {
   return result;
 };
 
-const updateChars = (source, fontSize, font) => {
-  const buffer = source.slice(1);
-
+const updateKerning = (source, fontSize, font) => {
   if (D.featureKerning) {
     const context = internalCanvas.getContext("2d");
     context.font = `${D.numberToCssString(fontSize)}px ${font}`;
 
-    buffer.forEach((v, i) => {
+    source.slice(1).forEach((v, i) => {
       const u = source[i];
       u.kerning = u.width - (u.advance = context.measureText(u.char + v.char).width - v.width);
     });
   }
-
-  source.filter(u => isWhiteSpace(u.code)).forEach(u => u.spacingBudget = Math.max(0, fontSize * 0.5 - u.progress));
-
-  buffer.forEach((v, i) => {
-    const u = source[i];
-    if (canBreak(u.code, v.code)) {
-      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
-    }
-  });
 };
 
 const parseParagraphBreakTable = {
@@ -294,7 +263,7 @@ D.parseParagraph = (source, fontSize, font) => {
     switch (node.nodeType) {
       case Node.ELEMENT_NODE:
         if (node.tagName === "RT") {
-          updateChars(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
+          updateKerning(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
         } else {
           node.childNodes.forEach(parse);
           if (parseParagraphBreakTable[node.tagName]) {
@@ -316,18 +285,46 @@ D.parseParagraph = (source, fontSize, font) => {
   };
   parse(source);
 
-  result.forEach(text => updateChars(text.items.map(item => item.main).flat(), fontSize, font));
+  result.forEach(text => updateKerning(text.items.map(item => item.main).flat(), fontSize, font));
 
   return result;
 };
 
 //-------------------------------------------------------------------------
 
-const resetSpacing = (source) => {
+const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
+
+const canBreak = (u, v) =>
+  // 行頭禁則
+  !( D.jlreq.isLineStartProhibited(v)
+  // 行末禁則
+  || D.jlreq.isLineEndProhibited(u)
+  // 連続するダッシュ・三点リーダ・二点リーダ
+  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
+  // くの字
+  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  // 前置省略記号とアラビア数字
+  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  // アラビア数字と後置省略記号
+  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  // 連続する欧文用文字
+  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
+
+//-------------------------------------------------------------------------
+
+const resetSpacing = (source, fontSize) => {
   source.forEach(u => {
+    u.spacing = 0;
+    u.spacingBudget = isWhiteSpace(u.code) ? Math.max(0, fontSize * 0.5 - u.advance) : 0;
     u.spacingBudgeted = 0;
     u.spacingFallback = 0;
-    u.spacing = 0;
+  });
+
+  source.slice(1).forEach((v, i) => {
+    const u = source[i];
+    if (canBreak(u.code, v.code)) {
+      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
+    }
   });
 };
 
@@ -343,10 +340,15 @@ const addSpacingBudgeted = (source, request, tolerance) => {
 
   let max = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
   let min = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity);
+  let omax = max;
+  let omin = min;
+  let spacing;
+  let actual;
+
   for (let i = 0; i < 32; ++i) {
-    const spacing = (min + max) * 0.5;
-    const actual = source.reduce((acc, u) => acc + Math.max(0, Math.min(spacing, u.spacingBudget) - u.spacingBudgeted), 0);
-    if (Math.abs(actual - request) < tolerance) {
+    spacing = (min + max) * 0.5;
+    actual = source.reduce((acc, u) => acc + Math.max(0, Math.min(spacing, u.spacingBudget) - u.spacingBudgeted), 0);
+    if (Math.abs(actual - request) <= tolerance) {
       source.forEach(u => {
         u.spacingBudgeted = Math.max(Math.min(spacing, u.spacingBudget), u.spacingBudgeted);
         u.spacing = u.spacingBudgeted + u.spacingFallback;
@@ -360,18 +362,22 @@ const addSpacingBudgeted = (source, request, tolerance) => {
     }
   }
 
+  console.log(omin, omax, spacing, request, source.length, actual);
   throw new Error("too many iterations");
 };
 
 const addSpacingFallback = (source, request, tolerance) => {
   const average = request / source.length;
-  let max = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), average);
-  let min = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), average);
-  // let min = 0;
+  let max = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), -Infinity) + average;
+  let min = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), Infinity) + average;
+  let omax = max;
+  let omin = min;
+  let spacing;
+  let actual;
   for (let i = 0; i < 256; ++i) {
-    const spacing = (max + min) * 0.5;
-    const actual = source.reduce((acc, u) => acc + Math.max(0, spacing - u.spacingFallback), 0);
-    if (Math.abs(actual - request) < tolerance) {
+    spacing = (max + min) * 0.5;
+    actual = source.reduce((acc, u) => acc + Math.max(0, spacing - u.spacingFallback), 0);
+    if (Math.abs(actual - request) <= tolerance) {
       source.forEach(u => {
         u.spacingFallback = Math.max(spacing, u.spacingFallback);
         u.spacing = u.spacingBudgeted + u.spacingFallback;
@@ -385,6 +391,7 @@ const addSpacingFallback = (source, request, tolerance) => {
     }
   }
 
+  console.log(omin, omax, spacing, request, source.length, average, actual);
   throw new Error("too many iterations");
 };
 
@@ -403,7 +410,9 @@ const addSpacing = (source, request) => {
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
 
-const updateItems = source => {
+const updateItems = (source, fontSize) => {
+  resetSpacing(source.map(item => item.main).flat(), fontSize);
+
   source.forEach((item, i) => {
     if (item.ruby) {
       const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
@@ -418,13 +427,12 @@ const updateItems = source => {
       const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
 
       const mainSpacing = Math.max(0, rubyWidth - (mainWidth + rubyOverhang));
-      resetSpacing(item.main);
       if (mainSpacing > 0) {
         addSpacing(item.main, mainSpacing);
       }
 
       const rubySpacing = Math.max(0, (mainWidth + rubyOverhang) - rubyWidth);
-      resetSpacing(item.ruby);
+      resetSpacing(item.ruby, fontSize * 0.5);
       if (rubySpacing > 0) {
         addSpacing(item.ruby, rubySpacing);
       }
@@ -432,7 +440,7 @@ const updateItems = source => {
       item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
       item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
     } else {
-      resetSpacing(item.main);
+      resetSpacing(item.main, fontSize);
       item.rubyOverhangPrev = 0;
       item.rubyOverhangNext = 0;
     }
@@ -464,7 +472,7 @@ D.composeText = (source, maxWidth) => {
   let line2 = [];
 
   while (true) {
-    updateItems(line1);
+    updateItems(line1, source.fontSize);
 
     const index = breakMain(line1.map(item => item.main).flat(), maxWidth);
     if (index !== -1) {
@@ -525,7 +533,15 @@ D.composeText = (source, maxWidth) => {
   // 文字の位置を確定させる。
 
   const element = D.createElement(`<div></div>`);
-  lines.forEach(line => {
+  lines.forEach((line, i) => {
+    updateItems(line, source.fontSize);
+    const chars = line.map(item => item.main).flat();
+    const width = chars.reduce((acc, u) => acc + u.advance + u.spacing, 0) + chars.slice(-1)[0].kerning;
+    console.log(width, maxWidth);
+    if (i < lines.length - 1) {
+      addSpacing(chars, maxWidth - width);
+    }
+
     const div = D.createElement(`<div></div>`);
     line.forEach(item => {
       item.main.forEach(u => {

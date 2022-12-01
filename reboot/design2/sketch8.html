@@ -48,7 +48,10 @@
 
 <template id="template">
 
-<div>TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo </div>
+<div><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。<br>TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo<br>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo<br><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo<br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><br><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo</span><br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span></div>
+
+<div><ruby>親文字<rt>TaTiTuTeTo TaTiTuTeTo</rt></ruby>。</div>
+
 
 <!--
 <div><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。</div>
@@ -113,10 +116,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const p = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
   // const x = p.map(t => D.composeText(t, t.fontSize * 24));
   const x = p.map(t => D.composeText(t, 478));
+  document.getElementById("output").append(...x);
   console.log("px", performance.now() - start);
   console.log(p);
 
-  document.getElementById("output").append(...x);
 
 
 });
