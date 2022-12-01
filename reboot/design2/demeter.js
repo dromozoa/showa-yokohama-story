@@ -323,124 +323,82 @@ D.parseParagraph = (source, fontSize, font) => {
 
 //-------------------------------------------------------------------------
 
-// 改行「直前」の文字の位置を計算する。空行を許さない。
-const breakMain = (source, maxWidth) => {
-  let advance = 0;
-  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
-  if (limit < 1) {
-    return source.length === 1 ? -1 : limit;
-  }
-  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
-  return index === -1 ? limit - 1: index;
-};
-
-// 改行「直後」の文字の位置を計算する。空行を許す。
-const breakRuby = (source, maxWidth) => {
-  let advance = -(source[0].advance + source[0].spacing) * 0.5;
-  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
-  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
-  return index === -1 ? limit : index + 1;
-};
-
-/* アキの由来
-
-
-
-  優先レベル
-    1. 空白               1/2まで（空白は1/4-1/3なので、+1/6-1/4)
-    2. 分割可能な文字間  +1/4まで
-    3. 分割不能な文字間   any
-
-  処理レベル
-    1. 親文字のほうが長い場合に、ルビ文字をあける
-    2. ルビ文字のほうが長い場合に、親文字をあける
-    3. 行長に本文を合わせる
-    4. 行長に合わせた親文字にルビ文字を合わせる
-
-  spacingBudgeted
-  spacingActual
-  spacing
-
-
-
-*/
-
-const addSpacing = (source, total) => {
-  // 対象の文字だけに集約している
-
-  // budgetを考慮する場合、残りを求める
-  let budget = 0;
+const resetSpacing = (source) => {
   source.forEach(u => {
-    budget += Math.max(0, u.spacingBudget - u.spacing);
+    u.spacingBudgeted = 0;
+    u.spacingFallback = 0;
+    u.spacing = 0;
   });
-  if (budget < total) {
-    // budgetを使いきる
-    source.forEach(u => {
-      u.spacing = Math.max(u.spacing, u.spacingBudget);
-    });
-    return total - budget;
-  } else {
-    // totalぶんだけ使う
-    // 連立方程式をとけばいいけど、てきとうにくりかえす？
-    // まじめにやると、n^2/2回まわすことになる
-    // 二分探索だと？
-    // n文字だと、でSnピクセルを配分するとするとlog(Sn)n回でピクセル精度？
-    // 回数は似た様なもんで安定性の問題からするとまじめにやったほうがよいか
-    // 高さの違う水槽に水を入れていく問題
+};
 
-    const avg = total / source.length;
-    let max = avg + Math.max(...source.map(u => u.spacing));
-    let min = 0;
-    let current = (min + max) * 0.5;
-    while (true) {
-      // currentで計算する
-      let add = 0;
+const addSpacingBudgeted = (source, request, tolerance) => {
+  const remaining = source.reduce((acc, u) => acc + u.spacingBudget - u.spacingBudgeted, 0);
+  if (remaining <= request) {
+    source.forEach(u => {
+      u.spacingBudgeted = u.spacingBudget;
+      u.spacing = u.spacingBudgeted + u.spacingFallback;
+    });
+    return request - remaining;
+  }
+
+  let max = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
+  let min = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity);
+  for (let i = 0; i < 32; ++i) {
+    const spacing = (min + max) * 0.5;
+    const actual = source.reduce((acc, u) => acc + Math.max(0, Math.min(spacing, u.spacingBudget) - u.spacingBudgeted), 0);
+    if (Math.abs(actual - request) < tolerance) {
       source.forEach(u => {
-        if (u.spacing < current) {
-          add += Math.min(current, u.spacingBudget) - u.spacing;
-        }
+        u.spacingBudgeted = Math.max(Math.min(spacing, u.spacingBudget), u.spacingBudgeted);
+        u.spacing = u.spacingBudgeted + u.spacingFallback;
       });
-      let diff = add - total;
-      if (Math.abs(diff) < 0.5) {
-        break;
-      }
-      if (diff > 0) {
-        // 高すぎたのでmin側によせる
-        max = current;
-      } else {
-        min = current;
-      }
-      current = (min + max) * 0.5;
+      console.log(i, min, max, spacing, request - actual);
+      return request - actual;
+    } else if (actual > request) {
+      max = spacing;
+    } else {
+      min = spacing;
     }
-
-    source.forEach(u => {
-      max = Math.max(max, u.spacing + avg);
-    });
-
-    return rest;
   }
+
+  throw new Error("too many iterations");
 };
 
-const updateSpacing = (source, spacing) => {
-  // 空ける箇所を決める
-  // 条件を満たすまで空けていく
-
-  // 文字間の定義は、その文字の後とする
-  // u,vのあいだを空けられるならば、uに足す
-
-};
-
-const updateSpacingBudget = (source, fontSize) => {
-  source.forEach(u => {
-    u.spacingBudget = isWhiteSpace(u.code) ? Math.max(0, fontSize * 0.5 - u.progress) : 0;
-  });
-
-  source.slice(1).forEach((v, i) => {
-    const u = source[i];
-    if (canBreak(u.code, v.code)) {
-      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
+const addSpacingFallback = (source, request, tolerance) => {
+  const average = request / source.length;
+  let max = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), average);
+  let min = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), average);
+  // let min = 0;
+  for (let i = 0; i < 256; ++i) {
+    const spacing = (max + min) * 0.5;
+    const actual = source.reduce((acc, u) => acc + Math.max(0, spacing - u.spacingFallback), 0);
+    if (Math.abs(actual - request) < tolerance) {
+      source.forEach(u => {
+        u.spacingFallback = Math.max(spacing, u.spacingFallback);
+        u.spacing = u.spacingBudgeted + u.spacingFallback;
+      });
+      console.log(i, min, max, spacing, request - actual);
+      return request - actual;
+    } else if (actual > request) {
+      max = spacing;
+    } else {
+      min = spacing;
     }
-  });
+  }
+
+  throw new Error("too many iterations");
+};
+
+const addSpacing = (source, request) => {
+  const tolerance = 0.25;
+  request = addSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
+  if (request < 0.5) {
+    return request;
+  }
+  request = addSpacingBudgeted(source.filter(u => !isWhiteSpace(u.code) && u.spacingBudget > 0), request, tolerance);
+  if (request < 0.5) {
+    return request;
+  }
+  return addSpacingFallback(source, request, tolerance);
 };
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
@@ -459,19 +417,45 @@ const updateItems = source => {
       const rubyOverhang = Math.max(0, Math.min(rubyWidth - mainWidth, rubyOverhangSum));
       const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
 
-      const mainSpacing = Math.max(0, rubyWidth - (mainWidth + rubyOverhang)) / item.main.length;
-      const rubySpacing = Math.max(0, (mainWidth + rubyOverhang) - rubyWidth) / item.main.length;
+      const mainSpacing = Math.max(0, rubyWidth - (mainWidth + rubyOverhang));
+      resetSpacing(item.main);
+      if (mainSpacing > 0) {
+        addSpacing(item.main, mainSpacing);
+      }
 
-      item.main.forEach(u => u.spacing = mainSpacing);
-      item.ruby.forEach(u => u.spacing = rubySpacing);
+      const rubySpacing = Math.max(0, (mainWidth + rubyOverhang) - rubyWidth);
+      resetSpacing(item.ruby);
+      if (rubySpacing > 0) {
+        addSpacing(item.ruby, rubySpacing);
+      }
+
       item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
       item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
     } else {
-      item.main.forEach(u => u.spacing = 0);
+      resetSpacing(item.main);
       item.rubyOverhangPrev = 0;
       item.rubyOverhangNext = 0;
     }
   });
+};
+
+// 改行「直前」の文字の位置を計算する。空行を許さない。
+const breakMain = (source, maxWidth) => {
+  let advance = 0;
+  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  if (limit < 1) {
+    return source.length === 1 ? -1 : limit;
+  }
+  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
+  return index === -1 ? limit - 1: index;
+};
+
+// 改行「直後」の文字の位置を計算する。空行を許す。
+const breakRuby = (source, maxWidth) => {
+  let advance = -(source[0].advance + source[0].spacing) * 0.5;
+  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
+  return index === -1 ? limit : index + 1;
 };
 
 D.composeText = (source, maxWidth) => {
@@ -537,11 +521,6 @@ D.composeText = (source, maxWidth) => {
       line2 = [];
     }
   }
-
-
-
-
-
 
   // 文字の位置を確定させる。
 
