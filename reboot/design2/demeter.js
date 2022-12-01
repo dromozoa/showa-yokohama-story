@@ -212,30 +212,70 @@ D.loadFontFaces = async (timeout) => {
 
 //-------------------------------------------------------------------------
 
+const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
+
+const canBreak = (u, v) =>
+  // 行頭禁則
+  !( D.jlreq.isLineStartProhibited(v)
+  // 行末禁則
+  || D.jlreq.isLineEndProhibited(u)
+  // 連続するダッシュ・三点リーダ・二点リーダ
+  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
+  // くの字
+  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  // 前置省略記号とアラビア数字
+  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  // アラビア数字と後置省略記号
+  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  // 連続する欧文用文字
+  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
+
+//-------------------------------------------------------------------------
+
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
   context.font = `${D.numberToCssString(fontSize)}px ${font}`;
 
   const result = [...source].map(char => {
+    const code = char.codePointAt(0);
     const width = context.measureText(char).width;
     return {
       char: char,
-      code: char.codePointAt(0),
+      code: code,
       width: width,
       advance: width,
       kerning: 0,
       spacing: 0,
+      spacingBudget: 0,
+      spacingBudgeted: 0,
+      spacingFallback: 0,
     };
   });
 
+  return result;
+};
+
+const updateChars = (source, fontSize, font) => {
+  const buffer = source.slice(1);
+
   if (D.featureKerning) {
-    result.slice(1).forEach((v, i) => {
-      const u = result[i];
+    const context = internalCanvas.getContext("2d");
+    context.font = `${D.numberToCssString(fontSize)}px ${font}`;
+
+    buffer.forEach((v, i) => {
+      const u = source[i];
       u.kerning = u.width - (u.advance = context.measureText(u.char + v.char).width - v.width);
     });
   }
 
-  return result;
+  source.filter(u => isWhiteSpace(u.code)).forEach(u => u.spacingBudget = Math.max(0, fontSize * 0.5 - u.progress));
+
+  buffer.forEach((v, i) => {
+    const u = source[i];
+    if (canBreak(u.code, v.code)) {
+      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
+    }
+  });
 };
 
 const parseParagraphBreakTable = {
@@ -245,6 +285,7 @@ const parseParagraphBreakTable = {
 };
 
 D.parseParagraph = (source, fontSize, font) => {
+  const rubyFontSize = fontSize * 0.5;
   const result = [];
   let text;
   let item;
@@ -253,7 +294,7 @@ D.parseParagraph = (source, fontSize, font) => {
     switch (node.nodeType) {
       case Node.ELEMENT_NODE:
         if (node.tagName === "RT") {
-          item.ruby = parseChars(node.textContent, fontSize * 0.5, font);
+          updateChars(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
         } else {
           node.childNodes.forEach(parse);
           if (parseParagraphBreakTable[node.tagName]) {
@@ -275,28 +316,12 @@ D.parseParagraph = (source, fontSize, font) => {
   };
   parse(source);
 
+  result.forEach(text => updateChars(text.items.map(item => item.main).flat(), fontSize, font));
+
   return result;
 };
 
 //-------------------------------------------------------------------------
-
-// const isWhiteSpace = u => u.code === 0x20 || u.code === 0x09 || u.code === 0x0A || u.code === 0x0D;
-
-const canBreak = (u, v) =>
-  // 行頭禁則
-  !( D.jlreq.isLineStartProhibited(v)
-  // 行末禁則
-  || D.jlreq.isLineEndProhibited(u)
-  // 連続するダッシュ・三点リーダ・二点リーダ
-  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
-  // くの字
-  || (u === 0x3033 || u === 0x3034) && v === 0x3035
-  // 前置省略記号とアラビア数字
-  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
-  // アラビア数字と後置省略記号
-  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
-  // 連続する欧文用文字
-  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
 
 // 改行「直前」の文字の位置を計算する。空行を許さない。
 const breakMain = (source, maxWidth) => {
@@ -340,9 +365,87 @@ const breakRuby = (source, maxWidth) => {
 
 */
 
+const addSpacing = (source, total) => {
+  // 対象の文字だけに集約している
+
+  // budgetを考慮する場合、残りを求める
+  let budget = 0;
+  source.forEach(u => {
+    budget += Math.max(0, u.spacingBudget - u.spacing);
+  });
+  if (budget < total) {
+    // budgetを使いきる
+    source.forEach(u => {
+      u.spacing = Math.max(u.spacing, u.spacingBudget);
+    });
+    return total - budget;
+  } else {
+    // totalぶんだけ使う
+    // 連立方程式をとけばいいけど、てきとうにくりかえす？
+    // まじめにやると、n^2/2回まわすことになる
+    // 二分探索だと？
+    // n文字だと、でSnピクセルを配分するとするとlog(Sn)n回でピクセル精度？
+    // 回数は似た様なもんで安定性の問題からするとまじめにやったほうがよいか
+    // 高さの違う水槽に水を入れていく問題
+
+    const avg = total / source.length;
+    let max = avg + Math.max(...source.map(u => u.spacing));
+    let min = 0;
+    let current = (min + max) * 0.5;
+    while (true) {
+      // currentで計算する
+      let add = 0;
+      source.forEach(u => {
+        if (u.spacing < current) {
+          add += Math.min(current, u.spacingBudget) - u.spacing;
+        }
+      });
+      let diff = add - total;
+      if (Math.abs(diff) < 0.5) {
+        break;
+      }
+      if (diff > 0) {
+        // 高すぎたのでmin側によせる
+        max = current;
+      } else {
+        min = current;
+      }
+      current = (min + max) * 0.5;
+    }
+
+    source.forEach(u => {
+      max = Math.max(max, u.spacing + avg);
+    });
+
+    return rest;
+  }
+};
+
+const updateSpacing = (source, spacing) => {
+  // 空ける箇所を決める
+  // 条件を満たすまで空けていく
+
+  // 文字間の定義は、その文字の後とする
+  // u,vのあいだを空けられるならば、uに足す
+
+};
+
+const updateSpacingBudget = (source, fontSize) => {
+  source.forEach(u => {
+    u.spacingBudget = isWhiteSpace(u.code) ? Math.max(0, fontSize * 0.5 - u.progress) : 0;
+  });
+
+  source.slice(1).forEach((v, i) => {
+    const u = source[i];
+    if (canBreak(u.code, v.code)) {
+      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
+    }
+  });
+};
+
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
 
-const updateLayout = source => {
+const updateItems = source => {
   source.forEach((item, i) => {
     if (item.ruby) {
       const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
@@ -377,7 +480,7 @@ D.composeText = (source, maxWidth) => {
   let line2 = [];
 
   while (true) {
-    updateLayout(line1);
+    updateItems(line1);
 
     const index = breakMain(line1.map(item => item.main).flat(), maxWidth);
     if (index !== -1) {
