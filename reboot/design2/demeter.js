@@ -292,7 +292,9 @@ D.parseParagraph = (source, fontSize, font) => {
 
 //-------------------------------------------------------------------------
 
-const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
+// const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
+
+const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D ? 1 : 0;
 
 const canBreak = (u, v) =>
   // 行頭禁則
@@ -447,23 +449,30 @@ const updateItems = (source, fontSize) => {
   });
 };
 
-// 改行「直前」の文字の位置を計算する。空行を許さない。
+// 改行「直前」の文字の位置を求める。
 const breakMain = (source, maxWidth) => {
+  // 行に入りきらない最初の文字の位置を求める。
   let advance = 0;
   const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  // 空行が生成されても一文字は含める。
   if (limit < 1) {
     return source.length === 1 ? -1 : limit;
   }
+  // 分割禁止規則を考慮して改行位置を求める。
   const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
-  return index === -1 ? limit - 1: index;
+  // 行の末尾が空白の場合は次の行に送る。
+  return index === -1 ? limit - 1 : Math.max(0, index - isWhiteSpace(source[index].code));
 };
 
-// 改行「直後」の文字の位置を計算する。空行を許す。
+// 改行「直後」の文字の位置を求める。
 const breakRuby = (source, maxWidth) => {
-  let advance = -(source[0].advance + source[0].spacing) * 0.5;
-  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  // 文字の左右にアキを配分して、行に入りきらない最初の文字の位置を求める。
+  let advance = 0;
+  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning - u.spacing * 0.5);
+  // 分割禁止規則を考慮して改行位置を求める。
   const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
-  return index === -1 ? limit : index + 1;
+  // 行の末尾が空白の場合は次の行に送る。
+  return index === -1 ? limit : index - isWhiteSpace(source[index].code) + 1;
 };
 
 D.composeText = (source, maxWidth) => {
@@ -498,6 +507,7 @@ D.composeText = (source, maxWidth) => {
           rubyOverhangPrev: item.rubyOverhangPrev,
           rubyOverhangNext: 0,
         };
+
         const item2 = {
           main: item.main.slice(mainIndex + 1),
           rubyOverhangPrev: 0,
