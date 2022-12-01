@@ -298,13 +298,47 @@ const canBreak = (u, v) =>
   // 連続する欧文用文字
   || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
 
-// 改行直後の文字の位置を返す。
-const breakLine = (source, maxWidth) => {
+// 改行「直前」の文字の位置を計算する。空行を許さない。
+const breakMain = (source, maxWidth) => {
   let advance = 0;
+  const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
+  if (limit < 1) {
+    return source.length === 1 ? -1 : limit;
+  }
+  const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
+  return index === -1 ? limit - 1: index;
+};
+
+// 改行「直後」の文字の位置を計算する。空行を許す。
+const breakRuby = (source, maxWidth) => {
+  let advance = -(source[0].advance + source[0].spacing) * 0.5;
   const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing) + u.kerning);
   const index = source.slice(1, limit + 1).findLastIndex((v, i) => canBreak(source[i].code, v.code));
   return index === -1 ? limit : index + 1;
 };
+
+/* アキの由来
+
+
+
+  優先レベル
+    1. 空白               1/2まで（空白は1/4-1/3なので、+1/6-1/4)
+    2. 分割可能な文字間  +1/4まで
+    3. 分割不能な文字間   any
+
+  処理レベル
+    1. 親文字のほうが長い場合に、ルビ文字をあける
+    2. ルビ文字のほうが長い場合に、親文字をあける
+    3. 行長に本文を合わせる
+    4. 行長に合わせた親文字にルビ文字を合わせる
+
+  spacingBudgeted
+  spacingActual
+  spacing
+
+
+
+*/
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
 
@@ -327,7 +361,6 @@ const updateLayout = source => {
 
       item.main.forEach(u => u.spacing = mainSpacing);
       item.ruby.forEach(u => u.spacing = rubySpacing);
-      item.ruby[0].spacing = Math.max(0, (rubySpacing - item.ruby[0].advance) * 0.5);
       item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
       item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
     } else {
@@ -346,9 +379,9 @@ D.composeText = (source, maxWidth) => {
   while (true) {
     updateLayout(line1);
 
-    const index = breakLine(line1.map(item => item.main).flat(), maxWidth);
+    const index = breakMain(line1.map(item => item.main).flat(), maxWidth);
     if (index !== -1) {
-      let mainIndex = Math.max(0, index - 1);
+      let mainIndex = Math.max(0, index);
       const itemIndex = line1.findIndex(item => {
         if (mainIndex < item.main.length) {
           return true;
@@ -380,7 +413,7 @@ D.composeText = (source, maxWidth) => {
         line1 = [ ...line1.slice(0, itemIndex), item1 ];
 
         if (item.ruby) {
-          const index = breakLine(item.ruby, item1.main.reduce((width, u) => width + u.advance + u.spacing, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev);
+          const index = breakRuby(item.ruby, item1.main.reduce((width, u) => width + u.advance + u.spacing, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev);
           if (index === -1) {
             item1.ruby = item.ruby;
           } else if (index === 0) {
