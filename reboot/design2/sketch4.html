@@ -65,11 +65,15 @@
     line-height: 2;
     overflow: hidden;
     overflow-wrap: break-word;
+    /*
     text-align: justify;
+    */
     resize: both;
   "><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。</div>
 
   <!--
+  <ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。
+
   <ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。
 
   <span><ruby>取り替え子<rt>チェンジリング</rt></ruby>。<ruby>新人類<rt>ニュータイプ</rt></ruby>。亜人。異人。魔人。油をそそがれなかった者たち。──遡及的に。</span><br><ruby>死んでくれる<rt>DIE FOR ME</rt></ruby>？<br>    傷つけられ、虐げられた、<ruby>幼子<rt>おさなご</rt></ruby>よ。<br>天国の門は開かれている。<ruby>現生人類<rt>ホモ・サピエンス・サピエンス</rt></ruby>と種や属が異なろうと、キリスト者でなかろうと。だが、しかし、——
@@ -103,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const result = D.layout(view);
     console.log(performance.now() - start);
     document.getElementById("result").append(result.result);
+    console.log(result.texts);
   };
 
   document.getElementById("update").addEventListener("click", update);

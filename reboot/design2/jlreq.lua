@@ -19,7 +19,10 @@
 -- https://www.w3.org/TR/jlreq/
 -- https://github.com/w3c/jlreq
 --
+-- 行頭禁則で使うのは cl-02,03,04,05,06,07,09,10,11,29
+-- 行末禁則で使うのは cl-01,28
 -- ルビのはみ出しで使うのは cl-01,02,05,06,07,08,10,11,15,16,19
+
 -- 漢字等 (cl-19) は "CJK Ideographs" 以外が列挙されている。定義がよくわからな
 -- いので。UnicodeのCJK Unified / Compatibility Ideographsを採用する。
 
@@ -61,52 +64,6 @@
 --   30000..3134A  ; Han # Lo [4939] CJK UNIFIED IDEOGRAPH-30000..CJK UNIFIED IDEOGRAPH-3134A
 --   31350..323AF  ; Han # Lo [4192] CJK UNIFIED IDEOGRAPH-31350..CJK UNIFIED IDEOGRAPH-323AF
 
-local ids_for_ruby = {}
-for _, id in ipairs { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16, 19 } do
-  ids_for_ruby[id] = true
-end
-
--- はみ出し量の計算テーブルを考える。前または後の親文字の幅に対する係数で表現す
--- る。
-local hang_both = {
-  -- a
-  [19] = 0;
-  -- b
-  [15] = 0.5;
-  [16] = 0.5;
-  [10] = 0.5;
-  [11] = 0.5;
-  -- d
-  [8] = 0.5;
-  -- e
-  [5] = 0.5;
-  -- f
-}
-
-local hang_before = {
-  -- c アキの調整の代わりにプロポーショナルで調整されているとする。
-  [2] = 0.5;
-  [6] = 0.5;
-  [7] = 0.5;
-  -- f アキの調整の代わりにプロポーショナルで調整されているとする。
-  [1] = 0.5;
-}
-
-local hang_after = {
-  -- c アキの調整の代わりにプロポーショナルで調整されているとする。
-  [1] = 0.5;
-  -- f アキの調整の代わりにプロポーショナルで調整されているとする。
-  [2] = 0.5;
-  [6] = 0.5;
-  [7] = 0.5;
-}
-
--- 結局、cl-19以外のすべてではみ出せることにする。
-local can_overhang = {}
-for _, id in ipairs { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16 } do
-  can_overhang[id] = true
-end
-
 -- Unicode 15.0.0のUCDから引用
 local cjk_ideographs = [[
 3400..4DBF; CJK Unified Ideographs Extension A
@@ -122,6 +79,47 @@ F900..FAFF; CJK Compatibility Ideographs
 31350..323AF; CJK Unified Ideographs Extension H
 ]]
 
+local rules = {
+  -- ルビはcl-19以外にはみ出すことができる。アキの調整のかわりに、プロポーショ
+  -- ナルフォントを使うため、はみ出し量を詳細に計算しない。
+  {
+    name = "canRubyOverhang";
+    1, 2, 5, 6, 7, 8, 10, 11, 15, 16;
+  };
+
+  {
+    name = "isLineStartProhibited";
+    2, 3, 4, 5, 6, 7, 9, 10, 11, 29;
+  };
+
+  {
+    name = "isLineEndProhibited";
+    1, 28;
+  };
+
+  -- {
+  --   name = "isInseparable";
+  --   8;
+  -- };
+
+  {
+    name = "isPrefixedAbbreviation";
+    12;
+  };
+
+  {
+    name = "isPostfixedAbbreviation";
+    13;
+  };
+
+  {
+    name = "isWesternCharacter";
+    27;
+  };
+}
+
+local can_ruby_overhang_ids = { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16 }
+
 local source_filename, result_filename = ...
 local options = {}
 for i = 3, #arg do
@@ -133,19 +131,19 @@ local source = handle:read "*a"
 handle:close()
 
 local dataset = {}
-
 for id, s in source:gmatch [[<section>%s*<h3 id="cl%-(%d+)">.-</h3>(.-)</section>]] do
   local t = s:match [[<table class="charclass">(.-)</table>]]
   if t then
     local id = assert(tonumber(id))
     local data = {}
-    for code in t:gmatch [[<tr>%s*<td class="character">.-</td>%s*<td>(.-)</td>]] do
+    for code in t:gmatch [[<tr>%s*<td class="character.-</td>%s*<td>(.-)</td>]] do
       if code:find [[^%x%x%x%x$]] then
-        -- cl-19で216Bが重複しているのを避ける
+        -- cl-19でU+216Bが重複しているのを避ける
         local code = assert(tonumber(code, 16))
         if not data[code] then
           data[code] = true
-          data[#data + 1] = code
+        else
+          io.write(("duplicate cl-%02d entry: U+%X\n"):format(id, code))
         end
       else
         assert(code:find [[^&lt;%x%x%x%x, %x%x%x%x&gt;$]])
@@ -156,52 +154,63 @@ for id, s in source:gmatch [[<section>%s*<h3 id="cl%-(%d+)">.-</h3>(.-)</section
   end
 end
 
-local dataset_for_ruby = {}
-
-for id, data in pairs(dataset) do
-  if ids_for_ruby[id] then
-    for _, code in ipairs(data) do
-      assert(not dataset_for_ruby[code])
-      dataset_for_ruby[code] = id
-    end
-  end
-end
-
 -- cl-19にCJK Unified / Compatibility Ideographsを追加する
+local data = dataset[19]
 for a, b in cjk_ideographs:gmatch [[(%x+)%.%.(%x+); CJK]] do
   local a = assert(tonumber(a, 16))
   local b = assert(tonumber(b, 16))
   assert(a <= b)
   for code = a, b do
-    dataset_for_ruby[code] = 19
+    -- U+4EDDが重複するのを避ける
+    if not data[code] then
+      data[code] = true
+    else
+      io.write(("duplicate cl-19 entry: U+%X\n"):format(code))
+    end
   end
 end
 
-local range
-local ranges = {}
-
-for code = 0, 0x10FFFF do
-  local id = dataset_for_ruby[code] or 0
-  local v = not not can_overhang[id]
-  if range and range.j == code - 1 and range.v == v then
-    range.j = code
-  else
-    range = {
-      i = code;
-      j = code;
-      v = v;
-    }
-    ranges[#ranges + 1] = range
+local function make_ranges(rule)
+  local data = {}
+  for _, id in ipairs(rule) do
+    for code in pairs(dataset[id]) do
+      if not data[code] then
+        data[code] = { id }
+      else
+        local classes = data[code]
+        classes[#classes + 1] = id
+        io.write(("duplicate cl-%s entry of %s: U+%X\n"):format(table.concat(classes, ","), rule.name, code))
+      end
+    end
   end
+
+  local ranges = {}
+  local range
+
+  for code = 0, 0x10FFFF do
+    local v = not not data[code]
+    if range and range.j == code - 1 and range.v == v then
+      range.j = code
+    else
+      range = {
+        i = code;
+        j = code;
+        v = v;
+      }
+      ranges[#ranges + 1] = range
+    end
+  end
+
+  return ranges
 end
 
-local function construct(data)
-  if #data == 1 then
-    return data[1]
+local function make_tree(ranges)
+  if #ranges == 1 then
+    return ranges[1]
   else
-    local n = math.floor(#data * 0.5)
-    local a = construct { table.unpack(data, 1, n) }
-    local b = construct { table.unpack(data, n + 1) }
+    local n = math.floor(#ranges * 0.5)
+    local a = make_tree { table.unpack(ranges, 1, n) }
+    local b = make_tree { table.unpack(ranges, n + 1) }
     return {
       i = a.i;
       j = b.j;
@@ -210,24 +219,7 @@ local function construct(data)
   end
 end
 
-local tree = construct(ranges)
-
-local handle = assert(io.open(result_filename, "w"))
-
-handle:write [[
-(() => {
-"use strict";
-
-if (globalThis.dromozoa_jlreq) {
-  return;
-}
-
-const root = globalThis.dromozoa_jlreq = {};
-root.ruby_overhang = c => {
-]]
-
-
-local function code(node, depth)
+local function generate_code(handle, node, depth)
   local indent = ""
   if options.enable_indent then
     indent = ("  "):rep(depth)
@@ -244,75 +236,52 @@ local function code(node, depth)
 
     if #a == 0 or #b == 0 then
       if #a == 0 and #b == 0 then
-        -- true, falseかfalse, trueの組となる
+        -- (a.v, b.v) = (true, false) or (false, true)
         assert(a.v ~= b.v)
         assert(a.j == b.i - 1)
         if a.v then
-          -- c < b.i
           handle:write(indent, "return c", sp, "<", sp, b.i, ";\n")
         else
-          -- !(c < b.i)
-          -- c >= b.i
-          -- c > b.i - 1
-          -- c > a.j
           handle:write(indent, "return c", sp, ">", sp, a.j, ";\n")
         end
       else
         assert(#a == 0 and #b == 2)
         local c = b[1]
         local d = b[2]
+        -- (a.v, c.v, d.v) = (true, false, true) or (false, true, false)
         assert(a.v ~= c.v and c.v ~= d.v)
         if a.v then
-          -- c < b.i ? a.v : c < d.i ? c.v : d.v
-          -- c < b.i ? true : c < d.i ? false : true
-          -- c < b.i ? true : c > c.j
-          -- c < b.i || c > c.j
           handle:write(indent, "return c", sp, "<", sp, b.i, sp, "||", sp, "c", sp, ">", sp, c.j, ";\n")
         else
-          -- c < b.i ? a.v : c < d.i ? c.v : d.v
-          -- c < b.i ? false : c < d.i ? true : false
-          -- c < b.i ? false : c < d.i
-          -- !(c < b.i) ? c < d.i : false
-          -- !(c < b.i) && c < d.i
-          -- c > a.j && c < d.i
           handle:write(indent, "return c", sp, ">", sp, a.j, sp, "&&", sp, "c", sp, "<", sp, d.i, ";\n")
         end
       end
     else
       handle:write(indent, "if", sp, "(c", sp, "<", sp, b.i, ")", sp, "{\n")
-      code(a, depth)
+      generate_code(handle, a, depth)
       handle:write(indent, "}", sp, "else", sp, "{\n")
-      code(b, depth)
+      generate_code(handle, b, depth)
       handle:write(indent, "}\n")
     end
   else
-    handle:write(indent, "return ", node.v, ";\n")
+    handle:write(indent, "return ", tostring(node.v), ";\n")
   end
 end
-code(tree, 1)
 
-handle:write [[
-};
-]]
-
-if options.enable_test then
+local function generate_test(handle, ranges, name)
   handle:write [[
-
-root.test_ruby_overhang = () => {
   const ranges = [
 ]]
-
   for _, range in ipairs(ranges) do
     handle:write(("    { i: 0x%04X, j: 0x%04X, v: %s },\n"):format(range.i, range.j, range.v))
   end
-
-  handle:write [[
+  handle:write(([[
   ];
   console.log("start");
   let n = 0;
   ranges.forEach(range => {
     for (let code = range.i; code <= range.j; ++code) {
-      const v = root.ruby_overhang(code)
+      const v = D.jlreq.%s(code)
       console.assert(v === range.v, range, code, v);
       ++n;
     }
@@ -320,8 +289,44 @@ root.test_ruby_overhang = () => {
   console.log(n);
   console.assert(n === 0x110000, ranges);
   console.log("end");
-};
+]]):format(name));
+end
+
+-- for _, rule in ipairs(rules) do
+--   rule.ranges = make_ranges(rule)
+--   rule.tree = make_tree(rule.ranges)
+-- end
+
+-- local can_ruby_overhang_ranges = make_ranges(can_ruby_overhang_ids)
+-- local can_ruby_overhang_tree = make_tree(can_ruby_overhang_ranges)
+
+local handle = assert(io.open(result_filename, "w"))
+
+handle:write [[
+(() => {
+"use strict";
+
+const D = globalThis.demeter ||= {};
+if (D.jlreq) {
+  return;
+}
+D.jlreq = {};
 ]]
+
+for _, rule in ipairs(rules) do
+  local ranges = make_ranges(rule)
+  local tree = make_tree(ranges)
+
+  handle:write(("\nD.jlreq.%s = c => {\n"):format(rule.name))
+  generate_code(handle, tree, 1)
+  handle:write "};\n"
+
+  if options.enable_test then
+    local name = rule.name:gsub("^(.)", function (s) return "test"..s:upper() end)
+    handle:write(("\nD.jlreq.%s = () => {\n"):format(name))
+    generate_test(handle, ranges, rule.name)
+    handle:write "};\n"
+  end
 end
 
 handle:write [[

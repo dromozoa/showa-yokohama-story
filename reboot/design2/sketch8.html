@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+
+  <link href="font_face.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script>
+    // globalThis.demeter = { config: { debug: true } };
+  </script>
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+</head>
+<body>
+<div id="loader" style="overflow-wrap: break-word"></div>
+
+<template id="template">
+<div>………………………………………………………………<ruby>聖堂<rt>カテドラル</rt></ruby>………………………………………………………………<br><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。<br><ruby>親文字<rt>TaTiTuTeTo TaTiTuTe</rt></ruby>。</div>
+
+<!--
+<div>………………………………………………………………<ruby>聖堂<rt>カテドラル</rt></ruby>………………………………………………………………<br><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。<br>TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo<br>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo<br><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo<br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><br><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo</span><br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><br><ruby>親文字<rt>TaTiTuTeTo TaTiTuTe</rt></ruby>。</div>
+
+<div><ruby>本文<rt>ながいながいルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>本文<rt>ながいながいルビ</rt></ruby>たちつてと。<ruby>本文<rt>ながいながいルビ</rt></ruby>なにぬねの。<ruby>ながいながいながいながいながい本文<rt>ながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいながいルビ</rt></ruby>たちつてと。<br><ruby>ながい本文<rt>ルビ</rt></ruby>あいうえおかきくけこさしすせそ<ruby>ながい本文<rt>ルビ</rt></ruby>たちつてと。</div>
+
+<div>TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo TaTiTuTeTo </div>
+
+<div>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo</div>
+
+<div><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo<br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span></div>
+
+<div><span>TaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeToTaTiTuTeTo</span><br><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span><span>Ta</span><span>Ti</span><span>Tu</span><span>Te</span><span>To</span></div>
+
+<div><ruby>親文字<rt>TaTiTuTeTo TaTiTuTeTo</rt></ruby>。</div>
+
+-->
+</template>
+
+<div id="output" style="
+  width: 478px;
+  height: 576px;
+  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+  font-size: 24px;
+  overflow: hidden;
+  resize: both;
+"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  let start;
+
+  const D = globalThis.demeter;
+  await D.boot();
+
+  const loader = document.getElementById("loader");
+
+  /*
+  [...document.fonts].forEach(fontFace => {
+    loader.append(D.createElement(`
+      <span>■</span>
+    `));
+  });
+
+  start = performance.now();
+  await Promise.all([...document.fonts].map((_, index) => {
+    loader.children[index].style.color = "#0f0";
+    return (async () => {
+      const result = await D.loadFontFace(index, 30000);
+      if (result.status === "loaded") {
+        loader.children[index].style.color = "#00f";
+      } else {
+        loader.children[index].style.color = "#f00";
+      }
+    })();
+  }));
+  console.log("loader", performance.now() - start);
+  */
+
+  const result = await D.loadFontFaces(30000);
+  loader.append(...D.createElements(`
+    <div>status: ${D.escapeHTML(result.status)}</div>
+    <div>elapsed: ${result.elapsed}</div>
+  `));
+
+  const output = document.getElementById("output");
+
+  let prevWidth;
+  const update = (width) => {
+    if (prevWidth === width) {
+      return;
+    }
+
+    start = performance.now();
+    const paragraph = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
+    console.log(paragraph);
+    [...output.children].forEach(node => node.remove());
+    output.append(...paragraph.map(text => D.composeText(text, width)));
+    prevWidth = width;
+    console.log("update", width, performance.now() - start);
+  };
+
+  update(output.getBoundingClientRect().width);
+
+  const observer = new ResizeObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.target === output) {
+        // console.log(entry.contentBoxSize);
+        update(entry.contentBoxSize[0].inlineSize);
+      }
+    });
+  });
+  observer.observe(output);
+
+
+});
+</script>
+</body>
+</html>
