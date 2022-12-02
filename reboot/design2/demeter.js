@@ -54,7 +54,7 @@ D.numberToCssString = source => {
   if (-0.00005 < source && source < 0.00005) {
     return "0";
   } else {
-    return source.toFixed(4).replace(/\.?0$/, "");
+    return source.toFixed(4).replace(/\.?0+$/, "");
   }
 };
 
@@ -259,6 +259,7 @@ const parseChars = (source, fontSize, font) => {
       spacingFallback: 0,
       spacing1: 0,
       spacing2: 0,
+      x: null,
     };
   });
 };
@@ -613,23 +614,48 @@ D.composeText = (source, maxWidth) => {
     line2 = [];
   }
 
-  lines.slice(0, -1).forEach(line => {
-    if (line.length === 1) {
-      const item = line[0];
-      justifySpacing(item.main, maxWidth - item.main.reduce((acc, u) => acc + u.advance, 0), 0.25);
-      if (item.ruby) {
-        justifySpacing(item.ruby, maxWidth - item.ruby.reduce((acc, u) => acc + u.advance, 0), 0.25);
-      }
-    } else {
-      const chars = line.map(item => item.main).flat();
-      const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0);
-      addSpacing(chars.slice(0, -1), maxWidth - width, 0.25);
-      line.forEach((item, i) => {
-        if (item.ruby && item.main.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
-          updateItem(line[i - 1], item, line[i + 1], addAdvanceSpacing);
+  lines.forEach((line, i) => {
+    const isLastLine = i === lines.length - 1;
+
+    if (!isLastLine) {
+      if (line.length === 1) {
+        const item = line[0];
+        justifySpacing(item.main, maxWidth - item.main.reduce((acc, u) => acc + u.advance, 0), 0.25);
+        if (item.ruby) {
+          justifySpacing(item.ruby, maxWidth - item.ruby.reduce((acc, u) => acc + u.advance, 0), 0.25);
         }
-      });
+      } else {
+        const buffer = line.map(item => item.main).flat();
+        addSpacing(buffer.slice(0, -1), maxWidth - buffer.reduce((acc, u) => acc + u.advance + u.spacing1, 0), 0.25);
+        line.forEach((item, j) => {
+          if (item.ruby && item.main.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
+            updateItem(line[j - 1], item, line[j + 1], addAdvanceSpacing);
+          }
+        });
+      }
     }
+
+    // 文字の位置を計算する。
+    let mainX = 0;
+    line.forEach((item, j) => {
+      const isLineStart = j === 0;
+      const isLineEnd = !isLastLine && j === line.length - 1;
+      const a = isLineStart ? 0 : isLineEnd ? 1 : 0.5;
+      const b = 1 - a;
+
+      if (item.ruby) {
+        let rubyX = mainX - item.rubyOverhangPrev;
+        item.ruby.forEach(u => {
+          u.x = rubyX += u.spacing1 * a;
+          rubyX += u.advance + u.spacing1 * b + u.spacing2;
+        });
+      }
+
+      item.main.forEach(u => {
+        u.x = mainX += u.spacing1 * a;
+        mainX += u.advance + u.spacing1 * b + u.spacing2;
+      });
+    });
   });
 
   const view = D.createElement(`
@@ -638,71 +664,46 @@ D.composeText = (source, maxWidth) => {
       height: ${D.numberToCssString(source.fontSize * lines.length * 2)}px;
     "><div style="
         position: absolute;
-      "></div><div></div></div>
+      "></div><div style="
+        position: absolute;
+      "></div></div>
   `);
   lines.forEach((line, i) => {
-    let progress = 0;
-    line.forEach((item, j) => {
+    const mainY = source.fontSize * i * 2;
+    const rubyY = source.fontSize * (i * 2 - 0.75);
+    line.forEach(item => {
       if (item.ruby) {
-        let x = progress - item.rubyOverhangPrev;
-        const y = source.fontSize * (i * 2 - 0.75);
-
-        let align = "center";
-        if (j === 0) {
-          align = "left";
-        } else if (i < lines.length - 1 && j === line.length - 1) {
-          align = "right";
-        }
-
         item.ruby.forEach(u => {
           view.firstElementChild.append(D.createElement(`
             <span style="
               position: absolute;
               display: inline-block;
-              top: ${D.numberToCssString(y)}px;
-              left: ${D.numberToCssString(x)}px;
-              width: ${D.numberToCssString(u.advance + u.spacing1)}px;
+              top: ${D.numberToCssString(rubyY)}px;
+              left: ${D.numberToCssString(u.x)}px;
+              width: ${D.numberToCssString(u.advance)}px;
               font: ${D.numberToCssString(source.fontSize * 0.5)}px ${D.escapeHTML(source.font)};
               line-height: ${D.numberToCssString(source.fontSize * 2)}px;
-              text-align: ${align};
             ">${D.escapeHTML(u.char)}</span>
           `));
-          x += u.advance + u.spacing1 + u.spacing2;
         });
       }
 
-      progress += item.main.reduce((acc, u) => acc + u.advance + u.spacing1 + u.spacing2, 0);
-
-    });
-  });
-
-  lines.forEach((line, i) => {
-    const div = D.createElement(`
-      <div style="
-        line-height: ${D.numberToCssString(source.fontSize * 2)}px;
-      "></div>
-    `);
-    line.forEach((item, j) => {
       item.main.forEach(u => {
-        let align = "center";
-        if (j === 0) {
-          align = "left";
-        } else if (i < lines.length - 1 && j === line.length - 1) {
-          align = "right";
-        }
-
-        div.append(D.createElement(`
+        view.children[1].append(D.createElement(`
           <span style="
+            position: absolute;
             display: inline-block;
-            width: ${D.numberToCssString(u.advance + u.spacing1)}px;
-            margin-right: ${D.numberToCssString(u.spacing2)}px;
-            text-align: ${align};
+            top: ${D.numberToCssString(mainY)}px;
+            left: ${D.numberToCssString(u.x)}px;
+            width: ${D.numberToCssString(u.advance)}px;
+            font: ${D.numberToCssString(source.fontSize)}px ${D.escapeHTML(source.font)};
+            line-height: ${D.numberToCssString(source.fontSize * 2)}px;
           ">${D.escapeHTML(u.char)}</span>
         `));
       });
     });
-    view.children[1].append(div);
   });
+
   return view;
 };
 
