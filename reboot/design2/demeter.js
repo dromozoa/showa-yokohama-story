@@ -330,24 +330,24 @@ const setSpacingBudgeted = (source, request, tolerance) => {
     return request - remaining;
   }
 
-  let lower = request / source.length;
-  if (lower <= source.reduce((acc, u) => Math.min(acc, u.spacingBudget), Infinity)) {
-    source.forEach(u => u.spacingBudgeted = lower);
+  let spacing = request / source.length;
+  if (spacing <= source.reduce((acc, u) => Math.min(acc, u.spacingBudget), Infinity)) {
+    source.forEach(u => u.spacingBudgeted = spacing);
     return 0;
   }
+  let lower = spacing;
   let upper = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
-  let spacing;
   let actual;
 
   for (let cycle = 0; cycle < 16; ++cycle) {
     spacing = (lower + upper) * 0.5;
     actual = source.reduce((acc, u) => acc + Math.min(spacing, u.spacingBudget), 0);
-    if (Math.abs(actual - request) <= tolerance) {
+    if (Math.abs(request - actual) <= tolerance) {
       break;
-    } else if (actual > request) {
-      upper = spacing;
-    } else {
+    } else if (request > actual) {
       lower = spacing;
+    } else {
+      upper = spacing;
     }
   }
 
@@ -382,20 +382,20 @@ const addSpacingBudgeted = (source, request, tolerance) => {
     return request - remaining;
   }
 
-  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity) + request / source.length;
+  let spacing = request / source.length;
+  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity) + spacing;
   let upper = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
-  let spacing;
   let actual;
 
   for (let cycle = 0; cycle < 16; ++cycle) {
     spacing = (lower + upper) * 0.5;
     actual = source.reduce((acc, u) => acc + Math.max(0, Math.min(spacing, u.spacingBudget) - u.spacingBudgeted), 0);
-    if (Math.abs(actual - request) <= tolerance) {
+    if (Math.abs(request - actual) <= tolerance) {
       break;
-    } else if (actual > request) {
-      upper = spacing;
-    } else {
+    } else if (request > actual) {
       lower = spacing;
+    } else {
+      upper = spacing;
     }
   }
 
@@ -404,10 +404,9 @@ const addSpacingBudgeted = (source, request, tolerance) => {
 };
 
 const addSpacingFallback = (source, request, tolerance) => {
-  const average = request / source.length;
-  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), Infinity) + average;
-  let upper = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), -Infinity) + average;
-  let spacing;
+  let spacing = request / source.length;
+  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), Infinity) + spacing;
+  let upper = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), -Infinity) + spacing;
 
   for (let cycle = 0; cycle < 16; ++cycle) {
     spacing = (lower + upper) * 0.5;
@@ -435,19 +434,6 @@ const addSpacing = (source, request, tolerance) => {
     }
   }
   source.forEach(u => u.spacing2 = u.spacingBudgeted + u.spacingFallback - u.spacing1);
-
-  /*
-  const tolerance = 0.25;
-  request = addSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
-  if (request < 0.5) {
-    return request;
-  }
-  request = addSpacingBudgeted(source.filter(u => !isWhiteSpace(u.code) && u.spacingBudget > 0), request, tolerance);
-  if (request < 0.5) {
-    return request;
-  }
-  return addSpacingFallback(source, request, tolerance);
-  */
 };
 
 //-------------------------------------------------------------------------
