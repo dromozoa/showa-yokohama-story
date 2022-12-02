@@ -375,75 +375,68 @@ const setSpacing = (source, request, tolerance) => {
 
 //-------------------------------------------------------------------------
 
-/*
 const addSpacingBudgeted = (source, request, tolerance) => {
   const remaining = source.reduce((acc, u) => acc + u.spacingBudget - u.spacingBudgeted, 0);
   if (remaining <= request) {
-    source.forEach(u => {
-      u.spacingBudgeted = u.spacingBudget;
-      u.spacing = u.spacingBudgeted + u.spacingFallback;
-    });
+    source.forEach(u => u.spacingBudgeted = u.spacingBudget);
     return request - remaining;
   }
 
-  let max = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
-  let min = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity);
-  let omax = max;
-  let omin = min;
+  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingBudgeted), Infinity) + request / source.length;
+  let upper = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
   let spacing;
   let actual;
 
-  for (let i = 0; i < 32; ++i) {
-    spacing = (min + max) * 0.5;
+  for (let cycle = 0; cycle < 16; ++cycle) {
+    spacing = (lower + upper) * 0.5;
     actual = source.reduce((acc, u) => acc + Math.max(0, Math.min(spacing, u.spacingBudget) - u.spacingBudgeted), 0);
     if (Math.abs(actual - request) <= tolerance) {
-      source.forEach(u => {
-        u.spacingBudgeted = Math.max(Math.min(spacing, u.spacingBudget), u.spacingBudgeted);
-        u.spacing = u.spacingBudgeted + u.spacingFallback;
-      });
-      // console.log(i, min, max, spacing, request - actual);
-      return request - actual;
+      break;
     } else if (actual > request) {
-      max = spacing;
+      upper = spacing;
     } else {
-      min = spacing;
+      lower = spacing;
     }
   }
 
-  // console.log(omin, omax, spacing, request, source.length, actual);
-  throw new Error("too many iterations");
+  source.forEach(u => u.spacingBudgeted = Math.max(Math.min(spacing, u.spacingBudget), u.spacingBudgeted));
+  return request - actual;
 };
 
 const addSpacingFallback = (source, request, tolerance) => {
   const average = request / source.length;
-  let max = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), -Infinity) + average;
-  let min = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), Infinity) + average;
-  let omax = max;
-  let omin = min;
+  let lower = source.reduce((acc, u) => Math.min(acc, u.spacingFallback), Infinity) + average;
+  let upper = source.reduce((acc, u) => Math.max(acc, u.spacingFallback), -Infinity) + average;
   let spacing;
-  let actual;
-  for (let i = 0; i < 256; ++i) {
-    spacing = (max + min) * 0.5;
-    actual = source.reduce((acc, u) => acc + Math.max(0, spacing - u.spacingFallback), 0);
+
+  for (let cycle = 0; cycle < 16; ++cycle) {
+    spacing = (lower + upper) * 0.5;
+    const actual = source.reduce((acc, u) => acc + Math.max(0, spacing - u.spacingFallback), 0);
     if (Math.abs(actual - request) <= tolerance) {
-      source.forEach(u => {
-        u.spacingFallback = Math.max(spacing, u.spacingFallback);
-        u.spacing = u.spacingBudgeted + u.spacingFallback;
-      });
-      // console.log(i, min, max, spacing, request - actual);
-      return request - actual;
+      break;
     } else if (actual > request) {
-      max = spacing;
+      upper = spacing;
     } else {
-      min = spacing;
+      lower = spacing;
     }
   }
 
-  // console.log(omin, omax, spacing, request, source.length, average, actual);
-  throw new Error("too many iterations");
+  source.forEach(u => u.spacingFallback = Math.max(spacing, u.spacingFallback));
 };
 
-const addSpacing = (source, request) => {
+const addSpacing = (source, request, tolerance) => {
+  if (request > tolerance) {
+    request = addSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
+    if (request > tolerance) {
+      request = addSpacingBudgeted(source.filter(u => !isWhiteSpace(u.code) && u.spacingBudget > 0), request, tolerance);
+      if (request > tolerance) {
+        addSpacingFallback(source, request, tolerance);
+      }
+    }
+  }
+  source.forEach(u => u.spacing2 = u.spacingBudgeted + u.spacingFallback - u.spacing1);
+
+  /*
   const tolerance = 0.25;
   request = addSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
   if (request < 0.5) {
@@ -454,8 +447,8 @@ const addSpacing = (source, request) => {
     return request;
   }
   return addSpacingFallback(source, request, tolerance);
+  */
 };
-*/
 
 //-------------------------------------------------------------------------
 
@@ -603,20 +596,25 @@ D.composeText = (source, maxWidth) => {
     line2 = [];
   }
 
-
-
-
-
   // 文字の位置を確定させる。
   // 本文の位置を決める。
   // 本文の位置に合わせて、ルビの位置を決め直す。
+
+  lines.forEach((line, i) => {
+    if (i < lines.length - 1) {
+      const chars = line.map(item => item.main).flat();
+      const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
+      // 本文の位置を決める。均等揃え。
+      addSpacing(chars.slice(0, -1), maxWidth - width, 0.25);
+    }
+  });
 
   const element = D.createElement(`<div></div>`);
   lines.forEach((line, i) => {
     // line.forEach((item, i) => updateItem(line[i - 1], item, line[i - 1]));
     // updateItems(line, source.fontSize);
-    const chars = line.map(item => item.main).flat();
-    const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
+    // const chars = line.map(item => item.main).flat();
+    // const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
     // console.log(width, maxWidth);
     // if (i < lines.length - 1) {
     //   addSpacing(chars, maxWidth - width);
@@ -629,7 +627,7 @@ D.composeText = (source, maxWidth) => {
           <span style="
             display: inline-block;
             width: ${D.numberToCssString(u.advance)}px;
-            margin-right: ${D.numberToCssString(u.spacing1)}px;
+            margin-right: ${D.numberToCssString(u.spacing1 + u.spacing2)}px;
           ">${D.escapeHTML(u.char)}</span>
         `));
       });
