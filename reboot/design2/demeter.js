@@ -369,8 +369,8 @@ const setSpacing = (source, request, tolerance) => {
         setSpacingFallback(source, request);
       }
     }
-    source.forEach(u => u.spacing1 = u.spacingBudgeted + u.spacingFallback);
   }
+  source.forEach(u => u.spacing1 = u.spacingBudgeted + u.spacingFallback);
 };
 
 //-------------------------------------------------------------------------
@@ -462,6 +462,8 @@ const updateItem = (prev, item, next) => {
   }
 };
 
+//-------------------------------------------------------------------------
+
 // 改行「直前」の文字の位置を求める。
 const breakMain = (source, maxWidth) => {
   // 行に入りきらない最初の文字の位置を求める。
@@ -487,6 +489,8 @@ const breakRuby = (source, maxWidth) => {
   // 行の末尾が空白の場合は次の行に送る。
   return index === -1 ? limit : index - isWhiteSpace(source[index].code) + 1;
 };
+
+//-------------------------------------------------------------------------
 
 D.composeText = (source, maxWidth) => {
   const lines = [];
@@ -586,41 +590,124 @@ D.composeText = (source, maxWidth) => {
   // 本文の位置を決める。
   // 本文の位置に合わせて、ルビの位置を決め直す。
 
-  lines.forEach((line, i) => {
-    if (i < lines.length - 1) {
+  lines.slice(0, -1).forEach(line => {
+    if (line.length === 1) {
+      // ひとつのルビで行が埋まっている場合、ルビ文字を均等割りする必要がある。
+      const item = line[0];
+      const chars = [...item.main];
+      const width = chars.reduce((acc, u) => acc + u.advance, 0) + chars.slice(-1)[0].kerning;
+
+      const u = chars.pop();
+      u.spacingBudgeted = 0;
+      u.spacingFallback = 0;
+      u.spacing1 = 0;
+      u.spacing2 = 0;
+
+      setSpacing(chars, maxWidth - width, 0.25);
+      chars.forEach(u => {
+        u.spacing2 = u.spacing1;
+        u.spacing1 = 0;
+      });
+
+      if (item.ruby) {
+        const chars = [...item.ruby];
+        const width = chars.reduce((acc, u) => acc + u.advance, 0) + chars.slice(-1)[0].kerning;
+        const u = chars.pop();
+        u.spacingBudgeted = 0;
+        u.spacingFallback = 0;
+        u.spacing1 = 0;
+        u.spacing2 = 0;
+
+        setSpacing(chars, maxWidth - width, 0.25);
+        chars.forEach(u => {
+          u.spacing2 = u.spacing1;
+          u.spacing1 = 0;
+        });
+      }
+
+    } else {
       const chars = line.map(item => item.main).flat();
       const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
       // 本文の位置を決める。均等揃え。
       addSpacing(chars.slice(0, -1), maxWidth - width, 0.25);
+
+      // 親文字の字間が変わっているかもしれない。
+
     }
   });
 
-  const element = D.createElement(`<div></div>`);
+  const view = D.createElement(`
+    <div style="
+      position: relative;
+      height: ${D.numberToCssString(source.fontSize * lines.length * 2)}px;
+    "><div style="
+        position: absolute;
+      "></div><div></div></div>
+  `);
   lines.forEach((line, i) => {
-    // line.forEach((item, i) => updateItem(line[i - 1], item, line[i - 1]));
-    // updateItems(line, source.fontSize);
-    // const chars = line.map(item => item.main).flat();
-    // const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
-    // console.log(width, maxWidth);
-    // if (i < lines.length - 1) {
-    //   addSpacing(chars, maxWidth - width);
-    // }
+    let progress = 0;
+    line.forEach((item, j) => {
+      if (item.ruby) {
+        let x = progress - item.rubyOverhangPrev;
+        const y = source.fontSize * (i * 2 - 0.75);
 
-    const div = D.createElement(`<div></div>`);
-    line.forEach(item => {
+        let align = "center";
+        if (j === 0) {
+          align = "left";
+        } else if (i < lines.length - 1 && j === line.length - 1) {
+          align = "right";
+        }
+
+        item.ruby.forEach(u => {
+          view.firstElementChild.append(D.createElement(`
+            <span style="
+              position: absolute;
+              display: inline-block;
+              top: ${D.numberToCssString(y)}px;
+              left: ${D.numberToCssString(x)}px;
+              width: ${D.numberToCssString(u.advance + u.spacing1)}px;
+              font: ${D.numberToCssString(source.fontSize * 0.5)}px ${D.escapeHTML(source.font)};
+              line-height: ${D.numberToCssString(source.fontSize * 2)}px;
+              text-align: ${align};
+            ">${D.escapeHTML(u.char)}</span>
+          `));
+          x += u.advance + u.spacing1 + u.spacing2;
+        });
+      }
+
+      progress += item.main.reduce((acc, u) => acc + u.advance + u.spacing1 + u.spacing2, 0);
+
+    });
+  });
+
+  lines.forEach((line, i) => {
+    const div = D.createElement(`
+      <div style="
+        line-height: ${D.numberToCssString(source.fontSize * 2)}px;
+      "></div>
+    `);
+    line.forEach((item, j) => {
       item.main.forEach(u => {
+        let align = "center";
+        if (j === 0) {
+          align = "left";
+        } else if (i < lines.length - 1 && j === line.length - 1) {
+          align = "right";
+        }
+
         div.append(D.createElement(`
           <span style="
             display: inline-block;
-            width: ${D.numberToCssString(u.advance)}px;
-            margin-right: ${D.numberToCssString(u.spacing1 + u.spacing2)}px;
+            width: ${D.numberToCssString(u.advance + u.spacing1)}px;
+            margin-right: ${D.numberToCssString(u.spacing2)}px;
+            text-align: ${align};
           ">${D.escapeHTML(u.char)}</span>
         `));
       });
     });
-    element.append(div);
+    view.children[1].append(div);
   });
-  return element;
+  return view;
 };
 
 //-------------------------------------------------------------------------

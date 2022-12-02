@@ -112,8 +112,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   start = performance.now();
   // const p = D.parseParagraph(D.createElement(`<span>${"TaTiTuTeTo".repeat(1)}</span>`), 32, "'Share Tech'");
   const p = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
-  // const x = p.map(t => D.composeText(t, t.fontSize * 24));
-  const x = p.map(t => D.composeText(t, 478));
+  const x = p.map(t => D.composeText(t, t.fontSize * 24));
+  // const x = p.map(t => D.composeText(t, 478));
   document.getElementById("output").append(...x);
   console.log("px", performance.now() - start);
   console.log(p);
