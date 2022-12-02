@@ -457,13 +457,13 @@ const addSpacing = (source, request, tolerance) => {
 //-------------------------------------------------------------------------
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
-const addAdvance = (acc, u) => acc + u.advance;
+
 const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
 const updateItem = (prev, item, next, mainWidthFn) => {
   if (item.ruby) {
-    const mainWidth = item.main.reduce(mainWidthFn || addAdvance, 0);
-    const rubyWidth = item.ruby.reduce(addAdvance, 0) + item.ruby.slice(-1)[0].kerning;
+    const mainWidth = item.main.reduce(mainWidthFn || ((acc, u) => acc + u.advance), 0);
+    const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
 
     const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
     const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
