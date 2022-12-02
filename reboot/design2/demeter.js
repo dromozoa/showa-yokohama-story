@@ -463,7 +463,7 @@ const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 const updateItem = (prev, item, next, mainWidthFn) => {
   if (item.ruby) {
     const mainWidth = item.main.reduce(mainWidthFn || ((acc, u) => acc + u.advance), 0);
-    const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+    const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0);
 
     const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
     const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
@@ -480,6 +480,11 @@ const updateItem = (prev, item, next, mainWidthFn) => {
     item.rubyOverhangPrev = 0;
     item.rubyOverhangNext = 0;
   }
+};
+
+const resetKerning = u => {
+  u.advance = u.width;
+  u.kerning = 0;
 };
 
 //-------------------------------------------------------------------------
@@ -540,6 +545,7 @@ D.composeText = (source, maxWidth) => {
           updateItem(line1[itemIndex - 1], item);
           continue;
         }
+        resetKerning(item.main[mainIndex]);
         line2 = [ ...line1.splice(itemIndex + 1), ...line2 ];
         break;
       }
@@ -549,6 +555,7 @@ D.composeText = (source, maxWidth) => {
         rubyOverhangPrev: item.rubyOverhangPrev,
         rubyOverhangNext: 0,
       };
+      resetKerning(item1.main[mainIndex]);
 
       const item2 = {
         main: item.main.slice(mainIndex + 1),
@@ -561,16 +568,16 @@ D.composeText = (source, maxWidth) => {
       line1.push(item1);
 
       if (item.ruby) {
-        const width = item1.main.reduce((width, u) => width + u.advance + u.spacing1, 0) + item1.main.slice(-1)[0].kerning + item.rubyOverhangPrev;
-        const index = breakRuby(item.ruby, width);
+        const index = breakRuby(item.ruby, item1.main.reduce((width, u) => width + u.advance + u.spacing1, 0) + item1.rubyOverhangPrev);
         if (index === -1) {
           item1.ruby = item.ruby;
         } else {
           if (index > 0) {
             item1.ruby = item.ruby.slice(0, index);
+            resetKerning(item1.ruby[index - 1]);
           }
 
-          // ルビの行頭の空白を削除する。
+          // 行頭の空白を除去する。
           const ruby = item.ruby.slice(index);
           if (isWhiteSpace(ruby[0].code)) {
             ruby.shift();
@@ -590,7 +597,7 @@ D.composeText = (source, maxWidth) => {
       break;
     }
 
-    // 本文の行頭の空白を削除する。
+    // 行頭の空白を除去する。
     const item = line2[0];
     if (isWhiteSpace(item.main[0].code)) {
       if (item.main.length === 1) {
@@ -608,29 +615,18 @@ D.composeText = (source, maxWidth) => {
 
   lines.slice(0, -1).forEach(line => {
     if (line.length === 1) {
-      // ひとつのルビで行が埋まっている場合、ルビ文字を均等割りする必要がある。
       const item = line[0];
-
-      const width = item.main.reduce((acc, u) => acc + u.advance, 0) + item.main.slice(-1)[0].kerning;
-      justifySpacing(item.main, maxWidth - width, 0.25);
-
+      justifySpacing(item.main, maxWidth - item.main.reduce((acc, u) => acc + u.advance, 0), 0.25);
       if (item.ruby) {
-        const width = item.ruby.reduce((acc, u) => acc + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
-        justifySpacing(item.ruby, maxWidth - width, 0.25);
+        justifySpacing(item.ruby, maxWidth - item.ruby.reduce((acc, u) => acc + u.advance, 0), 0.25);
       }
-
     } else {
       const chars = line.map(item => item.main).flat();
-      const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0) + chars.slice(-1)[0].kerning;
-      // 本文の位置を決める。均等揃え。
+      const width = chars.reduce((acc, u) => acc + u.advance + u.spacing1, 0);
       addSpacing(chars.slice(0, -1), maxWidth - width, 0.25);
-
-      // 親文字の字間が変わっているかもしれない。
-      // はみださなくてもよくなっているかも。
-      // spacing2
-      line.forEach((item, j) => {
+      line.forEach((item, i) => {
         if (item.ruby && item.main.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
-          updateItem(line[j - 1], item, line[j + 1], addAdvanceSpacing);
+          updateItem(line[i - 1], item, line[i + 1], addAdvanceSpacing);
         }
       });
     }
