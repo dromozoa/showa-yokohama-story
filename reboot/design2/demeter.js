@@ -259,7 +259,8 @@ const parseChars = (source, fontSize, font) => {
       spacingFallback: 0,
       spacing1: 0,
       spacing2: 0,
-      x: null,
+      x: undefined,
+      rubyConnection: undefined,
     };
   });
 };
@@ -305,7 +306,12 @@ D.parseParagraph = (source, fontSize, font) => {
         break;
       case Node.TEXT_NODE:
         if (!text) {
-          result.push(text = { items: [], fontSize: fontSize, font: font });
+          result.push(text = {
+            items: [],
+            fontSize: fontSize,
+            font: font,
+            lines: undefined,
+          });
         }
         text.items.push(item = {
           main: parseChars(node.textContent, fontSize, font),
@@ -519,7 +525,7 @@ const breakRuby = (source, maxWidth) => {
 //-------------------------------------------------------------------------
 
 D.composeText = (source, maxWidth) => {
-  const lines = [];
+  const lines = source.lines = [];
   let line1 = [...source.items];
   let line2 = [];
 
@@ -643,18 +649,42 @@ D.composeText = (source, maxWidth) => {
       const a = isLineStart ? 0 : isLineEnd ? 1 : 0.5;
       const b = 1 - a;
 
-      if (item.ruby) {
-        let rubyX = mainX - item.rubyOverhangPrev;
-        item.ruby.forEach(u => {
-          u.x = rubyX += u.spacing1 * a;
-          rubyX += u.advance + u.spacing1 * b + u.spacing2;
-        });
-      }
+      let rubyX = mainX - item.rubyOverhangPrev;
 
       item.main.forEach(u => {
         u.x = mainX += u.spacing1 * a;
         mainX += u.advance + u.spacing1 * b + u.spacing2;
       });
+
+      if (item.ruby) {
+        item.ruby.forEach(u => {
+          u.x = rubyX += u.spacing1 * a;
+          rubyX += u.advance + u.spacing1 * b + u.spacing2;
+        });
+
+        let mainIndex = 0;
+        let rubyIndex;
+        [
+          ...item.main.map((u, i) => {
+            const v = item.main[i + 1];
+            return { mainIndex: i, x: v ? (u.x + u.advance + v.x) * 0.5 : Infinity };
+          }),
+          ...item.ruby.map((u, i) => ({ rubyIndex: i, x: u.x + u.advance * 0.5 })),
+        ].sort((a, b) => a.x - b.x).forEach(order => {
+          if (order.mainIndex !== undefined) {
+            if (rubyIndex !== undefined) {
+              item.main[order.mainIndex].rubyConnection = rubyIndex;
+              rubyIndex = undefined;
+            }
+            ++mainIndex;
+          } else {
+            item.ruby[order.rubyIndex].rubyConnection = mainIndex;
+            if (rubyIndex === undefined) {
+              rubyIndex = order.rubyIndex;
+            }
+          }
+        });
+      }
     });
   });
 

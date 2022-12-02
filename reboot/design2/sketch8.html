@@ -123,10 +123,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     start = performance.now();
     const paragraph = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
+    console.log(paragraph);
     [...output.children].forEach(node => node.remove());
     output.append(...paragraph.map(text => D.composeText(text, width)));
     prevWidth = width;
-    // console.log("update", width, performance.now() - start);
+    console.log("update", width, performance.now() - start);
   };
 
   update(output.getBoundingClientRect().width);
