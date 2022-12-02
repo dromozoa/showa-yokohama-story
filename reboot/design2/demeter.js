@@ -212,11 +212,40 @@ D.loadFontFaces = async (timeout) => {
 
 //-------------------------------------------------------------------------
 
+const isWhiteSpace = u => (
+  // " " (SPACE)
+  u === 0x20
+  // "\t" (CHARACTER TABULATION)
+  || u === 0x09
+  // "\n" (LINE FEED)
+  || u === 0x0A
+  // "\r" (CARRIAGE RETURN)
+  || u === 0x0D
+) ? 1 : 0;
+
+const canBreak = (u, v) => (
+  // 行頭禁則
+  D.jlreq.isLineStartProhibited(v)
+  // 行末禁則
+  || D.jlreq.isLineEndProhibited(u)
+  // 連続するダッシュ・三点リーダ・二点リーダ
+  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
+  // くの字
+  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  // 前置省略記号とアラビア数字
+  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  // アラビア数字と後置省略記号
+  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  // 連続する欧文用文字
+  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
+) ? 0 : 1;
+
+//-------------------------------------------------------------------------
+
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
   context.font = `${D.numberToCssString(fontSize)}px ${font}`;
-
-  const result = [...source].map(char => {
+  return [...source].map(char => {
     const code = char.codePointAt(0);
     const width = context.measureText(char).width;
     return {
@@ -229,22 +258,24 @@ const parseChars = (source, fontSize, font) => {
       spacingBudget: 0,
       spacingBudgeted: 0,
       spacingFallback: 0,
+      spacingRuby: 0,
     };
   });
-
-  return result;
 };
 
-const updateKerning = (source, fontSize, font) => {
-  if (D.featureKerning) {
-    const context = internalCanvas.getContext("2d");
-    context.font = `${D.numberToCssString(fontSize)}px ${font}`;
-
-    source.slice(1).forEach((v, i) => {
-      const u = source[i];
-      u.kerning = u.width - (u.advance = context.measureText(u.char + v.char).width - v.width);
-    });
-  }
+const updateChars = (source, fontSize, font) => {
+  const context = internalCanvas.getContext("2d");
+  context.font = `${D.numberToCssString(fontSize)}px ${font}`;
+  source.forEach((u, i) => {
+    const v = source[i + 1];
+    if (v) {
+      u.advance = context.measureText(u.char + v.char).width - v.width;
+      u.kerning = u.width - u.advance;
+      u.spacingBudget = fontSize * 0.25 * (isWhiteSpace(u.code) || canBreak(u.code, v.code));
+    } else {
+      u.spacingBudget = fontSize * 0.25;
+    }
+  });
 };
 
 const parseParagraphBreakTable = {
@@ -263,7 +294,7 @@ D.parseParagraph = (source, fontSize, font) => {
     switch (node.nodeType) {
       case Node.ELEMENT_NODE:
         if (node.tagName === "RT") {
-          updateKerning(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
+          updateChars(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
         } else {
           node.childNodes.forEach(parse);
           if (parseParagraphBreakTable[node.tagName]) {
@@ -285,50 +316,70 @@ D.parseParagraph = (source, fontSize, font) => {
   };
   parse(source);
 
-  result.forEach(text => updateKerning(text.items.map(item => item.main).flat(), fontSize, font));
+  result.forEach(text => updateChars(text.items.map(item => item.main).flat(), fontSize, font));
 
   return result;
 };
 
 //-------------------------------------------------------------------------
 
-// const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D;
+const setSpacingBudgeted = (source, request, tolerance) => {
+  const remaining = source.reduce((acc, u) => acc + u.spacingBudget, 0);
+  if (remaining <= request) {
+    source.forEach(u => u.spacingBudgeted = u.spacingBudget);
+    return request - remaining;
+  }
 
-const isWhiteSpace = u => u === 0x20 || u === 0x09 || u === 0x0A || u === 0x0D ? 1 : 0;
+  let lower = request / source.length;
+  if (lower <= source.reduce((acc, u) => Math.min(acc, u.spacingBudget), Infinity)) {
+    source.forEach(u => u.spacingBudgeted = lower);
+    return 0;
+  }
+  let upper = source.reduce((acc, u) => Math.max(acc, u.spacingBudget), -Infinity);
+  let spacing;
+  let actual;
+  let cycle = 0;
 
-const canBreak = (u, v) =>
-  // 行頭禁則
-  !( D.jlreq.isLineStartProhibited(v)
-  // 行末禁則
-  || D.jlreq.isLineEndProhibited(u)
-  // 連続するダッシュ・三点リーダ・二点リーダ
-  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
-  // くの字
-  || (u === 0x3033 || u === 0x3034) && v === 0x3035
-  // 前置省略記号とアラビア数字
-  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
-  // アラビア数字と後置省略記号
-  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
-  // 連続する欧文用文字
-  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v));
+  for (; cycle < 16; ++cycle) {
+    spacing = (lower + upper) * 0.5;
+    actual = source.reduce((acc, u) => acc + Math.min(spacing, u.spacingBudget), 0);
+    if (Math.abs(actual - request) <= tolerance) {
+      break;
+    } else if (actual > request) {
+      upper = spacing;
+    } else {
+      lower = spacing;
+    }
+  }
+
+  // TODO remove
+  console.log(cycle, lower, upper, spacing, request, actual, request - actual);
+  if (cycle > 24) {
+    throw new Error("!!!");
+  }
+
+  source.forEach(u => u.spacingBudgeted = Math.min(spacing, u.spacingBudget));
+  return request - actual;
+};
+
+const setSpacingFallback = (source, request) => {
+  const spacing = request / source.length;
+  source.forEach(u => u.spacingFallback = spacing);
+};
+
+const setSpacing = (source, request) => {
+  const tolerance = 0.25;
+  request = setSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
+  if (request > tolerance) {
+    request = setSpacingBudgeted(source.filter(u => !isWhiteSpace(u.code) && u.spacingBudget > 0), request, tolerance);
+    if (request > tolerance) {
+      setSpacingFallback(source, request);
+    }
+  }
+  source.forEach(u => u.spacing = u.spacingRuby = u.spacingBudgeted + u.spacingFallback);
+};
 
 //-------------------------------------------------------------------------
-
-const resetSpacing = (source, fontSize) => {
-  source.forEach(u => {
-    u.spacing = 0;
-    u.spacingBudget = isWhiteSpace(u.code) ? Math.max(0, fontSize * 0.5 - u.advance) : 0;
-    u.spacingBudgeted = 0;
-    u.spacingFallback = 0;
-  });
-
-  source.slice(1).forEach((v, i) => {
-    const u = source[i];
-    if (canBreak(u.code, v.code)) {
-      u.spacingBudget = Math.max(u.spacingBudget, fontSize * 0.25);
-    }
-  });
-};
 
 const addSpacingBudgeted = (source, request, tolerance) => {
   const remaining = source.reduce((acc, u) => acc + u.spacingBudget - u.spacingBudgeted, 0);
@@ -355,7 +406,7 @@ const addSpacingBudgeted = (source, request, tolerance) => {
         u.spacingBudgeted = Math.max(Math.min(spacing, u.spacingBudget), u.spacingBudgeted);
         u.spacing = u.spacingBudgeted + u.spacingFallback;
       });
-      console.log(i, min, max, spacing, request - actual);
+      // console.log(i, min, max, spacing, request - actual);
       return request - actual;
     } else if (actual > request) {
       max = spacing;
@@ -364,7 +415,7 @@ const addSpacingBudgeted = (source, request, tolerance) => {
     }
   }
 
-  console.log(omin, omax, spacing, request, source.length, actual);
+  // console.log(omin, omax, spacing, request, source.length, actual);
   throw new Error("too many iterations");
 };
 
@@ -384,7 +435,7 @@ const addSpacingFallback = (source, request, tolerance) => {
         u.spacingFallback = Math.max(spacing, u.spacingFallback);
         u.spacing = u.spacingBudgeted + u.spacingFallback;
       });
-      console.log(i, min, max, spacing, request - actual);
+      // console.log(i, min, max, spacing, request - actual);
       return request - actual;
     } else if (actual > request) {
       max = spacing;
@@ -393,7 +444,7 @@ const addSpacingFallback = (source, request, tolerance) => {
     }
   }
 
-  console.log(omin, omax, spacing, request, source.length, average, actual);
+  // console.log(omin, omax, spacing, request, source.length, average, actual);
   throw new Error("too many iterations");
 };
 
@@ -413,8 +464,6 @@ const addSpacing = (source, request) => {
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
 
 const updateItems = (source, fontSize) => {
-  resetSpacing(source.map(item => item.main).flat(), fontSize);
-
   source.forEach((item, i) => {
     if (item.ruby) {
       const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
@@ -430,19 +479,17 @@ const updateItems = (source, fontSize) => {
 
       const mainSpacing = Math.max(0, rubyWidth - (mainWidth + rubyOverhang));
       if (mainSpacing > 0) {
-        addSpacing(item.main, mainSpacing);
+        setSpacing(item.main, mainSpacing);
       }
 
       const rubySpacing = Math.max(0, (mainWidth + rubyOverhang) - rubyWidth);
-      resetSpacing(item.ruby, fontSize * 0.5);
       if (rubySpacing > 0) {
-        addSpacing(item.ruby, rubySpacing);
+        setSpacing(item.ruby, rubySpacing);
       }
 
       item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
       item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
     } else {
-      resetSpacing(item.main, fontSize);
       item.rubyOverhangPrev = 0;
       item.rubyOverhangNext = 0;
     }
@@ -547,7 +594,7 @@ D.composeText = (source, maxWidth) => {
     updateItems(line, source.fontSize);
     const chars = line.map(item => item.main).flat();
     const width = chars.reduce((acc, u) => acc + u.advance + u.spacing, 0) + chars.slice(-1)[0].kerning;
-    console.log(width, maxWidth);
+    // console.log(width, maxWidth);
     if (i < lines.length - 1) {
       addSpacing(chars, maxWidth - width);
     }
