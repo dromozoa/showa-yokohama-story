@@ -632,6 +632,34 @@ D.composeText = (source, maxWidth) => {
       addSpacing(chars.slice(0, -1), maxWidth - width, 0.25);
 
       // 親文字の字間が変わっているかもしれない。
+      // はみださなくてもよくなっているかも。
+      let progress = 0;
+      line.forEach((item, j) => {
+        const mainWidth = item.main.reduce((acc, u) => acc + u.advance + u.spacing1 + u.spacing2, 0);
+        if (item.ruby) {
+          const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+
+          const prev = line[j - 1];
+          const next = line[j + 1];
+          const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
+          const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
+          const rubyOverhangSum = rubyOverhangPrev + rubyOverhangNext;
+          const rubyOverhang = Math.max(0, Math.min(rubyWidth - mainWidth, rubyOverhangSum));
+          const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
+
+
+          const spacing = mainWidth + rubyOverhang - rubyWidth;
+          console.log(progress, mainWidth, rubyOverhang, rubyWidth, spacing);
+          console.assert(spacing >= 0, spacing);
+          if (spacing >= 0) {
+            setSpacing(item.ruby, spacing, 0.25);
+          }
+
+          item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
+          item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
+        }
+        progress += mainWidth;
+      });
 
     }
   });
