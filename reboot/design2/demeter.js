@@ -360,7 +360,7 @@ const setSpacingFallback = (source, request) => {
   source.forEach(u => u.spacingFallback = spacing);
 };
 
-const setSpacing = (source, request, tolerance) => {
+const setSpacingImpl = (source, request, tolerance) => {
   if (request > tolerance) {
     request = setSpacingBudgeted(source.filter(u => isWhiteSpace(u.code)), request, tolerance);
     if (request > tolerance) {
@@ -370,7 +370,25 @@ const setSpacing = (source, request, tolerance) => {
       }
     }
   }
-  source.forEach(u => u.spacing1 = u.spacingBudgeted + u.spacingFallback);
+};
+
+const setSpacing = (source, request, tolerance) => {
+  setSpacingImpl(source, request, tolerance);
+  source.forEach(u => {
+    u.spacing1 = u.spacingBudgeted + u.spacingFallback;
+    u.spacing2 = 0;
+  });
+};
+
+const justifySpacing = (source, request, tolerance) => {
+  const u = source.slice(-1)[0];
+  u.spacingBudgeted = 0;
+  u.spacingFallback = 0;
+  setSpacingImpl(source.slice(0, -1), request, tolerance);
+  source.forEach(u => {
+    u.spacing1 = 0;
+    u.spacing2 = u.spacingBudgeted + u.spacingFallback;
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -439,11 +457,13 @@ const addSpacing = (source, request, tolerance) => {
 //-------------------------------------------------------------------------
 
 const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 0.5 : 0;
+const addAdvance = (acc, u) => acc + u.advance;
+const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
-const updateItem = (prev, item, next) => {
+const updateItem = (prev, item, next, mainWidthFn) => {
   if (item.ruby) {
-    const mainWidth = item.main.reduce((width, u) => width + u.advance, 0);
-    const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+    const mainWidth = item.main.reduce(mainWidthFn || addAdvance, 0);
+    const rubyWidth = item.ruby.reduce(addAdvance, 0) + item.ruby.slice(-1)[0].kerning;
 
     const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
     const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
@@ -517,7 +537,7 @@ D.composeText = (source, maxWidth) => {
       const item = line1[itemIndex];
       if (mainIndex === item.main.length - 1) {
         if (item.rubyOverhangNext > 0) {
-          updateItem(line1[itemIndex - 1], item, undefined);
+          updateItem(line1[itemIndex - 1], item);
           continue;
         }
         line2 = [ ...line1.splice(itemIndex + 1), ...line2 ];
@@ -561,7 +581,7 @@ D.composeText = (source, maxWidth) => {
         }
       }
 
-      updateItem(line1[itemIndex - 1], item1, undefined);
+      updateItem(line1[itemIndex - 1], item1);
       break;
     }
 
@@ -586,43 +606,17 @@ D.composeText = (source, maxWidth) => {
     line2 = [];
   }
 
-  // 文字の位置を確定させる。
-  // 本文の位置を決める。
-  // 本文の位置に合わせて、ルビの位置を決め直す。
-
   lines.slice(0, -1).forEach(line => {
     if (line.length === 1) {
       // ひとつのルビで行が埋まっている場合、ルビ文字を均等割りする必要がある。
       const item = line[0];
-      const chars = [...item.main];
-      const width = chars.reduce((acc, u) => acc + u.advance, 0) + chars.slice(-1)[0].kerning;
 
-      const u = chars.pop();
-      u.spacingBudgeted = 0;
-      u.spacingFallback = 0;
-      u.spacing1 = 0;
-      u.spacing2 = 0;
-
-      setSpacing(chars, maxWidth - width, 0.25);
-      chars.forEach(u => {
-        u.spacing2 = u.spacing1;
-        u.spacing1 = 0;
-      });
+      const width = item.main.reduce((acc, u) => acc + u.advance, 0) + item.main.slice(-1)[0].kerning;
+      justifySpacing(item.main, maxWidth - width, 0.25);
 
       if (item.ruby) {
-        const chars = [...item.ruby];
-        const width = chars.reduce((acc, u) => acc + u.advance, 0) + chars.slice(-1)[0].kerning;
-        const u = chars.pop();
-        u.spacingBudgeted = 0;
-        u.spacingFallback = 0;
-        u.spacing1 = 0;
-        u.spacing2 = 0;
-
-        setSpacing(chars, maxWidth - width, 0.25);
-        chars.forEach(u => {
-          u.spacing2 = u.spacing1;
-          u.spacing1 = 0;
-        });
+        const width = item.ruby.reduce((acc, u) => acc + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
+        justifySpacing(item.ruby, maxWidth - width, 0.25);
       }
 
     } else {
@@ -633,34 +627,12 @@ D.composeText = (source, maxWidth) => {
 
       // 親文字の字間が変わっているかもしれない。
       // はみださなくてもよくなっているかも。
-      let progress = 0;
+      // spacing2
       line.forEach((item, j) => {
-        const mainWidth = item.main.reduce((acc, u) => acc + u.advance + u.spacing1 + u.spacing2, 0);
-        if (item.ruby) {
-          const rubyWidth = item.ruby.reduce((width, u) => width + u.advance, 0) + item.ruby.slice(-1)[0].kerning;
-
-          const prev = line[j - 1];
-          const next = line[j + 1];
-          const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
-          const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
-          const rubyOverhangSum = rubyOverhangPrev + rubyOverhangNext;
-          const rubyOverhang = Math.max(0, Math.min(rubyWidth - mainWidth, rubyOverhangSum));
-          const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
-
-
-          const spacing = mainWidth + rubyOverhang - rubyWidth;
-          console.log(progress, mainWidth, rubyOverhang, rubyWidth, spacing);
-          console.assert(spacing >= 0, spacing);
-          if (spacing >= 0) {
-            setSpacing(item.ruby, spacing, 0.25);
-          }
-
-          item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
-          item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
+        if (item.ruby && item.main.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
+          updateItem(line[j - 1], item, line[j + 1], addAdvanceSpacing);
         }
-        progress += mainWidth;
       });
-
     }
   });
 
