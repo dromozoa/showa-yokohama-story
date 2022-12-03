@@ -308,8 +308,6 @@ D.parseParagraph = (source, fontSize, font) => {
         if (!text) {
           result.push(text = {
             items: [],
-            fontSize: fontSize,
-            font: font,
             lines: undefined,
           });
         }
@@ -525,7 +523,7 @@ const breakRuby = (source, maxWidth) => {
 //-------------------------------------------------------------------------
 
 D.composeText = (source, maxWidth) => {
-  const lines = source.lines = [];
+  const lines = [];
   let line1 = [...source.items];
   let line2 = [];
 
@@ -688,19 +686,17 @@ D.composeText = (source, maxWidth) => {
     });
   });
 
-  return source;
+  return lines;
 };
 
 //-------------------------------------------------------------------------
 
-D.layoutText = source => {
-  const fontSize = source.fontSize;
-
+D.layoutText = (source, fontSize) => {
   const textView = D.createElement(`
     <div class="demeter-text" style="line-height: ${D.numberToCssString(fontSize * 2)}px;"></div>
   `);
 
-  source.lines.forEach(line  => {
+  source.forEach(line  => {
     const lineView = textView.appendChild(D.createElement(`
       <div></div>
     `));

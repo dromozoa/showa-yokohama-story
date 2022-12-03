@@ -127,9 +127,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     start = performance.now();
     const paragraph = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
-    paragraph.forEach(text => D.composeText(text, width));
+    const lines = paragraph.map(text => D.composeText(text, width)).flat();
     [...output.children].forEach(node => node.remove());
-    output.append(...paragraph.map(text => D.layoutText(text)));
+    output.replaceChildren(D.layoutText(lines, 24));
 
     // console.log(paragraph);
     // [...output.children].forEach(node => node.remove());
