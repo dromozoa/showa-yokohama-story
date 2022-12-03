@@ -52,6 +52,7 @@
 ">'BIZ UDPMincho', serif<br>
 空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+水平バー: &#x2015;&#x2015;&#x2015;&#x2015;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
 
@@ -60,6 +61,7 @@
 ">'Share Tech', 'BIZ UDPMincho', serif<br>
 空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+水平バー: &#x2015;&#x2015;&#x2015;&#x2015;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
 
@@ -68,6 +70,7 @@
 ">'ShareTechMinus', 'BIZ UDPMincho', serif<br>
 空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+水平バー: &#x2015;&#x2015;&#x2015;&#x2015;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
 
@@ -78,6 +81,7 @@
   <button id="command2">Share TechのunicodeRangeを表示する。</button>
   <button id="command3">unicodeRangeを変更したShareTechMinusを追加する。</button>
   <button id="command4">スタイルシートの内容を見られるか？</button>
+  <button id="command5">Share TechのunicodeRangeとjlreqの欧文を比較する。</button>
 </div>
 
 <script>
@@ -156,8 +160,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     const node = document.createElement("style");
     node.textContent = text
       .replace(/font-family:.*?;/, "font-family: 'ShareTechMinus';")
-      .replace(/(unicode-range:.*?), *U\+2000.*?;/, "$1");
+      // .replace(/(unicode-range:.*?), *U\+2000.*?;/, "$1");
+      .replace(/unicode-range:.*?;/, "unicode-range: U+21-7e, U+a0-b4, U+b6-ff, U+152-153, U+2010, U+2013-2014, U+2016, U+2018-2019, U+201c-201d, U+2020-2022, U+2025-2026, U+2030, U+2032-2033, U+203e-203f, U+2042, U+2051, U+20ac, U+2191, U+2193, U+2212;");
     document.body.append(node);
+  });
+
+  document.getElementById("command5").addEventListener("click", async () => {
+    const fontFace = [...document.fonts].find(fontFace => /Share Tech/.test(fontFace.family));
+    const ranges = [];
+    let r;
+    fontFace.unicodeRange.split(/,\s*/).forEach(range => {
+      let match = range.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
+      if (!match) {
+        match = range.match(/^U\+([0-9A-F]+)$/i);
+      }
+      const a = parseInt(match[1], 16);
+      const b = match[2] !== undefined ? parseInt(match[2], 16) : a;
+      for (let code = a; code <= b; ++code) {
+        const v = D.jlreq.isWesternCharacter(code);
+        if (v) {
+          if (r && r.j === code - 1) {
+            r.j = code;
+          } else {
+            ranges.push(r = { i: code, j: code });
+          }
+        }
+      }
+    });
+    const buffer = [];
+    for (r of ranges) {
+      if (r.i === r.j) {
+        buffer.push("U+" + r.i.toString(16));
+      } else {
+        buffer.push("U+" + r.i.toString(16) + "-" + r.j.toString(16));
+      }
+    }
+    console.log(buffer.join(", "));
   });
 
 });
