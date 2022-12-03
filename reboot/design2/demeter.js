@@ -685,7 +685,7 @@ D.layoutText = (source, fontSize, lineHeight) => {
 
           ruby.forEach(u => {
             const charNode = rubyNode.appendChild(document.createElement("span"));
-            charNode.style.marginLeft= D.numberToCssPixels(u.x - u.rubyX);
+            charNode.style.marginLeft = D.numberToCssPixels(u.x - rubyX);
             charNode.style.width = D.numberToCssPixels(u.advance);
             charNode.textContent = u.char;
 

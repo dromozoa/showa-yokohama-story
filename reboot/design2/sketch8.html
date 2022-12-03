@@ -89,28 +89,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const loader = document.getElementById("loader");
 
-  /*
-  [...document.fonts].forEach(fontFace => {
-    loader.append(D.createElement(`
-      <span>■</span>
-    `));
-  });
-
-  start = performance.now();
-  await Promise.all([...document.fonts].map((_, index) => {
-    loader.children[index].style.color = "#0f0";
-    return (async () => {
-      const result = await D.loadFontFace(index, 30000);
-      if (result.status === "loaded") {
-        loader.children[index].style.color = "#00f";
-      } else {
-        loader.children[index].style.color = "#f00";
-      }
-    })();
-  }));
-  console.log("loader", performance.now() - start);
-  */
-
   const result = await D.loadFontFaces(30000);
   const template = document.createElement("template");
   template.innerHTML =`
@@ -126,18 +104,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (prevWidth === width) {
       return;
     }
-
     start = performance.now();
     const paragraph = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
     const lines = paragraph.map(text => D.composeText(text, width)).flat();
-    [...output.children].forEach(node => node.remove());
     output.replaceChildren(D.layoutText(lines, 24, 48));
-
-    // console.log(paragraph);
-    // [...output.children].forEach(node => node.remove());
-    // output.append(...paragraph.map(text => D.composeText(text, width)));
-    // prevWidth = width;
     console.log("update", width, performance.now() - start);
+    console.log(lines);
   };
 
   update(output.getBoundingClientRect().width);
