@@ -696,13 +696,8 @@ D.composeText = (source, maxWidth) => {
 D.layoutText = source => {
   const fontSize = source.fontSize;
 
-  // 微妙にはみだす可能性があるのでnowrapする。
   const textView = D.createElement(`
-    <div style="
-      font: ${D.numberToCssString(source.fontSize)}px ${D.escapeHTML(source.font)};
-      line-height: ${D.numberToCssString(source.fontSize * 2)}px;
-      white-space: nowrap;
-    "></div>
+    <div class="demeter-text" style="line-height: ${D.numberToCssString(fontSize * 2)}px;"></div>
   `);
 
   source.lines.forEach(line  => {
@@ -714,14 +709,7 @@ D.layoutText = source => {
     line.forEach(item => {
       item.main.forEach((u, i)  => {
         const charView = lineView.appendChild(D.createElement(`
-          <span style="
-            display: inline-block;
-            position: relative;
-            width: ${D.numberToCssString(u.advance)}px;
-            margin-left: ${D.numberToCssString(u.x - mainX)}px;
-          "><span style="
-              display: inline-block;
-            ">${D.escapeHTML(u.char)}</span></span>
+          <span style="width: ${D.numberToCssString(u.advance)}px; margin-left: ${D.numberToCssString(u.x - mainX)}px;"><span>${D.escapeHTML(u.char)}</span></span>
         `));
         mainX = u.x + u.advance;
 
@@ -729,21 +717,11 @@ D.layoutText = source => {
           const ruby = item.ruby.filter(ruby => ruby.rubyConnection === i);
           let rubyX = ruby[0].x;
           const rubyView = charView.appendChild(D.createElement(`
-            <span style="
-              display: block;
-              position: absolute;
-              top: ${D.numberToCssString(fontSize * -0.75)}px;
-              left: ${D.numberToCssString(rubyX - u.x)}px;
-              font-size: ${D.numberToCssString(fontSize * 0.5)}px;
-            "></span>
+            <div style="top: ${D.numberToCssString(fontSize * -0.75)}px; left: ${D.numberToCssString(rubyX - u.x)}px;"></div>
           `));
           ruby.forEach(u => {
             rubyView.append(D.createElement(`
-              <span style="
-                display: inline-block;
-                width: ${D.numberToCssString(u.advance)}px;
-                margin-left: ${D.numberToCssString(u.x - rubyX)}px;
-              ">${D.escapeHTML(u.char)}</span>
+              <span style="width: ${D.numberToCssString(u.advance)}px; margin-left: ${D.numberToCssString(u.x - rubyX)}px;">${D.escapeHTML(u.char)}</span>
             `));
             rubyX = u.x + u.advance;
           });
