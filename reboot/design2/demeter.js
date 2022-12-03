@@ -28,7 +28,9 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-const escapeHTMLTable = {
+D.numberToCssPixels = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "px");
+
+const escapeHtmlTable = {
   "&": "&amp;",
   "<": "&lt;",
   ">": "&gt;",
@@ -36,27 +38,7 @@ const escapeHTMLTable = {
   "'": "&apos;",
 };
 
-D.escapeHTML = source => source.replace(/[&<>"']/g, match => escapeHTMLTable[match]);
-
-D.createElement = html => {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  return template.content.firstElementChild;
-};
-
-D.createElements = html => {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  return template.content.children;
-};
-
-D.numberToCssString = source => {
-  if (-0.00005 < source && source < 0.00005) {
-    return "0";
-  } else {
-    return source.toFixed(4).replace(/\.?0+$/, "");
-  }
-};
+D.escapeHtml = s => s.replace(/[&<>"']/g, match => escapeHtmlTable[match]);
 
 //-------------------------------------------------------------------------
 
@@ -99,41 +81,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 let internalRoot;
 let internalCanvas;
-let internalLayout;
 
 const initializeInternalRoot = () => {
-  internalRoot = document.body.appendChild(D.createElement(`
-    <div style="
-      position: absolute;
-      width: auto;
-      height: auto;
-      top: -1989px;
-      left: -6417px;
-    "></div>
-  `)).attachShadow({ mode: "closed" });
-
-  const view = internalRoot.appendChild(D.createElement(`
-    <div>
-      <div><canvas></canvas></div>
-      <div style="
-        position: relative;
-        width: auto;
-        height: auto;
-      "></div>
-    </div>
-  `));
-  internalCanvas = view.firstElementChild.firstElementChild;
-  internalLayout = view.children[1];
+  const rootNode = document.createElement("div");
+  rootNode.style.position = "absolute";
+  rootNode.style.top = "-1989px";
+  rootNode.style.left = "-6417px";
+  document.body.append(rootNode);
+  internalRoot = rootNode.attachShadow({ mode: "closed" });
+  internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
 };
 
 //-------------------------------------------------------------------------
 
 // Showa Yokohama Storyフォントは
-//   U+E001:   800/1000
-//   U+E002:   900/1000
-//   Kerning: -300/1000
-// という寸法を持つ。フォントサイズが100pxのとき、カーニングが有効ならば、文字
-// 列"\uE001\uE0002"は幅140pxになる。
+//   U+E001: 800/1000
+//   U+E002: 900/1000
+// という寸法を持ち、-300/1000のカーニングが設定されている。フォントサイズが
+// 100pxのとき、文字列"\uE001\uE002"の幅は
+//   カーニング有効時: 140px
+//   カーニング無効時: 170px
+// になる。
 
 const checkKerning = async () => {
   const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
@@ -153,8 +121,7 @@ const checkKerning = async () => {
 
 // Firefox 107でFontFace.load()の返り値が（FontFace.loadedも）決定されない場合
 // があった。FontFaceが新しい別のオブジェクトにさしかえられ、プロミスが迷子にな
-// っているように見えた。そのため、ポーリングしてdocument.facesを監視することに
-// した。
+// っているように見えた。そこで、document.facesの監視のためにポーリングする。
 
 D.loadFontFace = async (index, timeout) => {
   const fontFace = [...document.fonts][index];
@@ -244,7 +211,7 @@ const canBreak = (u, v) => (
 
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = `${D.numberToCssString(fontSize)}px ${font}`;
+  context.font = D.numberToCssPixels(fontSize) + " " + font;
   return [...source].map(char => {
     const code = char.codePointAt(0);
     const width = context.measureText(char).width;
@@ -267,7 +234,7 @@ const parseChars = (source, fontSize, font) => {
 
 const updateChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = `${D.numberToCssString(fontSize)}px ${font}`;
+  context.font = D.numberToCssPixels(fontSize) + " " + font;
   source.forEach((u, i) => {
     const v = source[i + 1];
     if (v) {
@@ -688,34 +655,40 @@ D.composeText = (source, maxWidth) => {
 
 //-------------------------------------------------------------------------
 
-D.layoutText = (source, fontSize) => {
-  const textView = D.createElement(`
-    <div class="demeter-text" style="line-height: ${D.numberToCssString(fontSize * 2)}px;"></div>
-  `);
+D.layoutText = (source, fontSize, lineHeight) => {
+  const textNode = document.createElement("div");
+  textNode.className = "demeter-text";
+  textNode.style.lineHeight = D.numberToCssPixels(lineHeight);
 
-  source.forEach(line  => {
-    const lineView = textView.appendChild(D.createElement(`
-      <div></div>
-    `));
+  source.forEach(line => {
+    const lineNode = textNode.appendChild(document.createElement("div"));
 
     let mainX = 0;
     line.forEach(item => {
       item.main.forEach((u, i)  => {
-        const charView = lineView.appendChild(D.createElement(`
-          <span style="width: ${D.numberToCssString(u.advance)}px; margin-left: ${D.numberToCssString(u.x - mainX)}px;"><span>${D.escapeHTML(u.char)}</span></span>
-        `));
+        const mainNode = lineNode.appendChild(document.createElement("span"));
+        mainNode.style.marginLeft = D.numberToCssPixels(u.x - mainX);
+        mainNode.style.width = D.numberToCssPixels(u.advance);
+
+        const charNode = mainNode.appendChild(document.createElement("span"));
+        charNode.textContent = u.char;
+
         mainX = u.x + u.advance;
 
         if (u.rubyConnection !== undefined) {
           const ruby = item.ruby.filter(ruby => ruby.rubyConnection === i);
           let rubyX = ruby[0].x;
-          const rubyView = charView.appendChild(D.createElement(`
-            <div style="top: ${D.numberToCssString(fontSize * -0.75)}px; left: ${D.numberToCssString(rubyX - u.x)}px;"></div>
-          `));
+
+          const rubyNode = mainNode.appendChild(document.createElement("div"));
+          rubyNode.style.top = D.numberToCssPixels(fontSize * -0.75);
+          rubyNode.style.left = D.numberToCssPixels(rubyX - u.x);
+
           ruby.forEach(u => {
-            rubyView.append(D.createElement(`
-              <span style="width: ${D.numberToCssString(u.advance)}px; margin-left: ${D.numberToCssString(u.x - rubyX)}px;">${D.escapeHTML(u.char)}</span>
-            `));
+            const charNode = rubyNode.appendChild(document.createElement("span"));
+            charNode.style.marginLeft= D.numberToCssPixels(u.x - u.rubyX);
+            charNode.style.width = D.numberToCssPixels(u.advance);
+            charNode.textContent = u.char;
+
             rubyX = u.x + u.advance;
           });
         }
@@ -723,7 +696,7 @@ D.layoutText = (source, fontSize) => {
     });
   });
 
-  return textView;
+  return textNode;
 };
 
 //-------------------------------------------------------------------------

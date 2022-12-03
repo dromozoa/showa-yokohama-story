@@ -31,7 +31,7 @@
   <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
-  <link href="font_face.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
@@ -112,10 +112,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   */
 
   const result = await D.loadFontFaces(30000);
-  loader.append(...D.createElements(`
-    <div>status: ${D.escapeHTML(result.status)}</div>
+  const template = document.createElement("template");
+  template.innerHTML =`
+    <div>status: ${D.escapeHtml(result.status)}</div>
     <div>elapsed: ${result.elapsed}</div>
-  `));
+  `;
+  loader.append(template.content);
 
   const output = document.getElementById("output");
 
@@ -129,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const paragraph = D.parseParagraph(document.getElementById("template").content.firstElementChild, 24, "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'");
     const lines = paragraph.map(text => D.composeText(text, width)).flat();
     [...output.children].forEach(node => node.remove());
-    output.replaceChildren(D.layoutText(lines, 24));
+    output.replaceChildren(D.layoutText(lines, 24, 48));
 
     // console.log(paragraph);
     // [...output.children].forEach(node => node.remove());
