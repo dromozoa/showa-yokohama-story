@@ -34,7 +34,8 @@
   -->
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
 
-  <link href="font_face.css" rel="stylesheet">
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
@@ -49,6 +50,7 @@
 <p style="
   font: 24px 'BIZ UDPMincho', serif;
 ">'BIZ UDPMincho', serif<br>
+空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
@@ -56,6 +58,7 @@
 <p style="
   font: 24px 'Share Tech', 'BIZ UDPMincho', serif;
 ">'Share Tech', 'BIZ UDPMincho', serif<br>
+空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
@@ -63,18 +66,18 @@
 <p style="
   font: 24px 'ShareTechMinus', 'BIZ UDPMincho', serif;
 ">'ShareTechMinus', 'BIZ UDPMincho', serif<br>
+空白: SP<span> </span>AC<span>&nbsp;</span>E<br>
 ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
 
-<div id="view-unicode-range" style="
-  font: 24px 'Share Tech', 'BIZ UDPMincho', serif;
-"><table></table></div>
+<div><table id="view-unicode-range" ></table></div>
 
 <div>
   <button id="command1">Share TechのunicodeRangeを変更する。</button>
   <button id="command2">Share TechのunicodeRangeを表示する。</button>
   <button id="command3">unicodeRangeを変更したShareTechMinusを追加する。</button>
+  <button id="command4">スタイルシートの内容を見られるか？</button>
 </div>
 
 <script>
@@ -108,6 +111,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const view = document.getElementById("view-unicode-range");
     const fontFace = [...document.fonts].find(fontFace => /Share Tech/.test(fontFace.family));
 
+    const F = document.createDocumentFragment();
+
     const ranges = fontFace.unicodeRange.split(/,\s*/).filter(range => {
       let match = range.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
       if (!match) {
@@ -117,13 +122,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       const b = match[2] !== undefined ? parseInt(match[2], 16) : a;
       const chars = [];
       for (let c = a; c <= b; ++c) {
-        chars.push("(U+" + c.toString(16) + ")=" + D.escapeHTML(String.fromCodePoint(c)));
+        chars.push("(U+" + c.toString(16) + ")=" + String.fromCodePoint(c));
       }
 
-      view.firstElementChild.append(D.createElement(`
-        <tr><td>${D.escapeHTML(range)}</td><td>${chars.join(" ")}</td></tr>
-      `));
+      const trNode = document.createElement("tr");
+      trNode.append(document.createElement("td"), document.createElement("td"));
+      F.append(trNode);
+      trNode.firstElementChild.textContent = range;
+      trNode.lastElementChild.textContent = chars.join(" ");
     });
+
+    view.append(F);
   });
 
   document.getElementById("command3").addEventListener("click", async () => {
@@ -137,6 +146,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const result = await newFontFace.load();
     console.log(result);
     document.fonts.add(newFontFace);
+  });
+
+  document.getElementById("command4").addEventListener("click", async () => {
+    const response = await fetch("https://fonts.googleapis.com/css2?family=Share+Tech&display=swap");
+    const text = await response.text();
+    console.log(text);
+
+    const node = document.createElement("style");
+    node.textContent = text
+      .replace(/font-family:.*?;/, "font-family: 'ShareTechMinus';")
+      .replace(/(unicode-range:.*?), *U\+2000.*?;/, "$1");
+    document.body.append(node);
   });
 
 });
