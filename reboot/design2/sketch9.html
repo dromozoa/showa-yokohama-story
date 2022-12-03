@@ -74,7 +74,7 @@
 三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
 二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
 
-<div><table id="view-unicode-range" ></table></div>
+<div><table id="view-unicode-range"></table></div>
 
 <div>
   <button id="command1">Share TechのunicodeRangeを変更する。</button>
@@ -115,7 +115,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const view = document.getElementById("view-unicode-range");
     const fontFace = [...document.fonts].find(fontFace => /Share Tech/.test(fontFace.family));
 
-    const F = document.createDocumentFragment();
+    const documentFragment = document.createDocumentFragment();
+    const rowTmpl = document.createElement("tr");
+    rowTmpl.innerHTML = `
+      <td></td>
+      <td style="font-family: 'Share Tech'"></td>
+      <td style="font-family: 'BIZ UDPMincho'"></td>
+    `;
 
     const ranges = fontFace.unicodeRange.split(/,\s*/).filter(range => {
       let match = range.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
@@ -124,19 +130,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       const a = parseInt(match[1], 16);
       const b = match[2] !== undefined ? parseInt(match[2], 16) : a;
+
       const chars = [];
       for (let c = a; c <= b; ++c) {
-        chars.push("(U+" + c.toString(16) + ")=" + String.fromCodePoint(c));
+        const rowNode = rowTmpl.cloneNode(true);
+        rowNode.children[0].textContent = "U+" + c.toString(16);
+        rowNode.children[1].textContent = rowNode.children[2].textContent = String.fromCodePoint(c);
+        documentFragment.append(rowNode);
       }
-
-      const trNode = document.createElement("tr");
-      trNode.append(document.createElement("td"), document.createElement("td"));
-      F.append(trNode);
-      trNode.firstElementChild.textContent = range;
-      trNode.lastElementChild.textContent = chars.join(" ");
     });
 
-    view.append(F);
+    view.append(documentFragment);
   });
 
   document.getElementById("command3").addEventListener("click", async () => {
