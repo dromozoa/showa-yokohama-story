@@ -656,12 +656,12 @@ D.composeText = (source, maxWidth) => {
 //-------------------------------------------------------------------------
 
 D.layoutText = (source, fontSize, lineHeight) => {
-  const textNode = document.createElement("div");
-  textNode.className = "demeter-text";
-  textNode.style.lineHeight = D.numberToCssPixels(lineHeight);
+  const result = document.createElement("div");
+  result.className = "demeter-text";
+  result.style.lineHeight = D.numberToCssPixels(lineHeight);
 
   source.forEach(line => {
-    const lineNode = textNode.appendChild(document.createElement("div"));
+    const lineNode = result.appendChild(document.createElement("div"));
 
     let mainX = 0;
     line.forEach(item => {
@@ -696,7 +696,7 @@ D.layoutText = (source, fontSize, lineHeight) => {
     });
   });
 
-  return textNode;
+  return result;
 };
 
 //-------------------------------------------------------------------------

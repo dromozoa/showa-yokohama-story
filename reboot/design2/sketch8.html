@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lines = paragraph.map(text => D.composeText(text, width)).flat();
     output.replaceChildren(D.layoutText(lines, 24, 48));
     console.log("update", width, performance.now() - start);
-    console.log(lines);
+    // console.log(lines);
   };
 
   update(output.getBoundingClientRect().width);
