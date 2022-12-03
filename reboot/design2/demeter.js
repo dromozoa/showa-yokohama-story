@@ -306,12 +306,9 @@ D.parseParagraph = (source, fontSize, font) => {
         break;
       case Node.TEXT_NODE:
         if (!text) {
-          result.push(text = {
-            items: [],
-            lines: undefined,
-          });
+          result.push(text = []);
         }
-        text.items.push(item = {
+        text.push(item = {
           main: parseChars(node.textContent, fontSize, font),
           rubyOverhangPrev: 0,
           rubyOverhangNext: 0,
@@ -321,7 +318,7 @@ D.parseParagraph = (source, fontSize, font) => {
   };
   parse(source);
 
-  result.forEach(text => updateChars(text.items.map(item => item.main).flat(), fontSize, font));
+  result.forEach(text => updateChars(text.map(item => item.main).flat(), fontSize, font));
 
   return result;
 };
@@ -523,8 +520,8 @@ const breakRuby = (source, maxWidth) => {
 //-------------------------------------------------------------------------
 
 D.composeText = (source, maxWidth) => {
-  const lines = [];
-  let line1 = [...source.items];
+  const result = [];
+  let line1 = [...source];
   let line2 = [];
 
   while (true) {
@@ -597,7 +594,7 @@ D.composeText = (source, maxWidth) => {
       break;
     }
 
-    lines.push(line1);
+    result.push(line1);
     if (line2.length === 0) {
       break;
     }
@@ -618,8 +615,8 @@ D.composeText = (source, maxWidth) => {
     line2 = [];
   }
 
-  lines.forEach((line, i) => {
-    const isLastLine = i === lines.length - 1;
+  result.forEach((line, i) => {
+    const isLastLine = i === result.length - 1;
 
     if (!isLastLine) {
       if (line.length === 1) {
@@ -686,7 +683,7 @@ D.composeText = (source, maxWidth) => {
     });
   });
 
-  return lines;
+  return result;
 };
 
 //-------------------------------------------------------------------------
