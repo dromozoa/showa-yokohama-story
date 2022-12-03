@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+  --
+  -- This file is part of 昭和横濱物語.
+  --
+  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
+  -- it under the terms of the GNU General Public License as published by
+  -- the Free Software Foundation, either version 3 of the License, or
+  -- (at your option) any later version.
+  --
+  -- 昭和横濱物語 is distributed in the hope that it will be useful,
+  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  -- GNU General Public License for more details.
+  --
+  -- You should have received a copy of the GNU General Public License
+  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
+  <!--
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech&text=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&display=swap" rel="stylesheet">
+  -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="font_face.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+</head>
+<body>
+
+<p style="
+  font: 24px 'BIZ UDPMincho', serif;
+">'BIZ UDPMincho', serif<br>
+ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
+二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
+
+<p style="
+  font: 24px 'Share Tech', 'BIZ UDPMincho', serif;
+">'Share Tech', 'BIZ UDPMincho', serif<br>
+ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
+二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
+
+<p style="
+  font: 24px 'ShareTechMinus', 'BIZ UDPMincho', serif;
+">'ShareTechMinus', 'BIZ UDPMincho', serif<br>
+ダッシュ: &#x2014;&#x2014;&#x2014;&#x2014;<br>
+三点リーダ: &#x2026;&#x2026;&#x2026;&#x2026;<br>
+二点リーダ: &#x2025;&#x2025;&#x2025;&#x2025;</p>
+
+<div id="view-unicode-range" style="
+  font: 24px 'Share Tech', 'BIZ UDPMincho', serif;
+"><table></table></div>
+
+<div>
+  <button id="command1">Share TechのunicodeRangeを変更する。</button>
+  <button id="command2">Share TechのunicodeRangeを表示する。</button>
+  <button id="command3">unicodeRangeを変更したShareTechMinusを追加する。</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  let start;
+  let result;
+
+  const D = globalThis.demeter;
+  await D.boot();
+
+  start = performance.now();
+  result = await D.loadFontFaces(30000);
+  console.log("loadFontFaces", performance.now() - start, result);
+
+  document.getElementById("command1").addEventListener("click", () => {
+    const fontFace = [...document.fonts].find(fontFace => /Share Tech/.test(fontFace.family));
+    const ranges = fontFace.unicodeRange.split(/,\s*/).filter(range => {
+      let match = range.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
+      if (!match) {
+        match = range.match(/^U\+([0-9A-F]+)$/i);
+      }
+      const a = parseInt(match[1], 16);
+      const b = match[2] !== undefined ? parseInt(match[2], 16) : a;
+
+      return !(a <= 0x2014 && 0x2014 <= b);
+    });
+    fontFace.unicodeRange = ranges.join(", ");
+  });
+
+  document.getElementById("command2").addEventListener("click", () => {
+    const view = document.getElementById("view-unicode-range");
+    const fontFace = [...document.fonts].find(fontFace => /Share Tech/.test(fontFace.family));
+
+    const ranges = fontFace.unicodeRange.split(/,\s*/).filter(range => {
+      let match = range.match(/^U\+([0-9A-F]+)-([0-9A-F]+)/i);
+      if (!match) {
+        match = range.match(/^U\+([0-9A-F]+)$/i);
+      }
+      const a = parseInt(match[1], 16);
+      const b = match[2] !== undefined ? parseInt(match[2], 16) : a;
+      const chars = [];
+      for (let c = a; c <= b; ++c) {
+        chars.push("(U+" + c.toString(16) + ")=" + D.escapeHTML(String.fromCodePoint(c)));
+      }
+
+      view.firstElementChild.append(D.createElement(`
+        <tr><td>${D.escapeHTML(range)}</td><td>${chars.join(" ")}</td></tr>
+      `));
+    });
+  });
+
+  document.getElementById("command3").addEventListener("click", async () => {
+    const newFontFace = new FontFace("ShareTechMinus", "url(https://fonts.gstatic.com/s/sharetech/v17/7cHtv4Uyi5K0OeZ7bohU8H0JmBUhfrE.woff2)", {
+      style: "normal",
+      weight: 400,
+      // unicodeRange: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+      unicodeRange: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC",
+    });
+    console.log(newFontFace);
+    const result = await newFontFace.load();
+    console.log(result);
+    document.fonts.add(newFontFace);
+  });
+
+});
+</script>
+</body>
+</html>
