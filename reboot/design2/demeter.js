@@ -688,53 +688,71 @@ D.composeText = (source, maxWidth) => {
     });
   });
 
-  const view = D.createElement(`
-    <div style="
-      position: relative;
-      height: ${D.numberToCssString(source.fontSize * lines.length * 2)}px;
-    "><div style="
-        position: absolute;
-      "></div><div style="
-        position: absolute;
-      "></div></div>
-  `);
-  lines.forEach((line, i) => {
-    const mainY = source.fontSize * i * 2;
-    const rubyY = source.fontSize * (i * 2 - 0.75);
-    line.forEach(item => {
-      if (item.ruby) {
-        item.ruby.forEach(u => {
-          view.firstElementChild.append(D.createElement(`
-            <span style="
-              position: absolute;
-              display: inline-block;
-              top: ${D.numberToCssString(rubyY)}px;
-              left: ${D.numberToCssString(u.x)}px;
-              width: ${D.numberToCssString(u.advance)}px;
-              font: ${D.numberToCssString(source.fontSize * 0.5)}px ${D.escapeHTML(source.font)};
-              line-height: ${D.numberToCssString(source.fontSize * 2)}px;
-            ">${D.escapeHTML(u.char)}</span>
-          `));
-        });
-      }
+  return source;
+};
 
-      item.main.forEach(u => {
-        view.children[1].append(D.createElement(`
+//-------------------------------------------------------------------------
+
+D.layoutText = source => {
+  const fontSize = source.fontSize;
+
+  // 微妙にはみだす可能性があるのでnowrapする。
+  const textView = D.createElement(`
+    <div style="
+      font: ${D.numberToCssString(source.fontSize)}px ${D.escapeHTML(source.font)};
+      line-height: ${D.numberToCssString(source.fontSize * 2)}px;
+      white-space: nowrap;
+    "></div>
+  `);
+
+  source.lines.forEach(line  => {
+    const lineView = textView.appendChild(D.createElement(`
+      <div></div>
+    `));
+
+    let mainX = 0;
+    line.forEach(item => {
+      item.main.forEach((u, i)  => {
+        const charView = lineView.appendChild(D.createElement(`
           <span style="
-            position: absolute;
             display: inline-block;
-            top: ${D.numberToCssString(mainY)}px;
-            left: ${D.numberToCssString(u.x)}px;
+            position: relative;
             width: ${D.numberToCssString(u.advance)}px;
-            font: ${D.numberToCssString(source.fontSize)}px ${D.escapeHTML(source.font)};
-            line-height: ${D.numberToCssString(source.fontSize * 2)}px;
-          ">${D.escapeHTML(u.char)}</span>
+            margin-left: ${D.numberToCssString(u.x - mainX)}px;
+          "><span style="
+              display: inline-block;
+            ">${D.escapeHTML(u.char)}</span></span>
         `));
+        mainX = u.x + u.advance;
+
+        if (u.rubyConnection !== undefined) {
+          const ruby = item.ruby.filter(ruby => ruby.rubyConnection === i);
+          let rubyX = ruby[0].x;
+          const rubyView = charView.appendChild(D.createElement(`
+            <span style="
+              display: block;
+              position: absolute;
+              top: ${D.numberToCssString(fontSize * -0.75)}px;
+              left: ${D.numberToCssString(rubyX - u.x)}px;
+              font-size: ${D.numberToCssString(fontSize * 0.5)}px;
+            "></span>
+          `));
+          ruby.forEach(u => {
+            rubyView.append(D.createElement(`
+              <span style="
+                display: inline-block;
+                width: ${D.numberToCssString(u.advance)}px;
+                margin-left: ${D.numberToCssString(u.x - rubyX)}px;
+              ">${D.escapeHTML(u.char)}</span>
+            `));
+            rubyX = u.x + u.advance;
+          });
+        }
       });
     });
   });
 
-  return view;
+  return textView;
 };
 
 //-------------------------------------------------------------------------
