@@ -18,7 +18,7 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse = require "parse"
-local quote_html = require "quote_html"
+local escape_html = require "escape_html"
 
 local scenario_pathname, template_pathname, html_pathname, text_pathname = ...
 local scenario = parse(scenario_pathname)
@@ -33,25 +33,21 @@ end
 
 local n = 0
 for _, paragraph in ipairs(scenario) do
-  write(('<div id="p%04d" class="paragraph">\n'):format(paragraph.index))
-  for i, line in ipairs(paragraph) do
+  write(('<div id="p%04d">'):format(paragraph.index))
+  for i, text in ipairs(paragraph) do
     n = n + 1
-    write(('<span id="n%04d" class="line">'):format(n))
-    for _, v in ipairs(line) do
+    write(('<div id="t%04d">'):format(n))
+    for _, v in ipairs(text) do
       if type(v) == "string" then
-        write(quote_html(v))
+        write(escape_html(v))
       elseif v.ruby then
-        write("<ruby>", quote_html(v[1]), "<rt>", quote_html(v.ruby), "</rt></ruby>")
+        write("<ruby>", escape_html(v[1]), "<rt>", escape_html(v.ruby), "</rt></ruby>")
       else
         assert(v.voice)
-        write(quote_html(v[1]))
+        write(escape_html(v[1]))
       end
     end
-    write "</span>"
-    if i < #paragraph then
-      write "<br>"
-    end
-    write "\n"
+    write "</div>"
   end
   write "</div>\n"
 end
@@ -69,8 +65,8 @@ local function write(...)
   handle:write(...)
 end
 for _, paragraph in ipairs(scenario) do
-  for _, line in ipairs(paragraph) do
-    for _, v in ipairs(line) do
+  for _, text in ipairs(paragraph) do
+    for _, v in ipairs(text) do
       if type(v) == "string" then
         write(v)
       else
