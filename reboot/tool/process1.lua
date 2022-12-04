@@ -33,10 +33,10 @@ end
 
 local n = 0
 for _, paragraph in ipairs(scenario) do
-  write(('<div id="p%04d" data-speaker="%s">'):format(paragraph.index, paragraph.speaker))
+  write(('<div data-pid="%d" data-speaker="%s">'):format(paragraph.index, paragraph.speaker))
   for i, text in ipairs(paragraph) do
     n = n + 1
-    write(('<div id="t%04d">'):format(n))
+    write(('<div data-tid="%d">'):format(n))
     for _, v in ipairs(text) do
       if type(v) == "string" then
         write(escape_html(v))

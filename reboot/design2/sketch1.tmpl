@@ -9,7 +9,7 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
@@ -94,8 +94,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       await D.requestAnimationFrame();
 
       const sourceNode = sourceNodes[i];
-      const paragraph = D.parseParagraph(sourceNode, fontSize, font);
-      const lines = paragraph.map(text => D.composeText(text, maxWidth)).flat();
 
       const containerNode = document.createElement("div");
       containerNode.style.display = "flex";
@@ -104,15 +102,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const speakerNode = containerNode.appendChild(document.createElement("div"));
       speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
+      speakerNode.style.flex = "none";
       speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
       speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
-      speakerNode.style.flex = "none";
 
-      const textNode = containerNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
-      textNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
-      textNode.style.flex = "none";
-      if (lines.length > maxLines) {
-        textNode.style.backgroundColor = "#FCC";
+      const paragraphNode = containerNode.appendChild(document.createElement("div"));
+      paragraphNode.style.flex = "none";
+      paragraphNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
+      paragraphNode.dataset.pid = sourceNode.dataset.pid;
+
+      const paragraph = D.parseParagraph(sourceNode, fontSize, font);
+
+      let numLines = 0;
+      paragraph.map((text, j) => {
+        const lines = D.composeText(text, maxWidth);
+        numLines += lines.length;
+        const textNode = paragraphNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
+        textNode.dataset.tid = sourceNode.children[j].dataset.tid;
+      });
+
+      if (numLines > maxLines) {
+        paragraphNode.style.backgroundColor = "#FCC";
       }
 
       outputNode.append(containerNode);
