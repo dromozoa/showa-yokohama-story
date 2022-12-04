@@ -102,7 +102,6 @@ const initializeInternalRoot = () => {
 //   カーニング有効時: 140px
 //   カーニング無効時: 170px
 // になる。
-
 const checkKerning = async () => {
   const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
   if (index === -1) {
@@ -122,7 +121,6 @@ const checkKerning = async () => {
 // Firefox 107でFontFace.load()の返り値が（FontFace.loadedも）決定されない場合
 // があった。FontFaceが新しい別のオブジェクトにさしかえられ、プロミスが迷子にな
 // っているように見えた。そこで、document.facesの監視のためにポーリングする。
-
 D.loadFontFace = async (index, timeout) => {
   const fontFace = [...document.fonts][index];
   if (fontFace.status === "loaded") {
@@ -190,13 +188,13 @@ const isWhiteSpace = u => (
   || u === 0x0D
 ) ? 1 : 0;
 
+// 『日本語組版処理の要件』の分割禁止規則を参考に、てきとうに作成した。連続する
+// ダッシュ・三点リーダ・二点リーダは、連続する欧文用文字に含まれるので省略した。
 const canBreak = (u, v) => (
   // 行頭禁則
   D.jlreq.isLineStartProhibited(v)
   // 行末禁則
   || D.jlreq.isLineEndProhibited(u)
-  // 連続するダッシュ・三点リーダ・二点リーダ
-  || u === v && (u === 0x2014 || u === 0x2026 || u === 0x2025)
   // くの字
   || (u === 0x3033 || u === 0x3034) && v === 0x3035
   // 前置省略記号とアラビア数字
@@ -206,6 +204,8 @@ const canBreak = (u, v) => (
   // 連続する欧文用文字
   || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
 ) ? 0 : 1;
+
+const canSeparate = (u, v) => (canBreak(u, v) && !D.jlreq.isInseparable(u) && !D.jlreq.isInseparable(v)) ? 1: 0;
 
 //-------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ const updateChars = (source, fontSize, font) => {
     if (v) {
       u.advance = context.measureText(u.char + v.char).width - v.width;
       u.kerning = u.width - u.advance;
-      u.spacingBudget = fontSize * 0.25 * (isWhiteSpace(u.code) || canBreak(u.code, v.code));
+      u.spacingBudget = fontSize * 0.25 * (isWhiteSpace(u.code) || canSeparate(u.code, v.code));
     } else {
       u.spacingBudget = fontSize * 0.25;
     }
