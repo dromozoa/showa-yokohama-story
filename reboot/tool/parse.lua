@@ -99,7 +99,7 @@ local function parse(scenario, include_path, filename)
       -- @# 行コメント
 
     elseif match '^@"{(.-)}"' then
-      -- @"{<生文字列>}"
+      -- @"{生文字列}"
       line = append(line, _1)
 
     elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then

@@ -276,7 +276,7 @@ D.parseParagraph = (source, fontSize, font) => {
           result.push(text = []);
         }
         text.push(item = {
-          main: parseChars(node.textContent, fontSize, font),
+          base: parseChars(node.textContent, fontSize, font),
           rubyOverhangPrev: 0,
           rubyOverhangNext: 0,
         });
@@ -285,7 +285,7 @@ D.parseParagraph = (source, fontSize, font) => {
   };
   parse(source);
 
-  result.forEach(text => updateChars(text.map(item => item.main).flat(), fontSize, font));
+  result.forEach(text => updateChars(text.map(item => item.base).flat(), fontSize, font));
 
   return result;
 };
@@ -429,19 +429,19 @@ const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 
 
 const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
-const updateItem = (prev, item, next, mainWidthFn) => {
+const updateItem = (prev, item, next, baseWidthFn) => {
   if (item.ruby) {
-    const mainWidth = item.main.reduce(mainWidthFn || ((acc, u) => acc + u.advance), 0);
+    const baseWidth = item.base.reduce(baseWidthFn || ((acc, u) => acc + u.advance), 0);
     const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0);
 
-    const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.main.slice(-1)[0]);
-    const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.main[0]);
+    const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.base.slice(-1)[0]);
+    const rubyOverhangNext = getRubyOverhang(next && !next.ruby && next.base[0]);
     const rubyOverhangSum = rubyOverhangPrev + rubyOverhangNext;
-    const rubyOverhang = Math.max(0, Math.min(rubyWidth - mainWidth, rubyOverhangSum));
+    const rubyOverhang = Math.max(0, Math.min(rubyWidth - baseWidth, rubyOverhangSum));
     const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
 
-    const spacing = rubyWidth - mainWidth - rubyOverhang;
-    setSpacing(spacing > 0 ? item.main : item.ruby, Math.abs(spacing), 0.25);
+    const spacing = rubyWidth - baseWidth - rubyOverhang;
+    setSpacing(spacing > 0 ? item.base : item.ruby, Math.abs(spacing), 0.25);
 
     item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
     item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
@@ -459,7 +459,7 @@ const resetKerning = u => {
 //-------------------------------------------------------------------------
 
 // 改行「直前」の文字の位置を求める。
-const breakMain = (source, maxWidth) => {
+const breakBase = (source, maxWidth) => {
   // 行に入りきらない最初の文字の位置を求める。
   let advance = 0;
   const limit = source.findIndex(u => maxWidth < (advance += u.advance + u.spacing1) + u.kerning);
@@ -495,39 +495,39 @@ D.composeText = (source, maxWidth) => {
     line1.forEach((item, i) => updateItem(line1[i - 1], item, line1[i + 1]));
 
     while (true) {
-      let mainIndex = breakMain(line1.map(item => item.main).flat(), maxWidth);
-      if (mainIndex === -1) {
+      let baseIndex = breakBase(line1.map(item => item.base).flat(), maxWidth);
+      if (baseIndex === -1) {
         break;
       }
       const itemIndex = line1.findIndex(item => {
-        if (mainIndex < item.main.length) {
+        if (baseIndex < item.base.length) {
           return true;
         } else {
-          mainIndex -= item.main.length;
+          baseIndex -= item.base.length;
           return false;
         }
       });
 
       const item = line1[itemIndex];
-      if (mainIndex === item.main.length - 1) {
+      if (baseIndex === item.base.length - 1) {
         if (item.rubyOverhangNext > 0) {
           updateItem(line1[itemIndex - 1], item);
           continue;
         }
-        resetKerning(item.main[mainIndex]);
+        resetKerning(item.base[baseIndex]);
         line2 = [ ...line1.splice(itemIndex + 1), ...line2 ];
         break;
       }
 
       const item1 = {
-        main: item.main.slice(0, mainIndex + 1),
+        base: item.base.slice(0, baseIndex + 1),
         rubyOverhangPrev: item.rubyOverhangPrev,
         rubyOverhangNext: 0,
       };
-      resetKerning(item1.main[mainIndex]);
+      resetKerning(item1.base[baseIndex]);
 
       const item2 = {
-        main: item.main.slice(mainIndex + 1),
+        base: item.base.slice(baseIndex + 1),
         rubyOverhangPrev: 0,
         rubyOverhangNext: item.rubyOverhangNext,
       };
@@ -537,7 +537,7 @@ D.composeText = (source, maxWidth) => {
       line1.push(item1);
 
       if (item.ruby) {
-        const index = breakRuby(item.ruby, item1.main.reduce((width, u) => width + u.advance + u.spacing1, 0) + item1.rubyOverhangPrev);
+        const index = breakRuby(item.ruby, item1.base.reduce((width, u) => width + u.advance + u.spacing1, 0) + item1.rubyOverhangPrev);
         if (index === -1) {
           item1.ruby = item.ruby;
         } else {
@@ -568,13 +568,13 @@ D.composeText = (source, maxWidth) => {
 
     // 行頭の空白を除去する。
     const item = line2[0];
-    if (isWhiteSpace(item.main[0].code)) {
-      if (item.main.length === 1) {
+    if (isWhiteSpace(item.base[0].code)) {
+      if (item.base.length === 1) {
         if (!item.ruby) {
           line2.shift();
         }
       } else {
-        item.main.shift();
+        item.base.shift();
       }
     }
 
@@ -588,15 +588,15 @@ D.composeText = (source, maxWidth) => {
     if (!isLastLine) {
       if (line.length === 1) {
         const item = line[0];
-        justifySpacing(item.main, maxWidth - item.main.reduce((acc, u) => acc + u.advance, 0), 0.25);
+        justifySpacing(item.base, maxWidth - item.base.reduce((acc, u) => acc + u.advance, 0), 0.25);
         if (item.ruby) {
           justifySpacing(item.ruby, maxWidth - item.ruby.reduce((acc, u) => acc + u.advance, 0), 0.25);
         }
       } else {
-        const buffer = line.map(item => item.main).flat();
+        const buffer = line.map(item => item.base).flat();
         addSpacing(buffer.slice(0, -1), maxWidth - buffer.reduce((acc, u) => acc + u.advance + u.spacing1, 0), 0.25);
         line.forEach((item, j) => {
-          if (item.ruby && item.main.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
+          if (item.ruby && item.base.reduce((acc, u) => acc + u.spacing2, 0) > 0) {
             updateItem(line[j - 1], item, line[j + 1], addAdvanceSpacing);
           }
         });
@@ -604,18 +604,18 @@ D.composeText = (source, maxWidth) => {
     }
 
     // 文字の位置を計算する。
-    let mainX = 0;
+    let baseX = 0;
     line.forEach((item, j) => {
       const isLineStart = j === 0;
       const isLineEnd = !isLastLine && j === line.length - 1;
       const a = isLineStart ? 0 : isLineEnd ? 1 : 0.5;
       const b = 1 - a;
 
-      let rubyX = mainX - item.rubyOverhangPrev;
+      let rubyX = baseX - item.rubyOverhangPrev;
 
-      item.main.forEach(u => {
-        u.x = mainX += u.spacing1 * a;
-        mainX += u.advance + u.spacing1 * b + u.spacing2;
+      item.base.forEach(u => {
+        u.x = baseX += u.spacing1 * a;
+        baseX += u.advance + u.spacing1 * b + u.spacing2;
       });
 
       if (item.ruby) {
@@ -624,23 +624,23 @@ D.composeText = (source, maxWidth) => {
           rubyX += u.advance + u.spacing1 * b + u.spacing2;
         });
 
-        let mainIndex = 0;
+        let baseIndex = 0;
         let rubyIndex;
         [
-          ...item.main.map((u, i) => {
-            const v = item.main[i + 1];
-            return { mainIndex: i, x: v ? (u.x + u.advance + v.x) * 0.5 : Infinity };
+          ...item.base.map((u, i) => {
+            const v = item.base[i + 1];
+            return { baseIndex: i, x: v ? (u.x + u.advance + v.x) * 0.5 : Infinity };
           }),
           ...item.ruby.map((u, i) => ({ rubyIndex: i, x: u.x + u.advance * 0.5 })),
         ].sort((a, b) => a.x - b.x).forEach(order => {
-          if (order.mainIndex !== undefined) {
+          if (order.baseIndex !== undefined) {
             if (rubyIndex !== undefined) {
-              item.main[order.mainIndex].rubyConnection = rubyIndex;
+              item.base[order.baseIndex].rubyConnection = rubyIndex;
               rubyIndex = undefined;
             }
-            ++mainIndex;
+            ++baseIndex;
           } else {
-            item.ruby[order.rubyIndex].rubyConnection = mainIndex;
+            item.ruby[order.rubyIndex].rubyConnection = baseIndex;
             if (rubyIndex === undefined) {
               rubyIndex = order.rubyIndex;
             }
@@ -663,23 +663,23 @@ D.layoutText = (source, fontSize, lineHeight) => {
   source.forEach(line => {
     const lineNode = result.appendChild(document.createElement("div"));
 
-    let mainX = 0;
+    let baseX = 0;
     line.forEach(item => {
-      item.main.forEach((u, i)  => {
-        const mainNode = lineNode.appendChild(document.createElement("span"));
-        mainNode.style.marginLeft = D.numberToCssPixels(u.x - mainX);
-        mainNode.style.width = D.numberToCssPixels(u.advance);
+      item.base.forEach((u, i)  => {
+        const baseNode = lineNode.appendChild(document.createElement("span"));
+        baseNode.style.marginLeft = D.numberToCssPixels(u.x - baseX);
+        baseNode.style.width = D.numberToCssPixels(u.advance);
 
-        const charNode = mainNode.appendChild(document.createElement("span"));
+        const charNode = baseNode.appendChild(document.createElement("span"));
         charNode.textContent = u.char;
 
-        mainX = u.x + u.advance;
+        baseX = u.x + u.advance;
 
         if (u.rubyConnection !== undefined) {
           const ruby = item.ruby.filter(ruby => ruby.rubyConnection === i);
           let rubyX = ruby[0].x;
 
-          const rubyNode = mainNode.appendChild(document.createElement("div"));
+          const rubyNode = baseNode.appendChild(document.createElement("div"));
           rubyNode.style.top = D.numberToCssPixels(fontSize * -0.75);
           rubyNode.style.left = D.numberToCssPixels(rubyX - u.x);
 
