@@ -85,8 +85,8 @@ let internalCanvas;
 const initializeInternalRoot = () => {
   const rootNode = document.createElement("div");
   rootNode.style.position = "absolute";
-  rootNode.style.top = "-1989px";
-  rootNode.style.left = "-6417px";
+  rootNode.style.top = "-8916px";
+  rootNode.style.left = "-2133px";
   document.body.append(rootNode);
   internalRoot = rootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));

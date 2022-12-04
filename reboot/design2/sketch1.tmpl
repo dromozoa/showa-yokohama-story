@@ -36,9 +36,6 @@ $scenario
 document.addEventListener("DOMContentLoaded", async () => {
   let start;
 
-  const GUI = lil.GUI;
-  const gui = new GUI;
-
   const D = globalThis.demeter;
   await D.boot();
 
@@ -71,19 +68,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     steven:   "STEVEN",
   };
 
+  const GUI = lil.GUI;
+  const gui = new GUI;
+
+  const data = {
+    lineLength: 24,
+    layout: async () => await layout(data.lineLength),
+  };
+
+  gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
+  const layoutController = gui.add(data, "layout").name("レイアウト");
+
   const layout = async lineLength => {
-    let elapsed = 0;
+    layoutController.name("レイアウト中").disable();
+    const start = performance.now();
 
     outputNode.replaceChildren();
 
     const maxWidth = fontSize * lineLength;
-    const maxLines = Math.ceil(96 / lineLength);
+    const maxLines = Math.max(Math.ceil(96 / lineLength), 4);
     const lineHeight = fontSize * 2;
 
     const sourceNodes = document.querySelector("template").content.children;
     for (let i = 0; i < sourceNodes.length; ++i) {
       await D.requestAnimationFrame();
-      start = performance.now();
+
       const sourceNode = sourceNodes[i];
       const paragraph = D.parseParagraph(sourceNode, fontSize, font);
       const lines = paragraph.map(text => D.composeText(text, maxWidth)).flat();
@@ -107,19 +116,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       outputNode.append(containerNode);
-      elapsed += performance.now() - start
     }
 
-    console.log(elapsed);
+    console.log("layout", performance.now() - start);
+    layoutController.name("レイアウト").enable();
   };
-
-  const data = {
-    lineLength: 24,
-    layout: async () => await layout(data.lineLength),
-  };
-
-  gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
-  gui.add(data, "layout").name("レイアウト");
 
   await layout(24);
 });
