@@ -33,7 +33,7 @@ end
 
 local n = 0
 for _, paragraph in ipairs(scenario) do
-  write(('<div id="p%04d">'):format(paragraph.index))
+  write(('<div id="p%04d" data-speaker="%s">'):format(paragraph.index, paragraph.speaker))
   for i, text in ipairs(paragraph) do
     n = n + 1
     write(('<div id="t%04d">'):format(n))

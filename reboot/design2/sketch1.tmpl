@@ -9,7 +9,7 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
@@ -19,11 +19,14 @@
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
 
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
 </head>
 
-<body>
+<body style="margin: 0 0 0 24px">
 
 <template>
 $scenario
@@ -33,6 +36,9 @@ $scenario
 document.addEventListener("DOMContentLoaded", async () => {
   let start;
 
+  const GUI = lil.GUI;
+  const gui = new GUI;
+
   const D = globalThis.demeter;
   await D.boot();
 
@@ -41,28 +47,81 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("loadFontFaces", performance.now() - start, result);
 
   const fontSize = 24;
-  // const font = "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho'";
   const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
-  const maxWidth = fontSize * 30;
-  const lineHeight = fontSize * 2;
 
   const outputNode = document.body.appendChild(document.createElement("div"));
+  outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
   outputNode.style.font = D.numberToCssPixels(fontSize) + " " + font;
+  outputNode.style.overflow = "auto";
+  outputNode.style.scrollSnapType = "y mandatory";
 
-  let elapsed = 0;
+  window.addEventListener("resize", () => {
+    outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
+  });
 
-  const sourceNodes = document.querySelector("template").content.children;
-  for (let i = 0; i < sourceNodes.length; ++i) {
-    await D.requestAnimationFrame();
-    start = performance.now();
-    const paragraph = D.parseParagraph(sourceNodes[i], fontSize, font);
-    const lines = paragraph.map(text => D.composeText(text, maxWidth)).flat();
-    outputNode.append(D.layoutText(lines, fontSize, lineHeight));
-    elapsed += performance.now() - start
-  }
+  const speakerTable = {
+    narrator: "\uE000",
+    alice:    "アリス",
+    danu:     "ダヌー",
+    demeter:  "デメテル",
+    yukio:    "ユキヲ",
+    priest:   "神父",
+    engineer: "課長",
+    activist: "店主",
+    steven:   "STEVEN",
+  };
 
-  console.log(elapsed);
+  const layout = async lineLength => {
+    let elapsed = 0;
 
+    outputNode.replaceChildren();
+
+    const maxWidth = fontSize * lineLength;
+    const maxLines = Math.ceil(96 / lineLength);
+    const lineHeight = fontSize * 2;
+
+    const sourceNodes = document.querySelector("template").content.children;
+    for (let i = 0; i < sourceNodes.length; ++i) {
+      await D.requestAnimationFrame();
+      start = performance.now();
+      const sourceNode = sourceNodes[i];
+      const paragraph = D.parseParagraph(sourceNode, fontSize, font);
+      const lines = paragraph.map(text => D.composeText(text, maxWidth)).flat();
+
+      const containerNode = document.createElement("div");
+      containerNode.style.display = "flex";
+      containerNode.style.lineHeight = D.numberToCssPixels(lineHeight);
+      containerNode.style.scrollSnapAlign = "start";
+
+      const speakerNode = containerNode.appendChild(document.createElement("div"));
+      speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
+      speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
+      speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+      speakerNode.style.flex = "none";
+
+      const textNode = containerNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
+      textNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
+      textNode.style.flex = "none";
+      if (lines.length > maxLines) {
+        textNode.style.backgroundColor = "#FCC";
+      }
+
+      outputNode.append(containerNode);
+      elapsed += performance.now() - start
+    }
+
+    console.log(elapsed);
+  };
+
+  const data = {
+    lineLength: 24,
+    layout: async () => await layout(data.lineLength),
+  };
+
+  gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
+  gui.add(data, "layout").name("レイアウト");
+
+  await layout(24);
 });
 </script>
 

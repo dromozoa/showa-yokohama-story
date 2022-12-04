@@ -216,11 +216,12 @@ local function process_labels(scenario)
 end
 
 local function process_speakers(scenario)
-  for _, paragraph in ipairs(scenario) do
-    if paragraph.speaker then
-      if not speaker_definitions[paragraph.speaker] then
-        error("speaker '"..paragraph.speaker.."' not found")
-      end
+  for i, paragraph in ipairs(scenario) do
+    if not paragraph.speaker then
+      error("speaker is nil at paragraph "..i)
+    end
+    if not speaker_definitions[paragraph.speaker] then
+      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
     end
   end
 end
