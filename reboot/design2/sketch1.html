@@ -412,6 +412,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
   const layoutController = gui.add(data, "layout").name("レイアウト");
 
+  const newVoice = tid => {
+    const base = "../output/" + "0".repeat(Math.max(0, 4 - tid.length)) + tid
+    return new Howl({ src: [ base + ".webm", base + ".mp3" ] });
+  };
+
+  let voiceList;
+
+  const stopVoiceList = () => {
+    if (voiceList) {
+      voiceList.forEach(voice => {
+        if (voice.playing()) {
+          voice.stop();
+        }
+      });
+      voiceList = undefined;
+    }
+  };
+
+  const playVoiceList = (voiceIdList) => {
+    stopVoiceList();
+    voiceList = voiceIdList.map(voiceId => {
+      const basename = "../output/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
+      return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
+    });
+    voiceList.forEach((voice, i) => {
+      const voiceId = voiceIdList[i];
+      const nextVoice = voiceList[i + 1];
+      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#EEF");
+      voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
+      voice.once("end", () => {
+        document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
+        if (nextVoice) {
+          nextVoice.play();
+        }
+      });
+    });
+    voiceList[0].play();
+  };
+
   const layout = async lineLength => {
     layoutController.name("レイアウト中").disable();
     const start = performance.now();
@@ -438,6 +477,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       speakerNode.style.flex = "none";
       speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
       speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+      speakerNode.addEventListener("click", ev => playVoiceList([...ev.target.nextElementSibling.children].map(textNode => textNode.dataset.tid)));
 
       const paragraphNode = containerNode.appendChild(document.createElement("div"));
       paragraphNode.style.flex = "none";
@@ -455,7 +495,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       if (numLines > maxLines) {
-        paragraphNode.style.backgroundColor = "#FCC";
+        paragraphNode.style.backgroundColor = "#FEE";
       }
 
       outputNode.append(containerNode);

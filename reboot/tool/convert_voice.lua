@@ -21,17 +21,25 @@ local basename = require "basename"
 
 local output_dirname = arg[1]
 
-local extensions = { "webm", "mp3" }
+local function quote_shell(s)
+  return (([[']]..s:gsub([[']], [['\'']])..[[']]):gsub([[\''']], [[\']]):gsub([[''\']], [[\']]))
+end
+
+local function execute(command)
+  print(command)
+  os.execute(command)
+end
 
 for i = 1, #arg - 1 do
   local source_pathname = arg[i + 1]
   local source_filename = basename(source_pathname)
   local source_number = assert(source_filename:match "^(%d+).*%.wav$")
+  print(source_filename, source_number, i)
   assert(tonumber(source_number) + 1 == i)
 
-  for _, extension in ipairs(extensions) do
-    local command = ("ffmpeg -y -i '%s' -dash 1 '%s/%04d.%s'"):format(source_pathname, output_dirname, i, extension)
-    print(command)
-    os.execute(command)
-  end
+  -- webm
+  execute(("ffmpeg -y -i %s -b:a 64k -dash 1 %s/%04d.webm"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
+
+  -- mp3
+  execute(("ffmpeg -y -i %s -q:a 2 %s/%04d.mp3"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
 end
