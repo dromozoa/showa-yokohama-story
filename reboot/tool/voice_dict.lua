@@ -75,10 +75,27 @@ local source = handle:read "a"
 handle:close()
 
 local dictionary = parse_json(source)
-for i, entry in ipairs(dictionary) do
-  local t = math.floor(entry.accentType)
-  print(t, entry.sur, entry.pron, entry.pos, entry.lang)
-end
 
-write_json(io.stdout, dictionary, 1)
--- io.write(json.encode(dictionary))
+local handle = assert(io.open(result_pathname, "w"))
+local keys = { "sur", "pron", "pos", "priority", "accentType", "lang" }
+
+handle:write "[\n"
+for i, entry in ipairs(dictionary) do
+  handle:write "  {\n"
+  for j, key in ipairs(keys) do
+    handle:write "    "
+    write_json(handle, key)
+    handle:write ": "
+    write_json(handle, entry[key])
+    if j < #keys then
+      handle:write ","
+    end
+    handle:write "\n"
+  end
+  handle:write "  }"
+  if i < #dictionary then
+    handle:write ","
+  end
+  handle:write "\n"
+end
+handle:write "]\n"

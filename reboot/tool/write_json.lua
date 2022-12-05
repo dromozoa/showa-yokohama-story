@@ -17,7 +17,7 @@
 
 local quote_js = require "quote_js"
 
-local function write_json(handle, u)
+local function write(handle, u)
   local t = type(u)
   if t == "number" then
     return handle:write(("%.17g"):format(u))
@@ -39,7 +39,7 @@ local function write_json(handle, u)
           if i > 1 then
             handle:write ",\n"
           end
-          write_json(handle, v)
+          write(handle, v)
         end
         return handle:write "]"
       end
@@ -50,15 +50,12 @@ local function write_json(handle, u)
       if i > 1 then
         handle:write ",\n"
       end
-      write_json(handle, k)
+      write(handle, k)
       handle:write ":"
-      write_json(handle, u[k])
+      write(handle, u[k])
     end
     return handle:write "}"
   end
 end
 
-return function (handle, u)
-  write_json(handle, u)
-  handle:write "\n"
-end
+return write

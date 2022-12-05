@@ -456,6 +456,7 @@ local function write_mapping_data_gltf(mapping_data, result_pathname)
       };
     };
   })
+  handle:write "\n"
   handle:close()
 end
 

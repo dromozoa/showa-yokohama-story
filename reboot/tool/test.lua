@@ -20,7 +20,6 @@ local dirname = require "dirname"
 local quote_js = require "quote_js"
 
 local parse_json = require "parse_json"
-local write_json = require "write_json"
 
 assert(basename "usr" == "usr")
 assert(basename "usr/" == "usr")
