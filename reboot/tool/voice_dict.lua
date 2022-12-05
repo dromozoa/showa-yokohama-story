@@ -15,7 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local json = require "cjson"
+local parse_json = require "parse_json"
 local write_json = require "write_json"
 
 --[[
@@ -74,11 +74,11 @@ local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
 handle:close()
 
-local dictionary = json.decode(source)
+local dictionary = parse_json(source)
+for i, entry in ipairs(dictionary) do
+  local t = math.floor(entry.accentType)
+  print(t, entry.sur, entry.pron, entry.pos, entry.lang)
+end
 
--- for i, entry in ipairs(dictionary) do
---   local t = math.floor(entry.accentType)
---   print(t, entry.sur, entry.pron, entry.pos, entry.lang)
--- end
-
-write_json(io.stdout, dictionary)
+write_json(io.stdout, dictionary, 1)
+-- io.write(json.encode(dictionary))

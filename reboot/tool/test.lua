@@ -19,6 +19,9 @@ local basename = require "basename"
 local dirname = require "dirname"
 local quote_js = require "quote_js"
 
+local parse_json = require "parse_json"
+local write_json = require "write_json"
+
 assert(basename "usr" == "usr")
 assert(basename "usr/" == "usr")
 assert(basename "" == ".")
@@ -45,3 +48,5 @@ assert(quote_js "\0\1\2\3\4\5\6\7\8\9\10\11\12\13\14\15\127" == [["\u0000\u0001\
 assert(quote_js [["'/\]] == [["\"'/\\"]])
 assert(quote_js "\226\128\168\226\128\169" == [["\u2028\u2029"]])
 assert(quote_js "昭和横濱物語" == [["昭和横濱物語"]])
+
+assert(parse_json[[{"sushi":"\uD83C\uDF63"}]].sushi == "\u{1F363}")

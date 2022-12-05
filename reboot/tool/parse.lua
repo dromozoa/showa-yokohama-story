@@ -71,16 +71,14 @@ local function parse(scenario, include_path, filename)
   local _1
   local _2
   local _3
-  local _4
 
   local function match(pattern)
-    local i, j, a, b, c, d = source:find(pattern, position)
+    local i, j, a, b, c = source:find(pattern, position)
     if i then
       position = j + 1
       _1 = a
       _2 = b
       _3 = c
-      _4 = d
       return true
     else
       return false
