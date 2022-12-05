@@ -16,38 +16,55 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local json = require "cjson"
+local write_json = require "write_json"
 
 --[[
 
-  VoicePeakの設定フォルダ
-    ~/Library/Application Support/Dreamtonics/Voicepeak/settings
+Voicepeakの設定フォルダ
+  ~/Library/Application Support/Dreamtonics/Voicepeak/settings
 
-  VoicePeakの辞書ファイル
-    dict.json  主となるファイル
-    user.csv   辞書UIを閉じるときに更新される
-    user.dic   辞書UIを閉じるときに更新される
+Voicepeakの辞書ファイル
+  dict.json  主となるファイル
+  user.csv   辞書UIを閉じるときに更新される
+  user.dic   辞書UIを閉じるときに更新される
 
-  accentTypeはi番めの音節にアクセントが来る（その音節のあとにピッチが下がる）こ
-  とを示す。なお、n音節からなる発音について、i=0とi=nの場合はアクセントなしを示
-  す（i=0とi=nは等価と思われる。辞書UIの都合でi=nが出現しているのではないか）。
+Voicepeakが出力するdict.jsonでは、日本語の文字などはUnicodeエスケープされる。た
+だし、Voicepeakへの入力としてはUnicodeエスケープされている必要はないらしい。ま
+た、VPPファイルと異なり、JSONとして妥当であれば読みこんでくれるようだ。
 
+[accentType]
+i番めの音節にアクセントが来る（その音節のあとにピッチが下がる）ことを示す。なお、
+n音節からなる発音について、i=0とi=nの場合はアクセントなしを示す（i=0とi=nは等価
+と思われる。辞書UIの都合でi=nが出現しているのではないか）。
 
-  「ハツオン」というn=4の発音についての例
+「ハツオン」というn=4の発音についての例
 
-       ハツオン(は)
-        1 2 3 4
+     ハツオン(は)
+      1 2 3 4
 
-    0  ＿￣￣￣￣
+  0  ＿￣￣￣￣
 
-    1  ￣＿＿＿＿
+  1  ￣＿＿＿＿
 
-    2  ＿￣＿＿＿
+  2  ＿￣＿＿＿
 
-    3  ＿￣￣＿＿
+  3  ＿￣￣＿＿
 
-    4  ＿￣￣￣＿
+  4  ＿￣￣￣＿
 
-    5  ＿￣￣￣￣
+  5  ＿￣￣￣￣
+
+[pos]
+品詞の一覧
+  普通名詞        Japanese_Futsuu_meishi
+  固有名詞:一般   Japanese_Koyuumeishi_ippan
+  固有名詞:人名   Japanese_Koyuumeishi_jinmei
+  固有名詞:姓     Japanese_Koyuumeishi_sei
+  固有名詞:名     Japanese_Koyuumeishi_mei
+  固有名詞:地域   Japanese_Koyuumeishi_place
+
+[priority]
+優先度は1以上10以下の整数
 
 ]]
 
@@ -58,22 +75,10 @@ local source = handle:read "a"
 handle:close()
 
 local dictionary = json.decode(source)
-for i, entry in ipairs(dictionary) do
-  local t = math.floor(entry.accentType)
-  print(t, entry.sur, entry.pron, entry.pos, entry.lang)
-end
 
---[[
+-- for i, entry in ipairs(dictionary) do
+--   local t = math.floor(entry.accentType)
+--   print(t, entry.sur, entry.pron, entry.pos, entry.lang)
+-- end
 
-  {
-    "sur": "\u5bfe\u54ac\u6226\u95d8\u670d",
-    "pron": "\u30bf\u30a4\u30b3\u30a6\u30bb\u30f3\u30c8\u30a6\u30d5\u30af",
-    "pos": "Japanese_Futsuu_meishi",
-    "priority": 5,
-    "accentType": 8,
-    "lang": "ja"
-  },
-
-]]
-
-
+write_json(io.stdout, dictionary)
