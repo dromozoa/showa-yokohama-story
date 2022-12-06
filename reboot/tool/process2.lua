@@ -16,9 +16,7 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse = require "parse"
-local parse_json = require "parse_json"
 local speaker_definitions = require "speaker_definitions"
-local write_json = require "write_json"
 
 local scenario_pathname, source_pathname, result_pathname = ...
 local scenario = parse(scenario_pathname)
@@ -60,23 +58,3 @@ end)
 local handle = assert(io.open(result_pathname, "w"))
 handle:write(result)
 handle:close()
-
-if false then
-  -- VPPファイルから音素を抽出する実験。
-  local nsyl = 0
-  local vpp = parse_json(source:gsub("\0$", ""))
-  for _, block in ipairs(vpp.project.blocks) do
-    for _, sentence in ipairs(block["sentence-list"]) do
-      for _, token in ipairs(sentence.tokens) do
-        for _, syl in ipairs(token.syl) do
-          -- syl.sとsyl.p.sを取得する。
-          local ps = {}
-          for _, p in ipairs(syl.p) do
-            ps[#ps + 1] = p.s
-          end
-        end
-        nsyl = nsyl + #token.syl
-      end
-    end
-  end
-end
