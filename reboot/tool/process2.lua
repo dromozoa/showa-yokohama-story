@@ -61,23 +61,22 @@ local handle = assert(io.open(result_pathname, "w"))
 handle:write(result)
 handle:close()
 
--- VPPファイルから発声情報を抽出する。
-local nsyl = 0
-local vpp = parse_json(source:gsub("\0$", ""))
-for _, block in ipairs(vpp.project.blocks) do
-  for _, sentence in ipairs(block["sentence-list"]) do
-    for _, token in ipairs(sentence.tokens) do
-      for _, syl in ipairs(token.syl) do
-        local ps = {}
-        for _, p in ipairs(syl.p) do
-          ps[#ps + 1] = p.s
+if false then
+  -- VPPファイルから音素を抽出する実験。
+  local nsyl = 0
+  local vpp = parse_json(source:gsub("\0$", ""))
+  for _, block in ipairs(vpp.project.blocks) do
+    for _, sentence in ipairs(block["sentence-list"]) do
+      for _, token in ipairs(sentence.tokens) do
+        for _, syl in ipairs(token.syl) do
+          -- syl.sとsyl.p.sを取得する。
+          local ps = {}
+          for _, p in ipairs(syl.p) do
+            ps[#ps + 1] = p.s
+          end
         end
-        -- io.write("{", table.concat(ps, ","), "=", syl.s, "}\n")
+        nsyl = nsyl + #token.syl
       end
-      nsyl = nsyl + #token.syl
     end
-    -- io.write "/ "
   end
-  -- io.write "\n"
 end
--- print(nsyl)
