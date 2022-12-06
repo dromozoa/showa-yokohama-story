@@ -85,3 +85,59 @@ end
 --   end
 --   handle:close()
 -- end
+
+local function read_mfcc(handle)
+  -- voice.pyの出力を読む
+  local dataset = {}
+  for line in handle:lines() do
+    local data = {}
+    dataset[#dataset + 1] = data
+
+    local i = 0
+    for v in line:gmatch "[^\t]+" do
+      data[i] = assert(tonumber(v))
+      i = i + 1
+    end
+  end
+
+  return dataset
+end
+
+local function cosine(u, v)
+  local d = 0
+  local m = 0
+  local n = 0
+  for i = 1, math.min(#u, #v) do
+    local a = u[i]
+    local b = v[i]
+    d = d + a * b
+    m = m + a * a
+    n = n + b * b
+  end
+  return d / (math.sqrt(m) * math.sqrt(n))
+end
+
+local function prepare_phoneme()
+end
+
+local handle = assert(io.open(source_filename, "r"))
+local dataset = read_mfcc(handle)
+handle:close()
+
+local max_n = 0
+local max_i = 0
+
+for i = 1, #dataset do
+  local n = 0
+  for j = 1, #dataset do
+    if cosine(dataset[i], dataset[j]) >= 0.99 then
+      n = n + 1
+    end
+  end
+  if max_n < n then
+    max_n = n
+    max_i = i
+  end
+end
+
+print(max_i, #dataset, max_i * 512 / 44100, max_n)
