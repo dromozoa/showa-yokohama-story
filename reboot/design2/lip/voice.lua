@@ -15,7 +15,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local source_filename = ...
+local basename = require "basename"
+local parse_json = require "parse_json"
+local write_json = require "write_json"
+
+local command = ...
 
 -- Voicepeakが出力したwav (pcm_s16le) を読む。
 local function read_wav(handle)
@@ -117,27 +121,70 @@ local function cosine(u, v)
   return d / (math.sqrt(m) * math.sqrt(n))
 end
 
-local function prepare_phoneme()
-end
+local function prepare_phoneme(dataset)
+  -- 類似するベクトルの数がいちばん多いベクトルで代表する
 
-local handle = assert(io.open(source_filename, "r"))
-local dataset = read_mfcc(handle)
-handle:close()
+  local max_n = 0
+  local max_i = 0
 
-local max_n = 0
-local max_i = 0
-
-for i = 1, #dataset do
-  local n = 0
-  for j = 1, #dataset do
-    if cosine(dataset[i], dataset[j]) >= 0.99 then
-      n = n + 1
+  for i = 1, #dataset do
+    local n = 0
+    for j = 1, #dataset do
+      if cosine(dataset[i], dataset[j]) >= 0.99 then
+        n = n + 1
+      end
+    end
+    if max_n < n then
+      max_n = n
+      max_i = i
     end
   end
-  if max_n < n then
-    max_n = n
-    max_i = i
+
+  return dataset[max_i]
+end
+
+local commands = {}
+
+function commands.prepare_phonemes()
+  local result_filename = arg[2]
+
+  local phonemes = {}
+  for _, source_filename in ipairs { table.unpack(arg, 3) } do
+    local phoneme = assert(basename(source_filename):match "%-(%a)%.")
+    local handle = assert(io.open(source_filename))
+    local dataset = read_mfcc(handle)
+    handle:close()
+    phonemes[phoneme] = prepare_phoneme(dataset)
+  end
+
+  local handle = assert(io.open(result_filename, "w"))
+  write_json(handle, phonemes)
+  handle:close()
+end
+
+function commands.analyze()
+  local phonemes_filename = arg[2]
+  local source_filename = arg[3]
+
+  local handle = assert(io.open(phonemes_filename))
+  local phonemes = parse_json(handle:read "a")
+  handle:close()
+
+  local handle = assert(io.open(source_filename))
+  local dataset = read_mfcc(handle)
+  handle:close()
+
+  for i, u in ipairs(dataset) do
+    local data = {}
+    for k, v in pairs(phonemes) do
+      data[#data + 1] = { phoneme = k, cosine = cosine(u, v) }
+    end
+    table.sort(data, function (a, b) return a.cosine > b.cosine end)
+    -- if data[1].cosine > 0.5 then
+      -- print(i, data[1].phoneme, data[1].cosine)
+      print(("%.3f\t%s (%s)\t%.3f (%.3f)"):format((i - 1) * 512 / 44100, data[1].phoneme, data[2].phoneme, data[1].cosine, data[2].cosine))
+    -- end
   end
 end
 
-print(max_i, #dataset, max_i * 512 / 44100, max_n)
+commands[command]()
