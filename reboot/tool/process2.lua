@@ -62,6 +62,7 @@ handle:write(result)
 handle:close()
 
 -- VPPファイルから発声情報を抽出する。
+local nsyl = 0
 local vpp = parse_json(source:gsub("\0$", ""))
 for _, block in ipairs(vpp.project.blocks) do
   for _, sentence in ipairs(block["sentence-list"]) do
@@ -73,8 +74,10 @@ for _, block in ipairs(vpp.project.blocks) do
         end
         -- io.write("{", table.concat(ps, ","), "} ")
       end
+      nsyl = nsyl + #token.syl
     end
     -- io.write "/ "
   end
   -- io.write "\n"
 end
+-- print(nsyl)

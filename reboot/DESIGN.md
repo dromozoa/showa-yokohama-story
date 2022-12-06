@@ -296,3 +296,10 @@ opus  | voice |  64Kbps | -b:a 64k
 mp3   | music | 196Kbps | -q:a 2
 mp3   | voice |  87Kbps | -q:a 4
 
+[librosa](https://librosa.org/)をインストールした。
+
+```
+pip3 install librosa
+```
+
+`~/Library/Python/3.9`にインストールされた。
