@@ -72,7 +72,7 @@ for _, block in ipairs(vpp.project.blocks) do
         for _, p in ipairs(syl.p) do
           ps[#ps + 1] = p.s
         end
-        -- io.write("{", table.concat(ps, ","), "} ")
+        -- io.write("{", table.concat(ps, ","), "=", syl.s, "}\n")
       end
       nsyl = nsyl + #token.syl
     end

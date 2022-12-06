@@ -18,5 +18,5 @@
 import sys, librosa, numpy
 
 y, nr = librosa.load(sys.argv[1], sr=float(sys.argv[2]))
-M = librosa.feature.mfcc(y=y, sr=nr)
+M = librosa.feature.mfcc(y=y, sr=nr, lifter=22)
 numpy.savetxt(sys.argv[3], M.transpose(), delimiter="\t")

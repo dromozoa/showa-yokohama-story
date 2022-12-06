@@ -19,6 +19,8 @@ local basename = require "basename"
 local parse_json = require "parse_json"
 local write_json = require "write_json"
 
+-- 音声ファイルの実験スクリプト
+
 local command = ...
 
 -- Voicepeakが出力したwav (pcm_s16le) を読む。
@@ -111,7 +113,7 @@ local function cosine(u, v)
   local d = 0
   local m = 0
   local n = 0
-  for i = 1, math.min(#u, #v) do
+  for i = 1, math.min(#u, #v, 12) do
     local a = u[i]
     local b = v[i]
     d = d + a * b
@@ -121,7 +123,7 @@ local function cosine(u, v)
   return d / (math.sqrt(m) * math.sqrt(n))
 end
 
-local function prepare_phoneme(dataset)
+local function prepare(dataset)
   -- 類似するベクトルの数がいちばん多いベクトルで代表する
 
   local max_n = 0
@@ -145,21 +147,31 @@ end
 
 local commands = {}
 
-function commands.prepare_phonemes()
+function commands.prepare()
   local result_filename = arg[2]
 
   local phonemes = {}
+  local phonemeset = {}
   for _, source_filename in ipairs { table.unpack(arg, 3) } do
     local phoneme = assert(basename(source_filename):match "%-(%a)%.")
     local handle = assert(io.open(source_filename))
     local dataset = read_mfcc(handle)
     handle:close()
-    phonemes[phoneme] = prepare_phoneme(dataset)
+    phonemes[#phonemes + 1] = phoneme
+    phonemeset[phoneme] = prepare(dataset)
   end
 
   local handle = assert(io.open(result_filename, "w"))
-  write_json(handle, phonemes)
+  write_json(handle, phonemeset)
   handle:close()
+
+  table.sort(phonemes)
+  for i, u in ipairs(phonemes) do
+    for j = 1, i - 1 do
+      local v = phonemes[j]
+      print(u, v, cosine(phonemeset[u], phonemeset[v]))
+    end
+  end
 end
 
 function commands.analyze()
@@ -174,16 +186,31 @@ function commands.analyze()
   local dataset = read_mfcc(handle)
   handle:close()
 
+  io.write "P2\n"
+  io.write("40 ", #dataset, "\n")
+  io.write "256\n"
+
   for i, u in ipairs(dataset) do
+    -- local data = {}
+    -- for k, v in pairs(phonemes) do
+    --   data[#data + 1] = { phoneme = k, cosine = cosine(u, v) }
+    -- end
+    -- table.sort(data, function (a, b) return a.cosine > b.cosine end)
+    -- if data[1].cosine > 0.9 then
+    --   -- print(i, data[1].phoneme, data[1].cosine)
+    --   -- print(("%.3f\t%s (%s)\t%.3f (%.3f)"):format((i - 1) * 512 / 44100, data[1].phoneme, data[2].phoneme, data[1].cosine, data[2].cosine))
+    -- end
     local data = {}
     for k, v in pairs(phonemes) do
-      data[#data + 1] = { phoneme = k, cosine = cosine(u, v) }
+      data[k] = cosine(u, v)
     end
-    table.sort(data, function (a, b) return a.cosine > b.cosine end)
-    -- if data[1].cosine > 0.5 then
-      -- print(i, data[1].phoneme, data[1].cosine)
-      print(("%.3f\t%s (%s)\t%.3f (%.3f)"):format((i - 1) * 512 / 44100, data[1].phoneme, data[2].phoneme, data[1].cosine, data[2].cosine))
-    -- end
+    local x = 0.1
+    local y = 1 - x
+    for _, phoneme in ipairs { "a", "i", "u", "e", "o" } do
+      local v = math.floor((math.max(data[phoneme], y) - y) / x * 256) .. " "
+      io.write(v:rep(8))
+    end
+    io.write "\n"
   end
 end
 
