@@ -25,15 +25,18 @@ local function execute(command)
   os.execute(command)
 end
 
-local output_dirname = ...
-local source_pathnames = { table.unpack(arg, 2) }
+local output_dirname, output_name = ...
+local source_pathnames = { table.unpack(arg, 3) }
+table.sort(source_pathnames, function (a, b)
+  return tonumber(basename(a):match "^(%d+).*%.wav$") < tonumber(basename(b):match "^(%d+).*%.wav$")
+end)
 
 for i, source_pathname in ipairs(source_pathnames) do
-  assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i - 1)
+  assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i)
 
   -- webm
-  execute(("ffmpeg -y -i %s -b:a 64k -dash 1 %s/%04d.webm"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
+  execute(("ffmpeg -y -i %s -b:a 128k -dash 1 %s/%s%02d.webm"):format(quote_shell(source_pathname), quote_shell(output_dirname), quote_shell(output_name), i))
 
   -- mp3
-  execute(("ffmpeg -y -i %s -q:a 4 %s/%04d.mp3"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
+  execute(("ffmpeg -y -i %s -q:a 2 %s/%s%02d.mp3"):format(quote_shell(source_pathname), quote_shell(output_dirname), quote_shell(output_name), i))
 end

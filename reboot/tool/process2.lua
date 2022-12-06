@@ -65,9 +65,6 @@ handle:close()
 
 -- VPPファイルから発声情報を抽出する。
 local vpp = parse_json(source:gsub("\0$", ""))
--- write_json(io.stdout, vpp)
--- io.write "\n"
-
 for _, block in ipairs(vpp.project.blocks) do
   for _, sentence in ipairs(block["sentence-list"]) do
     for _, token in ipairs(sentence.tokens) do
@@ -76,10 +73,10 @@ for _, block in ipairs(vpp.project.blocks) do
         for _, p in ipairs(syl.p) do
           ps[#ps + 1] = p.s
         end
-        io.write("{", table.concat(ps, ","), "} ")
+        -- io.write("{", table.concat(ps, ","), "} ")
       end
     end
-    io.write "/ "
+    -- io.write "/ "
   end
-  io.write "\n"
+  -- io.write "\n"
 end

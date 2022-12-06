@@ -77,15 +77,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   const data = {
     lineLength: 24,
     layout: async () => await layout(data.lineLength),
+    music: "diana33",
+    volume: 0.5,
+    play: () => playMusic(data.music, data.volume),
+    stop: () => stopMusic(),
   };
 
   gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
   const layoutController = gui.add(data, "layout").name("レイアウト");
+  gui.add(data, "music", [ "diana33", "diana19", "diana23", "diana12", "vi03", "vi10" ]).name("BGM");
+  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("ボリューム");
+  gui.add(data, "play").name("再生");
+  gui.add(data, "stop").name("停止");
 
-  const newVoice = tid => {
-    const base = "../output/" + "0".repeat(Math.max(0, 4 - tid.length)) + tid
-    return new Howl({ src: [ base + ".webm", base + ".mp3" ] });
+  let music;
+
+  const stopMusic = () => {
+    if (music) {
+      if (music.playing()) {
+        music.stop();
+      }
+      music = undefined;
+    }
   };
+
+  const playMusic = (musicId, volume) => {
+    stopMusic();
+    const basename = "../output/music/sessions_" + musicId;
+    music = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      autoplay: true,
+      loop: true,
+      volume: volume,
+    });
+  };
+
+  volumeController.onChange(volume => {
+    if (music) {
+      music.volume(volume);
+    }
+  });
 
   let voiceList;
 
