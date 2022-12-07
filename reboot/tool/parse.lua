@@ -19,13 +19,19 @@ local basename = require "basename"
 local dirname = require "dirname"
 local speaker_definitions = require "speaker_definitions"
 
--- 話者   spaker
--- 親文字 base
--- ルビ   ruby
--- 音声   voice
--- 行     text (lineは組版結果の行に用いる）
--- 段落   paragraph
--- 注釈   annotation
+--[[
+
+用語の整理
+  話者    spaker
+  親文字  base
+  ルビ    ruby
+  音声    voice
+  物理行  text（LINE FEEDで明示的に指定された行）
+  論理行  line（組版結果の行）
+  段落    paragraph
+  注釈    annotation
+
+]]
 
 local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
@@ -88,6 +94,7 @@ local function parse(scenario, include_path, filename)
   local paragraph
   local text
 
+  -- TODO @choiceのテキストを自由にする
   while position <= #source do
     if match "^#([^\r\n]*)" then
       -- # 話者

@@ -366,12 +366,10 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  let start;
-
   const D = globalThis.demeter;
   await D.boot();
 
-  start = performance.now();
+  const start = performance.now();
   const result = await D.loadFontFaces(10000);
   console.log("loadFontFaces", performance.now() - start, result);
 
@@ -453,7 +451,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       for (let i = 0; i < analyser.fftSize; ++i) {
         const v = timeDomainData[i];
         if (v > 0) {
-          const h = H * v;
+          const h = HH * v;
           canvasContext.fillRect(i, HH - h, 1, h);
         } else {
           const h = HH * -v;
@@ -593,7 +591,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const paragraph = D.parseParagraph(sourceNode, fontSize, font);
 
       let numLines = 0;
-      paragraph.map((text, j) => {
+      paragraph.forEach((text, j) => {
         const lines = D.composeText(text, maxWidth);
         numLines += lines.length;
         const textNode = paragraphNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
