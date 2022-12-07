@@ -15,23 +15,28 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local basename = require "basename"
-local quote_shell = require "quote_shell"
+local parse_json = require "parse_json"
+local write_json = require "write_json"
 
-local function execute(command)
-  print(command)
-  os.execute(command)
-end
+local source_pathname = ...
 
-local output_dirname = ...
-local source_pathnames = { table.unpack(arg, 2) }
+local handle = assert(io.open(source_pathname))
+local source = handle:read "a"
+handle:close()
 
-for i, source_pathname in ipairs(source_pathnames) do
-  assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i - 1)
-
-  -- webm
-  execute(("ffmpeg -y -i %s -b:a 64k -dash 1 %s/%04d.webm"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
-
-  -- mp3
-  execute(("ffmpeg -y -i %s -q:a 4 %s/%04d.mp3"):format(quote_shell(source_pathname), quote_shell(output_dirname), i))
+-- VPPファイルから音素を抽出する。
+local vpp = parse_json(source:gsub("\0$", ""))
+for _, block in ipairs(vpp.project.blocks) do
+  for _, sentence in ipairs(block["sentence-list"]) do
+    for _, token in ipairs(sentence.tokens) do
+      for _, syl in ipairs(token.syl) do
+        -- syl.sとsyl.p.sを取得する。
+        local ps = {}
+        for _, p in ipairs(syl.p) do
+          ps[#ps + 1] = p.s
+        end
+        io.write(table.concat(ps), "\t", syl.s, "\n")
+      end
+    end
+  end
 end

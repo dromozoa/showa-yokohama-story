@@ -259,3 +259,47 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert -quality 90 -strip source.png P
 env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert favicon-32.png favicon-32.ico
 ```
 
+## オーディオ
+
+[howler.jsのFormat Recommendations](https://github.com/goldfire/howler.js#format-recommendations)に従い、webmとmp3にエンコードする。[Guidelines for high quality lossy audio encoding](https://trac.ffmpeg.org/wiki/Encode/HighQualityAudio)を参考にすると、
+
+- webm (libopus) は64Kbps以上
+- mp3 (libmp3lame) は `-aq 2` を使って192Kbps以上
+  - `-aq 2` は `-q:a 2` と等価
+  - [libmp3lameのオプション](https://ffmpeg.org/ffmpeg-codecs.html#libmp3lame-1)
+
+- Voicepeakは44100Hzのwavで出力することにした
+  - 周波数は音楽とあわせた
+
+音楽の入力ファイルのffprobe結果。
+
+```
+Input #0, wav, from 'sessions_diana23.wav':
+  Duration: 00:03:07.52, bitrate: 2116 kb/s
+  Stream #0:0: Audio: pcm_s24le ([1][0][0][0] / 0x0001), 44100 Hz, 2 channels, s32 (24 bit), 2116 kb/s
+```
+
+音声の入力ファイルのffprobe結果。音声はモノラルであることに注意。
+
+```
+Input #0, wav, from '001-voice2.wav':
+  Duration: 00:00:04.50, bitrate: 705 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, 1 channels, s16, 705 kb/s
+```
+
+変換結果（mp3のビットレートは結果の値）。
+
+Codec | Type  | Bitrate | Option
+------|-------|--------:|-------
+opus  | music | 128Kbps | -b:a 128k
+opus  | voice |  64Kbps | -b:a 64k
+mp3   | music | 196Kbps | -q:a 2
+mp3   | voice |  87Kbps | -q:a 4
+
+[librosa](https://librosa.org/)をインストールした。
+
+```
+pip3 install librosa
+```
+
+`~/Library/Python/3.9`にインストールされた。

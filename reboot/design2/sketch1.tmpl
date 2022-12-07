@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+</head>
+
+<body style="margin: 0 0 0 24px">
+
+<template>
+$scenario
+</template>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  let start;
+
+  const D = globalThis.demeter;
+  await D.boot();
+
+  start = performance.now();
+  const result = await D.loadFontFaces(10000);
+  console.log("loadFontFaces", performance.now() - start, result);
+
+  const fontSize = 24;
+  const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+
+  const outputNode = document.body.appendChild(document.createElement("div"));
+  outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
+  outputNode.style.font = D.numberToCssPixels(fontSize) + " " + font;
+  outputNode.style.overflow = "auto";
+  outputNode.style.scrollSnapType = "y mandatory";
+
+  window.addEventListener("resize", () => {
+    outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
+  });
+
+  const speakerTable = {
+    narrator: "\uE000",
+    alice:    "アリス",
+    danu:     "ダヌー",
+    demeter:  "デメテル",
+    yukio:    "ユキヲ",
+    priest:   "神父",
+    engineer: "課長",
+    activist: "店主",
+    steven:   "STEVEN",
+  };
+
+  const canvasSize = 256;
+  const canvasNode = document.createElement("canvas");
+  canvasNode.width = canvasSize * devicePixelRatio;
+  canvasNode.height = canvasSize * devicePixelRatio;
+  canvasNode.style.display = "block";
+  canvasNode.style.position = "fixed";
+  canvasNode.style.width = D.numberToCssPixels(canvasSize);
+  canvasNode.style.height = D.numberToCssPixels(canvasSize);
+  canvasNode.style.right = "15px";
+  canvasNode.style.bottom = "15px";
+  document.body.append(canvasNode);
+
+  const audioVisualizer = {}
+
+  const startAudioVisualizer = async () => {
+    if (!Howler.masterGain) {
+      return;
+    }
+
+    if (audioVisualizer.started) {
+      return true;
+    }
+    audioVisualizer.started = true;
+
+    const analyser = Howler.ctx.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.connect(Howler.ctx.destination);
+    Howler.masterGain.connect(analyser);
+
+    const canvasContext = canvasNode.getContext("2d");
+    const scale = devicePixelRatio;
+    canvasContext.scale(scale, scale);
+
+    const timeDomainData = new Float32Array(analyser.fftSize);
+    const frequencyData = new Float32Array(analyser.fftSize / 2);
+
+    const H = canvasSize;
+    const HH = H / 2;
+    const maxDecibels = -30;
+    const minDecibels = -100;
+    const rangeDecibels = maxDecibels - minDecibels;
+
+    while (!audioVisualizer.stop) {
+      await D.requestAnimationFrame();
+      analyser.getFloatTimeDomainData(timeDomainData);
+      analyser.getFloatFrequencyData(frequencyData);
+
+      canvasContext.clearRect(0, 0, canvasSize, H);
+
+      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      for (let i = 0; i < analyser.fftSize; ++i) {
+        const v = timeDomainData[i];
+        if (v > 0) {
+          const h = HH * v;
+          canvasContext.fillRect(i, HH - h, 1, h);
+        } else {
+          const h = HH * -v;
+          canvasContext.fillRect(i, HH, 1, h);
+        }
+      }
+
+      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      for (let i = 0; i < analyser.frequencyBinCount; ++i) {
+        // -30dB .. -100dB
+        const v = (Math.max(minDecibels, Math.min(maxDecibels, frequencyData[i])) - minDecibels) / rangeDecibels;
+        const h = H * v;
+        canvasContext.fillRect(i * 2, HH - h * 0.5, 2, h);
+      }
+    }
+
+    audioVisualizer.started = false;
+    audioVisualizer.stop = false;
+  };
+
+  const GUI = lil.GUI;
+  const gui = new GUI;
+
+  const data = {
+    lineLength: 24,
+    layout: async () => await layout(data.lineLength),
+    music: "diana33",
+    volume: 0.5,
+    play: () => playMusic(data.music, data.volume),
+    stop: () => stopMusic(),
+  };
+
+  gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
+  const layoutController = gui.add(data, "layout").name("レイアウト");
+  gui.add(data, "music", [ "diana33", "diana19", "diana23", "diana12", "vi03", "vi10" ]).name("BGM");
+  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("ボリューム");
+  gui.add(data, "play").name("再生");
+  gui.add(data, "stop").name("停止");
+
+  let music;
+
+  const stopMusic = () => {
+    if (music) {
+      if (music.playing()) {
+        music.stop();
+      }
+      music = undefined;
+    }
+  };
+
+  const playMusic = (musicId, volume) => {
+    stopMusic();
+    const basename = "../output/music/sessions_" + musicId;
+    music = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      autoplay: true,
+      loop: true,
+      volume: volume,
+    });
+    startAudioVisualizer();
+  };
+
+  volumeController.onChange(volume => {
+    if (music) {
+      music.volume(volume);
+    }
+  });
+
+  let voiceList;
+
+  const stopVoiceList = () => {
+    if (voiceList) {
+      voiceList.forEach(voice => {
+        if (voice.playing()) {
+          voice.stop();
+        }
+      });
+      voiceList = undefined;
+    }
+  };
+
+  const playVoiceList = (voiceIdList) => {
+    stopVoiceList();
+    voiceList = voiceIdList.map(voiceId => {
+      const basename = "../output/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
+      return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
+    });
+    voiceList.forEach((voice, i) => {
+      const voiceId = voiceIdList[i];
+      const nextVoice = voiceList[i + 1];
+      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#EEF");
+      voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
+      voice.once("end", () => {
+        document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
+        if (nextVoice) {
+          nextVoice.play();
+        }
+      });
+    });
+    voiceList[0].play();
+    startAudioVisualizer();
+  };
+
+  const layout = async lineLength => {
+    layoutController.name("レイアウト中").disable();
+    const start = performance.now();
+
+    outputNode.replaceChildren();
+
+    const maxWidth = fontSize * lineLength;
+    const maxLines = Math.max(Math.ceil(96 / lineLength), 4);
+    const lineHeight = fontSize * 2;
+
+    const sourceNodes = document.querySelector("template").content.children;
+    for (let i = 0; i < sourceNodes.length; ++i) {
+      await D.requestAnimationFrame();
+
+      const sourceNode = sourceNodes[i];
+
+      const containerNode = document.createElement("div");
+      containerNode.style.display = "flex";
+      containerNode.style.lineHeight = D.numberToCssPixels(lineHeight);
+      containerNode.style.scrollSnapAlign = "start";
+
+      const speakerNode = containerNode.appendChild(document.createElement("div"));
+      speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
+      speakerNode.style.flex = "none";
+      speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
+      speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+      speakerNode.addEventListener("click", ev => playVoiceList([...ev.target.nextElementSibling.children].map(textNode => textNode.dataset.tid)));
+
+      const paragraphNode = containerNode.appendChild(document.createElement("div"));
+      paragraphNode.style.flex = "none";
+      paragraphNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
+      paragraphNode.dataset.pid = sourceNode.dataset.pid;
+
+      const paragraph = D.parseParagraph(sourceNode, fontSize, font);
+
+      let numLines = 0;
+      paragraph.map((text, j) => {
+        const lines = D.composeText(text, maxWidth);
+        numLines += lines.length;
+        const textNode = paragraphNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
+        textNode.dataset.tid = sourceNode.children[j].dataset.tid;
+      });
+
+      if (numLines > maxLines) {
+        paragraphNode.style.backgroundColor = "#FEE";
+      }
+
+      outputNode.append(containerNode);
+    }
+
+    console.log("layout", performance.now() - start);
+    layoutController.name("レイアウト").enable();
+  };
+
+  await layout(24);
+});
+</script>
+
+</body>
+</html>

@@ -17,15 +17,24 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.dromozoa {
-  --main_font_family_western: 'Share Tech';
-  --main_font_family_japanese: 'BIZ UDPMincho';
-  --main_font_family: 'Showa Yokohama Story', var(--main_font_family_western), var(--main_font_family_japanese);
-  --main_font_size: 32px;
-  --main_line_height: 64px;
+div.demeter-text {
+  white-space: nowrap;
 }
 
-.dromozoa_test {
-  font-family: 'Share Tech', 'BIZ UDPMincho';
-  font-kerning: normal;
-};
+div.demeter-text > div > span {
+  display: inline-block;
+  position: relative;
+}
+
+div.demeter-text > div > span > span {
+  display: inline-block;
+}
+
+div.demeter-text > div > span > div {
+  position: absolute;
+  font-size: 50%;
+}
+
+div.demeter-text > div > span > div > span {
+  display: inline-block;
+}

@@ -23,7 +23,7 @@ local speaker_definitions = require "speaker_definitions"
 -- 親文字 base
 -- ルビ   ruby
 -- 音声   voice
--- 行     line
+-- 行     text (lineは組版結果の行に用いる）
 -- 段落   paragraph
 -- 注釈   annotation
 
@@ -71,16 +71,14 @@ local function parse(scenario, include_path, filename)
   local _1
   local _2
   local _3
-  local _4
 
   local function match(pattern)
-    local i, j, a, b, c, d = source:find(pattern, position)
+    local i, j, a, b, c = source:find(pattern, position)
     if i then
       position = j + 1
       _1 = a
       _2 = b
       _3 = c
-      _4 = d
       return true
     else
       return false
@@ -88,7 +86,7 @@ local function parse(scenario, include_path, filename)
   end
 
   local paragraph
-  local line
+  local text
 
   while position <= #source do
     if match "^#([^\r\n]*)" then
@@ -99,21 +97,21 @@ local function parse(scenario, include_path, filename)
       -- @# 行コメント
 
     elseif match '^@"{(.-)}"' then
-      -- @"{<生文字列>}"
-      line = append(line, _1)
+      -- @"{生文字列}"
+      text = append(text, _1)
 
     elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
       -- @r{親文字}{ルビ}{発音}
-      line = append(line, { trim(_1), ruby = trim(_2), voice = trim(_3) })
+      text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
 
     elseif match "^@r{([^}]*)}{([^}]*)}" then
       -- @r{親文字}{ルビ}
       local v = trim(_2)
-      line = append(line, { trim(_1), ruby = v, voice = v })
+      text = append(text, { trim(_1), ruby = v, voice = v })
 
     elseif match "^@v{([^}]*)}{([^}]*)}" then
       -- @v{親文字}{発音}
-      line = append(line, { trim(_1), voice = trim(_2) })
+      text = append(text, { trim(_1), voice = trim(_2) })
 
     elseif match "^@label{([^}]*)}" then
       -- @label{ラベル}
@@ -154,9 +152,9 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
-      if line then
-        paragraph = append(paragraph, line)
-        line = nil
+      if text then
+        paragraph = append(paragraph, text)
+        text = nil
       end
       if paragraph then
         scenario = append(scenario, paragraph)
@@ -165,14 +163,14 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^\r\n?" or match "^\n\r?" then
       -- 改行で行を分ける。
-      if line then
-        paragraph = append(paragraph, line)
-        line = nil
+      if text then
+        paragraph = append(paragraph, text)
+        text = nil
       end
 
     elseif match "^([^@#\r\n]+)" then
       -- テキスト
-      line = append(line, _1)
+      text = append(text, _1)
 
     else
       error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
@@ -216,11 +214,12 @@ local function process_labels(scenario)
 end
 
 local function process_speakers(scenario)
-  for _, paragraph in ipairs(scenario) do
-    if paragraph.speaker then
-      if not speaker_definitions[paragraph.speaker] then
-        error("speaker '"..paragraph.speaker.."' not found")
-      end
+  for i, paragraph in ipairs(scenario) do
+    if not paragraph.speaker then
+      error("speaker is nil at paragraph "..i)
+    end
+    if not speaker_definitions[paragraph.speaker] then
+      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
     end
   end
 end

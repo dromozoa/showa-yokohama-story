@@ -97,11 +97,6 @@ local rules = {
     1, 28;
   };
 
-  -- {
-  --   name = "isInseparable";
-  --   8;
-  -- };
-
   {
     name = "isPrefixedAbbreviation";
     12;
@@ -115,6 +110,11 @@ local rules = {
   {
     name = "isWesternCharacter";
     27;
+  };
+
+  {
+    name = "isInseparable";
+    1, 2, 3, 4, 5, 6, 7;
   };
 }
 
@@ -335,3 +335,57 @@ handle:write [[
 ]]
 
 handle:close()
+
+if options.check_relation then
+  -- ダッシュ     U+2014
+  -- 三点リーダ   U+2026
+  -- 二点リーダ   U+2025
+  -- アラビア数字 U+30-39
+  -- 前置省略文字 cl-12
+  -- 後置省略文字 cl-13
+  -- 欧文用文字   cl-27
+
+  local function check(code, name)
+    if dataset[27][code] then
+      io.write(("cl-27 contains entry: U+%X (%s)\n"):format(code, name))
+      return 1
+    end
+    return 0
+  end
+
+  check(0x2014, "ダッシュ")
+  check(0x2026, "三点リーダ")
+  check(0x2025, "二点リーダ")
+
+  local m = 0
+  local n = 0
+  for code in pairs(dataset[8]) do
+    m = m + 1
+    n = n + check(code, "分離禁止文字")
+  end
+  io.write(("%d / %d\n"):format(n, m))
+
+  m = 0
+  n = 0
+  for code = 0x30, 0x39 do
+    m = m + 1
+    n = n + check(code, "アラビア数字")
+  end
+  io.write(("%d / %d\n"):format(n, m))
+
+  m = 0
+  n = 0
+  for code in pairs(dataset[12]) do
+    m = m + 1
+    n = n + check(code, "前置省略文字")
+  end
+  io.write(("%d / %d\n"):format(n, m))
+
+  m = 0
+  n = 0
+  for code in pairs(dataset[13]) do
+    m = m + 1
+    n = n + check(code, "後置省略文字")
+  end
+  io.write(("%d / %d\n"):format(n, m))
+end

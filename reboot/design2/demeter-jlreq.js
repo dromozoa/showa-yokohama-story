@@ -923,4 +923,88 @@ return c>12976&&c<12992;
 }
 };
 
+D.jlreq.isInseparable = c => {
+if(c<8209){
+if(c<91){
+if(c<45){
+if(c<40){
+return c>32&&c<34;
+}else{
+return c<42||c>43;
+}
+}else{
+if(c<58){
+return c>45&&c<47;
+}else{
+if(c<63){
+return c<60;
+}else{
+return c<64;
+}
+}
+}
+}else{
+if(c<125){
+if(c<94){
+return c<92||c>92;
+}else{
+return c>122&&c<124;
+}
+}else{
+if(c<172){
+return c<126||c>170;
+}else{
+if(c<188){
+return c>186;
+}else{
+return c>8207;
+}
+}
+}
+}
+}else{
+if(c<12289){
+if(c<8222){
+if(c<8216){
+return c>8210&&c<8212;
+}else{
+return c<8218||c>8219;
+}
+}else{
+if(c<8263){
+return c>8251&&c<8253;
+}else{
+if(c<10629){
+return c<8266;
+}else{
+return c<10631;
+}
+}
+}
+}else{
+if(c<12318){
+if(c<12306){
+return c<12291||c>12295;
+}else{
+if(c<12314){
+return c>12307;
+}else{
+return c>12315;
+}
+}
+}else{
+if(c<12448){
+return c>12318&&c<12320;
+}else{
+if(c<12539){
+return c<12449;
+}else{
+return c<12540;
+}
+}
+}
+}
+}
+};
+
 })();

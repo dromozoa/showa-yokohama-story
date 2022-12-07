@@ -15,14 +15,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local quote = {
-  ["&"] = "&amp;";
-  ["<"] = "&lt;";
-  [">"] = "&gt;";
-  ["\""] = "&quot;";
-  ["\'"] = "&apos;";
-}
-
 return function (s)
-  return (s:gsub("[&<>\"\']", quote))
+  return (([[']]..s:gsub([[']], [['\'']])..[[']]):gsub([[\''']], [[\']]):gsub([[''\']], [[\']]))
 end
