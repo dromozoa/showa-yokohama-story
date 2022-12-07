@@ -400,6 +400,80 @@ document.addEventListener("DOMContentLoaded", async () => {
     steven:   "STEVEN",
   };
 
+  const canvasSize = 256;
+  const canvasNode = document.createElement("canvas");
+  canvasNode.width = canvasSize * devicePixelRatio;
+  canvasNode.height = canvasSize * devicePixelRatio;
+  canvasNode.style.display = "block";
+  canvasNode.style.position = "fixed";
+  canvasNode.style.width = D.numberToCssPixels(canvasSize);
+  canvasNode.style.height = D.numberToCssPixels(canvasSize);
+  canvasNode.style.right = "15px";
+  canvasNode.style.bottom = "15px";
+  document.body.append(canvasNode);
+
+  const audioVisualizer = {}
+
+  const startAudioVisualizer = async () => {
+    if (!Howler.masterGain) {
+      return;
+    }
+
+    if (audioVisualizer.started) {
+      return true;
+    }
+    audioVisualizer.started = true;
+
+    const analyser = Howler.ctx.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.connect(Howler.ctx.destination);
+    Howler.masterGain.connect(analyser);
+
+    const canvasContext = canvasNode.getContext("2d");
+    const scale = devicePixelRatio;
+    canvasContext.scale(scale, scale);
+
+    const timeDomainData = new Float32Array(analyser.fftSize);
+    const frequencyData = new Float32Array(analyser.fftSize / 2);
+
+    const H = canvasSize;
+    const HH = H / 2;
+    const maxDecibels = -30;
+    const minDecibels = -100;
+    const rangeDecibels = maxDecibels - minDecibels;
+
+    while (!audioVisualizer.stop) {
+      await D.requestAnimationFrame();
+      analyser.getFloatTimeDomainData(timeDomainData);
+      analyser.getFloatFrequencyData(frequencyData);
+
+      canvasContext.clearRect(0, 0, canvasSize, H);
+
+      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      for (let i = 0; i < analyser.fftSize; ++i) {
+        const v = timeDomainData[i];
+        if (v > 0) {
+          const h = H * v;
+          canvasContext.fillRect(i, HH - h, 1, h);
+        } else {
+          const h = HH * -v;
+          canvasContext.fillRect(i, HH, 1, h);
+        }
+      }
+
+      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      for (let i = 0; i < analyser.frequencyBinCount; ++i) {
+        // -30dB .. -100dB
+        const v = (Math.max(minDecibels, Math.min(maxDecibels, frequencyData[i])) - minDecibels) / rangeDecibels;
+        const h = H * v;
+        canvasContext.fillRect(i * 2, HH - h * 0.5, 2, h);
+      }
+    }
+
+    audioVisualizer.started = false;
+    audioVisualizer.stop = false;
+  };
+
   const GUI = lil.GUI;
   const gui = new GUI;
 
@@ -439,6 +513,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       loop: true,
       volume: volume,
     });
+    startAudioVisualizer();
   };
 
   volumeController.onChange(volume => {
@@ -479,6 +554,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
     voiceList[0].play();
+    startAudioVisualizer();
   };
 
   const layout = async lineLength => {
