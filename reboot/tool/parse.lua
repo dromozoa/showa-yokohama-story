@@ -31,6 +31,10 @@ local speaker_definitions = require "speaker_definitions"
   段落    paragraph
   注釈    annotation
 
+ディレクティブ
+#speaker
+@command{param1}{param2}
+
 ]]
 
 local function trim(s)
@@ -91,6 +95,52 @@ local function parse(scenario, include_path, filename)
     end
   end
 
+  local function parse_text(mode)
+    local text
+
+    local text_match = "^([^\r\n@]+)"
+    if mode == "directive" then
+      text_match = "^([^\r\n@}]+)"
+    end
+
+    while position <= #source do
+      if match '^@"{(.-)}"' then
+        -- @"{生文字列}"
+        text = append(text, _1)
+
+      elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
+        -- @r{親文字}{ルビ}{発音}
+        text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
+
+      elseif match "^@r{([^}]*)}{([^}]*)}" then
+        -- @r{親文字}{ルビ}
+        local v = trim(_2)
+        text = append(text, { trim(_1), ruby = v, voice = v })
+
+      elseif match "^@v{([^}]*)}{([^}]*)}" then
+        -- @v{親文字}{発音}
+        text = append(text, { trim(_1), voice = trim(_2) })
+
+      elseif match "^\r\n?" or match "^\n\r?" then
+        -- 改行で終端する。
+        return text
+
+      elseif mode == "directive" and match "^}" then
+        -- 引数を終端する。
+        return text
+
+      elseif match(text_match) then
+        -- テキスト
+        text = append(text, _1)
+
+      else
+        error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+      end
+    end
+
+    return text
+  end
+
   local paragraph
   local text
 
@@ -102,23 +152,6 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@#([^\r\n]*)" then
       -- @# 行コメント
-
-    elseif match '^@"{(.-)}"' then
-      -- @"{生文字列}"
-      text = append(text, _1)
-
-    elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
-      -- @r{親文字}{ルビ}{発音}
-      text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
-
-    elseif match "^@r{([^}]*)}{([^}]*)}" then
-      -- @r{親文字}{ルビ}
-      local v = trim(_2)
-      text = append(text, { trim(_1), ruby = v, voice = v })
-
-    elseif match "^@v{([^}]*)}{([^}]*)}" then
-      -- @v{親文字}{発音}
-      text = append(text, { trim(_1), voice = trim(_2) })
 
     elseif match "^@label{([^}]*)}" then
       -- @label{ラベル}
@@ -168,6 +201,37 @@ local function parse(scenario, include_path, filename)
         paragraph = nil
       end
 
+    else
+      -- 改行まで読む。
+      text = parse_text "paragraph"
+      if text then
+        paragraph = append(paragraph, text)
+        text = nil
+      end
+      -- 空行で段落を分ける。
+      if match "^[\t\v\f ]*\r\n?%s*" or match "^[\t\v\f ]*\n\r?%s*" then
+        scenario = append(scenario, paragraph)
+        paragraph = nil
+      end
+
+--[[
+    elseif match '^@"{(.-)}"' then
+      -- @"{生文字列}"
+      text = append(text, _1)
+
+    elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
+      -- @r{親文字}{ルビ}{発音}
+      text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
+
+    elseif match "^@r{([^}]*)}{([^}]*)}" then
+      -- @r{親文字}{ルビ}
+      local v = trim(_2)
+      text = append(text, { trim(_1), ruby = v, voice = v })
+
+    elseif match "^@v{([^}]*)}{([^}]*)}" then
+      -- @v{親文字}{発音}
+      text = append(text, { trim(_1), voice = trim(_2) })
+
     elseif match "^\r\n?" or match "^\n\r?" then
       -- 改行で行を分ける。
       if text then
@@ -181,6 +245,8 @@ local function parse(scenario, include_path, filename)
 
     else
       error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+]]
+
     end
   end
 
