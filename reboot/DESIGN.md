@@ -296,7 +296,7 @@ opus  | voice |  64Kbps | -b:a 64k
 mp3   | music | 196Kbps | -q:a 2
 mp3   | voice |  87Kbps | -q:a 4
 
-[librosa](https://librosa.org/)をインストールした。
+音声の解析のために[librosa](https://librosa.org/)をインストールした。最終的に使わないことにした。
 
 ```
 pip3 install librosa
@@ -304,12 +304,9 @@ pip3 install librosa
 
 `~/Library/Python/3.9`にインストールされた。
 
-# ボタン
+# 選択肢
 
-- line-heightを2でとるので、font-sizeが24pxのとき、行は48pxおくる。
-- 1行あけると、行の中央の間隔は96pxとなる。
-- ボタンとボタンの間隔を24pxとして、ボタン本体は72pxで、もとの行の上下に12pxずつつける。
-
-
-
+- 行の高さをhとする。
+- フォントサイズがxのとき、n行の選択肢の枠の高さをhx(n+1)にする。
+- テキストの配置位置は上からxの位置になる。
 
