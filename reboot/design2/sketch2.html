@@ -9,7 +9,7 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Share+Tech&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
@@ -26,42 +26,21 @@
   <script defer src="demeter-jlreq.js"></script>
 
   <style>
-    .button {
-      width: 480px;
-      background-color: #000;
-      margin: 0 0 24px 0;
-      padding: 12px 36px;
-      border: 1px solid #029D93;
-      border-radius: 36px 0;
-      cursor: pointer;
-      transition: all 1s;
-    }
-
-    .button:hover {
-      border-radius: 0;
-    }
-
-    .button:active {
-      background-color: #029D93;
-      /* border-color: #E00; */
-    }
-
-    .button2 {
+    div.choice {
       cursor: pointer;
       fill: rgba(255, 255, 255, 0.25);
       stroke: #fff;
-      transition: all 1s;
+      transition: all 0.5s;
     }
 
-    .button2:hover {
+    div.choice:hover {
       stroke: #029D93;
     }
 
-    .button2:active {
+    div.choice:active {
       fill: rgba(2, 157, 147, 0.25);
       stroke: #029D93;
     }
-
   </style>
 </head>
 
@@ -72,167 +51,20 @@
 ">
 
 <div id="source" style="
-  /* display: none; */
   font-size: 24px;
-  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPGothic', sans-serif;
+  font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
   line-height: 2;
 ">
-<button><div>エデンの<ruby>園<rt>その</rt></ruby></div></button>
+<button><div>エデンの園</div></button>
 <button><div>グライダー<ruby>銃<rt>ガン</rt></ruby></div></button>
 </div>
 
-<div style="
+<div id="container" style="
   position: relative;
-  width: 600px;
-  height: 120px;
   font-size: 24px;
-  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPGothic', sans-serif;
+  font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
   line-height: 2;
-">
-  <svg id="button" viewBox="0 0 600 120" style="position: absolute; width: 600px; height: 120px">
-    <!--
-    <rect x="24" y="24" width="480" height="72" style="fill: rgba(255,255,255,0.25)"/>
-    -->
-
-    <path style="fill: rgba(255,255,255,0.25); stroke: none" d="
-      M 30,30
-      h 468
-      v 60
-      h -447
-      l -21,-21
-      z
-    "/>
-
-    <path style="fill: rgba(255,255,255,0.25); stroke: none" d="
-      M 24,81
-      h 3
-      l 12,12
-      v 3
-      h -12
-      l -3,-3
-      z
-    "/>
-
-    <path style="fill: none; stroke: rgba(255,255,255,1); stroke-width: 1px" d="
-      M 24,24
-      h 480
-      v 72
-      h -456
-      l -24,-24
-      z
-    "/>
-    <path style="fill: rgba(255,255,255,1); stroke: rgba(255,255,255,1); stroke-width: 1px" d="
-      M 24,24
-      v -3
-      l 3, -3
-      h 114
-      l 3, 3
-      h 240
-      l 3, -3
-      h 114
-      l 3, 3
-      v 3
-      z
-    "/>
-  </svg>
-</div>
-
-<div style="
-  position: relative;
-  width: 600px;
-  height: 120px;
-  font-size: 24px;
-  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPGothic', sans-serif;
-  line-height: 2;
-">
-  <svg id="button2" class="button2" viewBox="0 0 600 120" style="
-    position: absolute;
-    width: 600px;
-    height: 120px;
-  ">
-    <!--
-    <rect x="24" y="24" width="480" height="72"/>
-    -->
-    <defs>
-      <clipPath id="clip">
-        <path d="
-          M 24,24
-          l 6,-6
-          h 111
-          l 3,3
-          h 240
-          l 3,-3
-          h 111
-          l 6,6
-          v 72
-          h -456
-          l -24,-24
-          z
-          M 25,25
-          v 47
-          l 23,23
-          h 455
-          v -70
-          z
-        "/>
-
-        <path d="
-          M 30,30
-          h 468
-          v 60
-          h -450
-          l -18,-18
-          z
-        "/>
-
-        <path d="
-          M 24,81
-          h 3
-          l 12,12
-          v 3
-          h -12
-          l -3,-3
-          z
-        "/>
-
-      </clipPath>
-    </defs>
-    <g clip-path="url(#clip)">
-      <path stroke-width="2" d="
-        M 24,24
-        h 480
-        v 72
-        h -456
-        l -24,-24
-        z
-      "/>
-
-      <!--
-        上部
-      -->
-      <path stroke-width="8" d="
-        M 23,19
-        h 482
-      "/>
-
-      <!--
-        左下
-
-        M 24,72
-        l 24,24
-        h -24
-        z
-      -->
-      <path stroke-width="2" d="
-        M 22,70
-        l 28,28
-        h -28
-        z
-      "/>
-    </g>
-  </svg>
-</div>
-
+"></div>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
@@ -244,144 +76,40 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("loadFontFaces", performance.now() - start, result);
 
   const fontSize = 24;
-  const font = "'Showa Yokohama Story', 'Share Tech', 'BIZ UDPGothic', sans-serif";
+  const font = "'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif";
 
   const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.font = D.numberToCssPixels(fontSize) + " " + font;
+  outputNode.style.font = D.numberToString(fontSize) + " " + font;
 
   let firstTextNode;
 
   const sourceNodes = document.querySelector("#source").children;
+  const containerNode = document.getElementById("container");
+
   for (let i = 0; i < sourceNodes.length; ++i) {
     const sourceNode = sourceNodes[i];
     const paragraph = D.parseParagraph(sourceNode, fontSize, font);
     paragraph.forEach(text => {
-      const lines = D.composeText(text, 480);
+      const lines = D.composeText(text, fontSize * 20);
       const textNode = D.layoutText(lines, fontSize, fontSize * 2);
-      if (!firstTextNode) {
-        firstTextNode = textNode.cloneNode(true);
-      }
-      const linkNode = document.createElement("div");
-      linkNode.className = "button";
-      linkNode.append(textNode);
-      outputNode.append(linkNode);
+      textNode.style.position = "absolute";
+      textNode.style.top = "24px";
+      textNode.style.left = "36px";
+
+      const choiceFrameNode = D.createChoiceFrame(fontSize * 24, fontSize * 4, fontSize);
+      choiceFrameNode.style.display = "block";
+
+      const choiceNode = document.createElement("div");
+      choiceNode.className = "choice";
+      choiceNode.style.position = "relative";
+      choiceNode.append(textNode, choiceFrameNode);
+      choiceNode.addEventListener("click", () => {
+        console.log("click", sourceNode);
+      });
+
+      containerNode.append(choiceNode);
     });
   }
-
-  const buttonContainerNode = document.getElementById("button2").parentElement;
-  firstTextNode.style.position = "absolute";
-  firstTextNode.style.top = "36px";
-  firstTextNode.style.left = "60px";
-  buttonContainerNode.append(firstTextNode);
-
-  // 96px
-  // lineheightが48だとする。領域としては96とる
-  // topBarが6で、72+6の高さになる。いっそ80にしとく？
-  // 72は内側に4けずられるので、実際は64
-  // 上下に8ずつある
-  // →0,12を左上の点としよう
-  // height = 96
-
-  const createChoiceFrame = (width, height, unit) => {
-    const px = v => D.numberToCssPixels(v).replace(/px$/, "");
-
-    const W = width;
-    const W2 = width * 0.5;
-    const W4 = width * 0.25;
-    const H = height - unit;
-    const U1 = unit;
-    const U2 = unit * 0.5;
-    const U4 = unit * 0.25;
-    const U8 = unit * 0.125;
-    const C2 = Math.cos(Math.PI * 0.25);
-    const C3 = Math.cos(Math.PI * 0.375);
-
-    const clipId = "clip1";
-
-    const template = document.createElement("template");
-    template.innerHTML = `
-      <svg viewBox="0 0 ${px(width)} ${px(height)}" style="
-        width: ${D.numberToCssPixels(width)};
-        height: ${D.numberToCssPixels(height)};
-      ">
-
-        <defs>
-          <clipPath id="${clipId}">
-            <path d="M 0,${px(U2)}
-              l ${px(U4)},${px(-U4)}
-              h ${px(W4-U4-U8)}
-              l ${px(U8)},${px(U8)}
-              h ${px(W2)}
-              l ${px(U8)},${px(-U8)}
-              h ${px(W4-U4-U8)}
-              l ${px(U4)},${px(U4)}
-              v ${px(H)}
-              H ${px(U1)}
-              L 0,${px(H-U2)}
-              z
-
-              M 1,${px(U2+1)}
-              V ${px(H-U2-C3)}
-              L ${px(U1+C3)},${px(H+U2-1)}
-              H ${px(W-1)}
-              V ${px(U2+1)}
-              z
-            "/>
-
-            <path d="
-              M ${px(U4)},${px(U2+U4)}
-              h ${px(W-U2)}
-              v ${px(H-U2)}
-              H ${px(U1+U4*C3)}
-              L ${px(U4)},${px(H-U2-U4*C3)}
-              z
-            "/>
-
-            <path d="
-              M 0,${px(H-U2+(U4-1)/C2)}
-              L ${px(U1-(U4-1)/C2)},${px(H+U2)}
-              H ${px(U4)}
-              l ${px(-U4)},${px(-U4)}
-              z
-            "/>
-
-          </clipPath>
-
-        </defs>
-
-        <g clip-path="url(#${clipId})">
-
-          <path stroke-width="2" d="
-            M 0,${px(U2)}
-            h ${px(W)}
-            v ${px(H)}
-            H ${px(U1)}
-            L 0,${px(H-U2)}
-            z
-          "/>
-
-          <path stroke-width="${px(U4+2)}" d="
-            M 0,${px(U2-U8)}
-            h ${px(W)}
-          "/>
-
-          <path stroke-width="2" d="
-            M -2,${px(H-U2-2)}
-            l ${px(U1+4)},${px(U1+4)}
-            H -2
-            z
-          "/>
-        </g>
-
-      </svg>
-    `;
-    return template.content.firstElementChild;
-  };
-
-  const choiceFrame = createChoiceFrame(600, 96, 24);
-  choiceFrame.setAttribute("class", "button2");
-  document.body.append(choiceFrame);
-
 });
 </script>
 

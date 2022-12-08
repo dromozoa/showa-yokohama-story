@@ -377,13 +377,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
 
   const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
-  outputNode.style.font = D.numberToCssPixels(fontSize) + " " + font;
+  outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
+  outputNode.style.font = D.numberToString(fontSize) + " " + font;
   outputNode.style.overflow = "auto";
   outputNode.style.scrollSnapType = "y mandatory";
 
   window.addEventListener("resize", () => {
-    outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
+    outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
   });
 
   const speakerTable = {
@@ -404,8 +404,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   canvasNode.height = canvasSize * devicePixelRatio;
   canvasNode.style.display = "block";
   canvasNode.style.position = "fixed";
-  canvasNode.style.width = D.numberToCssPixels(canvasSize);
-  canvasNode.style.height = D.numberToCssPixels(canvasSize);
+  canvasNode.style.width = D.numberToString(canvasSize);
+  canvasNode.style.height = D.numberToString(canvasSize);
   canvasNode.style.right = "15px";
   canvasNode.style.bottom = "15px";
   document.body.append(canvasNode);
@@ -573,19 +573,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const containerNode = document.createElement("div");
       containerNode.style.display = "flex";
-      containerNode.style.lineHeight = D.numberToCssPixels(lineHeight);
+      containerNode.style.lineHeight = D.numberToString(lineHeight);
       containerNode.style.scrollSnapAlign = "start";
 
       const speakerNode = containerNode.appendChild(document.createElement("div"));
       speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
       speakerNode.style.flex = "none";
-      speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
+      speakerNode.style.width = D.numberToString(fontSize * 5);
       speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
       speakerNode.addEventListener("click", ev => playVoiceList([...ev.target.nextElementSibling.children].map(textNode => textNode.dataset.tid)));
 
       const paragraphNode = containerNode.appendChild(document.createElement("div"));
       paragraphNode.style.flex = "none";
-      paragraphNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
+      paragraphNode.style.minHeight = D.numberToString(maxLines * lineHeight);
       paragraphNode.dataset.pid = sourceNode.dataset.pid;
 
       const paragraph = D.parseParagraph(sourceNode, fontSize, font);
