@@ -69,7 +69,7 @@ for _, paragraph in ipairs(scenario) do
         write("when=", escape_html(jump.when), "\n")
       end
     end
-    write "-->\n"
+    write "-->"
   end
   write "</div>\n"
 end

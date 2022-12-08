@@ -720,7 +720,7 @@ D.PathData = class {
   }
 
   toString() {
-    return this.d.join(" ");
+    return this.d.join("");
   }
 
   M(x, y) { return this.push("M", x, y); }
