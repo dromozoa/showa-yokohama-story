@@ -25,19 +25,26 @@
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
 
+  <!-- cursorを設定していると、AndroidのChromeがなんかハイライトしてくれちゃう？ -->
   <style>
-    div.choice {
+    div.choice > svg {
+      display: block;
+      /*
       cursor: pointer;
+      */
+    }
+
+    div.choice > svg {
       fill: rgba(255, 255, 255, 0.25);
       stroke: #fff;
       transition: all 0.5s;
     }
 
-    div.choice:hover {
+    div.choice:hover > svg {
       stroke: #029D93;
     }
 
-    div.choice:active {
+    div.choice:active > svg {
       fill: rgba(2, 157, 147, 0.25);
       stroke: #029D93;
     }
@@ -55,8 +62,8 @@
   font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
   line-height: 2;
 ">
-<button><div>エデンの園</div></button>
-<button><div>グライダー<ruby>銃<rt>ガン</rt></ruby></div></button>
+<div>エデンの園</div>
+<div>グライダー<ruby>銃<rt>ガン</rt></ruby></div>
 </div>
 
 <div id="container" style="
@@ -64,6 +71,8 @@
   font-size: 24px;
   font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
   line-height: 2;
+  user-select: none;
+  -webkit-user-select: none;
 "></div>
 
 <script>
@@ -103,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       choiceNode.className = "choice";
       choiceNode.style.position = "relative";
       choiceNode.append(textNode, choiceFrameNode);
-      choiceNode.addEventListener("click", () => {
+      choiceNode.addEventListener("click", (ev) => {
         console.log("click", sourceNode);
       });
 
