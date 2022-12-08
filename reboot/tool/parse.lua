@@ -140,7 +140,6 @@ local function parse(scenario, include_path, filename)
   local paragraph
   local text
 
-  -- TODO @choiceのテキストを自由にする
   while position <= #source do
     if match "^#([^\r\n]*)" then
       -- # 話者
@@ -156,6 +155,27 @@ local function parse(scenario, include_path, filename)
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
       paragraph = append_jump(paragraph, { label = trim(_1) })
+
+    elseif match "^@choice{" then
+      -- @choice{選択肢}
+      local choice = assert(parse_text "directive")
+      local label
+      if match "^{([^}]*)}" then
+        -- @choice{選択肢}{ラベル}
+        label = trim(_1)
+      else
+        -- @choice{選択肢}
+        local buffer = {}
+        for i, v in ipairs(choice) do
+          if type(v) == "string" then
+            buffer[i] = v
+          else
+            buffer[i] = v[1]
+          end
+        end
+        label = trim(table.concat(buffer))
+      end
+      paragraph = append_jump(paragraph, { choice = choice, label = label })
 
     elseif match "^@choice{([^}]*)}{([^}]*)}" then
       -- @choice{選択肢}{ラベル}
