@@ -29,16 +29,16 @@ syntax keyword sysTodo TODO FIXME XXX NOTE contained
 
 syntax match sysSpeaker     /#.*$/
 syntax match sysComment     /@#.*$/ contains=sysTodo
-syntax match sysRawString   /@"{.\{-}}"/
-syntax match sysRuby        /@r{[^}]*}{[^}]*}/
-syntax match sysRubyVoice   /@r{[^}]*}{[^}]*}{[^}]*}/
-syntax match sysVoice       /@v{[^}]*}{[^}]*}/
 syntax match sysLabel       /@label{[^}]*}/
 syntax match sysJump        /@jump{[^}]*}/
-syntax match sysChoice      /@choice{[^}]*}/
-syntax match sysChoiceLabel /@choice{[^}]*}{[^}]*}/
 syntax match sysInclude     /@include{[^}]*}/
 syntax match sysFinish      /@finish/
+
+syntax match sysRawString   /@"{.\{-}}"/
+syntax match sysRuby        /@r{[^}]*}{[^}]*}\%({[^}]*}\)\?/
+syntax match sysVoice       /@v{[^}]*}{[^}]*}/
+
+syntax region sysChoiceLabel start=/@choice{/ end=/}\%({[^}]*}\)\?/ contains=sysRawString,sysRuby,sysVoice
 
 syntax region sysWhen  start=/@when{{/  end=/}}{[^}]*}/ keepend contains=@javascript
 syntax region sysEnter start=/@enter{{/ end=/}}/        keepend contains=@javascript
