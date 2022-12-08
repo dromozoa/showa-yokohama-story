@@ -32,7 +32,7 @@ end
 local n = 0
 for _, paragraph in ipairs(scenario) do
   write(('<div data-pid="%d" data-speaker="%s">'):format(paragraph.index, paragraph.speaker))
-  for i, text in ipairs(paragraph) do
+  for _, text in ipairs(paragraph) do
     n = n + 1
     write(('<div data-tid="%d">'):format(n))
     for _, v in ipairs(text) do
@@ -46,6 +46,30 @@ for _, paragraph in ipairs(scenario) do
       end
     end
     write "</div>"
+  end
+  if paragraph.jumps then
+    write "<!--\n"
+    for _, jump in ipairs(paragraph.jumps) do
+      write("label=", escape_html(jump.label), "\n")
+      if jump.choice then
+        write "choice="
+        for _, v in ipairs(jump.choice) do
+          if type(v) == "string" then
+            write(escape_html(v))
+          elseif v.ruby then
+            write("<ruby>", escape_html(v[1]), "<rt>", escape_html(v.ruby), "</rt></ruby>")
+          else
+            assert(v.voice)
+            write(escape_html(v[1]))
+          end
+        end
+        write "\n"
+      end
+      if jump.when then
+        write("when=", escape_html(jump.when), "\n")
+      end
+    end
+    write "-->\n"
   end
   write "</div>\n"
 end

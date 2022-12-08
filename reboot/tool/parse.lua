@@ -31,10 +31,6 @@ local speaker_definitions = require "speaker_definitions"
   段落    paragraph
   注釈    annotation
 
-ディレクティブ
-#speaker
-@command{param1}{param2}
-
 ]]
 
 local function trim(s)
@@ -163,12 +159,12 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@choice{([^}]*)}{([^}]*)}" then
       -- @choice{選択肢}{ラベル}
-      paragraph = append_jump(paragraph, { choice = trim(_1), label = trim(_2) })
+      paragraph = append_jump(paragraph, { choice = { trim(_1) }, label = trim(_2) })
 
     elseif match "^@choice{([^}]*)}" then
       -- @choice{選択肢}
       local v = trim(_1)
-      paragraph = append_jump(paragraph, { choice = v, label = v })
+      paragraph = append_jump(paragraph, { choice = { v }, label = v })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
