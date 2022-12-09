@@ -24,6 +24,14 @@
     "lang": "ja"
   },
   {
+    "sur": "三十年代",
+    "pron": "サンジュウネンダイ",
+    "pos": "Japanese_Futsuu_meishi",
+    "priority": 5,
+    "accentType": 5,
+    "lang": "ja"
+  },
+  {
     "sur": "射耗",
     "pron": "シャモウ",
     "pos": "Japanese_Futsuu_meishi",
@@ -61,14 +69,6 @@
     "pos": "Japanese_Futsuu_meishi",
     "priority": 5,
     "accentType": 2,
-    "lang": "ja"
-  },
-  {
-    "sur": "三十年代",
-    "pron": "サンジュウネンダイ",
-    "pos": "Japanese_Futsuu_meishi",
-    "priority": 5,
-    "accentType": 5,
     "lang": "ja"
   }
 ]
