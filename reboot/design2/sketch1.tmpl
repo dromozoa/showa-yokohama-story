@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const playVoiceList = (voiceIdList) => {
     stopVoiceList();
     voiceList = voiceIdList.map(voiceId => {
-      const basename = "../output/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
+      const basename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
       return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
     });
     voiceList.forEach((voice, i) => {
