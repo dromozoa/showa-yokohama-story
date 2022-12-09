@@ -268,8 +268,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     outputNode.replaceChildren();
 
+    // 25文字→4行
+    // 20文字→6行
     const maxWidth = fontSize * lineLength;
-    const maxLines = Math.max(Math.ceil(96 / lineLength), 4);
+    const maxLines = Math.max(Math.floor(120 / lineLength), 4);
     const lineHeight = fontSize * 2;
 
     const sourceNodes = document.querySelector("template").content.children;
