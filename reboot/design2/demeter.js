@@ -292,6 +292,17 @@ D.parseParagraph = (source, fontSize, font) => {
 
 //-------------------------------------------------------------------------
 
+const resetSpacing = source => {
+  source.forEach(u => {
+    u.spacingBudgeted = 0;
+    u.spacingFallback = 0;
+    u.spacing1 = 0;
+    u.spacing2 = 0;
+  });
+};
+
+//-------------------------------------------------------------------------
+
 const setSpacingBudgeted = (source, request, tolerance) => {
   const remaining = source.reduce((acc, u) => acc + u.spacingBudget, 0);
   if (remaining <= request) {
@@ -429,9 +440,12 @@ const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 
 
 const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
-const updateItem = (prev, item, next, baseWidthFn) => {
+const updateItem = (prev, item, next, baseWidthFn = (acc, u) => acc + u.advance) => {
   if (item.ruby) {
-    const baseWidth = item.base.reduce(baseWidthFn || ((acc, u) => acc + u.advance), 0);
+    resetSpacing(item.base);
+    resetSpacing(item.ruby);
+
+    const baseWidth = item.base.reduce(baseWidthFn, 0);
     const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0);
 
     const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.base.slice(-1)[0]);
@@ -446,6 +460,7 @@ const updateItem = (prev, item, next, baseWidthFn) => {
     item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
     item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
   } else {
+    resetSpacing(item.base);
     item.rubyOverhangPrev = 0;
     item.rubyOverhangNext = 0;
   }
