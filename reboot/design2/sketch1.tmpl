@@ -149,6 +149,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     audioVisualizer.stop = false;
   };
 
+  const observerMap = new Map();
+  const observerParagraphPrev = parseInt(document.location.hash.replace(/^#/, ""), 10) || 1;
+  let observerParagraph;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const pid = entry.target.lastElementChild.dataset.pid;
+      if (entry.isIntersecting) {
+        observerMap.set(pid, entry.isIntersecting);
+      } else {
+        observerMap.delete(pid);
+      }
+    });
+    const paragraph = Math.min(...observerMap.keys());
+    if (observerParagraph !== paragraph) {
+      observerParagraph = paragraph;
+      history.replaceState(null, "", "#" + observerParagraph);
+    }
+  }, {
+    root: outputNode,
+    threshold: 0.5,
+  });
+
   const GUI = lil.GUI;
   const gui = new GUI;
 
@@ -159,14 +182,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     volume: 0.5,
     play: () => playMusic(data.music, data.volume),
     stop: () => stopMusic(),
+    scroll: () => {
+      const paragraphNode = document.querySelector(`[data-pid='${observerParagraphPrev}']`);
+      if (paragraphNode) {
+        paragraphNode.scrollIntoView({ behavior: "smooth" });
+      }
+    },
   };
 
   gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
   const layoutController = gui.add(data, "layout").name("レイアウト");
   gui.add(data, "music", [ "diana33", "diana19", "diana23", "diana12", "vi03", "vi10" ]).name("BGM");
-  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("ボリューム");
-  gui.add(data, "play").name("再生");
-  gui.add(data, "stop").name("停止");
+  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("BGMのボリューム");
+  gui.add(data, "play").name("BGMを再生");
+  gui.add(data, "stop").name("BGMを停止");
+  gui.add(data, "scroll").name("前回の段落位置に移動");
 
   let music;
 
@@ -280,13 +310,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       outputNode.append(containerNode);
+      observer.observe(containerNode);
     }
 
     console.log("layout", performance.now() - start);
     layoutController.name("レイアウト").enable();
   };
 
-  await layout(24);
+  await layout(data.lineLength);
+
 });
 </script>
 
