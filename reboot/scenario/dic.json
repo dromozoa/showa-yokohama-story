@@ -1,5 +1,13 @@
 [
   {
+    "sur": "荒野",
+    "pron": "アラノ",
+    "pos": "Japanese_Futsuu_meishi",
+    "priority": 5,
+    "accentType": 0,
+    "lang": "ja"
+  },
+  {
     "sur": "アラムナイ",
     "pron": "アラムナイ",
     "pos": "Japanese_Futsuu_meishi",
