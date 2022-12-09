@@ -361,9 +361,7 @@ const setSpacing = (source, request, tolerance) => {
 };
 
 const justifySpacing = (source, request, tolerance) => {
-  const u = source.slice(-1)[0];
-  u.spacingBudgeted = 0;
-  u.spacingFallback = 0;
+  resetSpacing(source);
   setSpacingImpl(source.slice(0, -1), request, tolerance);
   source.forEach(u => {
     u.spacing1 = 0;
@@ -441,8 +439,11 @@ const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 
 const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
 const updateItem = (prev, item, next, baseWidthFn = (acc, u) => acc + u.advance) => {
-  if (item.ruby) {
+  if (baseWidthFn !== addAdvanceSpacing) {
     resetSpacing(item.base);
+  }
+
+  if (item.ruby) {
     resetSpacing(item.ruby);
 
     const baseWidth = item.base.reduce(baseWidthFn, 0);
@@ -455,12 +456,15 @@ const updateItem = (prev, item, next, baseWidthFn = (acc, u) => acc + u.advance)
     const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
 
     const spacing = rubyWidth - baseWidth - rubyOverhang;
-    setSpacing(spacing > 0 ? item.base : item.ruby, Math.abs(spacing), 0.25);
+    if (spacing > 0) {
+      setSpacing(item.base, Math.abs(spacing), 0.25);
+    } else {
+      setSpacing(item.ruby, Math.abs(spacing), 0.25);
+    }
 
     item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
     item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
   } else {
-    resetSpacing(item.base);
     item.rubyOverhangPrev = 0;
     item.rubyOverhangNext = 0;
   }
