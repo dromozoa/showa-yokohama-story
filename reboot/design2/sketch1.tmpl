@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       voice.once("end", () => {
         document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
         if (nextVoice) {
-          nextVoice.play();
+          setTimeout(() => nextVoice.play(), 400);
         }
       });
     });
