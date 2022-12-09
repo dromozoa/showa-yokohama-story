@@ -1,5 +1,13 @@
 [
   {
+    "sur": "アラムナイ",
+    "pron": "アラムナイ",
+    "pos": "Japanese_Futsuu_meishi",
+    "priority": 5,
+    "accentType": 0,
+    "lang": "ja"
+  },
+  {
     "sur": "ガヴァメント",
     "pron": "ガヴァメント",
     "pos": "Japanese_Futsuu_meishi",
@@ -18,14 +26,6 @@
   {
     "sur": "年代物",
     "pron": "ネンダイモノ",
-    "pos": "Japanese_Futsuu_meishi",
-    "priority": 5,
-    "accentType": 0,
-    "lang": "ja"
-  },
-  {
-    "sur": "アラムナイ",
-    "pron": "アラムナイ",
     "pos": "Japanese_Futsuu_meishi",
     "priority": 5,
     "accentType": 0,
