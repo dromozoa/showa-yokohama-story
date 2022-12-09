@@ -29,7 +29,11 @@
   <script defer src="demeter-jlreq.js"></script>
 </head>
 
-<body style="margin: 0 0 0 24px">
+<body style="
+  margin: 0 0 0 24px;
+  background-color: #000;
+  color: #FFF;
+">
 
 <template>
 <div data-pid="1" data-speaker="narrator"><div data-tid="1">昭和七十四年七月、ボクはキミに出逢った。</div><div data-tid="2">人類が滅亡するまでの、最期のひとつきの、これは物語だ。</div></div>
@@ -474,14 +478,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     steven:   "STEVEN",
   };
 
-  const canvasSize = 256;
+  const canvasWidth = 256;
+  const canvasHeight = 64;
   const canvasNode = document.createElement("canvas");
-  canvasNode.width = canvasSize * devicePixelRatio;
-  canvasNode.height = canvasSize * devicePixelRatio;
+  canvasNode.width = canvasWidth * devicePixelRatio;
+  canvasNode.height = canvasHeight * devicePixelRatio;
   canvasNode.style.display = "block";
   canvasNode.style.position = "fixed";
-  canvasNode.style.width = D.numberToString(canvasSize);
-  canvasNode.style.height = D.numberToString(canvasSize);
+  canvasNode.style.width = D.numberToString(canvasWidth);
+  canvasNode.style.height = D.numberToString(canvasHeight);
   canvasNode.style.right = "15px";
   canvasNode.style.bottom = "15px";
   document.body.append(canvasNode);
@@ -510,7 +515,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timeDomainData = new Float32Array(analyser.fftSize);
     const frequencyData = new Float32Array(analyser.fftSize / 2);
 
-    const H = canvasSize;
+    const W = canvasWidth;
+    const H = canvasHeight;
     const HH = H / 2;
     const maxDecibels = -30;
     const minDecibels = -100;
@@ -521,9 +527,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       analyser.getFloatTimeDomainData(timeDomainData);
       analyser.getFloatFrequencyData(frequencyData);
 
-      canvasContext.clearRect(0, 0, canvasSize, H);
+      canvasContext.clearRect(0, 0, W, H);
 
-      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      canvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
       for (let i = 0; i < analyser.fftSize; ++i) {
         const v = timeDomainData[i];
         if (v > 0) {
@@ -535,12 +541,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      canvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
       for (let i = 0; i < analyser.frequencyBinCount; ++i) {
         // -30dB .. -100dB
         const v = (Math.max(minDecibels, Math.min(maxDecibels, frequencyData[i])) - minDecibels) / rangeDecibels;
         const h = H * v;
-        canvasContext.fillRect(i * 2, HH - h * 0.5, 2, h);
+        canvasContext.fillRect(W - i * 2 - 2, HH - h * 0.5, 2, h);
       }
     }
 
@@ -552,7 +558,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const gui = new GUI;
 
   const data = {
-    lineLength: 24,
+    lineLength: 25,
     layout: async () => await layout(data.lineLength),
     music: "diana33",
     volume: 0.5,
@@ -618,7 +624,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     voiceList.forEach((voice, i) => {
       const voiceId = voiceIdList[i];
       const nextVoice = voiceList[i + 1];
-      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#EEF");
+      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#333");
       voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
       voice.once("end", () => {
         document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
@@ -675,7 +681,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       if (numLines > maxLines) {
-        paragraphNode.style.backgroundColor = "#FEE";
+        paragraphNode.style.backgroundColor = "#300";
       }
 
       outputNode.append(containerNode);
