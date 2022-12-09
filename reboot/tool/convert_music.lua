@@ -20,7 +20,7 @@ local quote_shell = require "quote_shell"
 
 local function execute(command)
   print(command)
-  os.execute(command)
+  assert(os.execute(command))
 end
 
 local output_dirname, output_name = ...
