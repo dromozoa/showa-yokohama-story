@@ -25,12 +25,11 @@ local function execute(command)
 end
 
 -- https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-local I = "-18.0"
 local LRA = "7.0"
 local TP = "-2.0"
 
-local output_dirname, output_name = ...
-local source_pathnames = { table.unpack(arg, 3) }
+local integrated_loudness_target, output_dirname, output_name = ...
+local source_pathnames = { table.unpack(arg, 4) }
 table.sort(source_pathnames, function (a, b)
   return tonumber(basename(a):match "^(%d+).*%.wav$") < tonumber(basename(b):match "^(%d+).*%.wav$")
 end)
@@ -41,7 +40,7 @@ for _, source_pathname in ipairs(source_pathnames) do
 
   -- ラウドネスを調べる
   local audio_filter = "loudnorm"
-    .."=I="..I
+    .."=I="..integrated_loudness_target
     ..":LRA="..LRA
     ..":TP="..TP
     ..":print_format=json"
@@ -53,7 +52,7 @@ for _, source_pathname in ipairs(source_pathnames) do
   local result = parse_json(assert(source:match "\n{\n.-\n}\n"))
 
   local audio_filter = "loudnorm"
-    .."=I="..I
+    .."=I="..integrated_loudness_target
     ..":LRA="..LRA
     ..":TP="..TP
     ..":measured_I="..result.input_i
