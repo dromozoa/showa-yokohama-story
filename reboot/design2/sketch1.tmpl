@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     lineLength: 25,
     layout: async () => await layout(data.lineLength),
     music: "diana33",
-    volume: 0.5,
+    volume: 1,
     play: () => playMusic(data.music, data.volume),
     stop: () => stopMusic(),
     scroll: () => {
@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const playMusic = (musicId, volume) => {
     stopMusic();
-    const basename = "../output/music18/sessions_" + musicId;
+    const basename = "../output/music/sessions_" + musicId;
     music = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
       autoplay: true,
