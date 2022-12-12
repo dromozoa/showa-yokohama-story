@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html>
 
-<!--
-  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
-  --
-  -- This file is part of 昭和横濱物語.
-  --
-  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
-  -- it under the terms of the GNU General Public License as published by
-  -- the Free Software Foundation, either version 3 of the License, or
-  -- (at your option) any later version.
-  --
-  -- 昭和横濱物語 is distributed in the hope that it will be useful,
-  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
-  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  -- GNU General Public License for more details.
-  --
-  -- You should have received a copy of the GNU General Public License
-  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,165 +9,268 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
 
-  <link href="font_face.css" rel="stylesheet">
-  <link href="common.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- https://github.com/goldfire/howler.js#quick-start -->
-  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
-
-  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
-
   <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
 
-  <script defer src="jlreq.js"></script>
-  <script defer src="common.js"></script>
+  <!-- https://github.com/tweenjs/tween.js/#installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    .title-ja {
+      font-family: 'Yuji Syuku', serif;
+      font-size: 96px;
+      font-kerning: none;
+      color: #C63322;
+    }
+
+    .title-ja > span {
+      display: inline-block;
+      filter: url(#filter-ja);
+      transform-origin: center center;
+      /*
+      transform-origin: left center;
+      */
+      /* 左手座標系 回転は時計回り */
+      transform: rotate3d(1, 0, 0, -90deg);
+      opacity: 1;
+    }
+
+    .title-en {
+      font-family: 'Averia Serif Libre', serif;
+      font-size: 36px;
+      color: #C63322;
+      font-kerning: none;
+      transform-origin: center center;
+      transform: rotate3d(0, 1, 0, -90deg);
+      opacity: 0;
+    }
+
+    .title-en > span {
+      display: inline-block;
+      filter: url(#filter-en);
+    }
+  </style>
 </head>
-<body>
+<body style="
+  margin: 0;
+  background-color: #000;
+  color: #FFF;
+">
 
 <div>
-  <!--
-  <div id="view" class="view" style="
-    background-color: #ccc;
-    font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-    font-size: 24px;
-    line-height: 2;
-    overflow-wrap: break-word;
-    text-align: justify;
-    width: 12em;
-  ">
-    <div>あ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div>ああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div>あああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div>ああああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div>--------</div>
-    <div><span>&#x200B;</span>あ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div><span>&#x200B;</span>ああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div><span>&#x200B;</span>あああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div><span>&#x200B;</span>ああああ<span>&#x200B;</span><span style="letter-spacing: 11.5em">&#xFEFF;x</span></div>
-    <div>--------</div>
-    <div>あ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>ああ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>あああ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>ああああ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>--------</div>
-    <div>あ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>ああ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>あああ<span style="letter-spacing: 11.5em">x</span></div>
-    <div>ああああ<span style="letter-spacing: 11.5em">x</span></div>
-  </div>
-  -->
+  <div class="title-ja"><span
+    style="letter-spacing: -6px">昭</span><span
+    style="letter-spacing: -2px">和</span><span
+    style="letter-spacing: -2px">横</span><span
+    style="letter-spacing: -6px">濱</span><span
+    style="letter-spacing: -6px">物</span><span
+    style="letter-spacing:  0px">語</span></div>
+  <div class="title-en"><span
+    style="letter-spacing:  0px">S</span><span
+    style="letter-spacing: -0.0667px">H</span><span
+    style="letter-spacing: -0.3333px">O</span><span
+    style="letter-spacing: -1.5px">W</span><span
+    style="letter-spacing:  0px">A</span><span
+    style="letter-spacing:  0px">&nbsp;</span><span
+    style="letter-spacing: -0.8px">Y</span><span
+    style="letter-spacing: -0.0667px">O</span><span
+    style="letter-spacing: -0.8px">K</span><span
+    style="letter-spacing: -0.0667px">O</span><span
+    style="letter-spacing:  0px">H</span><span
+    style="letter-spacing:  0px">A</span><span
+    style="letter-spacing:  0px">M</span><span
+    style="letter-spacing:  0px">A</span><span
+    style="letter-spacing:  0px">&nbsp;</span><span
+    style="letter-spacing: -0.1333px">S</span><span
+    style="letter-spacing: -0.6px">T</span><span
+    style="letter-spacing: -0.0667px">O</span><span
+    style="letter-spacing: -0.5667px">R</span><span
+    style="letter-spacing:  0px">Y</span></div>
+</div>
 
-  <div style="
-    position: relative;
-    width: 480px;
-    height: 576px;
-  ">
-
-    <div id="a" style="
-      position: absolute;
-      width: 240px;
-      height: 576px;
-      top: 0px;
-      left: 0px;
-
-      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-      font-size: 24px;
-      line-height: 48px;
-      text-align: justify;
-    ">
-      <span
-      >あ</span><span>いうえおかきくけ</span><span style="white-space: nowrap">こたちつ</span>てとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span>
-    </div>
-
-    <div id="b" style="
-      position: absolute;
-      width: 240px;
-      height: 576px;
-      top: -18px;
-      left: 0px;
-
-      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-      font-size: 12px;
-      line-height: 48px;
-    ">
-      <span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span><span
-      >あ</span><span>いうえおかきくけこたちつてとなにぬねのはひふへほ</span>
-    </div>
-
-    <div id="c" style="
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      top: 0px;
-      left: 240px;
-
-      font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-      font-size: 24px;
-    "><span id="x" style="
-      line-height: 48px;
-      color: #f00;
-    ">永遠</span><br><span id ="y" style="
-      display: inline-block;
-      position: absolute;
-      width: 48px;
-      /*
-      top: 0px;
-      */
-      color: #0f0;
-      /*
-      padding-left: 24px;
-      */
-      line-height: normal;
-      text-align: right;
-    "><span>遠</span></span><br><span id ="z" style="
-      display: inline-block;
-      position: absolute;
-      width: 48px;
-      /*
-      top: 0px;
-      */
-      color: #00f;
-      /*
-      padding-right: 24px;
-      */
-      line-height: normal;
-      text-align: left;
-    "><span>永</span></div>
-
-  </div>
+<div style="position: absolute; top: -9999px; left: -9999px">
+  <svg>
+    <defs>
+      <filter id="filter-ja">
+        <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <filter id="filter-en">
+        <feMorphology operator="dilate" radius="0.5" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const D = globalThis.dromozoa;
-  await D.booted;
+  const D = demeter;
+  await D.boot();
 
-  console.log("load font faces: start");
-  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
-  console.log("load font faces: end", result);
+  const RingBuffer = class {
+    constructor(limit) {
+      this.index = 0;
+      this.limit = limit;
+      this.data = [];
+    }
+
+    push(value) {
+      this.data[this.index] = value;
+      ++this.index;
+      this.index %= this.limit;
+    }
+
+    forEach(fn) {
+      let index = 0;
+      for (let i = this.index; i < this.data.length; ++i) {
+        fn(this.data[i], index++);
+      }
+      for (let i = 0; i < this.index; ++i) {
+        fn(this.data[i], index++);
+      }
+    }
+
+    min() {
+      return this.data.reduce((acc, value) => Math.min(acc, value), Infinity);
+    }
+
+    max() {
+      return this.data.reduce((acc, value) => Math.max(acc, value), -Infinity);
+    }
+  }
+
+  const FrameRateModule = class {
+    constructor(width, height) {
+      const canvas = document.createElement("canvas");
+      canvas.width = width * devicePixelRatio;
+      canvas.height = height * devicePixelRatio;
+      canvas.style.width = D.numberToString(width);
+      canvas.style.height = D.numberToString(height);
+      const context = canvas.getContext("2d");
+      context.scale(devicePixelRatio, devicePixelRatio);
+
+      context.fillStyle = "rgba(255, 255, 255, 0.5)";
+      context.font = "16px 'Share Tech Mono'";
+      context.textBaseline = "top";
+
+      this.canvas = canvas;
+      this.canvasWidth = width;
+      this.canvasHeight = height;
+      this.prevTime = undefined;
+      this.frameCount = 0;
+      this.frameRates = new RingBuffer(width);
+    }
+
+    update() {
+      // 1秒ごとにFPSを計算する。
+      const now = performance.now();
+      if (this.prevTime === undefined) {
+        this.prevTime = now;
+        return;
+      }
+      ++this.frameCount;
+      const duration = now - this.prevTime;
+      if (duration < 1000) {
+        return;
+      }
+      const frameRate = this.frameCount * 1000 / duration;
+      this.frameRates.push(frameRate);
+      const frameRateMin = this.frameRates.min();
+      const frameRateMax = this.frameRates.max();
+
+      const W = this.canvasWidth;
+      const H = this.canvasHeight;
+      const context = this.canvas.getContext("2d");
+      context.clearRect(0, 0, W, H);
+      context.fillText(Math.round(frameRate) + "FPS (" + Math.round(frameRateMin) + "-" + Math.round(frameRateMax) + ")", 0, 0);
+
+      this.frameRates.forEach((v, i) => {
+        const h = (H - 16) * Math.min(v, 100) / 100;
+        context.fillRect(i, H - h, 1, h);
+      });
+
+      this.prevTime = now;
+      this.frameCount = 0;
+    }
+  }
+
+  const gui = new lil.GUI();
+
+  const data = {
+    startTitleAnimation: () => {
+      let chain;
+      [
+        ...document.querySelector(".title-ja").children,
+        document.querySelector(".title-en"),
+      ].forEach(node => {
+        const tween = new TWEEN.Tween({ opacity: 0, rotation: -90 })
+          .to({ opacity: 1, rotation: 0 }, 500)
+          .easing(TWEEN.Easing.Bounce.Out)
+          .onUpdate(data => {
+            node.style.opacity = data.opacity;
+            node.style.transform = "rotate3d(1, 0, 0, " + D.numberToString(data.rotation, "deg") + ")";
+          });
+        if (chain === undefined) {
+          chain = tween.start();
+        } else {
+          chain.chain(tween);
+          chain = tween;
+        }
+      });
+    },
+
+    resetTitleAnimation: () => {
+      [
+        ...document.querySelector(".title-ja").children,
+        document.querySelector(".title-en"),
+      ].forEach(node => {
+        node.style.opacity = 0;
+        node.style.transform = "rotate3d(1, 0, 0, -90deg)";
+      });
+    },
+  };
+  gui.add(data, "startTitleAnimation").name("タイトルアニメーションを開始");
+  gui.add(data, "resetTitleAnimation").name("タイトルアニメーションを初期化");
+
+  const frameRateModule = new FrameRateModule(240, 120);
+  frameRateModule.canvas.style.display = "block";
+  frameRateModule.canvas.style.position = "fixed";
+  frameRateModule.canvas.style.right = "15px";
+  frameRateModule.canvas.style.bottom = "15px";
+  document.body.append(frameRateModule.canvas);
+
+  while (true) {
+    await D.requestAnimationFrame();
+
+    TWEEN.update();
+    frameRateModule.update();
+  }
 });
 </script>
 
