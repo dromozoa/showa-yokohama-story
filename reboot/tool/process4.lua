@@ -28,6 +28,21 @@ SVGの単位系は
 GraphvizのSVG出力はpt単位で行われる。
 72dpi以外を設定すると、<svg>直下の<g>でscaleがかかる。
 
+基本高さ
+  8pt = 0.11111111in
+
+基本幅 (box)
+  24pt = 0.33333333in
+
+分岐の幅 (diamond)
+  36pt = 0.5in
+
+選択肢の幅 (trapezium)
+  30pt = 0.41666667in
+
+終端の直径 (circle)
+  12pt = 0.16666667in
+
 ]]
 
 
@@ -49,13 +64,13 @@ local E = "--"
 handle:write [[
 graph {
 dpi=72;
-ranksep=0.125;
-nodesep=0.25;
-node [fontsize=6,fixedsize=true,width=0.5,height=0.25];
+ranksep=0.11111111;
+nodesep=0.11111111;
+node [shape=box,width=0.33333333,height=0.11111111,label=""];
 ]]
 for i, paragraph in ipairs(scenario) do
   if paragraph.when_jumps then
-    handle:write("when", i, '[shape=diamond,label=""];\n')
+    handle:write("when", i, "[shape=diamond,width=0.5];\n")
     for _, jump in ipairs(paragraph.when_jumps) do
       handle:write("when", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     end
@@ -63,17 +78,17 @@ for i, paragraph in ipairs(scenario) do
   end
 
   if paragraph.choice_jumps then
-    handle:write("paragraph", i, '[shape=trapezium,label=""];\n');
+    handle:write("paragraph", i, "[shape=trapezium,width=0.41666667];\n");
     for _, jump in ipairs(paragraph.choice_jumps) do
       handle:write("paragraph", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     end
   else
-    handle:write("paragraph", i, '[shape=box,label=""];\n');
+    handle:write("paragraph", i, ";\n");
     if paragraph.jump then
       local jump = paragraph.jump
       handle:write("paragraph", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     elseif paragraph.finish then
-      handle:write("finish", i, '[shape=circle,label=""];\n');
+      handle:write("finish", i, "[shape=circle,width=0.16666667,height=0.16666667];\n");
       handle:write("paragraph", i, E, "finish", i, ";\n");
     else
       handle:write("paragraph", i, E, get_entry(scenario[i + 1]), ";\n")
