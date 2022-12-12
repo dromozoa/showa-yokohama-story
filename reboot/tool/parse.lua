@@ -198,9 +198,9 @@ local function parse(scenario, include_path, filename)
       -- @enter{{文}}
       paragraph = update(paragraph, "enter", trim(_1))
 
-    elseif match "^@exit{{(.-)}}" then
-      -- @exit{{文}}
-      paragraph = update(paragraph, "exit", trim(_1))
+    elseif match "^@leave{{(.-)}}" then
+      -- @leave{{文}}
+      paragraph = update(paragraph, "leave", trim(_1))
 
     elseif match "^@finish" then
       -- @finish

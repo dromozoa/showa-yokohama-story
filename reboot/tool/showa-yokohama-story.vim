@@ -42,7 +42,7 @@ syntax region sysChoiceLabel start=/@choice{/ end=/}\%({[^}]*}\)\?/ contains=sys
 
 syntax region sysWhen  start=/@when{{/  end=/}}{[^}]*}/ keepend contains=@javascript
 syntax region sysEnter start=/@enter{{/ end=/}}/        keepend contains=@javascript
-syntax region sysExit  start=/@exit{{/  end=/}}/        keepend contains=@javascript
+syntax region sysLeave start=/@leave{{/ end=/}}/        keepend contains=@javascript
 
 highlight default link sysTodo        Todo
 highlight default link sysSpeaker     Identifier
@@ -58,7 +58,7 @@ highlight default link sysChoiceLabel Conditional
 highlight default link sysInclude     Include
 highlight default link sysWhen        Special
 highlight default link sysEnter       Special
-highlight default link sysExit        Special
+highlight default link sysLeave       Special
 highlight default link sysFinish      Statement
 
 let b:current_syntax = "showa-yokohama-story"
