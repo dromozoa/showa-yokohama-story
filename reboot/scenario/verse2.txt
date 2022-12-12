@@ -1,13 +1,13 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@enter{{
+#narrator
+昭和七十四年七月、ボクはキミに出逢った。
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。
+@leave{{
   priest   = false;
   engineer = false;
   activist = false;
 }}
-#narrator
-昭和七十四年七月、ボクはキミに出逢った。
-人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 
 #alice
 キミには三通の手紙を届けてもらう。

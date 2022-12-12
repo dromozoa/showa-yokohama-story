@@ -1,12 +1,12 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@enter{{
-  eden   = false;
-  glider = false;
-}}
 #narrator
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
+@leave{{
+  eden   = false;
+  glider = false;
+}}
 
 #narrator
 @r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の@r{三人組}{トリオ}。
