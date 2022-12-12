@@ -62,6 +62,14 @@ local function append_jump(paragraph, jump)
     paragraph = {}
   end
   paragraph.jumps = append(paragraph.jumps, jump)
+  if jump.choice then
+    paragraph.choice_jumps = append(paragraph.choice_jumps, jump)
+  elseif jump.when then
+    paragraph.when_jumps = append(paragraph.when_jumps, jump)
+  else
+    assert(not paragraph.jump)
+    paragraph.jump = jump
+  end
   return paragraph
 end
 
@@ -185,6 +193,8 @@ local function parse(scenario, include_path, filename)
       -- @choice{選択肢}
       local v = trim(_1)
       paragraph = append_jump(paragraph, { choice = { v }, label = v })
+
+      -- TODO コードありのchoiceを策定する
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
