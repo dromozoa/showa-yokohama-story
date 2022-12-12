@@ -503,14 +503,14 @@ H@v{+}{プラス}八、巨大群体上陸。
 #demeter
 エデンの@v{園}{その}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@exit{{ eden = true; }}
+@exit{{eden = true;}}
 @jump{選択肢終}
 
 @label{グライダー銃}
 #demeter
 グライダー@r{銃}{ガン}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@exit{{ glider = true; }}
+@exit{{glider=true;}}
 @jump{選択肢終}
 
 @label{択ばない}
