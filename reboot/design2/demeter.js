@@ -247,13 +247,13 @@ const updateChars = (source, fontSize, font) => {
   });
 };
 
-const parseParagraphBreakTable = {
+const parseParagraphFromNodeBreakTable = {
   "BR": true,
   "DIV": true,
   "P": true,
 };
 
-D.parseParagraph = (source, fontSize, font) => {
+const parseParagraphFromNode = (source, fontSize, font) => {
   const rubyFontSize = fontSize * 0.5;
   const result = [];
   let text;
@@ -266,7 +266,7 @@ D.parseParagraph = (source, fontSize, font) => {
           updateChars(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
         } else {
           node.childNodes.forEach(parse);
-          if (parseParagraphBreakTable[node.tagName]) {
+          if (parseParagraphFromNodeBreakTable[node.tagName]) {
             text = undefined;
           }
         }
@@ -286,9 +286,32 @@ D.parseParagraph = (source, fontSize, font) => {
   parse(source);
 
   result.forEach(text => updateChars(text.map(item => item.base).flat(), fontSize, font));
-
   return result;
 };
+
+const parseParagraphFromArray = (source, fontSize, font) => {
+  const rubyFontSize = fontSize * 0.5;
+
+  return source.map(sourceText => {
+    const text = sourceText.map(sourceItem => {
+      const item = {
+        rubyOverhangPrev: 0,
+        rubyOverhangNext: 0,
+      };
+      if (typeof sourceItem === "string") {
+        item.base = parseChars(sourceItem, fontSize, font);
+      } else {
+        item.base = parseChars(sourceItem[0], fontSize, font);
+        updateChars(item.ruby = parseChars(sourceItem[1], rubyFontSize, font), rubyFontSize, font);
+      }
+      return item;
+    });
+    updateChars(text.map(item => item.base).flat(), fontSize, font);
+    return text;
+  });
+};
+
+D.parseParagraph = (source, fontSize, font) => (source instanceof Node ? parseParagraphFromNode : parseParagraphFromArray)(source, fontSize, font);
 
 //-------------------------------------------------------------------------
 

@@ -27,6 +27,7 @@
 
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
+  <script defer src="demeter-scenario.js"></script>
 
   <style>
     #demeter-graph-marker {
@@ -53,10 +54,6 @@
   background-color: #000;
   color: #FFF;
 ">
-
-<template>
-$scenario
-</template>
 
 <div style="
   position: absolute;
@@ -303,11 +300,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const maxLines = Math.max(Math.floor(120 / lineLength), 4);
     const lineHeight = fontSize * 2;
 
-    const sourceNodes = document.querySelector("template").content.children;
-    for (let i = 0; i < sourceNodes.length; ++i) {
+    let tid = 0;
+    for (let pid = 1; pid <= D.scenario.length; ++pid) {
       await D.requestAnimationFrame();
-
-      const sourceNode = sourceNodes[i];
+      const sourceParagraph = D.scenario[pid - 1];
 
       const containerNode = document.createElement("div");
       containerNode.style.display = "flex";
@@ -315,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       containerNode.style.scrollSnapAlign = "start";
 
       const speakerNode = containerNode.appendChild(document.createElement("div"));
-      speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
+      speakerNode.textContent = speakerTable[sourceParagraph[0].speaker];
       speakerNode.style.flex = "none";
       speakerNode.style.width = D.numberToString(fontSize * 5);
       speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
@@ -324,16 +320,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const paragraphNode = containerNode.appendChild(document.createElement("div"));
       paragraphNode.style.flex = "none";
       paragraphNode.style.minHeight = D.numberToString(maxLines * lineHeight);
-      paragraphNode.dataset.pid = sourceNode.dataset.pid;
+      paragraphNode.dataset.pid = pid;
 
-      const paragraph = D.parseParagraph(sourceNode, fontSize, font);
+      const paragraph = D.parseParagraph(sourceParagraph[1], fontSize, font);
 
       let numLines = 0;
       paragraph.forEach((text, j) => {
         const lines = D.composeText(text, maxWidth);
         numLines += lines.length;
         const textNode = paragraphNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
-        textNode.dataset.tid = sourceNode.children[j].dataset.tid;
+        textNode.dataset.tid = ++tid;
       });
 
       if (numLines > maxLines) {
