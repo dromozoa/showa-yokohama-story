@@ -18,14 +18,5 @@
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 here=`dirname "$0"`
-
-integrated_loudness_target=$1
-output_dirname=$2
-shift 2
-
-for i in "$@"
-do
-  output_name=`expr "X$i" : 'X\([^:]*\):'`
-  source_dirname=`expr "X$i" : 'X[^:]*:\(.*\)'`
-  env "LUA_PATH=$here/?.lua;;" lua "$here/convert_music.lua" "$integrated_loudness_target" "$output_dirname" "$output_name" "$source_dirname"/*.wav
-done
+export LUA_PATH="$here/?.lua;;"
+lua "$here/generate_dot.lua" "$1" | ssh honoka 'dot -Tsvg' | lua "$here/generate_svg.lua" >"$2"

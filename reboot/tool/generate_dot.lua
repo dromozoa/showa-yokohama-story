@@ -47,7 +47,7 @@ GraphvizのSVG出力はpt単位で行われる。
 
 ]]
 
-local scenario_pathname, result_pathname = ...
+local scenario_pathname = ...
 local scenario = parse(scenario_pathname)
 
 local function get_entry(paragraph)
@@ -64,7 +64,7 @@ end
 
 local to = "--"
 
-local handle = assert(io.open(result_pathname, "w"))
+local handle = io.stdout
 handle:write [[
 graph {
 dpi=72;
@@ -99,4 +99,3 @@ for i, paragraph in ipairs(scenario) do
   end
 end
 handle:write "}\n"
-handle:close()

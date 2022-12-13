@@ -15,17 +15,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local source_pathname, result_pathname = ...
+local source = io.read "a"
 
-local handle = assert(io.open(source_pathname))
-local source = handle:read "a"
-handle:close()
-
-local W, H, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 %1%.00 %2%.00".->%s*(.*)]])
+local width, height, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 %1%.00 %2%.00".->%s*(.*)]])
 local tx, ty, source = assert(source:match [[^<g id="graph0" class="graph" transform="scale%(1 1%) rotate%(0%) translate%(([%-%d]+) ([%-%d]+)%)">%s*(.*)]])
 
-local W = tonumber(W)
-local H = tonumber(H)
+local width = tonumber(width)
+local height = tonumber(height)
 local tx = tonumber(tx)
 local ty = tonumber(ty)
 
@@ -167,7 +163,7 @@ local function number_tostring_unpack(source)
   return table.unpack(result)
 end
 
-local handle = assert(io.open(result_pathname, "w"))
+local handle = io.stdout
 handle:write(([[
 <svg width="%d" height="%d" viewBox="0 0 %d %d" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -191,7 +187,7 @@ handle:write(([[
   </style>
 </defs>
 <g class="edges">
-]]):format(W, H, W, H))
+]]):format(width, height, width, height))
 
 for _, edge in ipairs(edges) do
   local buffer = {}
