@@ -171,7 +171,7 @@ local handle = assert(io.open(result_pathname, "w"))
 handle:write(([[
 <svg width="%d" height="%d" viewBox="0 0 %d %d" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <marker id="marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
+  <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
     <polygon fill="#666" stroke="none" points="6.6795,0 24,10 24,14 6.6795,24"/>
   </marker>
   <style>
@@ -179,6 +179,7 @@ handle:write(([[
       fill: none;
       stroke: #666;
       stroke-width: 0.5px;
+      marker-end: url(#demeter-graph-marker);
     }
     g.nodes > circle,
     g.nodes > rect,
@@ -203,7 +204,7 @@ for _, edge in ipairs(edges) do
       buffer[#buffer + 1] = ("C%s,%s %s,%s %s,%s"):format(number_tostring_unpack(p))
     end
   end
-  handle:write('<path d="', table.concat(buffer, " "), '" marker-end="url(#marker)"/>\n')
+  handle:write('<path d="', table.concat(buffer, " "), '"/>\n')
 end
 
 handle:write [[
