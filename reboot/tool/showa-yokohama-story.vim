@@ -25,39 +25,40 @@ set cpo&vim
 syn include @javascript syntax/javascript.vim
 unlet b:current_syntax
 
-syntax keyword sysTodo TODO FIXME XXX NOTE contained
-
-syntax match sysSpeaker /#.*$/
-syntax match sysComment /@#.*$/ contains=sysTodo
-syntax match sysLabel   /@label{[^}]*}/
-syntax match sysJump    /@jump{[^}]*}/
-syntax match sysInclude /@include{[^}]*}/
-syntax match sysFinish  /@finish/
-
 syntax match sysRawString /@"{.\{-}}"/
 syntax match sysRuby      /@r{[^}]*}{[^}]*}\%({[^}]*}\)\?/
 syntax match sysVoice     /@v{[^}]*}{[^}]*}/
 
-syntax region sysChoiceLabel start=/@choice{/ end=/}\%({[^}]*}\)\?/ contains=sysRawString,sysRuby,sysVoice
+syntax keyword sysTodo TODO FIXME XXX NOTE contained
+syntax match sysArgLabel /{[^}]*}/ contained
 
-syntax region sysWhen  start=/@when{{/  end=/}}{[^}]*}/ keepend contains=@javascript
-syntax region sysLeave start=/@leave{{/ end=/}}/        keepend contains=@javascript
+syntax match sysSpeaker /#.*$/
+syntax match sysComment /@#.*$/ contains=sysTodo
+syntax match sysLabel   /@label{[^}]*}/ contains=sysArgLabel
+syntax match sysJump    /@jump{[^}]*}/ contains=sysArgLabel
+syntax match sysInclude /@include{[^}]*}/
+syntax match sysFinish  /@finish/
 
-highlight default link sysTodo        Todo
-highlight default link sysSpeaker     Identifier
-highlight default link sysComment     Comment
-highlight default link sysRawString   String
-highlight default link sysRuby        String
-highlight default link sysRubyVoice   String
-highlight default link sysVoice       String
-highlight default link sysLabel       Label
-highlight default link sysJump        Statement
-highlight default link sysChoice      Conditional
-highlight default link sysChoiceLabel Conditional
-highlight default link sysInclude     Include
-highlight default link sysWhen        Special
-highlight default link sysLeave       Special
-highlight default link sysFinish      Statement
+syntax region sysChoice start=/@choice{/ end=/}/ contains=sysRawString,sysRuby,sysVoice nextgroup=sysChoiceScript,sysArgLabel
+syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript contained nextgroup=sysArgLabel
+syntax region sysWhen start=/@when{{/ end=/}}/ keepend contains=@javascript nextgroup=sysArgLabel
+syntax region sysLeave start=/@leave{{/ end=/}}/ keepend contains=@javascript
+
+highlight default link sysRawString    String
+highlight default link sysRuby         String
+highlight default link sysVoice        String
+highlight default link sysTodo         Todo
+highlight default link sysArgLabel     Macro
+highlight default link sysSpeaker      Identifier
+highlight default link sysComment      Comment
+highlight default link sysLabel        Statement
+highlight default link sysJump         Statement
+highlight default link sysChoice       Conditional
+highlight default link sysChoiceScript Conditional
+highlight default link sysInclude      Include
+highlight default link sysWhen         Conditional
+highlight default link sysLeave        Statement
+highlight default link sysFinish       Statement
 
 let b:current_syntax = "showa-yokohama-story"
 
