@@ -15,18 +15,32 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+lua = env "LUA_PATH=tool/?.lua;;" lua
 voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/settings/dic.json
 scenarios = $(wildcard scenario/*.txt)
+targets = output/graph.svg output/voice1.txt
 
-all:: $(voicepeak_dic) output/graph.svg
+ifneq ($(wildcard output/voice1.vpp),)
+targets += output/voice2.vpp
+endif
+
+all:: $(voicepeak_dic) $(targets)
+
+clean::
+	rm -f $(targets)
 
 $(voicepeak_dic): scenario/dic.json
-	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'`
+	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
 	cp -f $< '$@'
 
 output/graph.svg: $(scenarios)
-	./tool/generate_svg.sh scenario/scenario.txt $@
+	./tool/generate_graph.sh scenario/scenario.txt $@
+
+output/voice1.txt: $(scenarios)
+	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
+
+output/voice2.vpp: output/voice1.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice1.vpp $@
 
 check:: all
 	./test.sh lua
-

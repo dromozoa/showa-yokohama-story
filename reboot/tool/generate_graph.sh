@@ -19,4 +19,4 @@
 
 here=`dirname "$0"`
 export LUA_PATH="$here/?.lua;;"
-lua "$here/generate_dot.lua" "$1" | ssh honoka 'dot -Tsvg' | lua "$here/generate_svg.lua" >"$2"
+lua "$here/generate_graph_dot.lua" "$1" | ssh honoka 'dot -Tsvg' | lua "$here/generate_graph.lua" >"$2"
