@@ -45,7 +45,6 @@ GraphvizのSVG出力はpt単位で行われる。
 
 ]]
 
-
 local scenario_pathname, result_pathname = ...
 local scenario = parse(scenario_pathname)
 
@@ -53,9 +52,9 @@ local handle = assert(io.open(result_pathname, "w"))
 
 local function get_entry(paragraph)
   if paragraph.when_jumps then
-    return "when"..paragraph.index
+    return "c"..paragraph.index
   else
-    return "paragraph"..paragraph.index
+    return "p"..paragraph.index
   end
 end
 
@@ -70,28 +69,28 @@ node [shape=box,width=0.33333333,height=0.11111111,label=""];
 ]]
 for i, paragraph in ipairs(scenario) do
   if paragraph.when_jumps then
-    handle:write("when", i, "[shape=diamond,width=0.5];\n")
+    handle:write("c", i, "[shape=diamond,width=0.5];\n")
     for _, jump in ipairs(paragraph.when_jumps) do
-      handle:write("when", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
+      handle:write("c", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     end
-    handle:write("when", i, E, "paragraph", i, ";\n")
+    handle:write("c", i, E, "p", i, ";\n")
   end
 
   if paragraph.choice_jumps then
-    handle:write("paragraph", i, "[shape=trapezium,width=0.41666667];\n");
+    handle:write("p", i, "[shape=trapezium,width=0.41666667];\n");
     for _, jump in ipairs(paragraph.choice_jumps) do
-      handle:write("paragraph", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
+      handle:write("p", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     end
   else
-    handle:write("paragraph", i, ";\n");
+    handle:write("p", i, ";\n");
     if paragraph.jump then
       local jump = paragraph.jump
-      handle:write("paragraph", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
+      handle:write("p", i, E, get_entry(scenario[scenario.labels[jump.label].index]), ";\n")
     elseif paragraph.finish then
-      handle:write("finish", i, "[shape=circle,width=0.16666667,height=0.16666667];\n");
-      handle:write("paragraph", i, E, "finish", i, ";\n");
+      handle:write("f", i, "[shape=circle,width=0.16666667,height=0.16666667];\n");
+      handle:write("p", i, E, "f", i, ";\n");
     else
-      handle:write("paragraph", i, E, get_entry(scenario[i + 1]), ";\n")
+      handle:write("p", i, E, get_entry(scenario[i + 1]), ";\n")
     end
   end
 end
