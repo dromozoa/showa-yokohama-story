@@ -28,7 +28,7 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.numberToCssPixels = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "px");
+D.numberToString = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
 
 const escapeHtmlTable = {
   "&": "&amp;",
@@ -211,7 +211,7 @@ const canSeparate = (u, v) => (canBreak(u, v) && !D.jlreq.isInseparable(u) && !D
 
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = D.numberToCssPixels(fontSize) + " " + font;
+  context.font = D.numberToString(fontSize) + " " + font;
   return [...source].map(char => {
     const code = char.codePointAt(0);
     const width = context.measureText(char).width;
@@ -234,7 +234,7 @@ const parseChars = (source, fontSize, font) => {
 
 const updateChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = D.numberToCssPixels(fontSize) + " " + font;
+  context.font = D.numberToString(fontSize) + " " + font;
   source.forEach((u, i) => {
     const v = source[i + 1];
     if (v) {
@@ -288,6 +288,17 @@ D.parseParagraph = (source, fontSize, font) => {
   result.forEach(text => updateChars(text.map(item => item.base).flat(), fontSize, font));
 
   return result;
+};
+
+//-------------------------------------------------------------------------
+
+const resetSpacing = source => {
+  source.forEach(u => {
+    u.spacingBudgeted = 0;
+    u.spacingFallback = 0;
+    u.spacing1 = 0;
+    u.spacing2 = 0;
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -350,9 +361,7 @@ const setSpacing = (source, request, tolerance) => {
 };
 
 const justifySpacing = (source, request, tolerance) => {
-  const u = source.slice(-1)[0];
-  u.spacingBudgeted = 0;
-  u.spacingFallback = 0;
+  resetSpacing(source);
   setSpacingImpl(source.slice(0, -1), request, tolerance);
   source.forEach(u => {
     u.spacing1 = 0;
@@ -429,9 +438,15 @@ const getRubyOverhang = u => u && D.jlreq.canRubyOverhang(u.code) ? u.advance * 
 
 const addAdvanceSpacing = (acc, u) => acc + u.advance + u.spacing1 + u.spacing2;
 
-const updateItem = (prev, item, next, baseWidthFn) => {
+const updateItem = (prev, item, next, baseWidthFn = (acc, u) => acc + u.advance) => {
+  if (baseWidthFn !== addAdvanceSpacing) {
+    resetSpacing(item.base);
+  }
+
   if (item.ruby) {
-    const baseWidth = item.base.reduce(baseWidthFn || ((acc, u) => acc + u.advance), 0);
+    resetSpacing(item.ruby);
+
+    const baseWidth = item.base.reduce(baseWidthFn, 0);
     const rubyWidth = item.ruby.reduce((acc, u) => acc + u.advance, 0);
 
     const rubyOverhangPrev = getRubyOverhang(prev && !prev.ruby && prev.base.slice(-1)[0]);
@@ -441,7 +456,11 @@ const updateItem = (prev, item, next, baseWidthFn) => {
     const rubyOverhangRatio = rubyOverhangSum > 0 ? rubyOverhang / rubyOverhangSum : 0;
 
     const spacing = rubyWidth - baseWidth - rubyOverhang;
-    setSpacing(spacing > 0 ? item.base : item.ruby, Math.abs(spacing), 0.25);
+    if (spacing > 0) {
+      setSpacing(item.base, Math.abs(spacing), 0.25);
+    } else {
+      setSpacing(item.ruby, Math.abs(spacing), 0.25);
+    }
 
     item.rubyOverhangPrev = rubyOverhangPrev * rubyOverhangRatio;
     item.rubyOverhangNext = rubyOverhangNext * rubyOverhangRatio;
@@ -658,7 +677,7 @@ D.composeText = (source, maxWidth) => {
 D.layoutText = (source, fontSize, lineHeight) => {
   const result = document.createElement("div");
   result.className = "demeter-text";
-  result.style.lineHeight = D.numberToCssPixels(lineHeight);
+  result.style.lineHeight = D.numberToString(lineHeight);
 
   source.forEach(line => {
     const lineNode = result.appendChild(document.createElement("div"));
@@ -667,8 +686,8 @@ D.layoutText = (source, fontSize, lineHeight) => {
     line.forEach(item => {
       item.base.forEach((u, i)  => {
         const baseNode = lineNode.appendChild(document.createElement("span"));
-        baseNode.style.marginLeft = D.numberToCssPixels(u.x - baseX);
-        baseNode.style.width = D.numberToCssPixels(u.advance);
+        baseNode.style.marginLeft = D.numberToString(u.x - baseX);
+        baseNode.style.width = D.numberToString(u.advance);
 
         const charNode = baseNode.appendChild(document.createElement("span"));
         charNode.textContent = u.char;
@@ -680,13 +699,13 @@ D.layoutText = (source, fontSize, lineHeight) => {
           let rubyX = ruby[0].x;
 
           const rubyNode = baseNode.appendChild(document.createElement("div"));
-          rubyNode.style.top = D.numberToCssPixels(fontSize * -0.75);
-          rubyNode.style.left = D.numberToCssPixels(rubyX - u.x);
+          rubyNode.style.top = D.numberToString(fontSize * -0.75);
+          rubyNode.style.left = D.numberToString(rubyX - u.x);
 
           ruby.forEach(u => {
             const charNode = rubyNode.appendChild(document.createElement("span"));
-            charNode.style.marginLeft = D.numberToCssPixels(u.x - rubyX);
-            charNode.style.width = D.numberToCssPixels(u.advance);
+            charNode.style.marginLeft = D.numberToString(u.x - rubyX);
+            charNode.style.width = D.numberToString(u.advance);
             charNode.textContent = u.char;
 
             rubyX = u.x + u.advance;
@@ -698,6 +717,90 @@ D.layoutText = (source, fontSize, lineHeight) => {
 
   return result;
 };
+
+//-------------------------------------------------------------------------
+
+let serialNumber = 0;
+
+D.getSerialNumber = () => {
+  return ++serialNumber;
+};
+
+//-------------------------------------------------------------------------
+
+D.PathData = class {
+  constructor() {
+    this.d = [];
+  }
+
+  push(command, ...params) {
+    this.d.push(command + params.map(v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "")).join(","));
+    return this;
+  }
+
+  toString() {
+    return this.d.join("");
+  }
+
+  M(x, y) { return this.push("M", x, y); }
+  m(x, y) { return this.push("m", x, y); }
+  Z() { return this.push("Z"); }
+  z() { return this.push("z"); }
+  L(x, y) { return this.push("L", x, y); }
+  l(x, y) { return this.push("l", x, y); }
+  H(x) { return this.push("H", x); }
+  h(x) { return this.push("h", x); }
+  V(y) { return this.push("V", y); }
+  v(y) { return this.push("v", y); }
+};
+
+//-------------------------------------------------------------------------
+
+D.createChoiceFrame = (width, height, fontSize) => {
+  const W = width;
+  const W2 = width * 0.5;
+  const W4 = width * 0.25;
+  const H = height - fontSize;
+  const U1 = fontSize;
+  const U2 = fontSize * 0.5;
+  const U4 = fontSize * 0.25;
+  const U8 = fontSize * 0.125;
+  const C3 = Math.cos(Math.PI * 0.375);
+  const D2 = Math.sqrt(2);
+
+  const clipId = "demeter-serial-" + D.getSerialNumber();
+  const clipPathData = new D.PathData()
+    // 枠線の外側（時計回り）
+    .M(0,U2).l(U4,-U4).h(W4-U4-U8).l(U8,U8).h(W2).l(U8,-U8).h(W4-U4-U8).l(U4,U4).v(H).H(U1).L(0,H-U2).z()
+    // 枠線の内側（反時計回り）
+    .M(1,U2+1).V(H-U2-C3).L(U1+C3,H+U2-1).H(W-1).V(U2+1).z()
+    // テキスト領域
+    .M(U4,U2+U4).h(W-U2).v(H-U2).H(U1+U4*C3).L(U4,H-U2-U4*C3).z()
+    // 左下
+    .M(0,H-U2+(U4-1)*D2).L(U1-(U4-1)*D2,H+U2).H(U4).l(-U4,-U4).z();
+
+  const mainPathData = new D.PathData()
+    .M(0,U2).h(W).v(H).H(U1).L(0,H-U2).z().M(-2,H-U2-2).l(U1+4,U1+4).H(-2).z();
+
+  const barPathData = new D.PathData()
+    .M(0,U2-U8).h(W);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="0 0 ${D.numberToString(width, "")} ${D.numberToString(height, "")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+      <defs>
+        <clipPath id="${clipId}">
+          <path d="${clipPathData}"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#${clipId})">
+        <path stroke-width="2" d="${mainPathData}"/>
+        <path stroke-width="${D.numberToString(U4+2, "")}" d="${barPathData}"/>
+      </g>
+    </svg>
+  `;
+  return template.content.firstElementChild;
+}
 
 //-------------------------------------------------------------------------
 

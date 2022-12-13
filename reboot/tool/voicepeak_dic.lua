@@ -75,6 +75,15 @@ local source = handle:read "a"
 handle:close()
 
 local dictionary = parse_json(source)
+table.sort(dictionary, function (a, b)
+  -- 優先度がおなじなら発音順
+  if a.priority == b.priority then
+    return a.pron < b.pron
+  else
+    -- 優先度が高いほうが先
+    return a.priority > b.priority
+  end
+end)
 
 local handle = assert(io.open(result_pathname, "w"))
 local keys = { "sur", "pron", "pos", "priority", "accentType", "lang" }

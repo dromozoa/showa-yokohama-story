@@ -19,13 +19,19 @@ local basename = require "basename"
 local dirname = require "dirname"
 local speaker_definitions = require "speaker_definitions"
 
--- 話者   spaker
--- 親文字 base
--- ルビ   ruby
--- 音声   voice
--- 行     text (lineは組版結果の行に用いる）
--- 段落   paragraph
--- 注釈   annotation
+--[[
+
+用語の整理
+  話者    spaker
+  親文字  base
+  ルビ    ruby
+  音声    voice
+  物理行  text（LINE FEEDで明示的に指定された行）
+  論理行  line（組版結果の行）
+  段落    paragraph
+  注釈    annotation
+
+]]
 
 local function trim(s)
   return (s:gsub("^%s+", ""):gsub("%s+$", ""))
@@ -56,6 +62,14 @@ local function append_jump(paragraph, jump)
     paragraph = {}
   end
   paragraph.jumps = append(paragraph.jumps, jump)
+  if jump.choice then
+    paragraph.choice_jumps = append(paragraph.choice_jumps, jump)
+  elseif jump.when then
+    paragraph.when_jumps = append(paragraph.when_jumps, jump)
+  else
+    assert(not paragraph.jump)
+    paragraph.jump = jump
+  end
   return paragraph
 end
 
@@ -85,6 +99,52 @@ local function parse(scenario, include_path, filename)
     end
   end
 
+  local function parse_text(mode)
+    local text
+
+    local text_match = "^([^\r\n@]+)"
+    if mode == "directive" then
+      text_match = "^([^\r\n@}]+)"
+    end
+
+    while position <= #source do
+      if match '^@"{(.-)}"' then
+        -- @"{生文字列}"
+        text = append(text, _1)
+
+      elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
+        -- @r{親文字}{ルビ}{発音}
+        text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
+
+      elseif match "^@r{([^}]*)}{([^}]*)}" then
+        -- @r{親文字}{ルビ}
+        local v = trim(_2)
+        text = append(text, { trim(_1), ruby = v, voice = v })
+
+      elseif match "^@v{([^}]*)}{([^}]*)}" then
+        -- @v{親文字}{発音}
+        text = append(text, { trim(_1), voice = trim(_2) })
+
+      elseif match "^\r\n?" or match "^\n\r?" then
+        -- 改行で終端する。
+        return text
+
+      elseif mode == "directive" and match "^}" then
+        -- 引数を終端する。
+        return text
+
+      elseif match(text_match) then
+        -- テキスト
+        text = append(text, _1)
+
+      else
+        error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+      end
+    end
+
+    return text
+  end
+
   local paragraph
   local text
 
@@ -96,23 +156,6 @@ local function parse(scenario, include_path, filename)
     elseif match "^@#([^\r\n]*)" then
       -- @# 行コメント
 
-    elseif match '^@"{(.-)}"' then
-      -- @"{生文字列}"
-      text = append(text, _1)
-
-    elseif match "^@r{([^}]*)}{([^}]*)}{([^}]*)}" then
-      -- @r{親文字}{ルビ}{発音}
-      text = append(text, { trim(_1), ruby = trim(_2), voice = trim(_3) })
-
-    elseif match "^@r{([^}]*)}{([^}]*)}" then
-      -- @r{親文字}{ルビ}
-      local v = trim(_2)
-      text = append(text, { trim(_1), ruby = v, voice = v })
-
-    elseif match "^@v{([^}]*)}{([^}]*)}" then
-      -- @v{親文字}{発音}
-      text = append(text, { trim(_1), voice = trim(_2) })
-
     elseif match "^@label{([^}]*)}" then
       -- @label{ラベル}
       paragraph = update(paragraph, "label", trim(_1))
@@ -121,14 +164,31 @@ local function parse(scenario, include_path, filename)
       -- @jump{ラベル}
       paragraph = append_jump(paragraph, { label = trim(_1) })
 
-    elseif match "^@choice{([^}]*)}{([^}]*)}" then
-      -- @choice{選択肢}{ラベル}
-      paragraph = append_jump(paragraph, { choice = trim(_1), label = trim(_2) })
-
-    elseif match "^@choice{([^}]*)}" then
+    elseif match "^@choice{" then
       -- @choice{選択肢}
-      local v = trim(_1)
-      paragraph = append_jump(paragraph, { choice = v, label = v })
+      -- @choice{選択肢}{ラベル}
+      -- @choice{選択肢}{{文}}
+      -- @choice{選択肢}{{文}}{ラベル}
+      local choice = assert(parse_text "directive")
+      local action
+      local label
+      if match "^{{(.-)}}" then
+        action = trim(_1)
+      end
+      if match "^{([^}]*)}" then
+        label = trim(_1)
+      else
+        local buffer = {}
+        for i, v in ipairs(choice) do
+          if type(v) == "string" then
+            buffer[i] = v
+          else
+            buffer[i] = v[1]
+          end
+        end
+        label = trim(table.concat(buffer))
+      end
+      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -138,13 +198,9 @@ local function parse(scenario, include_path, filename)
       -- @when{{式}}{ラベル}
       paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
 
-    elseif match "^@enter{{(.-)}}" then
-      -- @enter{{文}}
-      paragraph = update(paragraph, "enter", trim(_1))
-
-    elseif match "^@exit{{(.-)}}" then
-      -- @exit{{文}}
-      paragraph = update(paragraph, "exit", trim(_1))
+    elseif match "^@leave{{(.-)}}" then
+      -- @leave{{文}}
+      paragraph = update(paragraph, "leave", trim(_1))
 
     elseif match "^@finish" then
       -- @finish
@@ -161,19 +217,18 @@ local function parse(scenario, include_path, filename)
         paragraph = nil
       end
 
-    elseif match "^\r\n?" or match "^\n\r?" then
-      -- 改行で行を分ける。
+    else
+      -- 改行まで読む。
+      text = parse_text "paragraph"
       if text then
         paragraph = append(paragraph, text)
         text = nil
       end
-
-    elseif match "^([^@#\r\n]+)" then
-      -- テキスト
-      text = append(text, _1)
-
-    else
-      error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+      -- 空行で段落を分ける。
+      if match "^[\t\v\f ]*\r\n?%s*" or match "^[\t\v\f ]*\n\r?%s*" then
+        scenario = append(scenario, paragraph)
+        paragraph = nil
+      end
     end
   end
 

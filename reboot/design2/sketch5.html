@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html>
 
-<!--
-  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
-  --
-  -- This file is part of 昭和横濱物語.
-  --
-  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
-  -- it under the terms of the GNU General Public License as published by
-  -- the Free Software Foundation, either version 3 of the License, or
-  -- (at your option) any later version.
-  --
-  -- 昭和横濱物語 is distributed in the hope that it will be useful,
-  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
-  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  -- GNU General Public License for more details.
-  --
-  -- You should have received a copy of the GNU General Public License
-  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,26 +11,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
 
-  <link href="font_face.css" rel="stylesheet">
-  <link href="common.css" rel="stylesheet">
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- https://github.com/goldfire/howler.js#quick-start -->
-  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
-
-  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
-
-  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
-
-  <script defer src="jlreq.js"></script>
-  <script defer src="common.js"></script>
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
 </head>
 <body>
 
@@ -70,12 +41,12 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const D = globalThis.dromozoa;
-  await D.booted;
+  const D = demeter;
+  await D.boot();
 
-  console.log("load font faces: start");
-  const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
-  console.log("load font faces: end", result);
+  const start = performance.now();
+  const result = await D.loadFontFaces(10000);
+  console.log("loadFontFaces", performance.now() - start, result);
 
   const view = document.getElementById("view");
   const out = document.getElementById("output");
@@ -83,14 +54,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   // letter-spacingと結果のサイズをこまかく見てみる
   for (let i = 10000; i < 10200; i += 1) {
     const s = (""+i).replace(/^(\d)(\d+)/, "$1.$2");
-    const node = D.create_element(`<span style="letter-spacing: ${s}px">文</span>`);
+    const node = document.createElement("span");
+    node.style.letterSpacing = s + "px";
+    node.textContent = "文";
     view.append(node);
     const r = node.getBoundingClientRect();
     const v = r.width - (24 + i / 10000);
     output.textContent += v.toFixed(8) + "\n";
     node.remove();
   }
-
 });
 </script>
 

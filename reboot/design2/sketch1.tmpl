@@ -27,22 +27,53 @@
 
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    #demeter-graph-marker {
+      fill: #666;
+      stroke: none;
+    }
+
+    g.edges {
+      fill: none;
+      stroke: #666;
+      stroke-width: 0.5px;
+      marker-end: url(#demeter-graph-marker);
+    }
+
+    g.nodes {
+      fill: #666;
+      stroke: none;
+    }
+  </style>
 </head>
 
-<body style="margin: 0 0 0 24px">
+<body style="
+  margin: 0 0 0 24px;
+  background-color: #000;
+  color: #FFF;
+">
 
 <template>
 $scenario
 </template>
 
+<div style="
+  position: absolute;
+  top: 200px;
+  right: 15px;
+  height: 400px;
+  overflow: auto;
+">
+$graph
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  let start;
-
-  const D = globalThis.demeter;
+  const D = demeter;
   await D.boot();
 
-  start = performance.now();
+  const start = performance.now();
   const result = await D.loadFontFaces(10000);
   console.log("loadFontFaces", performance.now() - start, result);
 
@@ -50,13 +81,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
 
   const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
-  outputNode.style.font = D.numberToCssPixels(fontSize) + " " + font;
+  outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
+  outputNode.style.font = D.numberToString(fontSize) + " " + font;
   outputNode.style.overflow = "auto";
   outputNode.style.scrollSnapType = "y mandatory";
 
   window.addEventListener("resize", () => {
-    outputNode.style.height = D.numberToCssPixels(document.documentElement.clientHeight);
+    outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
   });
 
   const speakerTable = {
@@ -71,14 +102,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     steven:   "STEVEN",
   };
 
-  const canvasSize = 256;
+  const canvasWidth = 256;
+  const canvasHeight = 64;
   const canvasNode = document.createElement("canvas");
-  canvasNode.width = canvasSize * devicePixelRatio;
-  canvasNode.height = canvasSize * devicePixelRatio;
+  canvasNode.width = canvasWidth * devicePixelRatio;
+  canvasNode.height = canvasHeight * devicePixelRatio;
   canvasNode.style.display = "block";
   canvasNode.style.position = "fixed";
-  canvasNode.style.width = D.numberToCssPixels(canvasSize);
-  canvasNode.style.height = D.numberToCssPixels(canvasSize);
+  canvasNode.style.width = D.numberToString(canvasWidth);
+  canvasNode.style.height = D.numberToString(canvasHeight);
   canvasNode.style.right = "15px";
   canvasNode.style.bottom = "15px";
   document.body.append(canvasNode);
@@ -107,7 +139,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timeDomainData = new Float32Array(analyser.fftSize);
     const frequencyData = new Float32Array(analyser.fftSize / 2);
 
-    const H = canvasSize;
+    const W = canvasWidth;
+    const H = canvasHeight;
     const HH = H / 2;
     const maxDecibels = -30;
     const minDecibels = -100;
@@ -118,9 +151,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       analyser.getFloatTimeDomainData(timeDomainData);
       analyser.getFloatFrequencyData(frequencyData);
 
-      canvasContext.clearRect(0, 0, canvasSize, H);
+      canvasContext.clearRect(0, 0, W, H);
 
-      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      canvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
       for (let i = 0; i < analyser.fftSize; ++i) {
         const v = timeDomainData[i];
         if (v > 0) {
@@ -132,12 +165,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      canvasContext.fillStyle = "rgba(0, 0, 0, 0.5)";
+      canvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
       for (let i = 0; i < analyser.frequencyBinCount; ++i) {
         // -30dB .. -100dB
         const v = (Math.max(minDecibels, Math.min(maxDecibels, frequencyData[i])) - minDecibels) / rangeDecibels;
         const h = H * v;
-        canvasContext.fillRect(i * 2, HH - h * 0.5, 2, h);
+        canvasContext.fillRect(W - i * 2 - 2, HH - h * 0.5, 2, h);
       }
     }
 
@@ -145,24 +178,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     audioVisualizer.stop = false;
   };
 
+  const observerMap = new Map();
+  const observerParagraphPrev = parseInt(document.location.hash.replace(/^#/, ""), 10) || 1;
+  let observerParagraph;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const pid = entry.target.lastElementChild.dataset.pid;
+      if (entry.isIntersecting) {
+        observerMap.set(pid, entry.isIntersecting);
+      } else {
+        observerMap.delete(pid);
+      }
+    });
+    const paragraph = Math.min(...observerMap.keys());
+    if (observerParagraph !== paragraph) {
+      observerParagraph = paragraph;
+      history.replaceState(null, "", "#" + observerParagraph);
+    }
+  }, {
+    root: outputNode,
+    threshold: 0.5,
+  });
+
   const GUI = lil.GUI;
   const gui = new GUI;
 
   const data = {
-    lineLength: 24,
+    lineLength: 25,
     layout: async () => await layout(data.lineLength),
     music: "diana33",
-    volume: 0.5,
+    volume: 1,
     play: () => playMusic(data.music, data.volume),
     stop: () => stopMusic(),
+    scroll: () => {
+      const paragraphNode = document.querySelector(`[data-pid='${observerParagraphPrev}']`);
+      if (paragraphNode) {
+        paragraphNode.scrollIntoView({ behavior: "smooth" });
+      }
+    },
   };
 
   gui.add(data, "lineLength", 10, 40, 1).name("一行の文字数");
   const layoutController = gui.add(data, "layout").name("レイアウト");
   gui.add(data, "music", [ "diana33", "diana19", "diana23", "diana12", "vi03", "vi10" ]).name("BGM");
-  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("ボリューム");
-  gui.add(data, "play").name("再生");
-  gui.add(data, "stop").name("停止");
+  const volumeController = gui.add(data, "volume", 0, 1, 0.05).name("BGMのボリューム");
+  gui.add(data, "play").name("BGMを再生");
+  gui.add(data, "stop").name("BGMを停止");
+  gui.add(data, "scroll").name("前回の段落位置に移動");
 
   let music;
 
@@ -209,18 +272,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const playVoiceList = (voiceIdList) => {
     stopVoiceList();
     voiceList = voiceIdList.map(voiceId => {
-      const basename = "../output/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
+      const basename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
       return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
     });
     voiceList.forEach((voice, i) => {
       const voiceId = voiceIdList[i];
       const nextVoice = voiceList[i + 1];
-      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#EEF");
+      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#333");
       voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
       voice.once("end", () => {
         document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
         if (nextVoice) {
-          nextVoice.play();
+          setTimeout(() => nextVoice.play(), 400);
         }
       });
     });
@@ -234,8 +297,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     outputNode.replaceChildren();
 
+    // 25文字→4行
+    // 20文字→6行
     const maxWidth = fontSize * lineLength;
-    const maxLines = Math.max(Math.ceil(96 / lineLength), 4);
+    const maxLines = Math.max(Math.floor(120 / lineLength), 4);
     const lineHeight = fontSize * 2;
 
     const sourceNodes = document.querySelector("template").content.children;
@@ -246,25 +311,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const containerNode = document.createElement("div");
       containerNode.style.display = "flex";
-      containerNode.style.lineHeight = D.numberToCssPixels(lineHeight);
+      containerNode.style.lineHeight = D.numberToString(lineHeight);
       containerNode.style.scrollSnapAlign = "start";
 
       const speakerNode = containerNode.appendChild(document.createElement("div"));
       speakerNode.textContent = speakerTable[sourceNode.dataset.speaker];
       speakerNode.style.flex = "none";
-      speakerNode.style.width = D.numberToCssPixels(fontSize * 5);
+      speakerNode.style.width = D.numberToString(fontSize * 5);
       speakerNode.style.fontFamily = "'Showa Yokohama Story', 'BIZ UDPMincho'";
       speakerNode.addEventListener("click", ev => playVoiceList([...ev.target.nextElementSibling.children].map(textNode => textNode.dataset.tid)));
 
       const paragraphNode = containerNode.appendChild(document.createElement("div"));
       paragraphNode.style.flex = "none";
-      paragraphNode.style.minHeight = D.numberToCssPixels(maxLines * lineHeight);
+      paragraphNode.style.minHeight = D.numberToString(maxLines * lineHeight);
       paragraphNode.dataset.pid = sourceNode.dataset.pid;
 
       const paragraph = D.parseParagraph(sourceNode, fontSize, font);
 
       let numLines = 0;
-      paragraph.map((text, j) => {
+      paragraph.forEach((text, j) => {
         const lines = D.composeText(text, maxWidth);
         numLines += lines.length;
         const textNode = paragraphNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
@@ -272,17 +337,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       if (numLines > maxLines) {
-        paragraphNode.style.backgroundColor = "#FEE";
+        paragraphNode.style.backgroundColor = "#300";
       }
 
       outputNode.append(containerNode);
+      observer.observe(containerNode);
     }
 
     console.log("layout", performance.now() - start);
     layoutController.name("レイアウト").enable();
   };
 
-  await layout(24);
+  await layout(data.lineLength);
+
 });
 </script>
 
