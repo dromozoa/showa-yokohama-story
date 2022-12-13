@@ -27,6 +27,25 @@
 
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    #demeter-graph-marker {
+      fill: #666;
+      stroke: none;
+    }
+
+    g.edges {
+      fill: none;
+      stroke: #666;
+      stroke-width: 0.5px;
+      marker-end: url(#demeter-graph-marker);
+    }
+
+    g.nodes {
+      fill: #666;
+      stroke: none;
+    }
+  </style>
 </head>
 
 <body style="
@@ -38,6 +57,16 @@
 <template>
 $scenario
 </template>
+
+<div style="
+  position: absolute;
+  top: 200px;
+  right: 15px;
+  height: 400px;
+  overflow: auto;
+">
+$graph
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
