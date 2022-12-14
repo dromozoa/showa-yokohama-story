@@ -41,32 +41,6 @@ for _, paragraph in ipairs(scenario) do
     end
     handle:write "</div>"
   end
-  --[[
-  if paragraph.jumps then
-    handle:write "<!--\n"
-    for _, jump in ipairs(paragraph.jumps) do
-      handle:write("label=", escape_html(jump.label), "\n")
-      if jump.choice then
-        handle:write "choice="
-        for _, v in ipairs(jump.choice) do
-          if type(v) == "string" then
-            handle:write(escape_html(v))
-          elseif v.ruby then
-            handle:write("<ruby>", escape_html(v[1]), "<rt>", escape_html(v.ruby), "</rt></ruby>")
-          else
-            assert(v.voice)
-            handle:write(escape_html(v[1]))
-          end
-        end
-        handle:write "\n"
-      end
-      if jump.when then
-        handle:write("when=", escape_html(jump.when), "\n")
-      end
-    end
-    handle:write "-->"
-  end
-  ]]
   handle:write "</div>\n"
 end
 handle:close()

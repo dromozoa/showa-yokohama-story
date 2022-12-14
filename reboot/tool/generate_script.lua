@@ -21,6 +21,20 @@ local quote_js = require "quote_js"
 local scenario_pathname, result_pathname = ...
 local scenario = parse(scenario_pathname)
 
+local function encode_text(text)
+  local result = {}
+  for i, v in ipairs(text) do
+    if type(v) == "string" then
+      result[#result + 1] = quote_js(v)
+    elseif v.ruby then
+      result[#result + 1] = "["..quote_js(v[1])..","..quote_js(v.ruby).."]"
+    else
+      result[#result + 1] = quote_js(v[1])
+    end
+  end
+  return "["..table.concat(result, ",").."]"
+end
+
 local handle = assert(io.open(result_pathname, "w"))
 
 handle:write [[
@@ -36,24 +50,38 @@ D.scenario = [
 ]]
 
 for _, paragraph in ipairs(scenario) do
-  handle:write("[{speaker:", quote_js(paragraph.speaker), "},[\n")
+  handle:write("[{speaker:", quote_js(paragraph.speaker))
+  if paragraph.jump then
+    handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
+  end
+  if paragraph.choice_jumps then
+    handle:write ",choices:[\n"
+    for _, jump in ipairs(paragraph.choice_jumps) do
+      handle:write("{choice:", encode_text(jump.choice))
+      if jump.action then
+        handle:write(",action:context=>{", jump.action, ";}")
+      end
+      handle:write(",label:", scenario.labels[jump.label].index, "},\n")
+    end
+    handle:write "]"
+  end
+  if paragraph.when_jumps then
+    handle:write ",when:context=>{\n"
+    for _, jump in ipairs(paragraph.when_jumps) do
+      handle:write("if(", jump.when, ")return ", scenario.labels[jump.label].index, ";\n")
+    end
+    handle:write "}"
+  end
+  if paragraph.leave then
+    handle:write(",leave:context=>{", paragraph.leave, ";}")
+  end
+  if paragraph.finish then
+    handle:write ",finish:true"
+  end
+  handle:write "},[\n"
 
   for _, text in ipairs(paragraph) do
-    handle:write "["
-    for i, v in ipairs(text) do
-      if i > 1 then
-        handle:write ","
-      end
-      if type(v) == "string" then
-        handle:write(quote_js(v))
-      elseif v.ruby then
-        handle:write("[", quote_js(v[1]), ",", quote_js(v.ruby), "]")
-      else
-        assert(v.voice)
-        handle:write(quote_js(v[1]))
-      end
-    end
-    handle:write "],\n"
+    handle:write(encode_text(text), ",\n")
   end
 
   handle:write "]],\n"

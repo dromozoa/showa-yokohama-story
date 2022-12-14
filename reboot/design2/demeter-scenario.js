@@ -69,7 +69,11 @@ D.scenario = [
 ["あぁ、そうだ。"],
 ["キミの拳銃を見せてほしい。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",choices:[
+{choice:["サム・スペード"],action:context=>{father=1;;},label:14},
+{choice:["フィリップ・マーロウ"],action:context=>{father=2;;},label:14},
+{choice:["マイク・ハマー"],action:context=>{father=3;;},label:14},
+]},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
 ["そうか。そういうことか。"],
@@ -199,16 +203,19 @@ D.scenario = [
 ["そのためにボクは横濱にもどった。"],
 ["そのためにボクたちは横濱にいる。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",choices:[
+{choice:["ある"],label:40},
+{choice:["ない"],label:41},
+]},[
 ["さてと。"],
 ["スティーブンと呼ばれた人物、あるいは結社の噂を聞いたことがあるか。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",jump:42},[
 ["そうだ。飽きるほど囁かれた噂だ。"],
 ["戦局を一変する決戦兵器。特効薬。ワクチン。"],
 ["絶望した人間の願望が産みだした、存在しないマクガフィン。都市伝説。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",jump:42},[
 ["そうか。まあ、一顧だに値しない噂だ。"],
 ["戦局を一変する決戦兵器。特効薬。ワクチン。"],
 ["絶望した人間の願望が産みだした、存在しないマクガフィン。都市伝説。"],
@@ -242,7 +249,9 @@ D.scenario = [
 ["昭和横濱物語。スティーブンによる福音書。第一節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",leave:context=>{priest   = false;
+  engineer = false;
+  activist = false;;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -252,10 +261,18 @@ D.scenario = [
 ["資源循環局。"],
 ["魚人港湾労働組合。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",choices:[
+{choice:["本牧",["大聖堂","カテドラル"]],label:51},
+{choice:["資源循環局"],label:75},
+{choice:["魚人港湾労働組合"],label:106},
+],when:context=>{
+if(priest && engineer && activist)return 145;
+}},[
 ["少尉、どこに手紙を届けるの。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",when:context=>{
+if(priest)return 74;
+},leave:context=>{priest = true;;}},[
 ["本牧",["大聖堂","カテドラル"],"。"],
 ["徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。"],
 ["関東大震災で崩壊し、現在の場所に移転した。"],
@@ -356,16 +373,18 @@ D.scenario = [
 ["極東",["十字軍","クルセイダーズ"],"は聖別されたカラシニコフで",["屍者","ゾンビ"],"を打倒する。"],
 ["土産を持たせる。すこし待て。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",jump:50},[
 ["神父が歩み去る。"],
 ["無名戦士の墓碑に向きなおり、ダヌーは陸式の礼を捧げた。"],
 ["掃除用具を拾い、キミは墓を磨いた。"],
 ["年代物の葡萄酒を受けとり、帰路についた。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",jump:50},[
 [["大聖堂","カテドラル"],"は行ったじゃん。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",when:context=>{
+if(engineer)return 105;
+},leave:context=>{engineer = true;;}},[
 ["人間だけが、",["屍者","ゾンビ"],"になると思われてきた。"],
 ["咬みつかれても引っかかれても、犬や猫は",["屍者","ゾンビ"],"にならない。"],
 ["毒でやられるだけ。"],
@@ -492,15 +511,17 @@ D.scenario = [
 [{speaker:"danu"},[
 ["そのとき、世界は遡及的に変容するのかな。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",jump:50},[
 ["応えはなかった。"],
 ["応えは求められていなかった。"],
 [["珈非","コーヒ"],"を飲みほして、キミは席を立った。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",jump:50},[
 ["資源循環局は、もう行ったよね。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",when:context=>{
+if(activist)return 144;
+},leave:context=>{activist = true;;}},[
 ["本牧異人町。"],
 ["蒲鉾兵舎にかかげられたネオンに、灯はともっていない。"],
 ["リックス・カフェ・アメリカン。"],
@@ -662,12 +683,12 @@ D.scenario = [
 [["学生","ガキ"],"のころからの習い性だからさ。"],
 ["あ",["奴","いつ"],"とつるんでさ。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",jump:50},[
 ["フィルタつき",["叶和圓","イェヘユアン"],"のカートンをキミは受けとる。"],
 ["ダヌーは古い歌をハミングした。"],
 ["ただよう臭いが煙草のせいなのかどうか、キミにはわからなかった。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",jump:50},[
 ["手紙は届けられてしまったよ、すでに。"],
 ]],
 [{speaker:"danu"},[
@@ -701,11 +722,15 @@ D.scenario = [
 [{speaker:"danu"},[
 ["ワンチャン、いけるって。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",choices:[
+{choice:["熱望"],label:154},
+{choice:["希望"],label:155},
+{choice:["拒否"],label:157},
+]},[
 ["強制はしない、少尉。"],
 ["熱望か希望か拒否か、ひとつを択べ。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",jump:168},[
 ["安心して。"],
 ["アンタのことは、ダヌーがちゃんと終わらせてあげるから。"],
 ]],
@@ -713,7 +738,11 @@ D.scenario = [
 ["この世界に、希望はないんだ、少尉。"],
 [["希望","エルピス"],"も",["ロック","エルビス"],"も喪われた。"],
 ]],
-[{speaker:"danu"},[
+[{speaker:"danu",choices:[
+{choice:["最熱望"],label:154},
+{choice:["熱望"],label:154},
+{choice:["拒否"],label:157},
+]},[
 [["妖精","エルブズ"],"はいるけど。"],
 ]],
 [{speaker:"danu"},[
@@ -764,7 +793,7 @@ D.scenario = [
 ["終わらせにきた。人類を。世界を。"],
 ["——昭和を。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",finish:true},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -774,7 +803,8 @@ D.scenario = [
 ["昭和横濱物語。スティーブンによる福音書。第二節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",leave:context=>{eden   = false;
+  glider = false;;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1261,16 +1291,20 @@ D.scenario = [
 ["ここからはたどりつけない、いつか。とか。"],
 ["そんな歴史。とか。"],
 ]],
-[{speaker:"steven"},[
+[{speaker:"steven",choices:[
+{choice:["エデンの園"],label:278},
+{choice:["グライダー",["銃","ガン"]],label:279},
+{choice:["択ばない"],label:280},
+]},[
 ["人間が読め。"],
 ["人間が択べ。"],
 ["配置を択べ。"],
 ]],
-[{speaker:"demeter"},[
+[{speaker:"demeter",jump:290,leave:context=>{eden = true;;}},[
 ["エデンの","園","配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
-[{speaker:"demeter"},[
+[{speaker:"demeter",jump:290,leave:context=>{glider = true;;}},[
 ["グライダー",["銃","ガン"],"配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
@@ -1321,7 +1355,7 @@ D.scenario = [
 ["人類を。世界を。"],
 ["——昭和を。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",finish:true},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1391,7 +1425,9 @@ D.scenario = [
 ["火箭が",["内燃機関","ディーゼルエンジン"],"をつらぬく。"],
 ["飛鳥が爆発する。"],
 ]],
-[{speaker:"alice"},[
+[{speaker:"alice",when:context=>{
+if(glider)return 323;
+}},[
 ["世界は書きかわるのか。"],
 ["あるいは、すでに書きかわったのか。"],
 ]],
@@ -1476,7 +1512,7 @@ D.scenario = [
 ["今度は、この国の。"],
 ["——戦後を。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",finish:true},[
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
@@ -1520,7 +1556,7 @@ D.scenario = [
 ["いつしか、昭和は終わっていた。"],
 ["新しい年号が制定されたかどうか、ボクは知らない。"],
 ]],
-[{speaker:"narrator"},[
+[{speaker:"narrator",finish:true},[
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],
