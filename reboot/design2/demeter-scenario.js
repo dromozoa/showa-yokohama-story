@@ -70,9 +70,9 @@ D.scenario = [
 ["キミの拳銃を見せてほしい。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:context=>{father=1;;},label:14},
-{choice:["フィリップ・マーロウ"],action:context=>{father=2;;},label:14},
-{choice:["マイク・ハマー"],action:context=>{father=3;;},label:14},
+{choice:["サム・スペード"],action:$=>{father=1;;},label:14},
+{choice:["フィリップ・マーロウ"],action:$=>{father=2;;},label:14},
+{choice:["マイク・ハマー"],action:$=>{father=3;;},label:14},
 ]},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
@@ -249,7 +249,7 @@ D.scenario = [
 ["昭和横濱物語。スティーブンによる福音書。第一節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",leave:context=>{priest   = false;
+[{speaker:"narrator",leave:$=>{priest   = false;
   engineer = false;
   activist = false;;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
@@ -265,14 +265,14 @@ D.scenario = [
 {choice:["本牧",["大聖堂","カテドラル"]],label:51},
 {choice:["資源循環局"],label:75},
 {choice:["魚人港湾労働組合"],label:106},
-],when:context=>{
+],when:$=>{
 if(priest && engineer && activist)return 145;
 }},[
 ["少尉、どこに手紙を届けるの。"],
 ]],
-[{speaker:"narrator",when:context=>{
+[{speaker:"narrator",when:$=>{
 if(priest)return 74;
-},leave:context=>{priest = true;;}},[
+},leave:$=>{priest = true;;}},[
 ["本牧",["大聖堂","カテドラル"],"。"],
 ["徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。"],
 ["関東大震災で崩壊し、現在の場所に移転した。"],
@@ -382,9 +382,9 @@ if(priest)return 74;
 [{speaker:"danu",jump:50},[
 [["大聖堂","カテドラル"],"は行ったじゃん。"],
 ]],
-[{speaker:"danu",when:context=>{
+[{speaker:"danu",when:$=>{
 if(engineer)return 105;
-},leave:context=>{engineer = true;;}},[
+},leave:$=>{engineer = true;;}},[
 ["人間だけが、",["屍者","ゾンビ"],"になると思われてきた。"],
 ["咬みつかれても引っかかれても、犬や猫は",["屍者","ゾンビ"],"にならない。"],
 ["毒でやられるだけ。"],
@@ -519,9 +519,9 @@ if(engineer)return 105;
 [{speaker:"danu",jump:50},[
 ["資源循環局は、もう行ったよね。"],
 ]],
-[{speaker:"narrator",when:context=>{
+[{speaker:"narrator",when:$=>{
 if(activist)return 144;
-},leave:context=>{activist = true;;}},[
+},leave:$=>{activist = true;;}},[
 ["本牧異人町。"],
 ["蒲鉾兵舎にかかげられたネオンに、灯はともっていない。"],
 ["リックス・カフェ・アメリカン。"],
@@ -803,8 +803,8 @@ if(activist)return 144;
 ["昭和横濱物語。スティーブンによる福音書。第二節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",leave:context=>{eden   = false;
-  glider = false;;}},[
+[{speaker:"narrator",leave:$=>{$.eden = false;
+  $.glider = false;;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1292,19 +1292,19 @@ if(activist)return 144;
 ["そんな歴史。とか。"],
 ]],
 [{speaker:"steven",choices:[
-{choice:["エデンの園"],label:278},
-{choice:["グライダー",["銃","ガン"]],label:279},
+{choice:["エデンの園"],action:$=>{$.eden=true;},label:278},
+{choice:["グライダー",["銃","ガン"]],action:$=>{$.glider=true;},label:279},
 {choice:["択ばない"],label:280},
 ]},[
 ["人間が読め。"],
 ["人間が択べ。"],
 ["配置を択べ。"],
 ]],
-[{speaker:"demeter",jump:290,leave:context=>{eden = true;;}},[
+[{speaker:"demeter",jump:290},[
 ["エデンの","園","配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
-[{speaker:"demeter",jump:290,leave:context=>{glider = true;;}},[
+[{speaker:"demeter",jump:290},[
 ["グライダー",["銃","ガン"],"配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
@@ -1425,7 +1425,7 @@ if(activist)return 144;
 ["火箭が",["内燃機関","ディーゼルエンジン"],"をつらぬく。"],
 ["飛鳥が爆発する。"],
 ]],
-[{speaker:"alice",when:context=>{
+[{speaker:"alice",when:$=>{
 if(glider)return 323;
 }},[
 ["世界は書きかわるのか。"],

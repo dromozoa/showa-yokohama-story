@@ -3,10 +3,7 @@
 #narrator
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
-@leave{{
-  eden   = false;
-  glider = false;
-}}
+@leave{{$.eden = false; $.glider = false}}
 
 #narrator
 @r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の@r{三人組}{トリオ}。
@@ -495,22 +492,20 @@ H@v{+}{プラス}八、巨大群体上陸。
 人間が読め。
 人間が択べ。
 配置を択べ。
-@choice{エデンの園}
-@choice{グライダー@r{銃}{ガン}}
+@choice{エデンの園}{{$.eden=true}}
+@choice{グライダー@r{銃}{ガン}}{{$.glider=true}}
 @choice{択ばない}
 
 @label{エデンの園}
 #demeter
 エデンの@v{園}{その}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@leave{{eden = true;}}
 @jump{選択肢終}
 
 @label{グライダー銃}
 #demeter
 グライダー@r{銃}{ガン}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@leave{{glider = true;}}
 @jump{選択肢終}
 
 @label{択ばない}
@@ -633,7 +628,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 火箭が@r{内燃機関}{ディーゼルエンジン}をつらぬく。
 飛鳥が爆発する。
 
-@when{{glider}}{グライダー銃ED}
+@when{{$.glider}}{グライダー銃ED}
 #alice
 世界は書きかわるのか。
 あるいは、すでに書きかわったのか。
