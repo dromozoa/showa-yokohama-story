@@ -25,13 +25,16 @@
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
 
-  <!-- cursorを設定していると、AndroidのChromeがなんかハイライトしてくれちゃう？ -->
+  <!--
+    cursorを設定するとAndroid EmulatorのChromeがクリック時にハイライトする？
+    この環境では
+      @media (pointer: fine)
+      @media (hover: none)
+    になるので、@media (hover: none)で切り分ける。
+  -->
   <style>
     div.choice > svg {
       display: block;
-      /*
-      cursor: pointer;
-      */
     }
 
     div.choice > svg {
@@ -48,6 +51,27 @@
       fill: rgba(2, 157, 147, 0.25);
       stroke: #029D93;
     }
+
+    @media (hover: none) {
+      .hover-none {
+        display: block;
+      }
+      .hover-hover {
+        display: none;
+      }
+    }
+
+    @media (hover: hover) {
+      .hover-none {
+        display: none;
+      }
+      .hover-hover {
+        display: black;
+      }
+      div.choice > svg {
+        cursor: pointer;
+      }
+    }
   </style>
 </head>
 
@@ -56,6 +80,11 @@
   background-color: #000;
   color: #FFF;
 ">
+
+<div>
+  <div class="hover-none">hover: none</div>
+  <div class="hover-hover">hover: hover</div>
+</div>
 
 <div id="source" style="
   font-size: 24px;
