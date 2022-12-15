@@ -76,21 +76,38 @@
       stroke: #fff;
     }
 
-    div.dialog > svg .button {
-      /*
-      fill: none;
-      */
+    div.dialog > svg .button1,
+    div.dialog > svg .button2 {
+      fill: rgba(255, 255, 255, 0.25);
+      stroke: #fff;
+      transition: all 0.5s;
     }
 
-    div.dialog > svg .button .bar {
-      fill: none;
+    div.dialog > svg .button1:hover,
+    div.dialog > svg .button2:hover {
+      stroke: #029D93;
     }
+
+    div.dialog > svg .button1:active,
+    div.dialog > svg .button2:active {
+      fill: rgba(2, 157, 147, 0.25);
+      stroke: #029D93;
+    }
+
+
+    @media (hover: hover) {
+      div.dialog > svg .button1:hover,
+      div.dialog > svg .button2:hover {
+        cursor: pointer;
+      }
+    }
+
   </style>
 </head>
 
 <body style="
   margin: 0 0 0 24px;
-  background-color: #000;
+  background-image: url(../output/bg.png);
   color: #FFF;
 ">
 
@@ -112,8 +129,10 @@
 <div id="container" style="
   position: relative;
   line-height: 2;
+  /*
   user-select: none;
   -webkit-user-select: none;
+  */
 "></div>
 
 <script>
@@ -181,6 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     messageNode.style.position = "absolute";
     messageNode.style.top = D.numberToString(fontSize);
     messageNode.style.left = D.numberToString(fontSize * 2);
+    messageNode.style.pointerEvents = "none";
 
     const paragraph = D.parseParagraph(document.querySelector("#source-dialog").firstElementChild, fontSize, font);
     paragraph.forEach(text => {
