@@ -32,9 +32,9 @@ local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
 handle:close()
 
--- VPPファイルは\0で終端する疑似JSON形式とみられる。VoicePeakで読みなおせるよう
--- にナレーター・設定・感情の部分だけ文字列として修正する。具体的には下記の文字
--- 列を対象とする。
+-- VPPファイルは\0で終端する疑似JSON形式とみられる。Voicepeakで読みなおせるよう
+-- にナレーター・設定・感情の部分を文字列として修正する。具体的には下記の文字列
+-- を対象とする。
 --
 -- {"narrator": {"key": "Speaker/f1"},
 --  "time-offset-mode": 2,

@@ -16,13 +16,14 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local speed = "1.2"
+local pause = "0.6"
 
 return {
   narrator = {
     speaker = "Speaker/f1";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -34,7 +35,7 @@ return {
     speaker = "Speaker/f1";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -46,7 +47,7 @@ return {
     speaker = "Speaker/f5";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -58,7 +59,7 @@ return {
     speaker = "Speaker/f4b";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -70,7 +71,7 @@ return {
     speaker = "Speaker/m3";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -82,7 +83,7 @@ return {
     speaker = "Speaker/m1";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -94,7 +95,7 @@ return {
     speaker = "Speaker/m1";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -106,7 +107,7 @@ return {
     speaker = "Speaker/m1";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -118,7 +119,7 @@ return {
     speaker = "Speaker/m4";
     speed = speed;
     pitch = "-1.5";
-    pause = "0.5";
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
