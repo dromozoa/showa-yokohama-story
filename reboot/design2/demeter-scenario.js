@@ -70,9 +70,9 @@ D.scenario = [
 ["キミの拳銃を見せてほしい。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:$=>{$.father = 1;;},label:14},
-{choice:["フィリップ・マーロウ"],action:$=>{$.father = 2;;},label:14},
-{choice:["マイク・ハマー"],action:$=>{$.father = 3;;},label:14},
+{choice:["サム・スペード"],action:$=>{$.father = 1;;},barcode:"Sam Spade",label:14},
+{choice:["フィリップ・マーロウ"],action:$=>{$.father = 2;;},barcode:"Philip Marlowe",label:14},
+{choice:["マイク・ハマー"],action:$=>{$.father = 3;;},barcode:"Mike Hammer",label:14},
 ]},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
@@ -204,8 +204,8 @@ D.scenario = [
 ["そのためにボクたちは横濱にいる。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["ある"],label:40},
-{choice:["ない"],label:41},
+{choice:["ある"],barcode:"Yes ma'am!",label:40},
+{choice:["ない"],barcode:"No ma'am!",label:41},
 ]},[
 ["さてと。"],
 ["スティーブンと呼ばれた人物、あるいは結社の噂を聞いたことがあるか。"],
@@ -249,9 +249,9 @@ D.scenario = [
 ["昭和横濱物語。スティーブンによる福音書。第一節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",leave:$=>{priest   = false;
-  engineer = false;
-  activist = false;;}},[
+[{speaker:"narrator",leave:$=>{delete $.priest;
+  delete $.engineer;
+  delete $.activist;;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -262,17 +262,17 @@ D.scenario = [
 ["魚人港湾労働組合。"],
 ]],
 [{speaker:"danu",choices:[
-{choice:["本牧",["大聖堂","カテドラル"]],label:51},
-{choice:["資源循環局"],label:75},
-{choice:["魚人港湾労働組合"],label:106},
+{choice:["本牧",["大聖堂","カテドラル"]],barcode:"priest",label:51},
+{choice:["資源循環局"],barcode:"engineer",label:75},
+{choice:["魚人港湾労働組合"],barcode:"activist",label:106},
 ],when:$=>{
-if(priest && engineer && activist)return 145;
+if($.priest && $.engineer && $.activist)return 145;
 }},[
 ["少尉、どこに手紙を届けるの。"],
 ]],
 [{speaker:"narrator",when:$=>{
-if(priest)return 74;
-},leave:$=>{priest = true;;}},[
+if($.priest)return 74;
+},leave:$=>{$.priest = true;}},[
 ["本牧",["大聖堂","カテドラル"],"。"],
 ["徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。"],
 ["関東大震災で崩壊し、現在の場所に移転した。"],
@@ -383,8 +383,8 @@ if(priest)return 74;
 [["大聖堂","カテドラル"],"は行ったじゃん。"],
 ]],
 [{speaker:"danu",when:$=>{
-if(engineer)return 105;
-},leave:$=>{engineer = true;;}},[
+if($.engineer)return 105;
+},leave:$=>{$.engineer = true;}},[
 ["人間だけが、",["屍者","ゾンビ"],"になると思われてきた。"],
 ["咬みつかれても引っかかれても、犬や猫は",["屍者","ゾンビ"],"にならない。"],
 ["毒でやられるだけ。"],
@@ -520,8 +520,8 @@ if(engineer)return 105;
 ["資源循環局は、もう行ったよね。"],
 ]],
 [{speaker:"narrator",when:$=>{
-if(activist)return 144;
-},leave:$=>{activist = true;;}},[
+if($.activist)return 144;
+},leave:$=>{$.activist = true;}},[
 ["本牧異人町。"],
 ["蒲鉾兵舎にかかげられたネオンに、灯はともっていない。"],
 ["リックス・カフェ・アメリカン。"],
@@ -723,8 +723,8 @@ if(activist)return 144;
 ["ワンチャン、いけるって。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["熱望"],label:154},
-{choice:["希望"],label:155},
+{choice:["熱望"],barcode:"Elvis",label:154},
+{choice:["希望"],barcode:"Elpis",label:155},
 {choice:["拒否"],label:157},
 ]},[
 ["強制はしない、少尉。"],
@@ -739,8 +739,8 @@ if(activist)return 144;
 [["希望","エルピス"],"も",["ロック","エルビス"],"も喪われた。"],
 ]],
 [{speaker:"danu",choices:[
-{choice:["最熱望"],label:154},
-{choice:["熱望"],label:154},
+{choice:["最熱望"],barcode:"Elvis",label:154},
+{choice:["熱望"],barcode:"Elvis",label:154},
 {choice:["拒否"],label:157},
 ]},[
 [["妖精","エルブズ"],"はいるけど。"],
@@ -803,7 +803,7 @@ if(activist)return 144;
 ["昭和横濱物語。スティーブンによる福音書。第二節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",leave:$=>{$.eden = false; $.glider = false;}},[
+[{speaker:"narrator"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1291,8 +1291,8 @@ if(activist)return 144;
 ["そんな歴史。とか。"],
 ]],
 [{speaker:"steven",choices:[
-{choice:["エデンの園"],action:$=>{$.eden=true;},label:278},
-{choice:["グライダー",["銃","ガン"]],action:$=>{$.glider=true;},label:279},
+{choice:["エデンの園"],action:$=>{$.genesis = false;;},barcode:"Garden of Eden",label:278},
+{choice:["グライダー",["銃","ガン"]],action:$=>{$.genesis = true;;},barcode:"Glider Gun",label:279},
 {choice:["択ばない"],label:280},
 ]},[
 ["人間が読め。"],
@@ -1425,7 +1425,7 @@ if(activist)return 144;
 ["飛鳥が爆発する。"],
 ]],
 [{speaker:"alice",when:$=>{
-if($.glider)return 323;
+if($.genesis)return 323;
 }},[
 ["世界は書きかわるのか。"],
 ["あるいは、すでに書きかわったのか。"],

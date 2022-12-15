@@ -61,6 +61,9 @@ for _, paragraph in ipairs(scenario) do
       if jump.action then
         handle:write(",action:$=>{", jump.action, ";}")
       end
+      if jump.barcode then
+        handle:write(",barcode:", quote_js(jump.barcode))
+      end
       handle:write(",label:", scenario.labels[jump.label].index, "},\n")
     end
     handle:write "]"

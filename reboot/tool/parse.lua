@@ -167,16 +167,22 @@ local function parse(scenario, include_path, filename)
     elseif match "^@choice{" then
       -- @choice{選択肢}
       -- @choice{選択肢}{ラベル}
+      -- @choice{選択肢}{ラベル}{バーコード}
       -- @choice{選択肢}{{文}}
       -- @choice{選択肢}{{文}}{ラベル}
+      -- @choice{選択肢}{{文}}{ラベル}{バーコード}
       local choice = assert(parse_text "directive")
       local action
       local label
+      local barcode
       if match "^{{(.-)}}" then
         action = trim(_1)
       end
       if match "^{([^}]*)}" then
         label = trim(_1)
+        if match "^{([^}]*)}" then
+          barcode = trim(_1)
+        end
       else
         local buffer = {}
         for i, v in ipairs(choice) do
@@ -188,7 +194,7 @@ local function parse(scenario, include_path, filename)
         end
         label = trim(table.concat(buffer))
       end
-      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label })
+      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label, barcode = barcode })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
