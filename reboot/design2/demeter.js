@@ -825,7 +825,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
   return template.content.firstElementChild;
 };
 
-D.createDialogFrame = (width, height, fontSize, buttonWidth, buttonHeight) => {
+D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeight) => {
   const W = width;
   const H = height;
   const H2 = height * 0.5;
@@ -847,41 +847,65 @@ D.createDialogFrame = (width, height, fontSize, buttonWidth, buttonHeight) => {
     .H(W-U2-1).v(1-H4).l(U8,-U8).v(U4-H2).l(-U8,-U8).v(1-H4).z()
     // 表示領域（時計回り）
     .M(U2+U4,U4).h(W-U1-U2).V(H4+U4*C3).l(U8,U8).V(H-H4-U4*C3-U8).l(-U8,U8).V(H-U4)
-    .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z()
+    .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z();
+
+  let buttonsHtml = '<g class="buttons">';
+  if (buttons > 0) {
     // ボタン1（反時計回り）
-    .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
-    .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z()
-    // ボタン2（反時計回り）
-    .M(W-BW-U1-U2,H-BH-U2+U4)
-    .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
+    clipPathData
+      .M(W-BW-U1-U2,H-BH-U2+U4)
+      .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
+
+    const button1PathData = new D.PathData()
+      .M(W-BW-U1-U2,H-BH-U2+U4)
+      .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
+      .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
+
+    const button1BarPathData = new D.PathData()
+      .M(W-BW-U1-U2,H-BH)
+      .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
+      .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
+      .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
+      .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
+
+    buttonsHtml += `
+      <g class="button1">
+        <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button1BarPathData}"/>
+        <path stroke-width="1" d="${button1PathData}"/>
+      </g>
+    `;
+
+    if (buttons > 1) {
+      // ボタン2（反時計回り）
+      clipPathData
+        .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
+        .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
+
+      const button2PathData = new D.PathData()
+        .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
+        .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
+        .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
+
+      const button2BarPathData = new D.PathData()
+        .M(W-BW*2-U1*2-U2,H-BH)
+        .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
+        .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
+        .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
+        .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
+
+      buttonsHtml += `
+        <g class="button2">
+          <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button2BarPathData}"/>
+          <path stroke-width="1" d="${button2PathData}"/>
+        </g>
+      `;
+    }
+  }
+  buttonsHtml += "</g>";
 
   const barPathData = new D.PathData()
     .M(U2-U4,0).V(H)
     .M(W-U2+U4,0).V(H);
-
-  const button1PathData = new D.PathData()
-    .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
-    .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
-    .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
-
-  const button1BarPathData = new D.PathData()
-    .M(W-BW*2-U1*2-U2,H-BH)
-    .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
-    .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
-    .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
-    .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
-
-  const button2PathData = new D.PathData()
-    .M(W-BW-U1-U2,H-BH-U2+U4)
-    .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
-    .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
-
-  const button2BarPathData = new D.PathData()
-    .M(W-BW-U1-U2,H-BH)
-    .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
-    .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
-    .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
-    .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
   const template = document.createElement("template");
   template.innerHTML = `
@@ -895,17 +919,7 @@ D.createDialogFrame = (width, height, fontSize, buttonWidth, buttonHeight) => {
         <path fill="none" stroke-width="${D.numberToString(U2+2,"")}" d="${barPathData}"/>
         <rect stroke-width="2" x="${D.numberToString(U2,"")}" y="0" width="${D.numberToString(W-U1,"")}" height="${D.numberToString(height,"")}"/>
       </g>
-
-      <g class="button">
-        <g class="button1">
-          <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button1BarPathData}"/>
-          <path stroke-width="1" d="${button1PathData}"/>
-        </g>
-        <g class="button2">
-          <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button2BarPathData}"/>
-          <path stroke-width="1" d="${button2PathData}"/>
-        </g>
-      </g>
+      ${buttonsHtml}
     </svg>
   `;
   return template.content.firstElementChild;

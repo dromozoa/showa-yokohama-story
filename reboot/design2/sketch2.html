@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const textNode = messageNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
     });
 
-    const dialogFrameNode = dialogNode.appendChild(D.createDialogFrame(fontSize * 24, fontSize * 12, fontSize, fontSize * 8, fontSize * 2));
+    const dialogFrameNode = dialogNode.appendChild(D.createDialogFrame(fontSize * 24, fontSize * 12, fontSize, 2, fontSize * 8, fontSize * 2));
     dialogFrameNode.style.display = "block";
   }
 });
