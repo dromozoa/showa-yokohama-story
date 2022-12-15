@@ -797,7 +797,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
     .M(0,U2).l(U4,-U4).h(W4-U4-U8).l(U8,U8).h(W2).l(U8,-U8).h(W4-U4-U8).l(U4,U4).v(H).H(U1).L(0,H-U2).z()
     // 枠線の内側（反時計回り）
     .M(1,U2+1).V(H-U2-C3).L(U1+C3,H+U2-1).H(W-1).V(U2+1).z()
-    // テキスト領域
+    // 表示領域
     .M(U4,U2+U4).h(W-U2).v(H-U2).H(U1+U4*C3).L(U4,H-U2-U4*C3).z()
     // 左下
     .M(0,H-U2+(U4-1)*D2).L(U1-(U4-1)*D2,H+U2).H(U4).l(-U4,-U4).z();
@@ -810,20 +810,106 @@ D.createChoiceFrame = (width, height, fontSize) => {
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width, "")} ${D.numberToString(height, "")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
       <defs>
         <clipPath id="${clipId}">
           <path d="${clipPathData}"/>
         </clipPath>
       </defs>
       <g clip-path="url(#${clipId})">
+        <path stroke-width="${D.numberToString(U4+2,"")}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
-        <path stroke-width="${D.numberToString(U4+2, "")}" d="${barPathData}"/>
       </g>
     </svg>
   `;
   return template.content.firstElementChild;
-}
+};
+
+D.createDialogFrame = (width, height, fontSize, buttonWidth, buttonHeight) => {
+  const W = width;
+  const H = height;
+  const BW = buttonWidth;
+  const BH = buttonHeight;
+  const H2 = height * 0.5;
+  const H4 = height * 0.25;
+  const U1 = fontSize;
+  const U2 = fontSize * 0.5;
+  const U4 = fontSize * 0.25;
+  const U8 = fontSize * 0.125;
+  const C3 = Math.cos(Math.PI * 0.375);
+  const D2 = Math.sqrt(2);
+
+  const clipId = "demeter-serial-" + D.getSerialNumber();
+  const clipPathData = new D.PathData()
+    // 枠線の外側（時計回り）
+    .M(0,U2).l(U2,-U2).h(W-U1).l(U2,U2).v(H-U1).l(-U2,U2).h(U1-W).l(-U2,-U2).z()
+    // 枠線の内側（反時計回り）
+    .M(U2+1,1).v(H4-1).l(-U8,U8).v(H2-U4).l(U8,U8).v(H4-1)
+    .H(W-U2-1).v(1-H4).l(U8,-U8).v(U4-H2).l(-U8,-U8).v(1-H4).z()
+    // 表示領域（時計回り）
+    .M(U2+U4,U4).h(W-U1-U2).V(H4+U4*C3).l(U8,U8).V(H-H4-U4*C3-U8).l(-U8,U8).V(H-U4)
+    .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z()
+    // ボタン1（反時計回り）
+    .M(W-BW*2-U1*2-U2,H-BH-U2+U4).v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(U2+U4-BH).h(U2+U4-BW).z()
+    // ボタン2（反時計回り）
+    .M(W-BW-U1-U2,H-BH-U2+U4).v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(U2+U4-BH).h(U2+U4-BW).z();
+
+  const barPathData = new D.PathData()
+    .M(U2-U4,0).V(H).M(W-U2+U4,0).V(H);
+
+  const button1PathData = new D.PathData()
+    .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
+    .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4).l(-U2-U4,U2+U4).h(U2+U4-BW).z();
+
+  const button1BarPathData = new D.PathData()
+    .M(W-BW*2-U1*2-U2,H-BH).v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
+    .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
+    .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
+    .m(U1*3-U4-BW,0).h(-U1-U4).v(-U2);
+
+  const button2PathData = new D.PathData()
+    .M(W-BW-U1-U2,H-BH-U2+U4)
+    .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4).l(-U2-U4,U2+U4).h(U2+U4-BW).z();
+
+  const button2BarPathData = new D.PathData()
+    .M(W-BW-U1-U2,H-BH).v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
+    .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
+    .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
+    .m(U1*3-U4-BW,0).h(-U1-U4).v(-U2);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+      <defs>
+        <clipPath id="${clipId}">
+          <path d="${clipPathData}"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#${clipId})">
+        <path stroke-width="${D.numberToString(U2+2,"")}" d="${barPathData}"/>
+        <rect stroke-width="2" x="${D.numberToString(U2,"")}" y="0" width="${D.numberToString(W-U1,"")}" height="${D.numberToString(height,"")}"/>
+      </g>
+
+      <g class="button">
+        <g class="button1">
+          <path class="bar" stroke-width="${D.numberToString(U8,"")}" d="${button1BarPathData}"/>
+          <path stroke-width="1" d="${button1PathData}"/>
+        </g>
+        <g class="button2">
+          <path class="bar" stroke-width="${D.numberToString(U8,"")}" d="${button2BarPathData}"/>
+          <path stroke-width="1" d="${button2PathData}"/>
+        </g>
+      </g>
+
+      <!--
+      <g>
+        <path stroke="none" d="${clipPathData}"/>
+      </g>
+      -->
+    </svg>
+  `;
+  return template.content.firstElementChild;
+};
 
 //-------------------------------------------------------------------------
 

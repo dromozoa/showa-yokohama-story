@@ -9,7 +9,7 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Libre+Barcode+39+Extended&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
@@ -35,9 +35,6 @@
   <style>
     div.choice > svg {
       display: block;
-    }
-
-    div.choice > svg {
       fill: rgba(255, 255, 255, 0.25);
       stroke: #fff;
       transition: all 0.5s;
@@ -72,6 +69,22 @@
         cursor: pointer;
       }
     }
+
+    div.dialog > svg {
+      display: block;
+      fill: rgba(255, 255, 255, 0.25);
+      stroke: #fff;
+    }
+
+    div.dialog > svg .button {
+      /*
+      fill: none;
+      */
+    }
+
+    div.dialog > svg .button .bar {
+      fill: none;
+    }
   </style>
 </head>
 
@@ -86,19 +99,18 @@
   <div class="hover-hover">hover: hover</div>
 </div>
 
-<div id="source" style="
-  font-size: 24px;
-  font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
-  line-height: 2;
-">
+<div id="source" style="display: none">
 <div>エデンの園</div>
 <div>グライダー<ruby>銃<rt>ガン</rt></ruby></div>
 </div>
 
+<div id="source-dialog" style="display: none">
+<div>このスロットを<ruby>上書き<rt>Overwrite</rt></ruby>します。<br>よろしくありますか？<br>ほんとうにいいの？<br>.<br
+>　　　　　　　　　　はい　　　　　　　　　&nbsp;いいえ</div>
+</div>
+
 <div id="container" style="
   position: relative;
-  font-size: 24px;
-  font-family: 'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif;
   line-height: 2;
   user-select: none;
   -webkit-user-select: none;
@@ -123,30 +135,61 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const sourceNodes = document.querySelector("#source").children;
   const containerNode = document.getElementById("container");
+  containerNode.style.font = D.numberToString(fontSize) + " " + font;
 
   for (let i = 0; i < sourceNodes.length; ++i) {
     const sourceNode = sourceNodes[i];
     const paragraph = D.parseParagraph(sourceNode, fontSize, font);
     paragraph.forEach(text => {
-      const lines = D.composeText(text, fontSize * 20);
-      const textNode = D.layoutText(lines, fontSize, fontSize * 2);
-      textNode.style.position = "absolute";
-      textNode.style.top = "24px";
-      textNode.style.left = "48px";
-
-      const choiceFrameNode = D.createChoiceFrame(fontSize * 24, fontSize * 4, fontSize);
-      choiceFrameNode.style.display = "block";
-
       const choiceNode = document.createElement("div");
       choiceNode.className = "choice";
       choiceNode.style.position = "relative";
-      choiceNode.append(textNode, choiceFrameNode);
+      choiceNode.style.width = D.numberToString(fontSize * 24);
+      choiceNode.style.height = D.numberToString(fontSize * 4);
       choiceNode.addEventListener("click", (ev) => {
         console.log("click", sourceNode);
       });
 
+      const lines = D.composeText(text, fontSize * 20);
+      const textNode = choiceNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
+      textNode.style.position = "absolute";
+      textNode.style.top = D.numberToString(fontSize);
+      textNode.style.left = D.numberToString(fontSize * 2);
+
+      const barcodeNode = choiceNode.appendChild(document.createElement("div"));
+      barcodeNode.style.position = "absolute";
+      barcodeNode.style.display = "inline-block";
+      barcodeNode.style.top = D.numberToString(fontSize);
+      barcodeNode.style.right = D.numberToString(fontSize * 0.5);
+      barcodeNode.style.font = D.numberToString(fontSize) + " 'Libre Barcode 39 Extended'";
+      barcodeNode.style.lineHeight = D.numberToString(fontSize);
+      barcodeNode.textContent = i === 0 ? "Garden of Eden" : "Glider Gun";
+
+      const choiceFrameNode = choiceNode.appendChild(D.createChoiceFrame(fontSize * 24, fontSize * 4, fontSize));
+      choiceFrameNode.style.display = "block";
+
       containerNode.append(choiceNode);
     });
+  }
+
+  {
+    const dialogNode = containerNode.appendChild(document.createElement("div"));
+    dialogNode.className = "dialog";
+    dialogNode.style.position = "relative";
+
+    const messageNode = dialogNode.appendChild(document.createElement("div"));
+    messageNode.style.position = "absolute";
+    messageNode.style.top = D.numberToString(fontSize);
+    messageNode.style.left = D.numberToString(fontSize * 2);
+
+    const paragraph = D.parseParagraph(document.querySelector("#source-dialog").firstElementChild, fontSize, font);
+    paragraph.forEach(text => {
+      const lines = D.composeText(text, fontSize * 20);
+      const textNode = messageNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
+    });
+
+    const dialogFrameNode = dialogNode.appendChild(D.createDialogFrame(fontSize * 24, fontSize * 12, fontSize, fontSize * 8, fontSize * 2));
+    dialogFrameNode.style.display = "block";
   }
 });
 </script>
