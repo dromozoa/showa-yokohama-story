@@ -70,9 +70,9 @@ D.scenario = [
 ["キミの拳銃を見せてほしい。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:$=>{father=1;;},label:14},
-{choice:["フィリップ・マーロウ"],action:$=>{father=2;;},label:14},
-{choice:["マイク・ハマー"],action:$=>{father=3;;},label:14},
+{choice:["サム・スペード"],action:$=>{$.father = 1;;},label:14},
+{choice:["フィリップ・マーロウ"],action:$=>{$.father = 2;;},label:14},
+{choice:["マイク・ハマー"],action:$=>{$.father = 3;;},label:14},
 ]},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
@@ -803,8 +803,7 @@ if(activist)return 144;
 ["昭和横濱物語。スティーブンによる福音書。第二節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",leave:$=>{$.eden = false;
-  $.glider = false;;}},[
+[{speaker:"narrator",leave:$=>{$.eden = false; $.glider = false;}},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1426,7 +1425,7 @@ if(activist)return 144;
 ["飛鳥が爆発する。"],
 ]],
 [{speaker:"alice",when:$=>{
-if(glider)return 323;
+if($.glider)return 323;
 }},[
 ["世界は書きかわるのか。"],
 ["あるいは、すでに書きかわったのか。"],
