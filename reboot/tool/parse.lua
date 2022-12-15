@@ -73,6 +73,10 @@ local function append_jump(paragraph, jump)
   return paragraph
 end
 
+local function append_paragraph(scenario, paragraph)
+  return append(scenario, paragraph)
+end
+
 local function parse(scenario, include_path, filename)
   local handle, message = io.open(include_path.."/"..filename)
   if not handle then
@@ -212,6 +216,10 @@ local function parse(scenario, include_path, filename)
       -- @finish
       paragraph = update(paragraph, "finish", true)
 
+    elseif match "^@system" then
+      -- @system
+      -- 以降の段落をシステム用とする
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if text then
@@ -219,7 +227,7 @@ local function parse(scenario, include_path, filename)
         text = nil
       end
       if paragraph then
-        scenario = append(scenario, paragraph)
+        scenario = append_paragraph(scenario, paragraph)
         paragraph = nil
       end
 
@@ -232,7 +240,7 @@ local function parse(scenario, include_path, filename)
       end
       -- 空行で段落を分ける。
       if match "^[\t\v\f ]*\r\n?%s*" or match "^[\t\v\f ]*\n\r?%s*" then
-        scenario = append(scenario, paragraph)
+        scenario = append_paragraph(scenario, paragraph)
         paragraph = nil
       end
     end
