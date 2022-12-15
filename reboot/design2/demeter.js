@@ -247,6 +247,25 @@ const updateChars = (source, fontSize, font) => {
   });
 };
 
+D.parseText = (source, fontSize, font) => {
+  const rubyFontSize = fontSize * 0.5;
+  const result = source.map(source => {
+    const result = {
+      rubyOverhangPrev: 0,
+      rubyOverhangNext: 0,
+    };
+    if (typeof source === "string") {
+      result.base = parseChars(source, fontSize, font);
+    } else {
+      result.base = parseChars(source[0], fontSize, font);
+      updateChars(result.ruby = parseChars(source[1], rubyFontSize, font), rubyFontSize, font);
+    }
+    return result;
+  });
+  updateChars(result.map(item => item.base).flat(), fontSize, font);
+  return result;
+};
+
 const parseParagraphFromNodeBreakTable = {
   "BR": true,
   "DIV": true,
@@ -290,25 +309,7 @@ const parseParagraphFromNode = (source, fontSize, font) => {
 };
 
 const parseParagraphFromArray = (source, fontSize, font) => {
-  const rubyFontSize = fontSize * 0.5;
-
-  return source.map(sourceText => {
-    const text = sourceText.map(sourceItem => {
-      const item = {
-        rubyOverhangPrev: 0,
-        rubyOverhangNext: 0,
-      };
-      if (typeof sourceItem === "string") {
-        item.base = parseChars(sourceItem, fontSize, font);
-      } else {
-        item.base = parseChars(sourceItem[0], fontSize, font);
-        updateChars(item.ruby = parseChars(sourceItem[1], rubyFontSize, font), rubyFontSize, font);
-      }
-      return item;
-    });
-    updateChars(text.map(item => item.base).flat(), fontSize, font);
-    return text;
-  });
+  return source.map(text => D.parseText(text, fontSize, font));
 };
 
 D.parseParagraph = (source, fontSize, font) => (source instanceof Node ? parseParagraphFromNode : parseParagraphFromArray)(source, fontSize, font);

@@ -1080,8 +1080,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           choiceNode.style.position = "relative";
           choiceNode.style.width = D.numberToString(fontSize * lineLength);
 
-          const choiceParagraph = D.parseParagraph([choice.choice], fontSize, uiFont);
-          const lines = D.composeText(choiceParagraph[0], fontSize * (lineLength - 4));
+          const choiceText = D.parseText(choice.choice, fontSize, uiFont);
+          const lines = D.composeText(choiceText, fontSize * (lineLength - 4));
           const textNode = choiceNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
           textNode.style.position = "absolute";
           textNode.style.top = D.numberToString(fontSize);
