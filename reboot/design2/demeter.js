@@ -825,6 +825,8 @@ D.createChoiceFrame = (width, height, fontSize) => {
   return template.content.firstElementChild;
 };
 
+//-------------------------------------------------------------------------
+
 D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeight) => {
   const W = width;
   const H = height;
@@ -850,56 +852,30 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
     .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z();
 
   let buttonsHtml = '<g class="buttons">';
-  if (buttons > 0) {
-    // ボタン1（反時計回り）
+  for (let i = 1; i <= buttons; ++i) {
+    // ボタン（反時計回り）
     clipPathData
-      .M(W-BW-U1-U2,H-BH-U2+U4)
+      .M(W-(BW+U1)*i-U2,H-BH-U2+U4)
       .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
 
-    const button1PathData = new D.PathData()
-      .M(W-BW-U1-U2,H-BH-U2+U4)
+    const buttonPathData = new D.PathData()
+      .M(W-(BW+U1)*i-U2,H-BH-U2+U4)
       .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
       .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
 
-    const button1BarPathData = new D.PathData()
-      .M(W-BW-U1-U2,H-BH)
+    const buttonBarPathData = new D.PathData()
+      .M(W-(BW+U1)*i-U2,H-BH)
       .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
       .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
       .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
       .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
     buttonsHtml += `
-      <g class="button1">
-        <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button1BarPathData}"/>
-        <path stroke-width="1" d="${button1PathData}"/>
+      <g class="button button${i}">
+        <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${buttonBarPathData}"/>
+        <path stroke-width="1" d="${buttonPathData}"/>
       </g>
     `;
-
-    if (buttons > 1) {
-      // ボタン2（反時計回り）
-      clipPathData
-        .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
-        .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
-
-      const button2PathData = new D.PathData()
-        .M(W-BW*2-U1*2-U2,H-BH-U2+U4)
-        .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
-        .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
-
-      const button2BarPathData = new D.PathData()
-        .M(W-BW*2-U1*2-U2,H-BH)
-        .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
-        .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
-        .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
-        .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
-
-      buttonsHtml += `
-        <g class="button2">
-          <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${button2BarPathData}"/>
-          <path stroke-width="1" d="${button2PathData}"/>
-        </g>
-      `;
-    }
   }
   buttonsHtml += "</g>";
 
