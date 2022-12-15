@@ -34,6 +34,9 @@ all:: $(voicepeak_dic) $(targets)
 clean::
 	rm -f $(targets)
 
+convert_voice::
+	$(lua) tool/convert_voice.lua output/voice $(wildcard output/voice/*-voice*.wav)
+
 $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
 	cp -f $< '$@'

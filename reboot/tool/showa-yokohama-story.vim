@@ -37,6 +37,8 @@ syntax match sysLabel /@label{[^}]*}/ contains=sysLabelArg
 syntax match sysJump /@jump{[^}]*}/ contains=sysLabelArg
 syntax match sysInclude /@include{[^}]*}/
 syntax match sysFinish /@finish/
+syntax match sysSystem /@system/
+syntax match sysDialog /@dialog{[^}]*}/
 
 syntax match sysChoiceLabel /{[^}]*}\%({[^}]*}\)\?/ contained
 syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript contained nextgroup=sysChoiceLabel
@@ -61,6 +63,8 @@ highlight default link sysInclude Include
 highlight default link sysWhen Conditional
 highlight default link sysLeave Statement
 highlight default link sysFinish Statement
+highlight default link sysSystem Statement
+highlight default link sysDialog Statement
 
 let b:current_syntax = "showa-yokohama-story"
 

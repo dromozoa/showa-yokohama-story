@@ -74,7 +74,9 @@ local function append_jump(paragraph, jump)
 end
 
 local function append_paragraph(scenario, paragraph)
-  return append(scenario, paragraph)
+  paragraph.system = scenario.system
+  scenario[#scenario + 1] = paragraph
+  return scenario
 end
 
 local function parse(scenario, include_path, filename)
@@ -219,6 +221,10 @@ local function parse(scenario, include_path, filename)
     elseif match "^@system" then
       -- @system
       -- 以降の段落をシステム用とする
+      scenario = update(scenario, "system", true)
+
+    elseif match "^@dialog{([^}]*)}" then
+      paragraph = update(paragraph, "dialog", trim(_1))
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。

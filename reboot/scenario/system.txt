@@ -2,9 +2,9 @@
 
 @system
 
-@# @dialog{save_slot1}
-@# #narrator
-@# 一番のスロットに上書き@r{保存}{セーブ}します。
+@dialog{save_slot1}
+#narrator
+一番のスロットに上書き@r{保存}{セーブ}します。
 @# よろしいですか？
 @# @choice{はい}{:yes}
 @# @choice{いいえ}{:no}
