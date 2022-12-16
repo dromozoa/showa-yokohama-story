@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html>
 
-<!--
-  -- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
-  --
-  -- This file is part of 昭和横濱物語.
-  --
-  -- 昭和横濱物語 is free software: you can redistribute it and/or modify
-  -- it under the terms of the GNU General Public License as published by
-  -- the Free Software Foundation, either version 3 of the License, or
-  -- (at your option) any later version.
-  --
-  -- 昭和横濱物語 is distributed in the hope that it will be useful,
-  -- but WITHOUT ANY WARRANTY; without even the implied warranty of
-  -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  -- GNU General Public License for more details.
-  --
-  -- You should have received a copy of the GNU General Public License
-  -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,167 +9,45 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
 
-  <link href="font_face.css" rel="stylesheet">
-  <link href="common.css" rel="stylesheet">
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
   <link href="favicon.ico" rel="icon" sizes="any">
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- https://github.com/goldfire/howler.js#quick-start -->
-  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
-
-  <!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
-
   <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
 
-  <script defer src="jlreq.js"></script>
-  <script defer src="common.js"></script>
+  <!-- https://github.com/tweenjs/tween.js/#installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background-image: url(../output/bg.png);
+      background-color: #000;
+      color: #FFF;
+    }
+  </style>
 </head>
 <body>
 
-<div style="
-  /*
-  font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-  */
-  font-kerning: normal;
-  font-size: 24px;
-  font-variant-ligatures: none;
-  line-height: 2;
-  white-space: nowrap;
-">
-  <div>
-    Safari 16でカーニング情報を取得する処理に時間がかかるという問題があった。
-    getBoundingClientRect()で幅を取得しており、再レイアウトが発生していた。
-  </div>
-
-  <div>
-    <button id="test_html">実験: getBoundingClientRect()</button>
-    <button id="test_measure_text">measureTextでフォントがロードされるか？</button>
-  </div>
-
-  <div id="view" style="
-    /*
-    font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
-    */
-    font-kerning: normal;
-    font-size: 24px;
-    font-variant-ligatures: none;
-    line-height: 2;
-    white-space: nowrap;
-  "></div>
-
+<div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const D = globalThis.dromozoa;
-  await D.booted;
-
-  // console.log("load font faces: start");
-  // const result = await Promise.all([...Array(document.fonts.size).keys()].map(index => D.load_font_face(index, 20000)));
-  // console.log("load font faces: end", result);
-
-  const source = [..."TaTi TuTe  To   U".repeat(32)];
-  // const source = [..."本文あいうえおかきくけこさしすせそ本文たちつてと。本文なにぬねの。ながいながいながいながいながい本文たちつてと。".repeat(16)];
-
-  const view = document.getElementById("view");
-  const style = getComputedStyle(view);
-
-  const canvas_width = 320;
-  const canvas_height = 240;
-
-  const canvas = D.create_element(`
-    <canvas
-      width="${Math.floor(canvas_width * devicePixelRatio)}"
-      height="${Math.floor(canvas_height * devicePixelRatio)}"
-      style="
-        width: ${canvas_width}px;
-        height: ${canvas_height}px;
-      "></canvas>
-  `);
-  D.offscreen.append(canvas);
-  console.log(canvas.width, canvas.height, devicePixelRatio);
-
-  const ctx = canvas.getContext("2d");
-  ctx.scale(devicePixelRatio, devicePixelRatio);
-
-  console.log(ctx.font);
-  // ctx.font = style.fontSize + " " + style.fontFamily;
-  ctx.font = "32px 'Showa Yokohama Story', sans-serif";
-  console.log(ctx.font);
-
-  // await D.request_animation_frame();
-  ctx.clearRect(0, 0, 120, 160);
-  ctx.fillText("TaTiTuTeTo日本語\uE001\uE002", 0, 80);
-
-  view.remove();
-
-  const action_canvas = async () => {
-    let start = performance.now();
-    let width = 0;
-    source.forEach((c, i) => {
-      const width1 = ctx.measureText(source.slice(i, i + 2).join("")).width;
-      const width2 = ctx.measureText(source.slice(i, i + 2).join("\uFEFF")).width;
-      width += Math.abs(width1 - width2);
-    });
-    console.log("test canvas", performance.now() - start, width);
-  };
-
-  const action = async () => {
-    let start = performance.now();
-    source.forEach((char, i) => {
-      const head = source.slice(i - 1, i).map(D.escape_html).join("");
-      const body = D.escape_html(char);
-
-      view.append(...D.create_elements(`
-        <div style="font-kerning: normal"><span>&#xFEFF;<span>${head}${body}</span></span><span></span></div>
-        <div style="font-kerning: normal"><span>&#xFEFF;<span>${head}</span><span>${body}</span></span></div>
-      `));
-    });
-    D.offscreen.append(view);
-    console.log("create", performance.now() - start);
-
-    // start = performance.now();
-    // await D.request_animation_frame();
-    // console.log("wait", performance.now() - start);
-
-    start = performance.now();
-    const first_width = view.firstElementChild.firstElementChild.getBoundingClientRect().width;
-    console.log("first", performance.now() - start, first_width);
-
-    start = performance.now();
-    let width = 0;
-    source.forEach((_, i) => {
-      const width1 = view.children[i * 2].firstElementChild.getBoundingClientRect().width;
-      const width2 = view.children[i * 2 + 1].firstElementChild.getBoundingClientRect().width;
-      width += Math.abs(width1 - width2);
-    });
-    console.log("test", performance.now() - start, width);
-  };
-
-  document.getElementById("test_html").addEventListener("click", action);
-  let start;
-
-  document.getElementById("test_measure_text").addEventListener("click", () => {
-    ctx.font = "32px 'Share Tech', 'BIZ UDPMincho', 'Showa Yokohama Story'";
-    console.log("test_measure_text", ctx.measureText("TaTiTuTeTo昭和横濱物語\uE000"));
-  });
-
-  // start = performance.now();
-  // action_canvas();
-  // console.log("action_canvas", performance.now() - start);
-
-  // start = performance.now();
-  // action();
-  // console.log("action", performance.now() - start);
-})// ;
+  const D = demeter;
+  await D.boot();
+});
 </script>
 
 </body>
