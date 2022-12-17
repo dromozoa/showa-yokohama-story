@@ -776,7 +776,7 @@ D.PathData = class {
   h(x) { return this.push("h", x); }
   V(y) { return this.push("V", y); }
   v(y) { return this.push("v", y); }
-};
+}
 
 //-------------------------------------------------------------------------
 
@@ -901,6 +901,104 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
   `;
   return template.content.firstElementChild;
 };
+
+//-------------------------------------------------------------------------
+
+D.Vector3 = class {
+  constructor(x = 0, y = 0, z = 0) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  normalize() {
+    const n = 1 / this.length();
+    this.x *= n;
+    this.y *= n;
+    this.z *= n;
+    return this;
+  }
+
+  dot(that) {
+    return this.x * that.x + this.y * that.y + this.z * that.z;
+  }
+
+  lengthSquared() {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+  }
+
+  length() {
+    return Math.sqrt(this.lengthSquared());
+  }
+}
+
+D.Color4 = class {
+  constructor(x = 0, y = 0, z = 0, w = 1) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
+  }
+
+  toString() {
+    return "rgba(" +
+      (this.x * 100) + "%," +
+      (this.y * 100) + "%," +
+      (this.z * 100) + "%," +
+      (this.w * 100) + "%)";
+  }
+}
+
+D.AxisAngle4 = class {
+  constructor(x, y, z, angle) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.angle = angle;
+  }
+
+  toString() {
+    return "rotate3d(" +
+      this.x + "," +
+      this.y + "," +
+      this.z + "," +
+      this.angle + "rad)";
+  }
+}
+
+D.Matrix4 = class {
+  constructor() {
+    this.m11 = 0; this.m12 = 0; this.m13 = 0; this.m14 = 0;
+    this.m21 = 0; this.m22 = 0; this.m23 = 0; this.m24 = 0;
+    this.m31 = 0; this.m32 = 0; this.m33 = 0; this.m34 = 0;
+    this.m41 = 0; this.m42 = 0; this.m43 = 0; this.m44 = 0;
+  }
+
+  toString() {
+    return "matrix3d(" +
+      this.m11 + "," + this.m21 + "," + this.m31 + "," + this.m41 + "," +
+      this.m12 + "," + this.m22 + "," + this.m32 + "," + this.m42 + "," +
+      this.m13 + "," + this.m23 + "," + this.m33 + "," + this.m43 + "," +
+      this.m14 + "," + this.m24 + "," + this.m34 + "," + this.m44 + ")";
+  }
+
+  fromString(source) {
+    const M = source.replace(/^[^\(]*\(\s*/, "").replace(/\s*\)[^\)]*$/, "").split(/\s*,\s*/).map(parseFloat);
+    this.m11 = M[0]; this.m12 = M[4]; this.m13 = M[ 8]; this.m14 = M[12];
+    this.m21 = M[1]; this.m22 = M[5]; this.m23 = M[ 9]; this.m24 = M[13];
+    this.m31 = M[2]; this.m32 = M[6]; this.m33 = M[10]; this.m34 = M[14];
+    this.m41 = M[3]; this.m42 = M[7]; this.m43 = M[11]; this.m44 = M[15];
+    return this;
+  }
+
+  setIdentity() {
+    this.m11 = 1; this.m12 = 0; this.m13 = 0; this.m14 = 0;
+    this.m21 = 0; this.m22 = 1; this.m23 = 0; this.m24 = 0;
+    this.m31 = 0; this.m32 = 0; this.m33 = 1; this.m34 = 0;
+    this.m41 = 0; this.m42 = 0; this.m43 = 0; this.m44 = 1;
+    return this;
+  }
+}
 
 //-------------------------------------------------------------------------
 

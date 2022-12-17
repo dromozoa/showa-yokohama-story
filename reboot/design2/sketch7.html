@@ -123,12 +123,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     rotatePanel: () => {
       new TWEEN.Tween({ rotation: 0 })
-        .to({ rotation: 360 }, 5000)
+        .to({ rotation: Math.PI * 2}, 5000)
         .onUpdate(data => {
-          panelNode.style.transform = "rotate3d(0, 1, 0, " + D.numberToString(data.rotation, "deg") + ")";
           // フラットシェーディング。正面から光が当たっているとする。
-          const y = Math.round(Math.abs(Math.cos(data.rotation / 180 * Math.PI)) * 255);
-          panelNode.style.color = "rgb(" + y + "," + y + "," + y + ")";
+          panelNode.style.transform = new D.AxisAngle4(0, 1, 0, data.rotation).toString();
+          const y = Math.abs(Math.cos(data.rotation));
+          panelNode.style.color = new D.Color4(y, y, y, 1).toString();
         })
         .start();
     },
