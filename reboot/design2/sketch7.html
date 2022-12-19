@@ -50,6 +50,7 @@
       height: 448px;
       font-size: 32px;
       line-height: 64px;
+      transform-style: preserve-3d;
       /*
       background-color: rgba(255, 255, 255, 0.2);
       */
@@ -133,11 +134,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
         .start();
     },
+    hidePanel: () => {
+      new TWEEN.Tween({ value: 1 })
+        .to({ value: 0 }, 2000)
+        .onUpdate(data => {
+          [...panelNode.children].forEach((node, i) => {
+            if (i > 0) {
+              node.style.opacity = data.value;
+              node.style.transform = "translateY(" + (data.value * 32 - 32) + "px) " + new D.AxisAngle4(1, 0, 0, (data.value - 1) * Math.PI / 2).toString();
+            }
+          });
+        })
+        .start();
+    },
   };
   gui.add(data, "perspective", 0, 10000, 50);
   gui.add(data, "setPerspective");
   gui.add(data, "unsetPerspective");
   gui.add(data, "rotatePanel");
+  gui.add(data, "hidePanel");
 
   while (true) {
     await D.requestAnimationFrame();
