@@ -16,13 +16,15 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local speed = "1.2"
+local pitch = "-1.5"
+local pause = "0.6"
 
 return {
   narrator = {
     speaker = "Speaker/f1";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -33,8 +35,8 @@ return {
   alice = {
     speaker = "Speaker/f1";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -45,8 +47,8 @@ return {
   danu = {
     speaker = "Speaker/f5";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -57,8 +59,8 @@ return {
   demeter = {
     speaker = "Speaker/f4b";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -69,8 +71,8 @@ return {
   yukio = {
     speaker = "Speaker/m3";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -81,8 +83,8 @@ return {
   priest = {
     speaker = "Speaker/m1";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -93,8 +95,8 @@ return {
   engineer = {
     speaker = "Speaker/m1";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -105,8 +107,8 @@ return {
   activist = {
     speaker = "Speaker/m1";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";
@@ -117,8 +119,8 @@ return {
   steven = {
     speaker = "Speaker/m4";
     speed = speed;
-    pitch = "-1.5";
-    pause = "0.5";
+    pitch = pitch;
+    pause = pause;
     volume = "2.0";
     happy = "0.0";
     fun = "0.0";

@@ -73,6 +73,12 @@ local function append_jump(paragraph, jump)
   return paragraph
 end
 
+local function append_paragraph(scenario, paragraph)
+  paragraph.system = scenario.system
+  scenario[#scenario + 1] = paragraph
+  return scenario
+end
+
 local function parse(scenario, include_path, filename)
   local handle, message = io.open(include_path.."/"..filename)
   if not handle then
@@ -167,16 +173,22 @@ local function parse(scenario, include_path, filename)
     elseif match "^@choice{" then
       -- @choice{選択肢}
       -- @choice{選択肢}{ラベル}
+      -- @choice{選択肢}{ラベル}{バーコード}
       -- @choice{選択肢}{{文}}
       -- @choice{選択肢}{{文}}{ラベル}
+      -- @choice{選択肢}{{文}}{ラベル}{バーコード}
       local choice = assert(parse_text "directive")
       local action
       local label
+      local barcode
       if match "^{{(.-)}}" then
         action = trim(_1)
       end
       if match "^{([^}]*)}" then
         label = trim(_1)
+        if match "^{([^}]*)}" then
+          barcode = trim(_1)
+        end
       else
         local buffer = {}
         for i, v in ipairs(choice) do
@@ -188,7 +200,7 @@ local function parse(scenario, include_path, filename)
         end
         label = trim(table.concat(buffer))
       end
-      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label })
+      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label, barcode = barcode })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -206,6 +218,14 @@ local function parse(scenario, include_path, filename)
       -- @finish
       paragraph = update(paragraph, "finish", true)
 
+    elseif match "^@system" then
+      -- @system
+      -- 以降の段落をシステム用とする
+      scenario = update(scenario, "system", true)
+
+    elseif match "^@dialog{([^}]*)}" then
+      paragraph = update(paragraph, "dialog", trim(_1))
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if text then
@@ -213,7 +233,7 @@ local function parse(scenario, include_path, filename)
         text = nil
       end
       if paragraph then
-        scenario = append(scenario, paragraph)
+        scenario = append_paragraph(scenario, paragraph)
         paragraph = nil
       end
 
@@ -226,7 +246,7 @@ local function parse(scenario, include_path, filename)
       end
       -- 空行で段落を分ける。
       if match "^[\t\v\f ]*\r\n?%s*" or match "^[\t\v\f ]*\n\r?%s*" then
-        scenario = append(scenario, paragraph)
+        scenario = append_paragraph(scenario, paragraph)
         paragraph = nil
       end
     end

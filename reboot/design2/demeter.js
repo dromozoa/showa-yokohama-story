@@ -247,13 +247,32 @@ const updateChars = (source, fontSize, font) => {
   });
 };
 
-const parseParagraphBreakTable = {
+D.parseText = (source, fontSize, font) => {
+  const rubyFontSize = fontSize * 0.5;
+  const result = source.map(source => {
+    const result = {
+      rubyOverhangPrev: 0,
+      rubyOverhangNext: 0,
+    };
+    if (typeof source === "string") {
+      result.base = parseChars(source, fontSize, font);
+    } else {
+      result.base = parseChars(source[0], fontSize, font);
+      updateChars(result.ruby = parseChars(source[1], rubyFontSize, font), rubyFontSize, font);
+    }
+    return result;
+  });
+  updateChars(result.map(item => item.base).flat(), fontSize, font);
+  return result;
+};
+
+const parseParagraphFromNodeBreakTable = {
   "BR": true,
   "DIV": true,
   "P": true,
 };
 
-D.parseParagraph = (source, fontSize, font) => {
+const parseParagraphFromNode = (source, fontSize, font) => {
   const rubyFontSize = fontSize * 0.5;
   const result = [];
   let text;
@@ -266,7 +285,7 @@ D.parseParagraph = (source, fontSize, font) => {
           updateChars(item.ruby = parseChars(node.textContent, rubyFontSize, font), rubyFontSize, font);
         } else {
           node.childNodes.forEach(parse);
-          if (parseParagraphBreakTable[node.tagName]) {
+          if (parseParagraphFromNodeBreakTable[node.tagName]) {
             text = undefined;
           }
         }
@@ -286,9 +305,14 @@ D.parseParagraph = (source, fontSize, font) => {
   parse(source);
 
   result.forEach(text => updateChars(text.map(item => item.base).flat(), fontSize, font));
-
   return result;
 };
+
+const parseParagraphFromArray = (source, fontSize, font) => {
+  return source.map(text => D.parseText(text, fontSize, font));
+};
+
+D.parseParagraph = (source, fontSize, font) => (source instanceof Node ? parseParagraphFromNode : parseParagraphFromArray)(source, fontSize, font);
 
 //-------------------------------------------------------------------------
 
@@ -752,7 +776,7 @@ D.PathData = class {
   h(x) { return this.push("h", x); }
   V(y) { return this.push("V", y); }
   v(y) { return this.push("v", y); }
-};
+}
 
 //-------------------------------------------------------------------------
 
@@ -774,7 +798,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
     .M(0,U2).l(U4,-U4).h(W4-U4-U8).l(U8,U8).h(W2).l(U8,-U8).h(W4-U4-U8).l(U4,U4).v(H).H(U1).L(0,H-U2).z()
     // 枠線の内側（反時計回り）
     .M(1,U2+1).V(H-U2-C3).L(U1+C3,H+U2-1).H(W-1).V(U2+1).z()
-    // テキスト領域
+    // 表示領域
     .M(U4,U2+U4).h(W-U2).v(H-U2).H(U1+U4*C3).L(U4,H-U2-U4*C3).z()
     // 左下
     .M(0,H-U2+(U4-1)*D2).L(U1-(U4-1)*D2,H+U2).H(U4).l(-U4,-U4).z();
@@ -787,19 +811,193 @@ D.createChoiceFrame = (width, height, fontSize) => {
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width, "")} ${D.numberToString(height, "")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
       <defs>
         <clipPath id="${clipId}">
           <path d="${clipPathData}"/>
         </clipPath>
       </defs>
       <g clip-path="url(#${clipId})">
+        <path fill="none" stroke-width="${D.numberToString(U4+2,"")}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
-        <path stroke-width="${D.numberToString(U4+2, "")}" d="${barPathData}"/>
       </g>
     </svg>
   `;
   return template.content.firstElementChild;
+};
+
+//-------------------------------------------------------------------------
+
+D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeight) => {
+  const W = width;
+  const H = height;
+  const H2 = height * 0.5;
+  const H4 = height * 0.25;
+  const U1 = fontSize;
+  const U2 = fontSize * 0.5;
+  const U4 = fontSize * 0.25;
+  const U8 = fontSize * 0.125;
+  const BW = buttonWidth;
+  const BH = buttonHeight;
+  const C3 = Math.cos(Math.PI * 0.375);
+
+  const clipId = "demeter-serial-" + D.getSerialNumber();
+  const clipPathData = new D.PathData()
+    // 枠線の外側（時計回り）
+    .M(0,U2).l(U2,-U2).h(W-U1).l(U2,U2).v(H-U1).l(-U2,U2).h(U1-W).l(-U2,-U2).z()
+    // 枠線の内側（反時計回り）
+    .M(U2+1,1).v(H4-1).l(-U8,U8).v(H2-U4).l(U8,U8).v(H4-1)
+    .H(W-U2-1).v(1-H4).l(U8,-U8).v(U4-H2).l(-U8,-U8).v(1-H4).z()
+    // 表示領域（時計回り）
+    .M(U2+U4,U4).h(W-U1-U2).V(H4+U4*C3).l(U8,U8).V(H-H4-U4*C3-U8).l(-U8,U8).V(H-U4)
+    .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z();
+
+  let buttonsHtml = '<g class="buttons">';
+  for (let i = 1; i <= buttons; ++i) {
+    // ボタン（反時計回り）
+    clipPathData
+      .M(W-(BW+U1)*i-U2,H-BH-U2+U4)
+      .v(BH-U2-U4).h(BW-U2-U4).l(U2+U4,-U2-U4).v(-BH+U2+U4).h(-BW+U2+U4).z();
+
+    const buttonPathData = new D.PathData()
+      .M(W-(BW+U1)*i-U2,H-BH-U2+U4)
+      .l(U2+U4,-U2-U4).h(BW-U2-U4).v(BH-U2-U4)
+      .l(-U2-U4,U2+U4).h(-BW+U2+U4).z();
+
+    const buttonBarPathData = new D.PathData()
+      .M(W-(BW+U1)*i-U2,H-BH)
+      .v(-U4).l(U2+U4,-U2-U4).h(U2+U4)
+      .m(BW-U1*3+U4,0).h(U1+U4).v(U2)
+      .m(0,BH-U1-U2).v(U4).l(-U2-U4,U2+U4).h(-U2-U4)
+      .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
+
+    buttonsHtml += `
+      <g class="button button${i}">
+        <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${buttonBarPathData}"/>
+        <path stroke-width="1" d="${buttonPathData}"/>
+      </g>
+    `;
+  }
+  buttonsHtml += "</g>";
+
+  const barPathData = new D.PathData()
+    .M(U2-U4,0).V(H)
+    .M(W-U2+U4,0).V(H);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+      <defs>
+        <clipPath id="${clipId}">
+          <path d="${clipPathData}"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#${clipId})">
+        <path fill="none" stroke-width="${D.numberToString(U2+2,"")}" d="${barPathData}"/>
+        <rect stroke-width="2" x="${D.numberToString(U2,"")}" y="0" width="${D.numberToString(W-U1,"")}" height="${D.numberToString(height,"")}"/>
+      </g>
+      ${buttonsHtml}
+    </svg>
+  `;
+  return template.content.firstElementChild;
+};
+
+//-------------------------------------------------------------------------
+
+D.Vector3 = class {
+  constructor(x = 0, y = 0, z = 0) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  normalize() {
+    const n = 1 / this.length();
+    this.x *= n;
+    this.y *= n;
+    this.z *= n;
+    return this;
+  }
+
+  dot(that) {
+    return this.x * that.x + this.y * that.y + this.z * that.z;
+  }
+
+  lengthSquared() {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+  }
+
+  length() {
+    return Math.sqrt(this.lengthSquared());
+  }
+}
+
+D.Color4 = class {
+  constructor(x = 0, y = 0, z = 0, w = 1) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
+  }
+
+  toString() {
+    return "rgba(" +
+      (this.x * 100) + "%," +
+      (this.y * 100) + "%," +
+      (this.z * 100) + "%," +
+      (this.w * 100) + "%)";
+  }
+}
+
+D.AxisAngle4 = class {
+  constructor(x, y, z, angle) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.angle = angle;
+  }
+
+  toString() {
+    return "rotate3d(" +
+      this.x + "," +
+      this.y + "," +
+      this.z + "," +
+      this.angle + "rad)";
+  }
+}
+
+D.Matrix4 = class {
+  constructor() {
+    this.m11 = 0; this.m12 = 0; this.m13 = 0; this.m14 = 0;
+    this.m21 = 0; this.m22 = 0; this.m23 = 0; this.m24 = 0;
+    this.m31 = 0; this.m32 = 0; this.m33 = 0; this.m34 = 0;
+    this.m41 = 0; this.m42 = 0; this.m43 = 0; this.m44 = 0;
+  }
+
+  toString() {
+    return "matrix3d(" +
+      this.m11 + "," + this.m21 + "," + this.m31 + "," + this.m41 + "," +
+      this.m12 + "," + this.m22 + "," + this.m32 + "," + this.m42 + "," +
+      this.m13 + "," + this.m23 + "," + this.m33 + "," + this.m43 + "," +
+      this.m14 + "," + this.m24 + "," + this.m34 + "," + this.m44 + ")";
+  }
+
+  fromString(source) {
+    const M = source.replace(/^[^\(]*\(\s*/, "").replace(/\s*\)[^\)]*$/, "").split(/\s*,\s*/).map(parseFloat);
+    this.m11 = M[0]; this.m12 = M[4]; this.m13 = M[ 8]; this.m14 = M[12];
+    this.m21 = M[1]; this.m22 = M[5]; this.m23 = M[ 9]; this.m24 = M[13];
+    this.m31 = M[2]; this.m32 = M[6]; this.m33 = M[10]; this.m34 = M[14];
+    this.m41 = M[3]; this.m42 = M[7]; this.m43 = M[11]; this.m44 = M[15];
+    return this;
+  }
+
+  setIdentity() {
+    this.m11 = 1; this.m12 = 0; this.m13 = 0; this.m14 = 0;
+    this.m21 = 0; this.m22 = 1; this.m23 = 0; this.m24 = 0;
+    this.m31 = 0; this.m32 = 0; this.m33 = 1; this.m34 = 0;
+    this.m41 = 0; this.m42 = 0; this.m43 = 0; this.m44 = 1;
+    return this;
+  }
 }
 
 //-------------------------------------------------------------------------

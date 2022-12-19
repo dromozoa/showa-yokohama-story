@@ -26,39 +26,45 @@ syn include @javascript syntax/javascript.vim
 unlet b:current_syntax
 
 syntax match sysRawString /@"{.\{-}}"/
-syntax match sysRuby      /@r{[^}]*}{[^}]*}\%({[^}]*}\)\?/
-syntax match sysVoice     /@v{[^}]*}{[^}]*}/
-
-syntax keyword sysTodo TODO FIXME XXX NOTE contained
-syntax match sysArgLabel /{[^}]*}/ contained
+syntax match sysRuby /@r{[^}]*}{[^}]*}\%({[^}]*}\)\?/
+syntax match sysVoice /@v{[^}]*}{[^}]*}/
 
 syntax match sysSpeaker /#.*$/
+syntax keyword sysTodo TODO FIXME XXX NOTE contained
 syntax match sysComment /@#.*$/ contains=sysTodo
-syntax match sysLabel   /@label{[^}]*}/ contains=sysArgLabel
-syntax match sysJump    /@jump{[^}]*}/ contains=sysArgLabel
+syntax match sysLabelArg /{[^}]*}/ contained
+syntax match sysLabel /@label{[^}]*}/ contains=sysLabelArg
+syntax match sysJump /@jump{[^}]*}/ contains=sysLabelArg
 syntax match sysInclude /@include{[^}]*}/
-syntax match sysFinish  /@finish/
+syntax match sysFinish /@finish/
+syntax match sysSystem /@system/
+syntax match sysDialog /@dialog{[^}]*}/
 
-syntax region sysChoice start=/@choice{/ end=/}/ contains=sysRawString,sysRuby,sysVoice nextgroup=sysChoiceScript,sysArgLabel
-syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript contained nextgroup=sysArgLabel
-syntax region sysWhen start=/@when{{/ end=/}}/ keepend contains=@javascript nextgroup=sysArgLabel
+syntax match sysChoiceLabel /{[^}]*}\%({[^}]*}\)\?/ contained
+syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript contained nextgroup=sysChoiceLabel
+syntax region sysChoice start=/@choice{/ end=/}/ contains=sysRawString,sysRuby,sysVoice nextgroup=sysChoiceScript,sysChoiceLabel
+
+syntax region sysWhen start=/@when{{/ end=/}}/ keepend contains=@javascript nextgroup=sysLabelArg
 syntax region sysLeave start=/@leave{{/ end=/}}/ keepend contains=@javascript
 
-highlight default link sysRawString    String
-highlight default link sysRuby         String
-highlight default link sysVoice        String
-highlight default link sysTodo         Todo
-highlight default link sysArgLabel     Macro
-highlight default link sysSpeaker      Identifier
-highlight default link sysComment      Comment
-highlight default link sysLabel        Statement
-highlight default link sysJump         Statement
-highlight default link sysChoice       Conditional
+highlight default link sysRawString String
+highlight default link sysRuby String
+highlight default link sysVoice String
+highlight default link sysSpeaker Identifier
+highlight default link sysTodo Todo
+highlight default link sysComment Comment
+highlight default link sysLabelArg Macro
+highlight default link sysLabel Statement
+highlight default link sysJump Statement
+highlight default link sysChoiceLabel Macro
 highlight default link sysChoiceScript Conditional
-highlight default link sysInclude      Include
-highlight default link sysWhen         Conditional
-highlight default link sysLeave        Statement
-highlight default link sysFinish       Statement
+highlight default link sysChoice Conditional
+highlight default link sysInclude Include
+highlight default link sysWhen Conditional
+highlight default link sysLeave Statement
+highlight default link sysFinish Statement
+highlight default link sysSystem Statement
+highlight default link sysDialog Statement
 
 let b:current_syntax = "showa-yokohama-story"
 

@@ -73,28 +73,30 @@ nodesep=0.11111111;
 node [shape=box,width=0.33333333,height=0.11111111,label=""];
 ]]
 for i, paragraph in ipairs(scenario) do
-  if paragraph.when_jumps then
-    handle:write("c", i, "[shape=diamond,width=0.5];\n")
-    for _, jump in ipairs(paragraph.when_jumps) do
-      handle:write("c", i, to, jump_entry(jump), ";\n")
+  -- システム用の段落は出力しない
+  if not paragraph.system then
+    if paragraph.when_jumps then
+      handle:write("c", i, "[shape=diamond,width=0.5];\n")
+      for _, jump in ipairs(paragraph.when_jumps) do
+        handle:write("c", i, to, jump_entry(jump), ";\n")
+      end
+      handle:write("c", i, to, "p", i, ";\n")
     end
-    handle:write("c", i, to, "p", i, ";\n")
-  end
-
-  if paragraph.choice_jumps then
-    handle:write("p", i, "[shape=trapezium,width=0.41666667];\n");
-    for _, jump in ipairs(paragraph.choice_jumps) do
-      handle:write("p", i, to, jump_entry(jump), ";\n")
-    end
-  else
-    handle:write("p", i, ";\n");
-    if paragraph.jump then
-      handle:write("p", i, to, jump_entry(paragraph.jump), ";\n")
-    elseif paragraph.finish then
-      handle:write("f", i, "[shape=circle,width=0.16666667,height=0.16666667];\n");
-      handle:write("p", i, to, "f", i, ";\n");
+    if paragraph.choice_jumps then
+      handle:write("p", i, "[shape=trapezium,width=0.41666667];\n");
+      for _, jump in ipairs(paragraph.choice_jumps) do
+        handle:write("p", i, to, jump_entry(jump), ";\n")
+      end
     else
-      handle:write("p", i, to, get_entry(scenario[i + 1]), ";\n")
+      handle:write("p", i, ";\n");
+      if paragraph.jump then
+        handle:write("p", i, to, jump_entry(paragraph.jump), ";\n")
+      elseif paragraph.finish then
+        handle:write("f", i, "[shape=circle,width=0.16666667,height=0.16666667];\n");
+        handle:write("p", i, to, "f", i, ";\n");
+      else
+        handle:write("p", i, to, get_entry(scenario[i + 1]), ";\n")
+      end
     end
   end
 end
