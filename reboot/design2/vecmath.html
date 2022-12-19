@@ -74,13 +74,13 @@
 \end{aligned}\]
 ただし、
 \[\begin{aligned}
-  s_c &amp;= \sin\frac{\theta}{2}\cos\frac{\theta}{2} \\
-  s_q &amp;= \sin^2\frac{\theta}{2}
+s_c &amp;= \sin\frac{\theta}{2}\cos\frac{\theta}{2} \\
+s_q &amp;= \sin^2\frac{\theta}{2}
 \end{aligned}\]
 それぞれ倍角の公式と半角の公式から、
 \[\begin{aligned}
-  s_c &amp;= \frac{\sin\theta}{2} \\
-  s_q &amp;= \frac{1-\cos\theta}{2}
+s_c &amp;= \frac{\sin\theta}{2} \\
+s_q &amp;= \frac{1-\cos\theta}{2}
 \end{aligned}\]
 </p>
 
@@ -116,6 +116,7 @@
 \tan\frac{\theta}{2} &amp;= \frac{\sqrt{x^2+y^2+z^2}}{w}
 \end{aligned}\]
 \(\theta=0\)のとき回転軸が定まらないので、<a href="https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java#L233">Sunのvecmath実装</a>は\((0,1,0)\)としている。
+<a href="https://github.com/kenjihiranabe/javax.vecmath/blob/master/src/main/java/javax/vecmath/AxisAngle4d.java#L328">平鍋のvecmath実装</a>は正規化しない。
 </p>
 
 <h2>四元数から回転行列</h2>
@@ -142,26 +143,26 @@
 <p>
 回転行列の対角成分に着目すると、
 \[\begin{aligned}
-  m_{11}+m_{22}+m_{33} &amp;= 4w^2-1 \\
-  m_{11}-m_{22}-m_{33} &amp;= 4x^2-1 \\
-  m_{22}-m_{33}-m_{11} &amp;= 4y^2-1 \\
-  m_{33}-m_{11}-m_{22} &amp;= 4z^2-1 \\
+m_{11}+m_{22}+m_{33} &amp;= 4w^2-1 \\
+m_{11}-m_{22}-m_{33} &amp;= 4x^2-1 \\
+m_{22}-m_{33}-m_{11} &amp;= 4y^2-1 \\
+m_{33}-m_{11}-m_{22} &amp;= 4z^2-1 \\
 \end{aligned}\]
 なので、
 \[\begin{aligned}
-  w &amp;= \frac{\sqrt{m_{11}+m_{22}+m_{33}+1}}{2} \\
-  x &amp;= \frac{\sqrt{m_{11}-m_{22}-m_{33}+1}}{2} \\
-  y &amp;= \frac{\sqrt{m_{22}-m_{33}-m_{11}+1}}{2} \\
-  z &amp;= \frac{\sqrt{m_{33}-m_{11}-m_{22}+1}}{2}
+w &amp;= \frac{\sqrt{m_{11}+m_{22}+m_{33}+1}}{2} \\
+x &amp;= \frac{\sqrt{m_{11}-m_{22}-m_{33}+1}}{2} \\
+y &amp;= \frac{\sqrt{m_{22}-m_{33}-m_{11}+1}}{2} \\
+z &amp;= \frac{\sqrt{m_{33}-m_{11}-m_{22}+1}}{2}
 \end{aligned}\]
 非対角成分に着目すると、
 \[\begin{aligned}
-  m_{21}+m_{12} &amp;= 4xy \\
-  m_{32}+m_{23} &amp;= 4yz \\
-  m_{13}+m_{31} &amp;= 4zx \\
-  m_{32}-m_{23} &amp;= 4wx \\
-  m_{13}-m_{31} &amp;= 4wy \\
-  m_{21}-m_{12} &amp;= 4wz
+m_{21}+m_{12} &amp;= 4xy \\
+m_{32}+m_{23} &amp;= 4yz \\
+m_{13}+m_{31} &amp;= 4zx \\
+m_{32}-m_{23} &amp;= 4wx \\
+m_{13}-m_{31} &amp;= 4wy \\
+m_{21}-m_{12} &amp;= 4wz
 \end{aligned}\]
 </p>
 
@@ -180,15 +181,74 @@ Shoemakeのチュートリアルでは、対角成分から\(x,y,z,w\)のどれ�
 <p>
 単位四元数\(q_1,q_2\)の球面線形補間(Spherical Linear Interpolation)は、
 \[\begin{aligned}
-  \mathrm{slerp}(q_1,q_2,t) = q_1\frac{\sin\Omega(1-t)}{\sin\Omega} + q_2\frac{\sin\Omega t}{\sin\Omega}
+\mathrm{slerp}(q_1,q_2,t) = q_1\frac{\sin\Omega(1-t)}{\sin\Omega} + q_2\frac{\sin\Omega t}{\sin\Omega}
 \end{aligned}\]
 ただし、
 \[\begin{aligned}
-  \cos\Omega = q_1\cdot q_2
+\cos\Omega = q_1\cdot q_2
 \end{aligned}\]
 </p>
 \(q_1\cdot q_2\lt0\)ならば、どちらかの四元数の符号を反転して最小距離で補間する。
 </div>
+
+<h2>逆行列</h2>
+
+<p>
+\[\begin{aligned}
+M
+&amp;=
+\begin{pmatrix}
+  m_{11} &amp; m_{12} &amp; m_{13} &amp; m_{14} \\
+  m_{21} &amp; m_{22} &amp; m_{23} &amp; m_{24} \\
+  m_{31} &amp; m_{32} &amp; m_{33} &amp; m_{34} \\
+  m_{41} &amp; m_{42} &amp; m_{43} &amp; m_{44}
+\end{pmatrix} \\
+M^{-1}
+&amp;=
+\frac{1}{\det M}
+\begin{pmatrix}
+  n_{11} &amp; n_{12} &amp; n_{13} &amp; n_{14} \\
+  n_{21} &amp; n_{22} &amp; n_{23} &amp; n_{24} \\
+  n_{31} &amp; n_{32} &amp; n_{33} &amp; n_{34} \\
+  n_{41} &amp; n_{42} &amp; n_{43} &amp; n_{44}
+\end{pmatrix}
+\end{aligned}\]
+
+<a href="https://github.com/kenjihiranabe/javax.vecmath/blob/master/src/main/java/javax/vecmath/Matrix4d.java#L1161">平鍋のvecmath実装</a>から、
+\[\begin{aligned}
+n_{11} &amp;= m_{22}(m_{33}m_{44}-m_{34}m_{43})+m_{23}(m_{34}m_{42}-m_{32}m_{44})+m_{24}(m_{32}m_{43}-m_{33}m_{42}) \\
+n_{12} &amp;= m_{32}(m_{13}m_{44}-m_{14}m_{43})+m_{33}(m_{14}m_{42}-m_{12}m_{44})+m_{34}(m_{12}m_{43}-m_{13}m_{42}) \\
+n_{13} &amp;= m_{42}(m_{13}m_{24}-m_{14}m_{23})+m_{43}(m_{14}m_{22}-m_{12}m_{24})+m_{44}(m_{12}m_{23}-m_{13}m_{22}) \\
+n_{14} &amp;= m_{12}(m_{24}m_{33}-m_{23}m_{34})+m_{13}(m_{22}m_{34}-m_{24}m_{32})+m_{14}(m_{23}m_{32}-m_{22}m_{33}) \\
+n_{21} &amp;= m_{23}(m_{31}m_{44}-m_{34}m_{41})+m_{24}(m_{33}m_{41}-m_{31}m_{43})+m_{21}(m_{34}m_{43}-m_{33}m_{44}) \\
+n_{22} &amp;= m_{33}(m_{11}m_{44}-m_{14}m_{41})+m_{34}(m_{13}m_{41}-m_{11}m_{43})+m_{31}(m_{14}m_{43}-m_{13}m_{44}) \\
+n_{23} &amp;= m_{43}(m_{11}m_{24}-m_{14}m_{21})+m_{44}(m_{13}m_{21}-m_{11}m_{23})+m_{41}(m_{14}m_{23}-m_{13}m_{24}) \\
+n_{24} &amp;= m_{13}(m_{24}m_{31}-m_{21}m_{34})+m_{14}(m_{21}m_{33}-m_{23}m_{31})+m_{11}(m_{23}m_{34}-m_{24}m_{33}) \\
+n_{31} &amp;= m_{24}(m_{31}m_{42}-m_{32}m_{41})+m_{21}(m_{32}m_{44}-m_{34}m_{42})+m_{22}(m_{34}m_{41}-m_{31}m_{44}) \\
+n_{32} &amp;= m_{34}(m_{11}m_{42}-m_{12}m_{41})+m_{31}(m_{12}m_{44}-m_{14}m_{42})+m_{32}(m_{14}m_{41}-m_{11}m_{44}) \\
+n_{33} &amp;= m_{44}(m_{11}m_{22}-m_{12}m_{21})+m_{41}(m_{12}m_{24}-m_{14}m_{22})+m_{42}(m_{14}m_{21}-m_{11}m_{24}) \\
+n_{34} &amp;= m_{14}(m_{22}m_{31}-m_{21}m_{32})+m_{11}(m_{24}m_{32}-m_{22}m_{34})+m_{12}(m_{21}m_{34}-m_{24}m_{31}) \\
+n_{41} &amp;= m_{21}(m_{33}m_{42}-m_{32}m_{43})+m_{22}(m_{31}m_{43}-m_{33}m_{41})+m_{23}(m_{32}m_{41}-m_{31}m_{42}) \\
+n_{42} &amp;= m_{31}(m_{13}m_{42}-m_{12}m_{43})+m_{32}(m_{11}m_{43}-m_{13}m_{41})+m_{33}(m_{12}m_{41}-m_{11}m_{42}) \\
+n_{43} &amp;= m_{41}(m_{13}m_{22}-m_{12}m_{23})+m_{42}(m_{11}m_{23}-m_{13}m_{21})+m_{43}(m_{12}m_{21}-m_{11}m_{22}) \\
+n_{44} &amp;= m_{11}(m_{22}m_{33}-m_{23}m_{32})+m_{12}(m_{23}m_{31}-m_{21}m_{33})+m_{13}(m_{21}m_{32}-m_{22}m_{31})
+\end{aligned}\]
+
+\[\begin{aligned}
+\det M
+&amp;=
+m_{11}n_{11}+m_{21}n_{12}+m_{31}n_{13}+m_{41}n_{14} \\
+&amp;=
+\begin{split}
+   &amp; (m_{11}m_{22}-m_{12}m_{21})(m_{33}m_{44}-m_{34}m_{43}) \\
+  -&amp; (m_{11}m_{23}-m_{13}m_{21})(m_{32}m_{44}-m_{34}m_{42}) \\
+  +&amp; (m_{11}m_{24}-m_{14}m_{21})(m_{32}m_{43}-m_{33}m_{42}) \\
+  +&amp; (m_{12}m_{23}-m_{13}m_{22})(m_{31}m_{44}-m_{34}m_{41}) \\
+  -&amp; (m_{12}m_{24}-m_{14}m_{22})(m_{31}m_{43}-m_{33}m_{41}) \\
+  +&amp; (m_{13}m_{24}-m_{14}m_{23})(m_{31}m_{42}-m_{32}m_{41})
+\end{split}
+\end{aligned}\]
+</p>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
