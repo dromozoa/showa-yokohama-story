@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cameraNode = document.querySelector(".camera");
   cameraNode.style.width = D.numberToString(W);
   cameraNode.style.height = D.numberToString(H);
+  cameraNode.style.transformStyle = "preserve-3d";
 
   const panelNode = document.querySelector(".panel");
   panelNode.style.top = D.numberToString((H - 448) * 0.5);

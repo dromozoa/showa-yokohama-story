@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>昭和横濱物語</title>
+
+<!-- https://fonts.google.com/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
+
+<!-- https://katex.org/docs/browser.html -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" integrity="sha256-gMRN4/6qeELzO1wbFa8qQLU8kfuF2dnAPiUoI0ATjx8=" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha256-hj447pxoq07J81z91mvNVKDDo2MTZf370GozMVGIfIA=" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha256-nLjaz8CGwpZsnsS6VPSi3EO3y+KzPOwaJ0PYhsf7R6c=" crossorigin="anonymous"></script>
+
+<link href="manifest.webmanifest" rel="manifest">
+<link href="favicon.ico" rel="icon" sizes="any">
+<link href="favicon.svg" rel="icon" type="image/svg+xml">
+<link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+<style>
+.container {
+  margin: 2rem;
+  font-family: 'BIZ UDPMincho';
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>回転ベクトルから回転行列</h2>
+
+<h3>ロドリゲスの回転公式</h3>
+
+<p>
+単位ベクトル\((x,y,z)\)を軸として\(\theta\)回転する行列は、<a href="https://mathworld.wolfram.com/RodriguesRotationFormula.html">Rodrigues' Rotation Formula</a>から、
+\[\begin{aligned}
+\begin{pmatrix}
+  m_{11} &amp; m_{12} &amp; m_{13} \\
+  m_{21} &amp; m_{22} &amp; m_{23} \\
+  m_{31} &amp; m_{32} &amp; m_{33}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  \cos\theta+x^2(1-\cos\theta) &amp; xy(1-\cos\theta)-z\sin\theta &amp; zx(1-\cos\theta)+y\sin\theta \\
+  xy(1-\cos\theta)+z\sin\theta &amp; \cos\theta+y^2(1-\cos\theta) &amp; yz(1-\cos\theta)-x\sin\theta \\
+  zx(1-\cos\theta)-y\sin\theta &amp; yz(1-\cos\theta)+x\sin\theta &amp; \cos\theta+z^2(1-\cos\theta)
+\end{pmatrix}
+\end{aligned}\]
+</p>
+
+<h3>CSS Transforms Moduleの記載</h3>
+
+<p>
+<a href="https://www.w3.org/TR/css-transforms-2/#mathematical-description">CSS Transforms Module</a>の記載は、四元数から導いたもので、
+\[\begin{aligned}
+\begin{pmatrix}
+  m_{11} &amp; m_{12} &amp; m_{13} \\
+  m_{21} &amp; m_{22} &amp; m_{23} \\
+  m_{31} &amp; m_{32} &amp; m_{33}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1-2(y^2+z^2)s_q &amp; 2(xys_q-zs_c)   &amp; 2(xzs_q+ys_c) \\
+  2(xys_q+zs_c)   &amp; 1-2(x^2+z^2)s_q &amp; 2(yzs_q-xs_c) \\
+  2(xzs_q-ys_c)   &amp; 2(yzs_q+xs_c)   &amp; 1-2(x^2+y^2)s_q
+\end{pmatrix}
+\end{aligned}\]
+ただし、
+\[\begin{aligned}
+  s_c &amp;= \sin\frac{\theta}{2}\cos\frac{\theta}{2} \\
+  s_q &amp;= \sin^2\frac{\theta}{2}
+\end{aligned}\]
+それぞれ倍角の公式と半角の公式から、
+\[\begin{aligned}
+  s_c &amp;= \frac{\sin\theta}{2} \\
+  s_q &amp;= \frac{1-\cos\theta}{2}
+\end{aligned}\]
+</p>
+
+<h2>回転ベクトルから四元数</h2>
+
+<p>
+単位ベクトル\((x,y,z)\)を軸として\(\theta\)回転する四元数は、
+\[\begin{aligned}
+\def\arraystretch{1.5}
+\begin{pmatrix}
+  q_x \\
+  q_y \\
+  q_z \\
+  q_w
+\end{pmatrix}
+=
+\begin{pmatrix}
+  x\sin\frac{\theta}{2} \\
+  y\sin\frac{\theta}{2} \\
+  z\sin\frac{\theta}{2} \\
+  \cos\frac{\theta}{2}
+\end{pmatrix}
+\end{aligned}\]
+</p>
+
+<h2>四元数から回転ベクトル</h2>
+
+<p>
+単位四元数\((x,y,z,w)\)から回転角\(\theta\)を求める。
+\[\begin{aligned}
+\sin\frac{\theta}{2} &amp;= \sqrt{x^2+y^2+z^2} \\
+\cos\frac{\theta}{2} &amp;= w \\
+\tan\frac{\theta}{2} &amp;= \frac{\sqrt{x^2+y^2+z^2}}{w}
+\end{aligned}\]
+\(\theta=0\)のとき回転軸が定まらないので、<a href="https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java#L233">Sunのvecmath実装</a>は\((0,1,0)\)としている。
+</p>
+
+<h2>四元数から回転行列</h2>
+
+<p>
+単位四元数\((x,y,z,w)\)が表す回転は、Ken ShoemakeのSIGGRAPHのチュートリアルから、
+\[\begin{aligned}
+\begin{pmatrix}
+  m_{11} &amp; m_{12} &amp; m_{13} \\
+  m_{21} &amp; m_{22} &amp; m_{23} \\
+  m_{31} &amp; m_{32} &amp; m_{33}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  1-2(y^2+z^2) &amp; 2(xy-wz) &amp; 2(xz+wy) \\
+  2(xy+wz) &amp; 1-2(x^2+z^2) &amp; 2(yz-wx) \\
+  2(xz-wy) &amp; 2(yz+wx) &amp; 1-2(x^2+y^2)
+\end{pmatrix}
+\end{aligned}\]
+</p>
+
+<h2>回転行列から四元数</h2>
+
+<p>
+回転行列の対角成分に着目すると、
+\[\begin{aligned}
+  m_{11}+m_{22}+m_{33} &amp;= 4w^2-1 \\
+  m_{11}-m_{22}-m_{33} &amp;= 4x^2-1 \\
+  m_{22}-m_{33}-m_{11} &amp;= 4y^2-1 \\
+  m_{33}-m_{11}-m_{22} &amp;= 4z^2-1 \\
+\end{aligned}\]
+なので、
+\[\begin{aligned}
+  w &amp;= \frac{\sqrt{m_{11}+m_{22}+m_{33}+1}}{2} \\
+  x &amp;= \frac{\sqrt{m_{11}-m_{22}-m_{33}+1}}{2} \\
+  y &amp;= \frac{\sqrt{m_{22}-m_{33}-m_{11}+1}}{2} \\
+  z &amp;= \frac{\sqrt{m_{33}-m_{11}-m_{22}+1}}{2}
+\end{aligned}\]
+非対角成分に着目すると、
+\[\begin{aligned}
+  m_{21}+m_{12} &amp;= 4xy \\
+  m_{32}+m_{23} &amp;= 4yz \\
+  m_{13}+m_{31} &amp;= 4zx \\
+  m_{32}-m_{23} &amp;= 4wx \\
+  m_{13}-m_{31} &amp;= 4wy \\
+  m_{21}-m_{12} &amp;= 4wz
+\end{aligned}\]
+</p>
+
+<p>
+Shoemakeのチュートリアルでは、対角成分から\(x,y,z,w\)のどれかを定め、残りを非対角成分から求める。
+まず、\(m_{11}+m_{22}+m_{33}\ge0\)ならば\(w\)から決定する。
+さもなければ、\(m_{11},m_{22},m_{33}\)のうち、\(m_{11}\)が最大ならば\(x\)から、\(m_{22}\)が最大ならば\(y\)から、\(m_{33}\)が最大ならば\(z\)から決定する。
+</p>
+
+<p>
+<a href="https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix">CSS Transforms ModuleのDecomposing a 3D matrix</a>は対角成分だけで計算している。
+</p>
+
+<h2>球面線形補間</h2>
+
+<p>
+単位四元数\(q_1,q_2\)の球面線形補間(Spherical Linear Interpolation)は、
+\[\begin{aligned}
+  \mathrm{slerp}(q_1,q_2,t) = q_1\frac{\sin\Omega(1-t)}{\sin\Omega} + q_2\frac{\sin\Omega t}{\sin\Omega}
+\end{aligned}\]
+ただし、
+\[\begin{aligned}
+  \cos\Omega = q_1\cdot q_2
+\end{aligned}\]
+</p>
+\(q_1\cdot q_2\lt0\)ならば、どちらかの四元数の符号を反転して最小距離で補間する。
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  renderMathInElement(document.body);
+});
+</script>
+
+</body>
+</html>
