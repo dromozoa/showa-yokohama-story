@@ -28,7 +28,7 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.numberToString = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
+D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 D.numberToCss = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
 
 const escapeHtmlTable = {
@@ -812,7 +812,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+    <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -821,7 +821,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
         </clipPath>
       </defs>
       <g clip-path="url(#${clipId})">
-        <path fill="none" stroke-width="${D.numberToString(U4+2,"")}" d="${barPathData}"/>
+        <path fill="none" stroke-width="${D.numberToString(U4+2)}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
       </g>
     </svg>
@@ -876,7 +876,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
     buttonsHtml += `
       <g class="button button${i}">
-        <path fill="none" stroke-width="${D.numberToString(U8,"")}" d="${buttonBarPathData}"/>
+        <path fill="none" stroke-width="${D.numberToString(U8)}" d="${buttonBarPathData}"/>
         <path stroke-width="1" d="${buttonPathData}"/>
       </g>
     `;
@@ -889,7 +889,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+    <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -898,8 +898,8 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
         </clipPath>
       </defs>
       <g clip-path="url(#${clipId})">
-        <path fill="none" stroke-width="${D.numberToString(U2+2,"")}" d="${barPathData}"/>
-        <rect stroke-width="2" x="${D.numberToString(U2,"")}" y="0" width="${D.numberToString(W-U1,"")}" height="${D.numberToString(height,"")}"/>
+        <path fill="none" stroke-width="${D.numberToString(U2+2)}" d="${barPathData}"/>
+        <rect stroke-width="2" x="${D.numberToString(U2)}" y="0" width="${D.numberToString(W-U1)}" height="${D.numberToString(height)}"/>
       </g>
       ${buttonsHtml}
     </svg>
@@ -908,17 +908,6 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 };
 
 //-------------------------------------------------------------------------
-
-//  104 4 104 4 104
-// 104 4 [144] 4 104
-// createMenuFrame(144, 104, 32);
-
-/*
-     BW U8 BW U8 BW
-    BW U8 [TW] U8 BW
-
-    stroke幅のぶんはふとらせる必要がある
- */
 
 D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const U1 = buttonHeight;
@@ -964,7 +953,7 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="${D.numberToString(-width*0.5,"")} ${D.numberToString(-height*0.5,"")} ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+    <svg viewBox="${D.numberToString(-width*0.5)} ${D.numberToString(-height*0.5)} ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <g class="buttons">
