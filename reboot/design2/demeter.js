@@ -811,7 +811,9 @@ D.createChoiceFrame = (width, height, fontSize) => {
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      xmlns="http://www.w3.org/2000/svg">
       <defs>
         <clipPath id="${clipId}">
           <path d="${clipPathData}"/>
@@ -886,7 +888,9 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
   const template = document.createElement("template");
   template.innerHTML = `
-    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}" style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}">
+    <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      xmlns="http://www.w3.org/2000/svg">
       <defs>
         <clipPath id="${clipId}">
           <path d="${clipPathData}"/>
@@ -904,12 +908,40 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
 //-------------------------------------------------------------------------
 
-D.createMenuFrame = (titleWidth, buttonWidth, height) => {
-  const U1 = height;
-  const U2 = height * 0.5;
-  const U3 = height / 3;
-  const U4 = height * 0.25;
-  const U8 = height * 0.125;
+//  104 4 104 4 104
+// 104 4 [144] 4 104
+// createMenuFrame(144, 104, 32);
+
+/*
+     BW U8 BW U8 BW
+    BW U8 [TW] U8 BW
+
+    stroke幅のぶんはふとらせる必要がある
+ */
+
+D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
+  const U1 = buttonHeight;
+  const U2 = buttonHeight * 0.5;
+  const U3 = buttonHeight / 3;
+  const U4 = buttonHeight * 0.25;
+  const U8 = buttonHeight * 0.125;
+
+  //    +--------U8--------+
+  //    |  BW U8 BW U8 BW  |
+  //    |        U8        |
+  // U8 | BW U8 [TW] U8 BW | U8
+  //    +--------U8--------+
+  const width = titleWidth + buttonWidth * 2 + U2;
+  const height = U1 * 2 + U4 + U8;
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="${D.numberToString(-width*0.5,"")} ${D.numberToString(-height*0.5,"")} ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
+      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      xmlns="http://www.w3.org/2000/svg">
+    </svg>
+  `;
+  return template.content.firstElementChild;
 };
 
 //-------------------------------------------------------------------------
