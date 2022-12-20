@@ -29,6 +29,7 @@ D.includeGuard = true;
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 D.numberToString = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
+D.numberToCss = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
 
 const escapeHtmlTable = {
   "&": "&amp;",
@@ -211,7 +212,7 @@ const canSeparate = (u, v) => (canBreak(u, v) && !D.jlreq.isInseparable(u) && !D
 
 const parseChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = D.numberToString(fontSize) + " " + font;
+  context.font = D.numberToCss(fontSize) + " " + font;
   return [...source].map(char => {
     const code = char.codePointAt(0);
     const width = context.measureText(char).width;
@@ -234,7 +235,7 @@ const parseChars = (source, fontSize, font) => {
 
 const updateChars = (source, fontSize, font) => {
   const context = internalCanvas.getContext("2d");
-  context.font = D.numberToString(fontSize) + " " + font;
+  context.font = D.numberToCss(fontSize) + " " + font;
   source.forEach((u, i) => {
     const v = source[i + 1];
     if (v) {
@@ -701,7 +702,7 @@ D.composeText = (source, maxWidth) => {
 D.layoutText = (source, fontSize, lineHeight) => {
   const result = document.createElement("div");
   result.className = "demeter-text";
-  result.style.lineHeight = D.numberToString(lineHeight);
+  result.style.lineHeight = D.numberToCss(lineHeight);
 
   source.forEach(line => {
     const lineNode = result.appendChild(document.createElement("div"));
@@ -710,8 +711,8 @@ D.layoutText = (source, fontSize, lineHeight) => {
     line.forEach(item => {
       item.base.forEach((u, i)  => {
         const baseNode = lineNode.appendChild(document.createElement("span"));
-        baseNode.style.marginLeft = D.numberToString(u.x - baseX);
-        baseNode.style.width = D.numberToString(u.advance);
+        baseNode.style.marginLeft = D.numberToCss(u.x - baseX);
+        baseNode.style.width = D.numberToCss(u.advance);
 
         const charNode = baseNode.appendChild(document.createElement("span"));
         charNode.textContent = u.char;
@@ -723,13 +724,13 @@ D.layoutText = (source, fontSize, lineHeight) => {
           let rubyX = ruby[0].x;
 
           const rubyNode = baseNode.appendChild(document.createElement("div"));
-          rubyNode.style.top = D.numberToString(fontSize * -0.75);
-          rubyNode.style.left = D.numberToString(rubyX - u.x);
+          rubyNode.style.top = D.numberToCss(fontSize * -0.75);
+          rubyNode.style.left = D.numberToCss(rubyX - u.x);
 
           ruby.forEach(u => {
             const charNode = rubyNode.appendChild(document.createElement("span"));
-            charNode.style.marginLeft = D.numberToString(u.x - rubyX);
-            charNode.style.width = D.numberToString(u.advance);
+            charNode.style.marginLeft = D.numberToCss(u.x - rubyX);
+            charNode.style.width = D.numberToCss(u.advance);
             charNode.textContent = u.char;
 
             rubyX = u.x + u.advance;
@@ -812,7 +813,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
   const template = document.createElement("template");
   template.innerHTML = `
     <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
-      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <defs>
         <clipPath id="${clipId}">
@@ -889,7 +890,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
   const template = document.createElement("template");
   template.innerHTML = `
     <svg viewBox="0 0 ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
-      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <defs>
         <clipPath id="${clipId}">
@@ -964,7 +965,7 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const template = document.createElement("template");
   template.innerHTML = `
     <svg viewBox="${D.numberToString(-width*0.5,"")} ${D.numberToString(-height*0.5,"")} ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
-      style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
+      style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <g class="buttons">
         <g class="button button1"><path d="${button1PathData}"/></g>

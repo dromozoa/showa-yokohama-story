@@ -808,13 +808,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const uiFont = font;
 
   const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
-  outputNode.style.font = D.numberToString(fontSize) + " " + font;
+  outputNode.style.height = D.numberToCss(document.documentElement.clientHeight);
+  outputNode.style.font = D.numberToCss(fontSize) + " " + font;
   outputNode.style.overflow = "auto";
   outputNode.style.scrollSnapType = "y mandatory";
 
   window.addEventListener("resize", () => {
-    outputNode.style.height = D.numberToString(document.documentElement.clientHeight);
+    outputNode.style.height = D.numberToCss(document.documentElement.clientHeight);
   });
 
   const speakerTable = {
@@ -836,8 +836,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   canvasNode.height = canvasHeight * devicePixelRatio;
   canvasNode.style.display = "block";
   canvasNode.style.position = "fixed";
-  canvasNode.style.width = D.numberToString(canvasWidth);
-  canvasNode.style.height = D.numberToString(canvasHeight);
+  canvasNode.style.width = D.numberToCss(canvasWidth);
+  canvasNode.style.height = D.numberToCss(canvasHeight);
   canvasNode.style.right = "15px";
   canvasNode.style.bottom = "15px";
   document.body.append(canvasNode);
@@ -1038,18 +1038,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       {
         const containerNode = document.createElement("div");
         containerNode.style.display = "flex";
-        containerNode.style.lineHeight = D.numberToString(lineHeight);
+        containerNode.style.lineHeight = D.numberToCss(lineHeight);
         containerNode.style.scrollSnapAlign = "start";
 
         const speakerNode = containerNode.appendChild(document.createElement("div"));
         speakerNode.textContent = speakerTable[sourceParagraph[0].speaker];
         speakerNode.style.flex = "none";
-        speakerNode.style.width = D.numberToString(fontSize * 5);
+        speakerNode.style.width = D.numberToCss(fontSize * 5);
         speakerNode.addEventListener("click", ev => playVoiceList([...ev.target.nextElementSibling.children].map(textNode => textNode.dataset.tid)));
 
         const paragraphNode = containerNode.appendChild(document.createElement("div"));
         paragraphNode.style.flex = "none";
-        paragraphNode.style.minHeight = D.numberToString(maxLines * lineHeight);
+        paragraphNode.style.minHeight = D.numberToCss(maxLines * lineHeight);
         paragraphNode.dataset.pid = pid;
 
         const paragraph = D.parseParagraph(sourceParagraph[1], fontSize, font);
@@ -1072,30 +1072,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (sourceParagraph[0].choices) {
         const containerNode = document.createElement("div");
-        containerNode.style.font = D.numberToString(fontSize) + " " + uiFont;
+        containerNode.style.font = D.numberToCss(fontSize) + " " + uiFont;
 
         sourceParagraph[0].choices.forEach((choice, i) => {
           const choiceNode = containerNode.appendChild(document.createElement("div"));
           choiceNode.className = "choice";
           choiceNode.style.position = "relative";
-          choiceNode.style.width = D.numberToString(fontSize * lineLength);
+          choiceNode.style.width = D.numberToCss(fontSize * lineLength);
 
           const choiceText = D.parseText(choice.choice, fontSize, uiFont);
           const lines = D.composeText(choiceText, fontSize * (lineLength - 4));
           const textNode = choiceNode.appendChild(D.layoutText(lines, fontSize, lineHeight));
           textNode.style.position = "absolute";
-          textNode.style.top = D.numberToString(fontSize);
-          textNode.style.left = D.numberToString(fontSize * 2);
+          textNode.style.top = D.numberToCss(fontSize);
+          textNode.style.left = D.numberToCss(fontSize * 2);
           textNode.style.pointerEvents = "none";
 
           if (choice.barcode) {
             const barcodeNode = choiceNode.appendChild(document.createElement("span"));
             barcodeNode.style.display = "inline-block";
             barcodeNode.style.position = "absolute";
-            barcodeNode.style.top = D.numberToString(fontSize);
-            barcodeNode.style.right = D.numberToString(fontSize * 0.5);
-            barcodeNode.style.font = D.numberToString(fontSize) + " 'Libre Barcode 128'";
-            barcodeNode.style.lineHeight = D.numberToString(fontSize);
+            barcodeNode.style.top = D.numberToCss(fontSize);
+            barcodeNode.style.right = D.numberToCss(fontSize * 0.5);
+            barcodeNode.style.font = D.numberToCss(fontSize) + " 'Libre Barcode 128'";
+            barcodeNode.style.lineHeight = D.numberToCss(fontSize);
             barcodeNode.style.pointerEvents = "none";
             barcodeNode.textContent = choice.barcode;
           }

@@ -149,13 +149,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const font = "'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif";
 
   const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.font = D.numberToString(fontSize) + " " + font;
+  outputNode.style.font = D.numberToCss(fontSize) + " " + font;
 
   let firstTextNode;
 
   const sourceNodes = document.querySelector("#source").children;
   const containerNode = document.getElementById("container");
-  containerNode.style.font = D.numberToString(fontSize) + " " + font;
+  containerNode.style.font = D.numberToCss(fontSize) + " " + font;
 
   for (let i = 0; i < sourceNodes.length; ++i) {
     const sourceNode = sourceNodes[i];
@@ -164,8 +164,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const choiceNode = document.createElement("div");
       choiceNode.className = "choice";
       choiceNode.style.position = "relative";
-      choiceNode.style.width = D.numberToString(fontSize * 24);
-      choiceNode.style.height = D.numberToString(fontSize * 4);
+      choiceNode.style.width = D.numberToCss(fontSize * 24);
+      choiceNode.style.height = D.numberToCss(fontSize * 4);
       choiceNode.addEventListener("click", (ev) => {
         console.log("click", sourceNode);
       });
@@ -173,16 +173,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const lines = D.composeText(text, fontSize * 20);
       const textNode = choiceNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
       textNode.style.position = "absolute";
-      textNode.style.top = D.numberToString(fontSize);
-      textNode.style.left = D.numberToString(fontSize * 2);
+      textNode.style.top = D.numberToCss(fontSize);
+      textNode.style.left = D.numberToCss(fontSize * 2);
 
       const barcodeNode = choiceNode.appendChild(document.createElement("div"));
       barcodeNode.style.position = "absolute";
       barcodeNode.style.display = "inline-block";
-      barcodeNode.style.top = D.numberToString(fontSize);
-      barcodeNode.style.right = D.numberToString(fontSize * 0.5);
-      barcodeNode.style.font = D.numberToString(fontSize) + " 'Libre Barcode 128'";
-      barcodeNode.style.lineHeight = D.numberToString(fontSize);
+      barcodeNode.style.top = D.numberToCss(fontSize);
+      barcodeNode.style.right = D.numberToCss(fontSize * 0.5);
+      barcodeNode.style.font = D.numberToCss(fontSize) + " 'Libre Barcode 128'";
+      barcodeNode.style.lineHeight = D.numberToCss(fontSize);
       barcodeNode.textContent = i === 0 ? "Garden of Eden" : "Glider Gun";
 
       const choiceFrameNode = choiceNode.appendChild(D.createChoiceFrame(fontSize * 24, fontSize * 4, fontSize));
@@ -199,8 +199,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const messageNode = dialogNode.appendChild(document.createElement("div"));
     messageNode.style.position = "absolute";
-    messageNode.style.top = D.numberToString(fontSize);
-    messageNode.style.left = D.numberToString(fontSize * 2);
+    messageNode.style.top = D.numberToCss(fontSize);
+    messageNode.style.left = D.numberToCss(fontSize * 2);
     messageNode.style.pointerEvents = "none";
 
     const paragraph = D.parseParagraph(document.querySelector("#source-dialog").firstElementChild, fontSize, font);
