@@ -28,8 +28,8 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 D.numberToCss = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
+D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
 const escapeHtmlTable = {
   "&": "&amp;",
@@ -40,6 +40,14 @@ const escapeHtmlTable = {
 };
 
 D.escapeHtml = s => s.replace(/[&<>"']/g, match => escapeHtmlTable[match]);
+
+//-------------------------------------------------------------------------
+
+let serialNumber = 0;
+
+D.getSerialNumber = () => {
+  return ++serialNumber;
+};
 
 //-------------------------------------------------------------------------
 
@@ -317,16 +325,7 @@ D.parseParagraph = (source, fontSize, font) => (source instanceof Node ? parsePa
 
 //-------------------------------------------------------------------------
 
-const resetSpacing = source => {
-  source.forEach(u => {
-    u.spacingBudgeted = 0;
-    u.spacingFallback = 0;
-    u.spacing1 = 0;
-    u.spacing2 = 0;
-  });
-};
-
-//-------------------------------------------------------------------------
+const resetSpacing = source => source.forEach(u => u.spacingBudgeted = u.spacingFallback = u.spacing1 = u.spacing2 = 0);
 
 const setSpacingBudgeted = (source, request, tolerance) => {
   const remaining = source.reduce((acc, u) => acc + u.spacingBudget, 0);
@@ -745,21 +744,13 @@ D.layoutText = (source, fontSize, lineHeight) => {
 
 //-------------------------------------------------------------------------
 
-let serialNumber = 0;
-
-D.getSerialNumber = () => {
-  return ++serialNumber;
-};
-
-//-------------------------------------------------------------------------
-
 D.PathData = class {
   constructor() {
     this.d = [];
   }
 
   push(command, ...params) {
-    this.d.push(command + params.map(v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "")).join(","));
+    this.d.push(command + params.map(D.numberToString).join(","));
     return this;
   }
 
