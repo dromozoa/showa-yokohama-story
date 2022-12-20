@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://icons8.com/line-awesome/howto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background-image: url(../output/bg.png);
+      background-color: #000;
+      color: #FFF;
+    }
+
+    .panel {
+      position: relative;
+    }
+
+    .title {
+      position: absolute;
+      width: 144px;
+      top: 40px;
+      left: 112px;
+      font-family: 'Yuji Syuku', serif;
+      font-kerning: none;
+      font-size: 16px;
+      line-height: 32px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .menu {
+      position: absolute;
+      width: 104px;
+      font-family: 'Share Tech', sans-serif;
+      font-size: 16px;
+      line-height: 32px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .frame {
+      position: absolute;
+    }
+
+    .frame > svg {
+      display: block;
+      fill: rgba(255, 255, 255, 0.1);
+      stroke: #FFF;
+      stroke-width: 1px;
+    }
+
+    .button {
+      transition: all 0.5s;
+    }
+
+    .button:hover {
+      stroke: #029D93;
+    }
+
+    .button:active {
+      fill: rgba(2, 157, 147, 0.1);
+      stroke: #029D93;
+    }
+
+    @media (hover: hover) {
+      .button {
+        cursor: pointer;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <div class="frame"></div>
+  <!-- 184 - 104/2 -->
+  <div class="menu" style="top: 4px; left: 132px"><i class="las la-cog"></i>SYSTEM</div>
+  <!-- 184 - 104*3/2 -->
+  <div class="menu" style="top: 4px; left: 28px"><i class="las la-bible"></i>LOAD</div>
+  <!-- 184 + 104/2 -->
+  <div class="menu" style="top: 4px; left: 236px"><i class="las la-save"></i>SAVE</div>
+  <!-- 184 - 144/2 - 104 -->
+  <div class="menu" style="top: 40px; left: 8px"><i class="las la-play-circle"></i> AUTO</div>
+  <!-- 184 + 144/2 -->
+  <div class="menu" style="top: 40px; left: 256px"><i class="las la-fast-forward"></i> SKIP</div>
+  <div class="title"><span style="font-family: 'Showa Yokohama Story'">&#xE000;</span> <span
+    style="letter-spacing: -0.06em">昭</span><span
+    style="letter-spacing: -0.02em">和</span><span
+    style="letter-spacing: -0.03em">横</span><span
+    style="letter-spacing: -0.05em">濱</span><span
+    style="letter-spacing: -0.07em">物</span><span
+    style="letter-spacing: 0">語</span></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = demeter;
+  await D.boot();
+
+  const menuFrameNode = D.createMenuFrame(144, 104, 32);
+  document.querySelector(".frame").append(menuFrameNode);
+  [...document.querySelectorAll(".button")].forEach(node => {
+    node.addEventListener("click", ev => {
+      console.log(ev.target);
+    });
+  });
+});
+</script>
+
+</body>
+</html>

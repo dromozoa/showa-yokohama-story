@@ -50,6 +50,7 @@
       height: 448px;
       font-size: 32px;
       line-height: 64px;
+      transform-style: preserve-3d;
       /*
       background-color: rgba(255, 255, 255, 0.2);
       */
@@ -82,9 +83,9 @@
   <div class="panel">
     <div class="title"><span style="font-family: 'Showa Yokohama Story'">&#xE000;</span> <span
       style="letter-spacing: -0.06em">昭</span><span
-      style="letter-spacing: -0.04em">和</span><span
+      style="letter-spacing: -0.02em">和</span><span
       style="letter-spacing: -0.03em">横</span><span
-      style="letter-spacing: -0.07em">濱</span><span
+      style="letter-spacing: -0.05em">濱</span><span
       style="letter-spacing: -0.07em">物</span><span
       style="letter-spacing: 0">語</span></div>
     <div class="menu"><i class="las la-cog"></i> SYSTEM</div>
@@ -126,10 +127,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       new TWEEN.Tween({ rotation: 0 })
         .to({ rotation: Math.PI * 2}, 5000)
         .onUpdate(data => {
+          panelNode.style.transform = "rotate3d(0,1,0," + data.rotation + "rad)";
+          // panelNode.style.transform = new D.AxisAngle4(0, 1, 0, data.rotation).toString();
           // フラットシェーディング。正面から光が当たっているとする。
-          panelNode.style.transform = new D.AxisAngle4(0, 1, 0, data.rotation).toString();
-          const y = Math.abs(Math.cos(data.rotation));
-          panelNode.style.color = new D.Color4(y, y, y, 1).toString();
+          // const y = Math.abs(Math.cos(data.rotation));
+          // panelNode.style.color = new D.Color4(y, y, y, 1).toString();
+        })
+        .start();
+    },
+    showPanel: () => {
+      new TWEEN.Tween({ value: 0 })
+        .to({ value: 1 }, 500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(data => {
+          [...panelNode.children].forEach((node, i) => {
+            if (i > 0) {
+              node.style.opacity = data.value;
+            }
+          });
+        })
+        .start();
+    },
+    hidePanel: () => {
+      new TWEEN.Tween({ value: 1 })
+        .to({ value: 0 }, 500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(data => {
+          [...panelNode.children].forEach((node, i) => {
+            if (i > 0) {
+              node.style.opacity = data.value;
+            }
+          });
         })
         .start();
     },
@@ -138,6 +166,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   gui.add(data, "setPerspective");
   gui.add(data, "unsetPerspective");
   gui.add(data, "rotatePanel");
+  gui.add(data, "showPanel");
+  gui.add(data, "hidePanel");
 
   while (true) {
     await D.requestAnimationFrame();
