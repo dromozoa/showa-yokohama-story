@@ -925,6 +925,10 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const U3 = buttonHeight / 3;
   const U4 = buttonHeight * 0.25;
   const U8 = buttonHeight * 0.125;
+  const U16 = buttonHeight * 0.0625;
+
+  const BW = buttonWidth;
+  const BW2 = buttonWidth * 0.5;
 
   //    +--------U8--------+
   //    |  BW U8 BW U8 BW  |
@@ -934,11 +938,21 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const width = titleWidth + buttonWidth * 2 + U2;
   const height = U1 * 2 + U4 + U8;
 
+  const button1PathData = new D.PathData()
+    .M(-BW2,-U1+U3-U16).l(U3,-U3).h(BW-U3*2).l(U3,U3).v(U3).l(-U3,U3).h(-BW+U3*2).l(-U3,-U3).z();
+
+  const button2PathData = new D.PathData()
+    .M(-BW-BW2-U8,-U1+U3-U16).l(U3,-U3).h(BW-U3*2).l(U3,U3).v(U3).l(-U3,U3).h(-BW+U3*2).l(-U3,-U3).z();
+
   const template = document.createElement("template");
   template.innerHTML = `
     <svg viewBox="${D.numberToString(-width*0.5,"")} ${D.numberToString(-height*0.5,"")} ${D.numberToString(width,"")} ${D.numberToString(height,"")}"
       style="width: ${D.numberToString(width)}; height: ${D.numberToString(height)}"
       xmlns="http://www.w3.org/2000/svg">
+      <g class="buttons">
+        <g class="button button1"><path d="${button1PathData}"/></g>
+        <g class="button button2"><path d="${button2PathData}"/></g>
+      </g>
     </svg>
   `;
   return template.content.firstElementChild;

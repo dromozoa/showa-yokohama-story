@@ -33,6 +33,11 @@
       background-color: #000;
       color: #FFF;
     }
+    .button {
+      fill: rgba(255, 255, 255, 0.1);
+      stroke: #fff;
+      stroke-width: 1px;
+    }
   </style>
 </head>
 <body>
@@ -47,6 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   //  104 4 104 4 104
   // 104 4 [144] 4 104
   const menuFrameNode = D.createMenuFrame(144, 104, 32);
+  document.querySelector(".panel").append(menuFrameNode);
 
 });
 </script>
