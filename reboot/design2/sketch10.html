@@ -33,27 +33,101 @@
       background-color: #000;
       color: #FFF;
     }
-    .button {
+
+    .panel {
+      position: relative;
+    }
+
+    .title {
+      position: absolute;
+      width: 144px;
+      top: 40px;
+      left: 112px;
+      font-family: 'Yuji Syuku', serif;
+      font-kerning: none;
+      font-size: 16px;
+      line-height: 32px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .menu {
+      position: absolute;
+      width: 104px;
+      font-family: 'Share Tech', sans-serif;
+      font-size: 16px;
+      line-height: 32px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .frame {
+      position: absolute;
+    }
+
+    .frame > svg {
+      display: block;
       fill: rgba(255, 255, 255, 0.1);
-      stroke: #fff;
+      stroke: #FFF;
       stroke-width: 1px;
     }
+
+    .button {
+      transition: all 0.5s;
+    }
+
+    .button:hover {
+      stroke: #029D93;
+    }
+
+    .button:active {
+      fill: rgba(2, 157, 147, 0.1);
+      stroke: #029D93;
+    }
+
+    @media (hover: hover) {
+      .button {
+        cursor: pointer;
+      }
+    }
+
   </style>
 </head>
 <body>
 
-<div class="panel"></div>
+<div class="panel">
+  <div class="frame"></div>
+  <!-- 184 - 104/2 -->
+  <div class="menu" style="top: 4px; left: 132px"><i class="las la-cog"></i>SYSTEM</div>
+  <!-- 184 - 104*3/2 -->
+  <div class="menu" style="top: 4px; left: 28px"><i class="las la-bible"></i>LOAD</div>
+  <!-- 184 + 104/2 -->
+  <div class="menu" style="top: 4px; left: 236px"><i class="las la-save"></i>SAVE</div>
+  <!-- 184 - 144/2 - 104 -->
+  <div class="menu" style="top: 40px; left: 8px"><i class="las la-play-circle"></i> AUTO</div>
+  <!-- 184 + 144/2 -->
+  <div class="menu" style="top: 40px; left: 256px"><i class="las la-fast-forward"></i> SKIP</div>
+  <div class="title"><span style="font-family: 'Showa Yokohama Story'">&#xE000;</span> <span
+    style="letter-spacing: -0.06em">昭</span><span
+    style="letter-spacing: -0.02em">和</span><span
+    style="letter-spacing: -0.03em">横</span><span
+    style="letter-spacing: -0.05em">濱</span><span
+    style="letter-spacing: -0.07em">物</span><span
+    style="letter-spacing: 0">語</span></div>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   const D = demeter;
   await D.boot();
 
-  //  104 4 104 4 104
-  // 104 4 [144] 4 104
   const menuFrameNode = D.createMenuFrame(144, 104, 32);
-  document.querySelector(".panel").append(menuFrameNode);
-
+  document.querySelector(".frame").append(menuFrameNode);
+  [...document.querySelectorAll(".button")].forEach(node => {
+    node.addEventListener("click", ev => {
+      console.log(ev.target);
+    });
+  });
 });
 </script>
 

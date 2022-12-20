@@ -929,6 +929,10 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
   const BW = buttonWidth;
   const BW2 = buttonWidth * 0.5;
+  const TW2 = titleWidth * 0.5;
+
+  const C3 = Math.cos(Math.PI * 0.375);
+  const D2 = Math.sqrt(2);
 
   //    +--------U8--------+
   //    |  BW U8 BW U8 BW  |
@@ -939,10 +943,23 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const height = U1 * 2 + U4 + U8;
 
   const button1PathData = new D.PathData()
-    .M(-BW2,-U1+U3-U16).l(U3,-U3).h(BW-U3*2).l(U3,U3).v(U3).l(-U3,U3).h(-BW+U3*2).l(-U3,-U3).z();
+    .M(-BW2-U8,-U1+U3-U16).l(U3,-U3).h(BW-(U3-U8)*2).l(U3,U3).v(U3).l(-U3,U3).h(-BW+(U3-U8)*2).l(-U3,-U3).z();
 
   const button2PathData = new D.PathData()
-    .M(-BW-BW2-U8,-U1+U3-U16).l(U3,-U3).h(BW-U3*2).l(U3,U3).v(U3).l(-U3,U3).h(-BW+U3*2).l(-U3,-U3).z();
+    .M(-BW-BW2-U8,-U1+U3-U16)
+    .l(U3,-U3).h(BW-U8*D2).l(-U3+U8*C3,U3-U8*C3).v(U3+U4*C3).l(U3-U8*C3,U3-U8*C3).h(-BW+U8*D2).l(-U3,-U3).z();
+
+  const button3PathData = new D.PathData()
+    .M(BW+BW2+U8,-U1+U3-U16)
+    .l(-U3,-U3).h(-BW+U8*D2).l(U3-U8*C3,U3-U8*C3).v(U3+U4*C3).l(-U3+U8*C3,U3-U8*C3).h(BW-U8*D2).l(U3,-U3).z();
+
+  const button4PathData = new D.PathData()
+    .M(-BW-TW2-U8,U3+U16)
+    .l(U3,-U3).h(BW-U8*D2).l(-U3+U8*C3,U3-U8*C3).v(U3+U4*C3).l(U3-U8*C3,U3-U8*C3).h(-BW+U8*D2).l(-U3,-U3).z();
+
+  const button5PathData = new D.PathData()
+    .M(BW+TW2+U8,U3+U16)
+    .l(-U3,-U3).h(-BW+U8*D2).l(U3-U8*C3,U3-U8*C3).v(U3+U4*C3).l(-U3+U8*C3,U3-U8*C3).h(BW-U8*D2).l(U3,-U3).z();
 
   const template = document.createElement("template");
   template.innerHTML = `
@@ -952,6 +969,9 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
       <g class="buttons">
         <g class="button button1"><path d="${button1PathData}"/></g>
         <g class="button button2"><path d="${button2PathData}"/></g>
+        <g class="button button3"><path d="${button3PathData}"/></g>
+        <g class="button button4"><path d="${button4PathData}"/></g>
+        <g class="button button5"><path d="${button5PathData}"/></g>
       </g>
     </svg>
   `;
