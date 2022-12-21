@@ -120,7 +120,7 @@ D.voiceSprite = {
 local offset = 0
 for i = 1, #result do
   local sprite = result[i]
-  handle:write(('"%04d":[%d,%.2f],\n'):format(i - 1, offset * 1000, sprite.duration * 1000))
+  handle:write(('"%04d":[%d,%d],\n'):format(i - 1, offset * 1000, math.ceil(sprite.duration * 1000)))
   offset = offset + sprite.padded
 end
 

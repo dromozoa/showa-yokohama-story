@@ -27,6 +27,7 @@
   <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
   <script defer src="demeter-scenario.js"></script>
+  <script defer src="demeter-voice-sprite.js"></script>
 
   <style>
     #demeter-graph-marker {
@@ -992,37 +993,65 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   let voiceList;
+  let voiceId;
+  let voice = new Howl({
+    src: [ "../output/voice.webm", "../output/voice.mp3" ],
+    sprite: D.voiceSprite,
+    onplay: id => {
+      console.log("onplay", id);
+    },
+    onstop: id => {
+      console.log("onstop", id);
+    },
+    onend: id => {
+      // 時間をあける必要がある。無音期間を使う？
+      console.log("onend", id);
+      if (voiceList) {
+        const voiceSprite = voiceList.shift();
+        if (voiceList.length === 0) {
+          voiceList = undefined;
+        }
+        setTimeout(() => voice.play(voiceSprite), 400);
+      }
+    },
+  });
 
   const stopVoiceList = () => {
-    if (voiceList) {
-      voiceList.forEach(voice => {
-        if (voice.playing()) {
-          voice.stop();
-        }
-      });
-      voiceList = undefined;
+    voiceList = undefined;
+    if (voiceId) {
+      voice.stop(voiceId);
     }
+    voiceId = undefined;
   };
 
   const playVoiceList = (voiceIdList) => {
+    console.log(voiceIdList);
     stopVoiceList();
-    voiceList = voiceIdList.map(voiceId => {
-      const basename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId
-      return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
-    });
-    voiceList.forEach((voice, i) => {
-      const voiceId = voiceIdList[i];
-      const nextVoice = voiceList[i + 1];
-      voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#333");
-      voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
-      voice.once("end", () => {
-        document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
-        if (nextVoice) {
-          setTimeout(() => nextVoice.play(), 400);
-        }
-      });
-    });
-    voiceList[0].play();
+    voiceList = voiceIdList.map(voiceId => "0".repeat(Math.max(0, 4 - voiceId.length)) + (voiceId - 1));
+    const voiceSprite = voiceList.shift();
+    if (voiceList.length === 0) {
+      voiceList = undefined;
+    }
+    voiceId = voice.play(voiceSprite);
+
+    // voiceList = voiceIdList.map(voiceId => {
+    //   const basename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceId.length)) + voiceId;
+    //   return new Howl({ src: [ basename + ".webm", basename + ".mp3" ] });
+    // });
+    // voiceList.forEach((voice, i) => {
+    //   const voiceId = voiceIdList[i];
+    //   const nextVoice = voiceList[i + 1];
+    //   voice.on("play", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "#333");
+    //   voice.on("stop", () => document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent");
+    //   voice.once("end", () => {
+    //     document.querySelector("[data-tid='" + voiceId + "']").style.backgroundColor = "transparent";
+    //     if (nextVoice) {
+    //       setTimeout(() => nextVoice.play(), 400);
+    //     }
+    //   });
+    // });
+    // voiceList[0].play();
+
     startAudioVisualizer();
   };
 
