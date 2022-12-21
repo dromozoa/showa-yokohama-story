@@ -24,14 +24,34 @@ body {
 }
 
 /* 1989-01-16 21:33Z */
-.demeter-off-screen {
+.demeter-offscreen {
   position: absolute;
   top: -8916px;
   left: -2133px;
 }
 
+.demeter-title-ja {
+  font-family: 'Yuji Syuku', serif;
+}
+
+.demeter-title-en {
+  font-family: 'Averia Serif Libre', serif;
+}
+
+.demeter-icon {
+  font-family: 'Showa Yokohama Story';
+}
+
+.demeter-icon::before {
+  content: '\E000';
+}
+
 .demeter-loader {
-  font-family: 'BIZ UDPMincho', 'Source Serif Pro';
+  font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
+}
+
+.demeter-graph > svg {
+  display: block;
 }
 
 /*************************************************************************/
