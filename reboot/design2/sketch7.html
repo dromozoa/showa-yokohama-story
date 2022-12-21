@@ -106,19 +106,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const H = document.documentElement.clientHeight;
 
   const cameraNode = document.querySelector(".camera");
-  cameraNode.style.width = D.numberToString(W);
-  cameraNode.style.height = D.numberToString(H);
+  cameraNode.style.width = D.numberToCss(W);
+  cameraNode.style.height = D.numberToCss(H);
   cameraNode.style.transformStyle = "preserve-3d";
 
   const panelNode = document.querySelector(".panel");
-  panelNode.style.top = D.numberToString((H - 448) * 0.5);
-  panelNode.style.left = D.numberToString((W - 320) * 0.5);
+  panelNode.style.top = D.numberToCss((H - 448) * 0.5);
+  panelNode.style.left = D.numberToCss((W - 320) * 0.5);
 
   const gui = new lil.GUI();
   const data = {
     perspective: 1000,
     setPerspective: () => {
-      cameraNode.style.perspective = D.numberToString(data.perspective);
+      cameraNode.style.perspective = D.numberToCss(data.perspective);
     },
     unsetPerspective: () => {
       cameraNode.style.perspective = "none";

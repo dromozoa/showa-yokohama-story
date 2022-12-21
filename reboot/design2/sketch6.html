@@ -74,12 +74,12 @@
 
 <div>
   <div class="title-ja"><span
-    style="letter-spacing: -6px">昭</span><span
-    style="letter-spacing: -2px">和</span><span
-    style="letter-spacing: -2px">横</span><span
-    style="letter-spacing: -6px">濱</span><span
-    style="letter-spacing: -6px">物</span><span
-    style="letter-spacing:  0px">語</span></div>
+    style="letter-spacing: -0.06em">昭</span><span
+    style="letter-spacing: -0.02em">和</span><span
+    style="letter-spacing: -0.03em">横</span><span
+    style="letter-spacing: -0.05em">濱</span><span
+    style="letter-spacing: -0.07em">物</span><span
+    style="letter-spacing: 0">語</span></div>
   <div class="title-en"><span
     style="letter-spacing:  0px">S</span><span
     style="letter-spacing: -0.0667px">H</span><span
@@ -170,8 +170,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const canvas = document.createElement("canvas");
       canvas.width = width * devicePixelRatio;
       canvas.height = height * devicePixelRatio;
-      canvas.style.width = D.numberToString(width);
-      canvas.style.height = D.numberToString(height);
+      canvas.style.width = D.numberToCss(width);
+      canvas.style.height = D.numberToCss(height);
       const context = canvas.getContext("2d");
       context.scale(devicePixelRatio, devicePixelRatio);
 
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           .easing(TWEEN.Easing.Bounce.Out)
           .onUpdate(data => {
             node.style.opacity = data.opacity;
-            node.style.transform = "rotate3d(1, 0, 0, " + D.numberToString(data.rotation, "deg") + ")";
+            node.style.transform = "rotate3d(1, 0, 0, " + D.numberToCss(data.rotation, "deg") + ")";
           });
         if (chain === undefined) {
           chain = tween.start();

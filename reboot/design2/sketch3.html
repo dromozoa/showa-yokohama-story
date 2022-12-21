@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
 
   const containerNode = document.createElement("div");
-  containerNode.style.font = D.numberToString(fontSize) + " " + font;
-  containerNode.style.lineHeight = D.numberToString(fontSize * 2);
+  containerNode.style.font = D.numberToCss(fontSize) + " " + font;
+  containerNode.style.lineHeight = D.numberToCss(fontSize * 2);
 
   const paragraphNode = containerNode.appendChild(document.createElement("div"));
 
