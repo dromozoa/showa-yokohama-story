@@ -15,7 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local template_pathname, scenario_pathname, graph_pathname, result_pathname = ...
+local template_pathname, loader_pathname, graph_pathname, result_pathname = ...
 
 local function read_all(pathname)
   local handle = assert(io.open(pathname))
@@ -25,9 +25,9 @@ local function read_all(pathname)
 end
 
 local template = read_all(template_pathname)
-local scenario = read_all(scenario_pathname)
+local loader = read_all(loader_pathname)
 local graph = read_all(graph_pathname)
 
 local handle = assert(io.open(result_pathname, "w"))
-handle:write((template:gsub("$scenario\n", scenario):gsub("$graph\n", graph)))
+handle:write((template:gsub("$loader\n", loader):gsub("$graph\n", graph)))
 handle:close()
