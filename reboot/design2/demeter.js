@@ -92,12 +92,16 @@ let internalRoot;
 let internalCanvas;
 
 const initializeInternalRoot = () => {
-  const rootNode = document.createElement("div");
-  rootNode.style.position = "absolute";
-  rootNode.style.top = "-8916px";
-  rootNode.style.left = "-2133px";
-  document.body.append(rootNode);
-  internalRoot = rootNode.attachShadow({ mode: "closed" });
+  let offScreenNode = document.getElementById("demeter-off-screen");
+  if (!offScreenNode) {
+    offScreenNode = document.createElement("div");
+    offScreenNode.style.position = "absolute";
+    offScreenNode.style.top = "-8916px";
+    offScreenNode.style.left = "-2133px";
+    document.body.append(offScreenNode);
+  }
+  const internalRootNode = offScreenNode.appendChild(document.createElement("div"));
+  internalRoot = internalRootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
 };
 

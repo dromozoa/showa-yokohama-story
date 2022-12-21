@@ -17,6 +17,25 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+body {
+  margin: 0;
+  background-color: #000;
+  color: #FFF;
+}
+
+/* 1989-01-16 21:33Z */
+#demeter-off-screen {
+  position: absolute;
+  top: -8916px;
+  left: -2133px;
+}
+
+.demeter-loader {
+  font-family: 'BIZ UDPMincho', 'Source Serif Pro';
+}
+
+/*************************************************************************/
+
 div.demeter-text {
   white-space: nowrap;
 }
