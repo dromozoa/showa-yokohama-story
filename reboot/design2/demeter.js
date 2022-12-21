@@ -92,7 +92,7 @@ let internalRoot;
 let internalCanvas;
 
 const initializeInternalRoot = () => {
-  let offScreenNode = document.getElementById("demeter-off-screen");
+  let offScreenNode = document.querySelector(".demeter-off-screen");
   if (!offScreenNode) {
     offScreenNode = document.createElement("div");
     offScreenNode.style.position = "absolute";

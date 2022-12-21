@@ -24,7 +24,7 @@ body {
 }
 
 /* 1989-01-16 21:33Z */
-#demeter-off-screen {
+.demeter-off-screen {
   position: absolute;
   top: -8916px;
   left: -2133px;
