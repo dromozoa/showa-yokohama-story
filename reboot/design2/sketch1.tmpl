@@ -9,8 +9,7 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Source+Serif+Pro&display=swap" rel="stylesheet">
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
 
@@ -79,6 +78,15 @@
   color: #FFF;
 ">
 
+<div style="
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  font-family: 'BIZ UDPMincho', 'Source Serif Pro';
+">
+$scenario
+</div>
+
 <div class="graph" style="
   position: absolute;
   top: 200px;
@@ -95,11 +103,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   await D.boot();
 
   const start = performance.now();
-  const result = await D.loadFontFaces(10000);
+  const result = await D.loadFontFaces(100);
   console.log("loadFontFaces", performance.now() - start, result);
 
   const fontSize = 24;
-  const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+  const font = "'Showa Yokohama Story', 'BIZ UDPMincho', 'Source Serif Pro'";
   // const uiFont = "'Showa Yokohama Story', 'BIZ UDPGothic'";
   const uiFont = font;
 

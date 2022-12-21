@@ -18,29 +18,94 @@
 local parse = require "parse"
 local escape_html = require "escape_html"
 
-local scenario_pathname, result_pathname = ...
+local function parse_font_face_map(pathname)
+  local handle = assert(io.open(pathname))
+
+  local key
+  local family
+  local result = {}
+
+  local _1
+  local _2
+  local function match(source, pattern)
+    local a, b = source:match(pattern)
+    if a then
+      _1 = a
+      _2 = b
+      return true
+    else
+      return false
+    end
+  end
+
+  for line in handle:lines() do
+    if match(line, "^/%* %[(%d+)%] %*/$") or match(line, "^/%* (.+) %*/$") then
+      assert(not key)
+      key = _1
+    elseif match(line, "^%s*font%-family: '(.+)';$") then
+      assert(not family)
+      family = _1
+    elseif match(line, "^%s*unicode%-range: (.+);$") then
+      local face = assert(family).." / "..assert(key)
+      for item in (_1..","):gmatch "([^,]+),%s*" do
+        local a
+        local b
+        if match(item, "^U%+(%x+)%-(%x+)$") then
+          a = tonumber(_1, 16)
+          b = tonumber(_2, 16)
+        else
+          assert(match(item, "^U%+(%x+)$"))
+          a = tonumber(_1, 16)
+          b = a
+        end
+        for i = a, b do
+          if not result[i] then
+            result[i] = face
+          end
+        end
+      end
+
+      key = nil
+      family = nil
+    end
+  end
+
+  handle:close()
+  return result
+end
+
+local scenario_pathname, result_pathname, css_pathname  = ...
 local scenario = parse(scenario_pathname)
 
-local index = 0
+local font_face_map = parse_font_face_map(css_pathname)
+
+local map = {}
+local data = {}
 
 local handle = assert(io.open(result_pathname, "w"))
+handle:write "<div>"
 for _, paragraph in ipairs(scenario) do
-  handle:write(('<div data-pid="%d" data-speaker="%s">'):format(paragraph.index, paragraph.speaker))
   for _, text in ipairs(paragraph) do
-    index = index + 1
-    handle:write(('<div data-tid="%d">'):format(index))
+    local buffer = {}
     for _, v in ipairs(text) do
       if type(v) == "string" then
-        handle:write(escape_html(v))
+        buffer[#buffer + 1] = v
       elseif v.ruby then
-        handle:write("<ruby>", escape_html(v[1]), "<rt>", escape_html(v.ruby), "</rt></ruby>")
+        buffer[#buffer + 1] = v[1]
+        buffer[#buffer + 1] = v.ruby
       else
         assert(v.voice)
-        handle:write(escape_html(v[1]))
+        buffer[#buffer + 1] = v[1]
       end
     end
-    handle:write "</div>"
+    for _, code in utf8.codes(table.concat(buffer)) do
+      local face = assert(font_face_map[code])
+      if not map[face] then
+        map[face] = true
+        handle:write(utf8.char(code))
+      end
+    end
   end
-  handle:write "</div>\n"
 end
+handle:write "</div>\n"
 handle:close()

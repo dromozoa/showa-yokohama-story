@@ -42,7 +42,7 @@ $(voicepeak_dic): scenario/dic.json
 	cp -f $< '$@'
 
 output/scenario.html: $(scenarios)
-	$(lua) tool/generate_scenario.lua scenario/scenario.txt $@
+	$(lua) tool/generate_scenario.lua scenario/scenario.txt $@ tool/google_fonts_serif.css
 
 output/graph.svg: $(scenarios)
 	./tool/generate_graph.sh scenario/scenario.txt $@
