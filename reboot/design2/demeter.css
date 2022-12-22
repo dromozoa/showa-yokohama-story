@@ -17,11 +17,16 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body {
+/*************************************************************************/
+
+.demeter-body {
   margin: 0;
   background-color: #000;
+  background-image: url(../output/bg.png);
   color: #FFF;
 }
+
+/*************************************************************************/
 
 /* 1989-01-16 21:33Z */
 .demeter-offscreen {
@@ -61,6 +66,26 @@ body {
 
 .demeter-graph > svg {
   display: block;
+}
+
+/*************************************************************************/
+
+@media (orientation: portrait) {
+  .demeter-orientation::after {
+    content: 'portrait';
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-orientation::after {
+    content: 'landscape';
+  }
+}
+
+@media (max-width: 420px) {
+  .demeter-width::after {
+    content: 'max-width 420px';
+  }
 }
 
 /*************************************************************************/

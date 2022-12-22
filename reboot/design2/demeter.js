@@ -28,18 +28,9 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.numberToCss = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
-const escapeHtmlTable = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&apos;",
-};
-
-D.escapeHtml = s => s.replace(/[&<>"']/g, match => escapeHtmlTable[match]);
+D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
 
 //-------------------------------------------------------------------------
 
@@ -48,43 +39,6 @@ let serialNumber = 0;
 D.getSerialNumber = () => {
   return ++serialNumber;
 };
-
-//-------------------------------------------------------------------------
-
-let bootException;
-let booted;
-let bootedFutures = [];
-
-D.boot = async () => {
-  return new Promise((resolve, reject) => {
-    if (booted) {
-      if (bootException === undefined) {
-        resolve();
-      } else {
-        reject(bootException);
-      }
-    } else {
-      bootedFutures.push({ resolve: resolve, reject: reject });
-    }
-  });
-};
-
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    initializeInternalRoot();
-    await Promise.all([ checkKerning() ]);
-  } catch (e) {
-    bootException = e;
-  }
-  booted = true;
-
-  if (bootException === undefined) {
-    bootedFutures.forEach(future => future.resolve());
-  } else {
-    bootedFutures.forEach(future => future.reject(bootException));
-  }
-  bootedFutures = undefined;
-}, { once: true });
 
 //-------------------------------------------------------------------------
 
@@ -103,89 +57,6 @@ const initializeInternalRoot = () => {
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
-};
-
-//-------------------------------------------------------------------------
-
-// Showa Yokohama Storyフォントは
-//   U+E001: 800/1000
-//   U+E002: 900/1000
-// という寸法を持ち、-300/1000のカーニングが設定されている。フォントサイズが
-// 100pxのとき、文字列"\uE001\uE002"の幅は
-//   カーニング有効時: 140px
-//   カーニング無効時: 170px
-// になる。
-const checkKerning = async () => {
-  const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
-  if (index === -1) {
-    throw new Error("font-face 'Showa Yokohama Story' not found");
-  }
-  if ((await D.loadFontFace(index, 1000)).status !== "loaded") {
-    throw new Error("font-face 'Showa Yokohama Story' not loaded");
-  }
-
-  const context = internalCanvas.getContext("2d");
-  context.font = "100px 'Showa Yokohama Story'";
-  D.featureKerning = Math.abs(context.measureText("\uE001\uE002").width - 140) < 1;
-};
-
-//-------------------------------------------------------------------------
-
-// Firefox 107でFontFace.load()の返り値が（FontFace.loadedも）決定されない場合
-// があった。FontFaceが新しい別のオブジェクトにさしかえられ、プロミスが迷子にな
-// っているように見えた。そこで、document.facesの監視のためにポーリングする。
-D.loadFontFace = async (index, timeout) => {
-  const fontFace = [...document.fonts][index];
-  if (fontFace.status === "loaded") {
-    return { status: "loaded", elapsed: 0 };
-  }
-  fontFace.load();
-
-  const start = await D.requestAnimationFrame();
-  if ([...document.fonts][index].status === "loaded") {
-    return { status: "loaded", elapsed: 0 };
-  }
-
-  if (!timeout || timeout < 0) {
-    timeout = Infinity;
-  }
-
-  while (true) {
-    const elapsed = await D.requestAnimationFrame() - start;
-    if ([...document.fonts][index].status === "loaded") {
-      return { status: "loaded", elapsed: elapsed };
-    }
-    if (timeout < elapsed) {
-      return { status: "timeout", elapsed: elapsed };
-    }
-  }
-};
-
-D.loadFontFaces = async (timeout) => {
-  const fontFaces = [...document.fonts].filter(fontFace => fontFace.status !== "loaded");
-  if (fontFaces.length === 0) {
-    return { status: "loaded", elapsed: 0 };
-  }
-  fontFaces.forEach(fontFace => fontFace.load());
-
-  const start = await D.requestAnimationFrame();
-  if ([...document.fonts].every(fontFace => fontFace.status === "loaded")) {
-    return { status: "loaded", elapsed: 0 };
-  }
-
-  if (!timeout || timeout < 0) {
-    timeout = Infinity;
-  }
-
-  while (true) {
-    const elapsed = await D.requestAnimationFrame() - start;
-    if ([...document.fonts].every(fontFace => fontFace.status === "loaded")) {
-      return { status: "loaded", elapsed: elapsed };
-    }
-    if (timeout < elapsed) {
-      return { status: "timeout", elapsed: elapsed };
-    }
-  }
 };
 
 //-------------------------------------------------------------------------
@@ -962,6 +833,34 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   `;
   return template.content.firstElementChild;
 };
+
+//-------------------------------------------------------------------------
+
+window.addEventListener("keydown", ev => {
+  // console.log("keydown", ev.code);
+});
+
+window.addEventListener("keyup", ev => {
+  // console.log("keyup", ev.code);
+});
+
+window.addEventListener("resize", () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+  // console.log("resize", W, H);
+});
+
+window.addEventListener("orientationchange", () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+  // console.log("orientationchange", W, H, screen.orientation);
+});
+
+//-------------------------------------------------------------------------
+
+document.addEventListener("DOMContentLoaded", async () => {
+  initializeInternalRoot();
+}, { once: true });
 
 //-------------------------------------------------------------------------
 
