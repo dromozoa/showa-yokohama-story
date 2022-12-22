@@ -31,11 +31,20 @@ body {
 }
 
 .demeter-title-ja {
+  color: #C63322;
   font-family: 'Yuji Syuku', serif;
+}
+
+.demeter-title-ja > span {
+  filter: url(#demeter-title-filter);
 }
 
 .demeter-title-en {
   font-family: 'Averia Serif Libre', serif;
+}
+
+.demeter-subtitle {
+  font-family: 'Share Tech', sans-serif;
 }
 
 .demeter-icon {

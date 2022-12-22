@@ -29,16 +29,29 @@
   <!-- https://icons8.com/line-awesome/howto -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
 
-  <script defer src="demeter.js"></script>
   <script defer src="demeter-jlreq.js"></script>
   <script defer src="demeter-scenario.js"></script>
   <script defer src="demeter-voice-sprite.js"></script>
+  <script defer src="demeter.js"></script>
 </head>
 
 <body>
 
 <div class="demeter-offscreen">
-<div class="demeter-title-ja"><span class="demeter-icon"> </span><span
+<svg>
+  <defs>
+    <filter id="demeter-title-filter" primitiveUnits="objectBoundingBox">
+      <feFlood flood-color="#FFFEDA" flood-opacity="1" result="color"/>
+      <feMorphology operator="dilate" radius="0.01" in="SourceAlpha" result="dilation"/>
+      <feComposite operator="in" in="color" in2="dilation" result="border"/>
+      <feMerge>
+        <feMergeNode in="border"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
+<div class="demeter-title-ja"><span class="demeter-icon"></span><span
   style="letter-spacing: -0.06em">昭</span><span
   style="letter-spacing: -0.02em">和</span><span
   style="letter-spacing: -0.03em">横</span><span
@@ -46,6 +59,10 @@
   style="letter-spacing: -0.07em">物</span><span
   style="letter-spacing: 0">語</span></div>
 <div class="demeter-title-en"><span>SHOWA YOKOHAMA STORY</span></div>
+<div class="demeter-subtitle">
+  <div>EVANGELIUM SECUNDUM STEPHANUS verse I-III</div>
+  <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+</div>
 <div class="demeter-loader">
 <div>昭七十四年月、逢類滅亡期物語破局現界億存圏寒冷冬屍脳髄凍害鎖疫功嶼南喪炭従源浜咬匙訓嗅噂埠猿砲遭僚厄銃刻莫迦尖黙鉾棲α鉱膠仔鯨吠溺蹂邀朶狡駱碑倣斧扶硝簾註圓溪闊禍榜贖宥箭</div>
 </div>
@@ -760,8 +777,10 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log(document.documentElement.clientWidth, document.documentElement.clientHeight);
   const D = demeter;
   await D.boot();
+  console.log(document.documentElement.clientWidth, document.documentElement.clientHeight);
 });
 </script>
 
