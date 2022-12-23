@@ -93,26 +93,6 @@
 
 /*************************************************************************/
 
-@media (orientation: portrait) {
-  .demeter-orientation::after {
-    content: 'portrait';
-  }
-}
-
-@media (orientation: landscape) {
-  .demeter-orientation::after {
-    content: 'landscape';
-  }
-}
-
-@media (max-width: 420px) {
-  .demeter-width::after {
-    content: 'max-width 420px';
-  }
-}
-
-/*************************************************************************/
-
 div.demeter-text {
   white-space: nowrap;
 }

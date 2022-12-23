@@ -926,6 +926,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cameraNode = document.querySelector(".demeter-camera");
   cameraNode.append(createScreenTitle());
 
+
+
+
+
   while (true) {
     await D.requestAnimationFrame();
     TWEEN.update();
