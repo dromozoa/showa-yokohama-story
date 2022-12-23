@@ -27,8 +27,12 @@
 }
 
 .demeter-screen-title {
+  position: absolute;
   width: 432px;
   height: 432px;
+  /*
+  background-color: rgba(255, 255, 255, 0.25);
+  */
 }
 
 /*************************************************************************/
