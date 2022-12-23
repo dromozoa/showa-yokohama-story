@@ -26,6 +26,46 @@
   color: #FFF;
 }
 
+.demeter-screen-title {
+  width: 432px;
+  height: 432px;
+}
+
+/*************************************************************************/
+
+.demeter-title-ja {
+  color: #C63322;
+  font-family: 'Yuji Syuku', serif;
+  font-size: 64px;
+  line-height: 96px;
+  text-align: center;
+}
+
+.demeter-title-ja > span {
+  filter: url(#demeter-title-ja-filter);
+}
+
+.demeter-title-en {
+  color: #C63322;
+  font-family: 'Averia Serif Libre', serif;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.demeter-title-en > div.demeter-text > div > span > span {
+  filter: url(#demeter-title-en-filter);
+}
+
+.demeter-subtitle {
+  margin-top: 72px;
+  color: #029D93;
+  font-family: 'Share Tech', sans-serif;
+  line-height: 24px;
+  font-size: 16px;
+  text-align: center;
+}
+
 /*************************************************************************/
 
 /* 1989-01-16 21:33Z */
@@ -33,23 +73,6 @@
   position: absolute;
   top: -8916px;
   left: -2133px;
-}
-
-.demeter-title-ja {
-  color: #C63322;
-  font-family: 'Yuji Syuku', serif;
-}
-
-.demeter-title-ja > span {
-  filter: url(#demeter-title-filter);
-}
-
-.demeter-title-en {
-  font-family: 'Averia Serif Libre', serif;
-}
-
-.demeter-subtitle {
-  font-family: 'Share Tech', sans-serif;
 }
 
 .demeter-icon {

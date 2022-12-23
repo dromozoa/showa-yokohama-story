@@ -860,8 +860,18 @@ window.addEventListener("orientationchange", () => {
 
 //-------------------------------------------------------------------------
 
+let titleTween;
+
 const createScreenTitle = () => {
   // セーブ状況により、サブタイトルが変化する
+  // 高さ432px
+  // title-ja 96
+  // title-en 24
+  // アキ
+  // subtitle 24
+  // subtitle 24
+  // アキ
+  // icon 24
 
   const template = document.createElement("template");
   template.innerHTML = `
@@ -873,8 +883,37 @@ const createScreenTitle = () => {
         style="letter-spacing: -0.05em">濱</span><span
         style="letter-spacing: -0.07em">物</span><span
         style="letter-spacing: 0">語</span></div>
+      <div class="demeter-title-en"></div>
+      <div class="demeter-subtitle">
+        <div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
+        <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+      </div>
+      <div style="
+        margin-top: 16px;
+        color: #029D93;
+        font-size: 16px;
+        line-height: 24px;
+        text-align: center;
+      ">
+        <div class="demeter-title-icon demeter-icon"></div>
+      </div>
     </div>
   `;
+
+  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 16, "'Averia Serif Libre', serif"), 432);
+  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 16, 24));
+
+  // 放物線
+  titleTween = new TWEEN.Tween({ x: -1 })
+    .to({ x: 1 }, 1200)
+    .easing(TWEEN.Easing.Linear.None)
+    .onUpdate(data => {
+      const y = (1 - data.x * data.x) * 8;
+      document.querySelector(".demeter-title-icon").style.transform = "translateY(" + D.numberToCss(y) + ")";
+    })
+    .repeat(Infinity)
+    .start();
+
   return template.content.firstElementChild;
 };
 
@@ -887,6 +926,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cameraNode = document.querySelector(".demeter-camera");
   cameraNode.append(createScreenTitle());
 
+  while (true) {
+    await D.requestAnimationFrame();
+    TWEEN.update();
+  }
 }, { once: true });
 
 //-------------------------------------------------------------------------
