@@ -836,6 +836,12 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
+const resize = () => {
+  const cameraNode = document.querySelector(".demeter-camera");
+  cameraNode.style.width = D.numberToCss(document.documentElement.clientWidth);
+  cameraNode.style.height = D.numberToCss(document.documentElement.clientHeight);
+};
+
 window.addEventListener("keydown", ev => {
   // console.log("keydown", ev.code);
 });
@@ -845,21 +851,42 @@ window.addEventListener("keyup", ev => {
 });
 
 window.addEventListener("resize", () => {
-  const W = document.documentElement.clientWidth;
-  const H = document.documentElement.clientHeight;
-  // console.log("resize", W, H);
+  resize();
 });
 
 window.addEventListener("orientationchange", () => {
-  const W = document.documentElement.clientWidth;
-  const H = document.documentElement.clientHeight;
-  // console.log("orientationchange", W, H, screen.orientation);
+  resize();
 });
+
+//-------------------------------------------------------------------------
+
+const createScreenTitle = () => {
+  // セーブ状況により、サブタイトルが変化する
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <div class="demeter-screen demeter-screen-title">
+      <div class="demeter-title-ja"><span
+        style="letter-spacing: -0.06em">昭</span><span
+        style="letter-spacing: -0.02em">和</span><span
+        style="letter-spacing: -0.03em">横</span><span
+        style="letter-spacing: -0.05em">濱</span><span
+        style="letter-spacing: -0.07em">物</span><span
+        style="letter-spacing: 0">語</span></div>
+    </div>
+  `;
+  return template.content.firstElementChild;
+};
 
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternalRoot();
+  resize();
+
+  const cameraNode = document.querySelector(".demeter-camera");
+  cameraNode.append(createScreenTitle());
+
 }, { once: true });
 
 //-------------------------------------------------------------------------
