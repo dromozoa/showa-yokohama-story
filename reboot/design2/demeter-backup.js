@@ -28,9 +28,18 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
+D.numberToCss = (v, unit = "px") => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, unit);
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
-D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
+const escapeHtmlTable = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&apos;",
+};
+
+D.escapeHtml = s => s.replace(/[&<>"']/g, match => escapeHtmlTable[match]);
 
 //-------------------------------------------------------------------------
 
@@ -39,6 +48,43 @@ let serialNumber = 0;
 D.getSerialNumber = () => {
   return ++serialNumber;
 };
+
+//-------------------------------------------------------------------------
+
+let bootException;
+let booted;
+let bootedFutures = [];
+
+D.boot = async () => {
+  return new Promise((resolve, reject) => {
+    if (booted) {
+      if (bootException === undefined) {
+        resolve();
+      } else {
+        reject(bootException);
+      }
+    } else {
+      bootedFutures.push({ resolve: resolve, reject: reject });
+    }
+  });
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    initializeInternalRoot();
+    await Promise.all([ checkKerning() ]);
+  } catch (e) {
+    bootException = e;
+  }
+  booted = true;
+
+  if (bootException === undefined) {
+    bootedFutures.forEach(future => future.resolve());
+  } else {
+    bootedFutures.forEach(future => future.reject(bootException));
+  }
+  bootedFutures = undefined;
+}, { once: true });
 
 //-------------------------------------------------------------------------
 
@@ -57,6 +103,89 @@ const initializeInternalRoot = () => {
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
+};
+
+//-------------------------------------------------------------------------
+
+// Showa Yokohama Storyフォントは
+//   U+E001: 800/1000
+//   U+E002: 900/1000
+// という寸法を持ち、-300/1000のカーニングが設定されている。フォントサイズが
+// 100pxのとき、文字列"\uE001\uE002"の幅は
+//   カーニング有効時: 140px
+//   カーニング無効時: 170px
+// になる。
+const checkKerning = async () => {
+  const index = [...document.fonts].findIndex(fontFace => /Showa Yokohama Story/.test(fontFace.family));
+  if (index === -1) {
+    throw new Error("font-face 'Showa Yokohama Story' not found");
+  }
+  if ((await D.loadFontFace(index, 1000)).status !== "loaded") {
+    throw new Error("font-face 'Showa Yokohama Story' not loaded");
+  }
+
+  const context = internalCanvas.getContext("2d");
+  context.font = "100px 'Showa Yokohama Story'";
+  D.featureKerning = Math.abs(context.measureText("\uE001\uE002").width - 140) < 1;
+};
+
+//-------------------------------------------------------------------------
+
+// Firefox 107でFontFace.load()の返り値が（FontFace.loadedも）決定されない場合
+// があった。FontFaceが新しい別のオブジェクトにさしかえられ、プロミスが迷子にな
+// っているように見えた。そこで、document.facesの監視のためにポーリングする。
+D.loadFontFace = async (index, timeout) => {
+  const fontFace = [...document.fonts][index];
+  if (fontFace.status === "loaded") {
+    return { status: "loaded", elapsed: 0 };
+  }
+  fontFace.load();
+
+  const start = await D.requestAnimationFrame();
+  if ([...document.fonts][index].status === "loaded") {
+    return { status: "loaded", elapsed: 0 };
+  }
+
+  if (!timeout || timeout < 0) {
+    timeout = Infinity;
+  }
+
+  while (true) {
+    const elapsed = await D.requestAnimationFrame() - start;
+    if ([...document.fonts][index].status === "loaded") {
+      return { status: "loaded", elapsed: elapsed };
+    }
+    if (timeout < elapsed) {
+      return { status: "timeout", elapsed: elapsed };
+    }
+  }
+};
+
+D.loadFontFaces = async (timeout) => {
+  const fontFaces = [...document.fonts].filter(fontFace => fontFace.status !== "loaded");
+  if (fontFaces.length === 0) {
+    return { status: "loaded", elapsed: 0 };
+  }
+  fontFaces.forEach(fontFace => fontFace.load());
+
+  const start = await D.requestAnimationFrame();
+  if ([...document.fonts].every(fontFace => fontFace.status === "loaded")) {
+    return { status: "loaded", elapsed: 0 };
+  }
+
+  if (!timeout || timeout < 0) {
+    timeout = Infinity;
+  }
+
+  while (true) {
+    const elapsed = await D.requestAnimationFrame() - start;
+    if ([...document.fonts].every(fontFace => fontFace.status === "loaded")) {
+      return { status: "loaded", elapsed: elapsed };
+    }
+    if (timeout < elapsed) {
+      return { status: "timeout", elapsed: elapsed };
+    }
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -833,108 +962,6 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   `;
   return template.content.firstElementChild;
 };
-
-//-------------------------------------------------------------------------
-
-const resize = () => {
-  const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.style.width = D.numberToCss(document.documentElement.clientWidth);
-  cameraNode.style.height = D.numberToCss(document.documentElement.clientHeight);
-};
-
-window.addEventListener("keydown", ev => {
-  // console.log("keydown", ev.code);
-});
-
-window.addEventListener("keyup", ev => {
-  // console.log("keyup", ev.code);
-});
-
-window.addEventListener("resize", () => {
-  resize();
-});
-
-window.addEventListener("orientationchange", () => {
-  resize();
-});
-
-//-------------------------------------------------------------------------
-
-let titleTween;
-
-const createScreenTitle = () => {
-  // セーブ状況により、サブタイトルが変化する
-  // 高さ432px
-  // title-ja 96
-  // title-en 24
-  // アキ
-  // subtitle 24
-  // subtitle 24
-  // アキ
-  // icon 24
-
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <div class="demeter-screen demeter-screen-title">
-      <div class="demeter-title-ja"><span
-        style="letter-spacing: -0.06em">昭</span><span
-        style="letter-spacing: -0.02em">和</span><span
-        style="letter-spacing: -0.03em">横</span><span
-        style="letter-spacing: -0.05em">濱</span><span
-        style="letter-spacing: -0.07em">物</span><span
-        style="letter-spacing: 0">語</span></div>
-      <div class="demeter-title-en"></div>
-      <div class="demeter-subtitle">
-        <div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
-        <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
-      </div>
-      <div style="
-        margin-top: 16px;
-        color: #029D93;
-        font-size: 16px;
-        line-height: 24px;
-        text-align: center;
-      ">
-        <div class="demeter-title-icon demeter-icon"></div>
-      </div>
-    </div>
-  `;
-
-  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 16, "'Averia Serif Libre', serif"), 432);
-  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 16, 24));
-
-  // 放物線
-  titleTween = new TWEEN.Tween({ x: -1 })
-    .to({ x: 1 }, 1200)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate(data => {
-      const y = (1 - data.x * data.x) * 8;
-      document.querySelector(".demeter-title-icon").style.transform = "translateY(" + D.numberToCss(y) + ")";
-    })
-    .repeat(Infinity)
-    .start();
-
-  return template.content.firstElementChild;
-};
-
-//-------------------------------------------------------------------------
-
-document.addEventListener("DOMContentLoaded", async () => {
-  initializeInternalRoot();
-  resize();
-
-  const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.append(createScreenTitle());
-
-
-
-
-
-  while (true) {
-    await D.requestAnimationFrame();
-    TWEEN.update();
-  }
-}, { once: true });
 
 //-------------------------------------------------------------------------
 

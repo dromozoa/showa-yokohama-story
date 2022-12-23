@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&family=Share+Tech&display=swap" rel="stylesheet">
 
   <link href="demeter.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
@@ -34,7 +34,7 @@
     }
 
     .title-ja > span {
-      filter: url(#filter1);
+      filter: url(#filter1b);
       /*
       filter: blur(1px);
       filter: drop-shadow(0 0 8px #fff);
@@ -50,14 +50,16 @@
     }
 
     .title-en > span {
-      filter: url(#filter2);
+      filter: url(#filter1b);
     }
 
     .subtitle {
-      font-family: 'Share Tech Mono', serif;
+      font-family: 'Share Tech', sans-serif;
       font-size: 24px;
       line-height: 1.5;
       color: #029D93;
+      width: 600px;
+      text-align: center;
     }
 
   </style>
@@ -83,10 +85,7 @@
   <div class="title-en">SHOWA YOKOHAMA STORY</div>
 </div>
 
-<div style="
-  margin-top: 48px;
-  margin-left: 48px;
-">
+<div style="margin-left: 24px; margin-top: 48px">
   <div class="subtitle">EVANGELIUM SECUNDUM STEPHANUS verse I-III</div>
   <div class="subtitle">INSERT 30 PIECES OF SILVER TO CONTINUE...</div>
 </div>
@@ -94,8 +93,17 @@
 <div style="position: absolute; top: -9999px; left: -9999px">
   <svg>
     <defs>
-      <filter id="filter1">
+      <filter id="filter1a">
         <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <filter id="filter1b" primitiveUnits="objectBoundingBox" >
+        <feMorphology operator="dilate" radius="0.01" in="SourceAlpha" result="dilated"/>
         <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
         <feComposite operator="in" in="filled" in2="dilated" result="background"/>
         <feMerge>
