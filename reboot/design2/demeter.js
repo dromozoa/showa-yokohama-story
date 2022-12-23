@@ -837,9 +837,21 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 //-------------------------------------------------------------------------
 
 const resize = () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+  const size = Math.min(W, H);
+  const scale = Math.min(1.5, size / 432);
+
   const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.style.width = D.numberToCss(document.documentElement.clientWidth);
-  cameraNode.style.height = D.numberToCss(document.documentElement.clientHeight);
+  cameraNode.style.width = D.numberToCss(W);
+  cameraNode.style.height = D.numberToCss(H);
+
+  const node = cameraNode.firstElementChild;
+  if (node) {
+    node.style.transform =
+      "translate(" + D.numberToCss(W * 0.5 - 216) + "," + D.numberToCss(H * 0.5 - 216) + ")" +
+      "scale(" + D.numberToString(scale) + ")";
+  }
 };
 
 window.addEventListener("keydown", ev => {
@@ -876,7 +888,7 @@ const createScreenTitle = () => {
   const template = document.createElement("template");
   template.innerHTML = `
     <div class="demeter-screen demeter-screen-title">
-      <div class="demeter-title-ja"><span
+      <div class="demeter-title-ja" style="margin-top: 72px"><span
         style="letter-spacing: -0.06em">昭</span><span
         style="letter-spacing: -0.02em">和</span><span
         style="letter-spacing: -0.03em">横</span><span
@@ -921,14 +933,10 @@ const createScreenTitle = () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternalRoot();
-  resize();
 
   const cameraNode = document.querySelector(".demeter-camera");
   cameraNode.append(createScreenTitle());
-
-
-
-
+  resize();
 
   while (true) {
     await D.requestAnimationFrame();
