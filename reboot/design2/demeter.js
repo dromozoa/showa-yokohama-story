@@ -840,7 +840,7 @@ const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
   const size = Math.min(W, H);
-  const scale = Math.min(1.5, size / 432);
+  const scale = Math.min(1, size / 638);
 
   const cameraNode = document.querySelector(".demeter-camera");
   cameraNode.style.width = D.numberToCss(W);
@@ -849,7 +849,7 @@ const resize = () => {
   const node = cameraNode.firstElementChild;
   if (node) {
     node.style.transform =
-      "translate(" + D.numberToCss(W * 0.5 - 216) + "," + D.numberToCss(H * 0.5 - 216) + ")" +
+      "translate(" + D.numberToCss(W * 0.5 - 324) + "," + D.numberToCss(H * 0.5 - 324) + ")" +
       "scale(" + D.numberToString(scale) + ")";
   }
 };
@@ -901,10 +901,10 @@ const createScreenTitle = () => {
         <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
       </div>
       <div style="
-        margin-top: 16px;
+        margin-top: 24px;
         color: #029D93;
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 24px;
+        line-height: 36px;
         text-align: center;
       ">
         <div class="demeter-title-icon demeter-icon"></div>
@@ -912,14 +912,14 @@ const createScreenTitle = () => {
     </div>
   `;
 
-  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 16, "'Averia Serif Libre', serif"), 432);
-  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 16, 24));
+  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 24, "'Averia Serif Libre', serif"), 648);
+  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 24, 36));
 
   titleTween = new TWEEN.Tween({ x: -1 })
     .to({ x: 1 }, 1200)
     .easing(TWEEN.Easing.Linear.None)
     .onUpdate(data => {
-      const y = (1 - data.x * data.x) * 8;
+      const y = (1 - data.x * data.x) * 12;
       document.querySelector(".demeter-title-icon").style.transform = "translateY(" + D.numberToCss(y) + ")";
     })
     .repeat(Infinity)

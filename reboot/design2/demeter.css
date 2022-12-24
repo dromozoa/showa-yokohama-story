@@ -28,8 +28,8 @@
 
 .demeter-screen-title {
   position: absolute;
-  width: 432px;
-  height: 432px;
+  width: 648px;
+  height: 648px;
   /*
   background-color: rgba(255, 255, 255, 0.25);
   */
@@ -40,8 +40,8 @@
 .demeter-title-ja {
   color: #C63322;
   font-family: 'Yuji Syuku', serif;
-  font-size: 64px;
-  line-height: 96px;
+  font-size: 96px;
+  line-height: 144px;
   text-align: center;
 }
 
@@ -52,8 +52,8 @@
 .demeter-title-en {
   color: #C63322;
   font-family: 'Averia Serif Libre', serif;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 24px;
+  line-height: 36px;
   text-align: center;
 }
 
@@ -62,11 +62,11 @@
 }
 
 .demeter-subtitle {
-  margin-top: 72px;
+  margin-top: 108px;
   color: #029D93;
   font-family: 'Share Tech', sans-serif;
-  line-height: 24px;
-  font-size: 16px;
+  line-height: 36px;
+  font-size: 24px;
   text-align: center;
 }
 
