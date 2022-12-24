@@ -930,19 +930,6 @@ const createScreenTitle = () => {
 
 //-------------------------------------------------------------------------
 
-const createScreenMainPortrait = () => {
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <div class="demeter-screen demeter-screen-main">
-      <div class="">
-      </div>
-    </div>
-  `;
-  return template.content.firstElementChild;
-};
-
-//-------------------------------------------------------------------------
-
 let music;
 let voice;
 
@@ -952,6 +939,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeInternalRoot();
 
   const cameraNode = document.querySelector(".demeter-camera");
+
   const screenTitleNode = createScreenTitle();
   screenTitleNode.addEventListener("click", ev => {
     console.log(ev.target);

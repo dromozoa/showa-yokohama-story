@@ -340,3 +340,9 @@ pip3 install librosa
 
 - 1152x768でレイアウトを切って、スケールの最大値を1にする
 
+```
+          Title
+  Load    Main    Save
+```
+
+
