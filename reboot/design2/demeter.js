@@ -930,6 +930,19 @@ const createScreenTitle = () => {
 
 //-------------------------------------------------------------------------
 
+const createScreenMainPortrait = () => {
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <div class="demeter-screen demeter-screen-main">
+      <div class="">
+      </div>
+    </div>
+  `;
+  return template.content.firstElementChild;
+};
+
+//-------------------------------------------------------------------------
+
 let music;
 let voice;
 
@@ -955,12 +968,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     voice = new Howl({
       src: [
-        "../output/voice/0002.webm",
-        "../output/voice/0002.mp3",
+        "../output/voice/0004.webm",
+        "../output/voice/0004.mp3",
       ],
-      sprite: D.voiceSprites[1],
+      sprite: D.voiceSprites[3],
       onend: id => {
-        if (++voiceIndex <= 3) {
+        console.log("onend", id);
+        if (++voiceIndex <= 2) {
           setTimeout(() => {
             console.log(voice.play(voiceIndex.toString()));
           }, 400);
