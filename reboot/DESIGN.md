@@ -270,6 +270,9 @@ env DYLD_LIBRARY_PATH="$MAGICK_HOME/lib" convert favicon-32.png favicon-32.ico
 
 - Voicepeakは44100Hzのwavで出力することにした
   - 周波数は音楽とあわせた
+- 12/24: Voicepeakは48000Hzで出力にした
+  - UIを変更する必要がない
+  - webm/opusが48000Hzになるから
 
 音楽の入力ファイルのffprobe結果。
 
@@ -282,9 +285,9 @@ Input #0, wav, from 'sessions_diana23.wav':
 音声の入力ファイルのffprobe結果。音声はモノラルであることに注意。
 
 ```
-Input #0, wav, from '001-voice2.wav':
-  Duration: 00:00:04.50, bitrate: 705 kb/s
-  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, 1 channels, s16, 705 kb/s
+Input #0, wav, from 'output/voice2/000-voice2.wav':
+  Duration: 00:00:03.61, bitrate: 768 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 48000 Hz, 1 channels, s16, 768 kb/s
 ```
 
 変換結果（mp3のビットレートは結果の値）。

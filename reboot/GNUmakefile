@@ -35,8 +35,8 @@ clean::
 	rm -f $(targets)
 
 convert_voice::
-	$(lua) tool/convert_voice.lua output voice $(wildcard output/voice/*-voice*.wav)
-	cp -f output/voice.js design2/demeter-voice-sprite.js
+	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice2 "*-voice*.wav"
+	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
 
 $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :

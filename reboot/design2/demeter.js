@@ -915,7 +915,6 @@ const createScreenTitle = () => {
   const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 16, "'Averia Serif Libre', serif"), 432);
   template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 16, 24));
 
-  // 放物線
   titleTween = new TWEEN.Tween({ x: -1 })
     .to({ x: 1 }, 1200)
     .easing(TWEEN.Easing.Linear.None)
@@ -931,11 +930,47 @@ const createScreenTitle = () => {
 
 //-------------------------------------------------------------------------
 
+let music;
+let voice;
+
 document.addEventListener("DOMContentLoaded", async () => {
+  Howler.autoUnlock = false;
+
   initializeInternalRoot();
 
   const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.append(createScreenTitle());
+  const screenTitleNode = createScreenTitle();
+  screenTitleNode.addEventListener("click", ev => {
+    console.log(ev.target);
+    music = new Howl({
+      src: [
+        "../output/music/sessions_diana33.webm",
+        "../output/music/sessions_diana33.mp3",
+      ],
+      autoplay: true,
+      loop: true,
+    });
+
+    let voiceIndex = 1;
+
+    voice = new Howl({
+      src: [
+        "../output/voice/0002.webm",
+        "../output/voice/0002.mp3",
+      ],
+      sprite: D.voiceSprites[1],
+      onend: id => {
+        if (++voiceIndex <= 3) {
+          setTimeout(() => {
+            console.log(voice.play(voiceIndex.toString()));
+          }, 400);
+        }
+      },
+    });
+    console.log(voice.play(voiceIndex.toString()));
+  });
+
+  cameraNode.append(screenTitleNode);
   resize();
 
   while (true) {

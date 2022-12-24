@@ -20,4 +20,7 @@
 here=`dirname "$0"`
 export LUA_PATH="$here/?.lua;;"
 
-lua "$here/generate_graph_dot.lua" "$1" | ssh honoka 'dot -Tsvg' | lua "$here/generate_graph.lua" >"$2"
+output_dirname=`(cd "$2" && pwd)`
+source_dirname=`(cd "$3" && pwd)`
+
+lua "$here/convert_voice.lua" "$1" "$output_dirname" "$source_dirname"/$4
