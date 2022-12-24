@@ -123,8 +123,25 @@ end
 -- 400ミリ秒の無音区間を生成しておく。
 generate_wav(output_dirname.."/silent.wav", 0.4)
 
+local handle_js = assert(io.open(output_dirname.."/demeter-voice-sprites.js", "w"))
+
+handle_js:write [[
+(() => {
+"use strict";
+
+const D = globalThis.demeter ||= {};
+if (D.voiceSprites) {
+  return;
+}
+
+D.voiceSprites = [
+]]
+
 local index = 0
 for i, paragraph in ipairs(scenario) do
+  local offset = 0
+  handle_js:write "{"
+
   local handle = assert(io.open(output_dirname.."/concat.txt", "w"))
   for j, text in ipairs(paragraph) do
     index = index + 1
@@ -133,8 +150,14 @@ for i, paragraph in ipairs(scenario) do
       handle:write("file '"..output_dirname.."/silent.wav'\n")
     end
     handle:write("file '"..source_pathnames[index].."'\n")
+
+    local duration = source_durations[index]
+    handle_js:write(('"%d":[%d,%d],'):format(j, math.ceil(offset * 1000), math.ceil(duration * 1000)))
+    offset = offset + duration + 0.4
   end
   handle:close()
+
+  handle_js:write "},\n"
 
   execute(("ffmpeg -y -safe 0 -f concat -i %s/concat.txt -b:a 64k -dash 1 %s/%04d.webm"):format(
     quote_shell(output_dirname),
@@ -146,3 +169,11 @@ for i, paragraph in ipairs(scenario) do
     quote_shell(output_dirname),
     i))
 end
+
+handle_js:write [[
+];
+
+})();
+]]
+
+handle_js:close()
