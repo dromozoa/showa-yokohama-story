@@ -950,15 +950,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       autoplay: true,
       loop: true,
     });
+
+    let voiceIndex = 1;
+
     voice = new Howl({
       src: [
-        "../output/voice.webm",
-        "../output/voice.mp3",
+        "../output/voice/0002.webm",
+        "../output/voice/0002.mp3",
       ],
-      sprite: D.voiceSprite,
+      sprite: D.voiceSprites[1],
+      onend: id => {
+        if (++voiceIndex <= 3) {
+          setTimeout(() => {
+            console.log(voice.play(voiceIndex.toString()));
+          }, 400);
+        }
+      },
     });
-
-    console.log(voice.play());
+    console.log(voice.play(voiceIndex.toString()));
   });
 
   cameraNode.append(screenTitleNode);
