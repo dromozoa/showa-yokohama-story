@@ -16,12 +16,14 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local basename = require "basename"
+local parse = require "parse"
 local quote_shell = require "quote_shell"
 
 -- Voicepeakが出力したwavファイルを読む。
-local function parse_wav(source_pathname)
-  local handle = assert(io.open(source_pathname, "rb"))
+local function parse_wav(pathname)
+  local handle = assert(io.open(pathname, "rb"))
   assert(handle:read(4) == "RIFF")
+
   local file_size = string.unpack("<I4", handle:read(4))
   assert(handle:read(4) == "WAVE")
 
@@ -57,8 +59,8 @@ local function parse_wav(source_pathname)
 
   assert(format_tag == 1)
   assert(channels == 1)
-  assert(samples_per_sec == 44100)
-  assert(avg_bytes_per_sec == 88200)
+  assert(samples_per_sec == 48000)
+  assert(avg_bytes_per_sec == 96000)
   assert(block_align == 2)
   assert(bits_per_sample == 16)
   assert(data_size)
@@ -67,70 +69,80 @@ local function parse_wav(source_pathname)
   return data_size, data_duration
 end
 
+-- 無音のwavファイルを生成する
+local function generate_wav(pathname, duration)
+  local format_tag = 1
+  local channels = 1
+  local samples_per_sec = 48000
+  local avg_bytes_per_sec = 96000
+  local block_align = 2
+  local bits_per_sample = 16
+
+  local data_samples = math.floor(duration * samples_per_sec)
+  local data_size = data_samples * block_align
+
+  local handle = assert(io.open(pathname, "wb"))
+
+  handle:write "RIFF"
+  handle:write(string.pack("<I4", data_size + 36))
+
+  -- 4
+  handle:write "WAVE"
+
+  -- 8+16
+  handle:write "fmt "
+  handle:write(string.pack("<I4", 16))
+  handle:write(string.pack("<I2I2I4I4I2I2", format_tag, channels, samples_per_sec, avg_bytes_per_sec, block_align, bits_per_sample))
+
+  -- 8+data_size
+  handle:write "data"
+  handle:write(string.pack("<I4", data_size))
+  for _ = 1, data_samples do
+    handle:write(string.pack("<I2", 0))
+  end
+
+  handle:close()
+end
+
 local function execute(command)
   print(command)
   assert(os.execute(command))
 end
 
--- 段落ごとにスプライトにまとめる。
--- 400ミリ秒、ウェイトをはさむ。
-
-local output_dirname, output_name = ...
-local output_basename = output_dirname.."/"..output_name
+local scenario_pathname, output_dirname = ...
+local scenario = parse(scenario_pathname)
 local source_pathnames = { table.unpack(arg, 3) }
+local source_durations = {}
 
-local result = {}
-local handle = assert(io.open(output_basename..".txt", "w"))
 for i, source_pathname in ipairs(source_pathnames) do
   assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i - 1)
   local _, duration = parse_wav(source_pathname)
-  local padded = math.ceil(duration) + 1
-  result[i] = {
-    duration = duration;
-    padded = padded;
-  }
-  execute(("ffmpeg -y -i %s -filter:a apad=whole_dur=%d %s-%04d.wav"):format(quote_shell(source_pathname), padded, quote_shell(output_basename), i - 1))
-  handle:write(("file '%s-%04d.wav'\n"):format(output_name, i - 1))
-end
-handle:close()
-
-execute(("ffmpeg -y -f concat -i %s.txt -c copy %s.wav"):format(quote_shell(output_basename), quote_shell(output_basename)))
-
-for i = 1, #result do
-  os.remove(("%s-%04d.wav"):format(output_basename, i - 1))
+  source_durations[i] = duration
 end
 
-execute(("ffmpeg -y -i %s.wav -b:a 64k -dash 1 %s.webm"):format(quote_shell(output_basename), quote_shell(output_basename)))
-execute(("ffmpeg -y -i %s.wav -q:a 4 %s.mp3"):format(quote_shell(output_basename), quote_shell(output_basename)))
+-- 400ミリ秒の無音区間を生成しておく。
+generate_wav(output_dirname.."/silent.wav", 0.4)
 
-os.remove(output_basename..".txt")
-os.remove(output_basename..".wav")
+local index = 0
+for i, paragraph in ipairs(scenario) do
+  local handle = assert(io.open(output_dirname.."/concat.txt", "w"))
+  for j, text in ipairs(paragraph) do
+    index = index + 1
+    if j > 1 then
+      -- 無音区間をはさむ。
+      handle:write("file '"..output_dirname.."/silent.wav'\n")
+    end
+    handle:write("file '"..source_pathnames[index].."'\n")
+  end
+  handle:close()
 
-local handle = assert(io.open(output_basename..".js", "w"))
+  execute(("ffmpeg -y -safe 0 -f concat -i %s/concat.txt -b:a 64k -dash 1 %s/%04d.webm"):format(
+    quote_shell(output_dirname),
+    quote_shell(output_dirname),
+    i))
 
-handle:write [[
-(() => {
-"use strict";
-
-const D = globalThis.demeter ||= {};
-if (D.voiceSprite) {
-  return;
-}
-
-D.voiceSprite = {
-]]
-
-local offset = 0
-for i = 1, #result do
-  local sprite = result[i]
-  handle:write(('"%04d":[%d,%d],\n'):format(i - 1, offset * 1000, math.ceil(sprite.duration * 1000)))
-  offset = offset + sprite.padded
+  execute(("ffmpeg -y -safe 0 -f concat -i %s/concat.txt -q:a 4 %s/%04d.mp3"):format(
+    quote_shell(output_dirname),
+    quote_shell(output_dirname),
+    i))
 end
-
-handle:write [[
-};
-
-})();
-]]
-
-handle:close()
