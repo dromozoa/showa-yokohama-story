@@ -23,4 +23,4 @@ export LUA_PATH="$here/?.lua;;"
 output_dirname=`(cd "$2" && pwd)`
 source_dirname=`(cd "$3" && pwd)`
 
-lua "$here/convert_voice2.lua" "$1" "$output_dirname" "$source_dirname"/$4
+lua "$here/convert_voice.lua" "$1" "$output_dirname" "$source_dirname"/$4

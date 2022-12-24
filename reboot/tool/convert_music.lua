@@ -62,7 +62,7 @@ for _, source_pathname in ipairs(source_pathnames) do
     ..":offset="..result.target_offset
     ..":print_format=json,"
     .."channelmap=channel_layout=stereo,"
-    .."aresample=44100:resampler=soxr"
+    .."aresample=48000:resampler=soxr"
 
   -- webm
   execute(("ffmpeg -y -i %s -filter:a %s -b:a 128k -dash 1 %s.webm"):format(quote_shell(source_pathname), quote_shell(audio_filter), quote_shell(result_name)))
