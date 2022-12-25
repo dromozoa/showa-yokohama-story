@@ -836,11 +836,14 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
+const sizeMin = 24 * 27; // 648
+const sizeMax = 24 * 48; // 1152
+
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  const size = Math.min(W, H);
-  const scale = Math.min(1, size / 638);
+  const size = Math.max(W, H);
+  const scale = Math.min(1, size / sizeMax);
 
   const cameraNode = document.querySelector(".demeter-camera");
   cameraNode.style.width = D.numberToCss(W);
@@ -849,7 +852,7 @@ const resize = () => {
   const node = cameraNode.firstElementChild;
   if (node) {
     node.style.transform =
-      "translate(" + D.numberToCss(W * 0.5 - 324) + "," + D.numberToCss(H * 0.5 - 324) + ")" +
+      "translate(" + D.numberToCss(W * 0.5 - 576) + "," + D.numberToCss(H * 0.5 - 576) + ")" +
       "scale(" + D.numberToString(scale) + ")";
   }
 };
@@ -937,48 +940,49 @@ document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
-
-  const cameraNode = document.querySelector(".demeter-camera");
-
-  const screenTitleNode = createScreenTitle();
-  screenTitleNode.addEventListener("click", ev => {
-    console.log(ev.target);
-    music = new Howl({
-      src: [
-        "../output/music/sessions_diana33.webm",
-        "../output/music/sessions_diana33.mp3",
-      ],
-      autoplay: true,
-      loop: true,
-    });
-
-    let voiceIndex = 1;
-
-    voice = new Howl({
-      src: [
-        "../output/voice/0004.webm",
-        "../output/voice/0004.mp3",
-      ],
-      sprite: D.voiceSprites[3],
-      onend: id => {
-        console.log("onend", id);
-        if (++voiceIndex <= 2) {
-          setTimeout(() => {
-            console.log(voice.play(voiceIndex.toString()));
-          }, 400);
-        }
-      },
-    });
-    console.log(voice.play(voiceIndex.toString()));
-  });
-
-  cameraNode.append(screenTitleNode);
   resize();
 
-  while (true) {
-    await D.requestAnimationFrame();
-    TWEEN.update();
-  }
+//  const cameraNode = document.querySelector(".demeter-camera");
+//
+//  const screenTitleNode = createScreenTitle();
+//  screenTitleNode.addEventListener("click", ev => {
+//    console.log(ev.target);
+//    music = new Howl({
+//      src: [
+//        "../output/music/sessions_diana33.webm",
+//        "../output/music/sessions_diana33.mp3",
+//      ],
+//      autoplay: true,
+//      loop: true,
+//    });
+//
+//    let voiceIndex = 1;
+//
+//    voice = new Howl({
+//      src: [
+//        "../output/voice/0004.webm",
+//        "../output/voice/0004.mp3",
+//      ],
+//      sprite: D.voiceSprites[3],
+//      onend: id => {
+//        console.log("onend", id);
+//        if (++voiceIndex <= 2) {
+//          setTimeout(() => {
+//            console.log(voice.play(voiceIndex.toString()));
+//          }, 400);
+//        }
+//      },
+//    });
+//    console.log(voice.play(voiceIndex.toString()));
+//  });
+//
+//  cameraNode.append(screenTitleNode);
+//  resize();
+//
+//  while (true) {
+//    await D.requestAnimationFrame();
+//    TWEEN.update();
+//  }
 }, { once: true });
 
 //-------------------------------------------------------------------------

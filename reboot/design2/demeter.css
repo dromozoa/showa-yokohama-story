@@ -19,29 +19,39 @@
 
 /*************************************************************************/
 
-.demeter-body {
-  margin: 0;
-  background-color: #000;
-  background-image: url(../output/bg.png);
-  color: #FFF;
+:root {
+  --font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
+  --font-size: 24px;
+  --font-family-title-ja: 'Yuji Syuku', serif;
+  --font-family-title-en: 'Averia Serif Libre', serif;
+  --font-family-console: 'Share Tech', sans-serif;
+  --color-title: #C63322;
+  --color-console: #029D93;
+  --size-min: calc(var(--font-size) * 27);
+  --size-max: calc(var(--font-size) * 48);
 }
 
-.demeter-screen-title {
+body.demeter {
+  margin: 0;
+  color: #FFF;
+  background-color: #000;
+  background-image: url(../output/bg.png);
+}
+
+.demeter-screen {
   position: absolute;
-  width: 648px;
-  height: 648px;
-  /*
-  background-color: rgba(255, 255, 255, 0.25);
-  */
+  width: var(--size-max);
+  height: var(--size-max);
 }
 
 /*************************************************************************/
 
 .demeter-title-ja {
-  color: #C63322;
-  font-family: 'Yuji Syuku', serif;
-  font-size: 96px;
-  line-height: 144px;
+  color: var(--color-title);
+  font-family: var(--font-family-title-ja);
+  font-kerning: none;
+  font-size: calc(var(--font-size) * 4);
+  line-height: calc(var(--font-size) * 6);
   text-align: center;
 }
 
@@ -50,23 +60,31 @@
 }
 
 .demeter-title-en {
-  color: #C63322;
-  font-family: 'Averia Serif Libre', serif;
-  font-size: 24px;
-  line-height: 36px;
+  color: var(--color-title);
+  font-family: var(--font-family-title-en);
+  font-kerning: none;
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
   text-align: center;
 }
 
-.demeter-title-en > div.demeter-text > div > span > span {
+.demeter-title-en > span {
   filter: url(#demeter-title-en-filter);
 }
 
-.demeter-subtitle {
-  margin-top: 108px;
-  color: #029D93;
-  font-family: 'Share Tech', sans-serif;
-  line-height: 36px;
-  font-size: 24px;
+.demeter-title-text {
+  color: var(--color-console);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
+  text-align: center;
+}
+
+.demeter-title-icon {
+  color: var(--color-console);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
   text-align: center;
 }
 
