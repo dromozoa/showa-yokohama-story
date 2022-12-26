@@ -68,8 +68,9 @@ body.demeter {
   position: absolute;
   width: var(--size-min);
   height: var(--size-min);
-  /* debug */
+  /* debug
   background-color: rgba(255, 255, 255, 0.1);
+  */
 }
 
 .demeter-title-ja {
@@ -200,6 +201,8 @@ body.demeter {
 .demeter-main-paragraph {
   position: absolute;
   top: calc(var(--font-size) * 34);
+  left: var(--font-size);
+  width: calc(var(--font-size) * 25);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
@@ -207,6 +210,20 @@ body.demeter {
 
 .demeter-main-paragraph-speaker {
   text-align: center;
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-main-paragraph-lines {
+  height: calc(var(--font-size) * 8);
+}
+
+.demeter-main-paragraph-icon {
+  text-align: right;
+
+  animation-name: demeter-bounce;
+  animation-duration: 1.2s;
+  animation-iteration-count: infinite;
+  transform-origin: center bottom;
 }
 
 /*************************************************************************/
