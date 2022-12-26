@@ -266,7 +266,7 @@ body.demeter {
 
   90% {
     animation-timing-function: ease-in;
-    transform: scaleY(0.75);
+    transform: scaleY(0.85);
   }
 
   100% {
