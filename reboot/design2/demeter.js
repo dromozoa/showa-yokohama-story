@@ -822,12 +822,12 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
     <svg viewBox="${D.numberToString(-width*0.5)} ${D.numberToString(-height*0.5)} ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
-      <g class="buttons">
-        <g class="button button1"><path d="${button1PathData}"/></g>
-        <g class="button button2"><path d="${button2PathData}"/></g>
-        <g class="button button3"><path d="${button3PathData}"/></g>
-        <g class="button button4"><path d="${button4PathData}"/></g>
-        <g class="button button5"><path d="${button5PathData}"/></g>
+      <g class="demeter-buttons">
+        <g class="demeter-button demeter-button1"><path d="${button1PathData}"/></g>
+        <g class="demeter-button demeter-button2"><path d="${button2PathData}"/></g>
+        <g class="demeter-button demeter-button3"><path d="${button3PathData}"/></g>
+        <g class="demeter-button demeter-button4"><path d="${button4PathData}"/></g>
+        <g class="demeter-button demeter-button5"><path d="${button5PathData}"/></g>
       </g>
     </svg>
   `;
@@ -836,27 +836,66 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
-const sizeMin = 24 * 27; // 648
-const sizeMax = 24 * 48; // 1152
+const fontSize = 24;
+const sizeMin = fontSize * 27;
+const sizeMax = fontSize * 48;
+
+//-------------------------------------------------------------------------
+
+const initializeTitleScreen = () => {
+  // セーブ状況により、サブタイトルが変化する
+  const node = document.querySelector(".demeter-title-text").firstElementChild;
+  node.textContent = "EVANGELIUM SECUNDUM STEPHANUS verse I-III";
+};
+
+const initializeMainScreen = () => {
+  const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
+  document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
+
+  [...menuFrameNode.querySelectorAll(".button")].forEach(node => {
+    node.addEventListener("click", ev => console.log(ev.target));
+  });
+
+};
+
+const initialize = () => {
+  initializeTitleScreen();
+  initializeMainScreen();
+};
+
+//-------------------------------------------------------------------------
 
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  const size = Math.max(W, H);
-  const scale = Math.min(1, size / sizeMax);
 
-  const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.style.width = D.numberToCss(W);
-  cameraNode.style.height = D.numberToCss(H);
+  const titleScreenNode = document.querySelector(".demeter-title-screen");
+  if (titleScreenNode) {
+    titleScreenNode.style.transform = "translate(" +
+      D.numberToCss((W - sizeMin) * 0.5) + "," +
+      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
+      D.numberToString(Math.min(1, W / sizeMin, H / sizeMin)) + ")";
+  }
 
-  const node = cameraNode.firstElementChild;
-  if (node) {
-    node.style.transform =
-      "translate(" + D.numberToCss(W * 0.5 - 576) + "," + D.numberToCss(H * 0.5 - 576) + ")" +
-      "scale(" + D.numberToString(scale) + ")";
+  const mainScreenNode = document.querySelector(".demeter-main-screen")
+  if (mainScreenNode) {
+    mainScreenNode.style.transform = "translate(" +
+      D.numberToCss((W - sizeMin) * 0.5) + "," +
+      D.numberToCss(H + (H - sizeMin) * 0.5) + ") scale(" +
+      D.numberToString(Math.min(1, W / sizeMin, H / sizeMax)) + ")";
   }
 };
 
+window.addEventListener("resize", () => {
+  resize();
+});
+
+
+window.addEventListener("orientationchange", () => {
+  resize();
+});
+
+/*
 window.addEventListener("keydown", ev => {
   // console.log("keydown", ev.code);
 });
@@ -864,14 +903,7 @@ window.addEventListener("keydown", ev => {
 window.addEventListener("keyup", ev => {
   // console.log("keyup", ev.code);
 });
-
-window.addEventListener("resize", () => {
-  resize();
-});
-
-window.addEventListener("orientationchange", () => {
-  resize();
-});
+*/
 
 //-------------------------------------------------------------------------
 
@@ -940,6 +972,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
+  initialize();
   resize();
 
 //  const cameraNode = document.querySelector(".demeter-camera");
