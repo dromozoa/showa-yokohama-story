@@ -895,72 +895,20 @@ window.addEventListener("orientationchange", () => {
   resize();
 });
 
-/*
 window.addEventListener("keydown", ev => {
-  // console.log("keydown", ev.code);
+  console.log("keydown", ev.code);
 });
 
 window.addEventListener("keyup", ev => {
-  // console.log("keyup", ev.code);
+  console.log("keyup", ev.code);
 });
-*/
 
 //-------------------------------------------------------------------------
 
-let titleTween;
+const showTitleScreen = () => {
+};
 
-const createScreenTitle = () => {
-  // セーブ状況により、サブタイトルが変化する
-  // 高さ432px
-  // title-ja 96
-  // title-en 24
-  // アキ
-  // subtitle 24
-  // subtitle 24
-  // アキ
-  // icon 24
-
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <div class="demeter-screen demeter-screen-title">
-      <div class="demeter-title-ja" style="margin-top: 72px"><span
-        style="letter-spacing: -0.06em">昭</span><span
-        style="letter-spacing: -0.02em">和</span><span
-        style="letter-spacing: -0.03em">横</span><span
-        style="letter-spacing: -0.05em">濱</span><span
-        style="letter-spacing: -0.07em">物</span><span
-        style="letter-spacing: 0">語</span></div>
-      <div class="demeter-title-en"></div>
-      <div class="demeter-subtitle">
-        <div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
-        <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
-      </div>
-      <div style="
-        margin-top: 24px;
-        color: #029D93;
-        font-size: 24px;
-        line-height: 36px;
-        text-align: center;
-      ">
-        <div class="demeter-title-icon demeter-icon"></div>
-      </div>
-    </div>
-  `;
-
-  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 24, "'Averia Serif Libre', serif"), 648);
-  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 24, 36));
-
-  titleTween = new TWEEN.Tween({ x: -1 })
-    .to({ x: 1 }, 1200)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate(data => {
-      const y = (1 - data.x * data.x) * 12;
-      document.querySelector(".demeter-title-icon").style.transform = "translateY(" + D.numberToCss(y) + ")";
-    })
-    .repeat(Infinity)
-    .start();
-
-  return template.content.firstElementChild;
+const showMainScreen = () => {
 };
 
 //-------------------------------------------------------------------------
@@ -974,48 +922,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeInternalRoot();
   initialize();
   resize();
-
-//  const cameraNode = document.querySelector(".demeter-camera");
-//
-//  const screenTitleNode = createScreenTitle();
-//  screenTitleNode.addEventListener("click", ev => {
-//    console.log(ev.target);
-//    music = new Howl({
-//      src: [
-//        "../output/music/sessions_diana33.webm",
-//        "../output/music/sessions_diana33.mp3",
-//      ],
-//      autoplay: true,
-//      loop: true,
-//    });
-//
-//    let voiceIndex = 1;
-//
-//    voice = new Howl({
-//      src: [
-//        "../output/voice/0004.webm",
-//        "../output/voice/0004.mp3",
-//      ],
-//      sprite: D.voiceSprites[3],
-//      onend: id => {
-//        console.log("onend", id);
-//        if (++voiceIndex <= 2) {
-//          setTimeout(() => {
-//            console.log(voice.play(voiceIndex.toString()));
-//          }, 400);
-//        }
-//      },
-//    });
-//    console.log(voice.play(voiceIndex.toString()));
-//  });
-//
-//  cameraNode.append(screenTitleNode);
-//  resize();
-//
-//  while (true) {
-//    await D.requestAnimationFrame();
-//    TWEEN.update();
-//  }
 }, { once: true });
 
 //-------------------------------------------------------------------------
