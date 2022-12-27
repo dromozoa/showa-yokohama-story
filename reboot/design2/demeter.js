@@ -822,12 +822,12 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
     <svg viewBox="${D.numberToString(-width*0.5)} ${D.numberToString(-height*0.5)} ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
-      <g class="buttons">
-        <g class="button button1"><path d="${button1PathData}"/></g>
-        <g class="button button2"><path d="${button2PathData}"/></g>
-        <g class="button button3"><path d="${button3PathData}"/></g>
-        <g class="button button4"><path d="${button4PathData}"/></g>
-        <g class="button button5"><path d="${button5PathData}"/></g>
+      <g class="demeter-buttons">
+        <g class="demeter-button demeter-button1"><path d="${button1PathData}"/></g>
+        <g class="demeter-button demeter-button2"><path d="${button2PathData}"/></g>
+        <g class="demeter-button demeter-button3"><path d="${button3PathData}"/></g>
+        <g class="demeter-button demeter-button4"><path d="${button4PathData}"/></g>
+        <g class="demeter-button demeter-button5"><path d="${button5PathData}"/></g>
       </g>
     </svg>
   `;
@@ -836,96 +836,79 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
+const fontSize = 24;
+const sizeMin = fontSize * 27;
+const sizeMax = fontSize * 48;
+
+//-------------------------------------------------------------------------
+
+const initializeTitleScreen = () => {
+  // セーブ状況により、サブタイトルが変化する
+  const node = document.querySelector(".demeter-title-text").firstElementChild;
+  node.textContent = "EVANGELIUM SECUNDUM STEPHANUS verse I-III";
+};
+
+const initializeMainScreen = () => {
+  const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
+  document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
+
+  [...menuFrameNode.querySelectorAll(".button")].forEach(node => {
+    node.addEventListener("click", ev => console.log(ev.target));
+  });
+
+};
+
+const initialize = () => {
+  initializeTitleScreen();
+  initializeMainScreen();
+};
+
+//-------------------------------------------------------------------------
+
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  const size = Math.min(W, H);
-  const scale = Math.min(1.5, size / 432);
 
-  const cameraNode = document.querySelector(".demeter-camera");
-  cameraNode.style.width = D.numberToCss(W);
-  cameraNode.style.height = D.numberToCss(H);
+  const titleScreenNode = document.querySelector(".demeter-title-screen");
+  if (titleScreenNode) {
+    titleScreenNode.style.transform = "translate(" +
+      D.numberToCss((W - sizeMin) * 0.5) + "," +
+      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
+      D.numberToString(Math.min(1, W / sizeMin, H / sizeMin)) + ")";
+  }
 
-  const node = cameraNode.firstElementChild;
-  if (node) {
-    node.style.transform =
-      "translate(" + D.numberToCss(W * 0.5 - 216) + "," + D.numberToCss(H * 0.5 - 216) + ")" +
-      "scale(" + D.numberToString(scale) + ")";
+  const mainScreenNode = document.querySelector(".demeter-main-screen")
+  if (mainScreenNode) {
+    mainScreenNode.style.transform = "translate(" +
+      D.numberToCss((W - sizeMin) * 0.5) + "," +
+      D.numberToCss(H + (H - sizeMin) * 0.5) + ") scale(" +
+      D.numberToString(Math.min(1, W / sizeMin, H / sizeMax)) + ")";
   }
 };
-
-window.addEventListener("keydown", ev => {
-  // console.log("keydown", ev.code);
-});
-
-window.addEventListener("keyup", ev => {
-  // console.log("keyup", ev.code);
-});
 
 window.addEventListener("resize", () => {
   resize();
 });
 
+
 window.addEventListener("orientationchange", () => {
   resize();
 });
 
+window.addEventListener("keydown", ev => {
+  console.log("keydown", ev.code);
+});
+
+window.addEventListener("keyup", ev => {
+  console.log("keyup", ev.code);
+});
+
 //-------------------------------------------------------------------------
 
-let titleTween;
+const showTitleScreen = () => {
+};
 
-const createScreenTitle = () => {
-  // セーブ状況により、サブタイトルが変化する
-  // 高さ432px
-  // title-ja 96
-  // title-en 24
-  // アキ
-  // subtitle 24
-  // subtitle 24
-  // アキ
-  // icon 24
-
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <div class="demeter-screen demeter-screen-title">
-      <div class="demeter-title-ja" style="margin-top: 72px"><span
-        style="letter-spacing: -0.06em">昭</span><span
-        style="letter-spacing: -0.02em">和</span><span
-        style="letter-spacing: -0.03em">横</span><span
-        style="letter-spacing: -0.05em">濱</span><span
-        style="letter-spacing: -0.07em">物</span><span
-        style="letter-spacing: 0">語</span></div>
-      <div class="demeter-title-en"></div>
-      <div class="demeter-subtitle">
-        <div>EVANGELIUM SECUNDUM STEPHANUS verse I</div>
-        <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
-      </div>
-      <div style="
-        margin-top: 16px;
-        color: #029D93;
-        font-size: 16px;
-        line-height: 24px;
-        text-align: center;
-      ">
-        <div class="demeter-title-icon demeter-icon"></div>
-      </div>
-    </div>
-  `;
-
-  const lines = D.composeText(D.parseText(["SHOWA YOKOHAMA STORY"], 16, "'Averia Serif Libre', serif"), 432);
-  template.content.querySelector(".demeter-title-en").append(D.layoutText(lines, 16, 24));
-
-  titleTween = new TWEEN.Tween({ x: -1 })
-    .to({ x: 1 }, 1200)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate(data => {
-      const y = (1 - data.x * data.x) * 8;
-      document.querySelector(".demeter-title-icon").style.transform = "translateY(" + D.numberToCss(y) + ")";
-    })
-    .repeat(Infinity)
-    .start();
-
-  return template.content.firstElementChild;
+const showMainScreen = () => {
 };
 
 //-------------------------------------------------------------------------
@@ -937,46 +920,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
-
-  const cameraNode = document.querySelector(".demeter-camera");
-  const screenTitleNode = createScreenTitle();
-  screenTitleNode.addEventListener("click", ev => {
-    console.log(ev.target);
-    music = new Howl({
-      src: [
-        "../output/music/sessions_diana33.webm",
-        "../output/music/sessions_diana33.mp3",
-      ],
-      autoplay: true,
-      loop: true,
-    });
-
-    let voiceIndex = 1;
-
-    voice = new Howl({
-      src: [
-        "../output/voice/0002.webm",
-        "../output/voice/0002.mp3",
-      ],
-      sprite: D.voiceSprites[1],
-      onend: id => {
-        if (++voiceIndex <= 3) {
-          setTimeout(() => {
-            console.log(voice.play(voiceIndex.toString()));
-          }, 400);
-        }
-      },
-    });
-    console.log(voice.play(voiceIndex.toString()));
-  });
-
-  cameraNode.append(screenTitleNode);
+  initialize();
   resize();
-
-  while (true) {
-    await D.requestAnimationFrame();
-    TWEEN.update();
-  }
 }, { once: true });
 
 //-------------------------------------------------------------------------
