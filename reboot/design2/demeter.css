@@ -50,16 +50,10 @@ body.demeter {
   margin: 0;
   color: #FFF;
   background-color: #000;
+  /* TODO 背景画像を最適化する */
   background-image: url(../output/bg.png);
-  /* debug */
   background-repeat: none;
   background-attachment: fixed;
-}
-
-.demeter-camera {
-  /*
-  overflow: hidden;
-  */
 }
 
 /*************************************************************************/
@@ -68,9 +62,10 @@ body.demeter {
   position: absolute;
   width: var(--size-min);
   height: var(--size-min);
-  /* debug
+}
+
+.demeter-debug .demeter-title-screen {
   background-color: rgba(255, 255, 255, 0.1);
-  */
 }
 
 .demeter-title-ja {
@@ -126,7 +121,9 @@ body.demeter {
   position: absolute;
   width: var(--size-min);
   height: var(--size-max);
-  /* debug */
+}
+
+.demeter-debug .demeter-main-screen {
   background-color: rgba(255, 255, 255, 0.1);
 }
 

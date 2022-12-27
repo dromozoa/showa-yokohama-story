@@ -842,10 +842,14 @@ const sizeMax = fontSize * 48;
 
 //-------------------------------------------------------------------------
 
-const initializeTitleScreen = () => {
-  // セーブ状況により、サブタイトルが変化する
+const updateTitleScreen = text => {
   const node = document.querySelector(".demeter-title-text").firstElementChild;
-  node.textContent = "EVANGELIUM SECUNDUM STEPHANUS verse I-III";
+  node.textContent = text;
+};
+
+const initializeTitleScreen = () => {
+  // TODO セーブ状況により、サブタイトルが変化する
+  updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
 };
 
 const initializeMainScreen = () => {
@@ -868,6 +872,7 @@ const initialize = () => {
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
+  console.log(W, H);
 
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
