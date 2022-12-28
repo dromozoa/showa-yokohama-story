@@ -894,7 +894,7 @@ const nextParagraph = async () => {
   textNumber = 0;
   baseNumber = undefined;
   baseTimestamp = undefined;
-  const speed = 50;
+  const speed = 20;
 
   let start;
 
