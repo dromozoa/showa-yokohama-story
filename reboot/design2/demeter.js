@@ -919,8 +919,8 @@ D.VoiceSprite = class {
     this.soundId = undefined;
   }
 
-  async start() {
-    const promise = new Promise((resolve, reject) => {
+  start() {
+    return new Promise((resolve, reject) => {
       this.sound.once("playerror", (soundId, message) => {
         if (this.soundId === soundId) {
           this.soundId = undefined;
@@ -944,7 +944,6 @@ D.VoiceSprite = class {
 
       this.soundId = this.sound.play(this.sprite);
     });
-    return await promise;
   }
 
   finish() {
@@ -978,7 +977,7 @@ const nextParagraph = async () => {
   D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
     const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
     textNodes.push(textNode);
-    textAnimations.push(new D.TextAnimation(textNode, 0));
+    textAnimations.push(new D.TextAnimation(textNode, 30));
   });
   document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
 
