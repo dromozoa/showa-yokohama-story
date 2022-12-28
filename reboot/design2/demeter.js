@@ -837,8 +837,131 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 //-------------------------------------------------------------------------
 
 const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 const sizeMin = fontSize * 27;
 const sizeMax = fontSize * 48;
+
+//-------------------------------------------------------------------------
+
+let audioUnlocked;
+let music;
+let voice;
+
+const playMusic = (key, volume = 1) => {
+  const basename = "../output/music/sessions_" + key;
+  music = new Howl({
+    src: [ basename + ".webm", basename + ".mp3" ],
+    autoplay: true,
+    loop: true,
+    volume: volume,
+  });
+};
+
+const unlockAudio = () => {
+  if (audioUnlocked) {
+    return;
+  }
+  audioUnlocked = true;
+
+  playMusic("diana33");
+};
+
+//-------------------------------------------------------------------------
+
+let paragraphIndexPrev = 0;
+let paragraphIndex;
+let textNumber;
+let baseNumber;
+let baseState;
+let baseTimestamp;
+
+const nextParagraph = async () => {
+  if (paragraphIndex !== undefined) {
+    return;
+  }
+  paragraphIndex = paragraphIndexPrev + 1;
+
+  const paragraph = D.scenario[paragraphIndex - 1];
+
+  const textNodes = [];
+  D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+    const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
+    textNode.querySelectorAll(":scope > div > span").forEach(baseNode => baseNode.style.opacity = "0");
+    textNodes.push(textNode);
+  });
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+
+  textNumber = 0;
+  baseNumber = undefined;
+  baseTimestamp = undefined;
+  const speed = 50;
+
+  let start;
+
+  while (true) {
+    const timestamp = await D.requestAnimationFrame();
+    if (start === undefined) {
+      start = timestamp;
+    }
+
+    if (baseTimestamp === undefined) {
+      ++textNumber;
+      baseNumber = 1;
+      baseTimestamp = 0;
+      start = undefined;
+    }
+
+    const textNode = textNodes[textNumber - 1];
+    if (!textNode) {
+      break;
+    }
+
+    const baseNode = textNode.querySelectorAll(":scope > div > span").item(baseNumber - 1);
+    if (!baseNode) {
+      ++textNumber;
+      baseNumber = 1;
+      baseTimestamp = 0;
+      start = undefined;
+      continue;
+    }
+
+    const duration = timestamp - start;
+    baseNode.style.opacity = D.numberToString(Math.min(1, duration / speed));
+
+    if (duration > speed) {
+      ++baseNumber;
+      baseTimestamp = 0;
+      start = undefined;
+    }
+  }
+
+  textNumber = 1;
+  baseNumber = undefined;
+
+  while (textNumber !== undefined) {
+    const textNode = textNodes[textNumber - 1];
+    if (!textNode) {
+    }
+
+
+
+
+    break;
+  }
+
+
+
+  await D.requestAnimationFrame();
+  textNodes.forEach(async (textNode, i) => {
+    // await D.requestAnimationFrame();
+    // textNode.style.opacity = "0.5";
+  });
+
+  // textNumber,baseNumber
+
+  paragraphIndexPrev = paragraphIndex;
+  paragraphIndex = undefined;
+};
 
 //-------------------------------------------------------------------------
 
@@ -850,6 +973,11 @@ const updateTitleScreen = text => {
 const initializeTitleScreen = () => {
   // TODO セーブ状況により、サブタイトルが変化する
   updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
+
+  document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
+    unlockAudio();
+    await nextParagraph();
+  });
 };
 
 const initializeMainScreen = () => {
@@ -869,39 +997,47 @@ const initialize = () => {
 
 //-------------------------------------------------------------------------
 
-const resize = () => {
+const resizeScreen = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  console.log(W, H);
+
+  // TODO portraitとlandscapeを分ける
 
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
+    const scale = Math.min(1, W / sizeMin, H / sizeMax);
     titleScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
-      D.numberToString(Math.min(1, W / sizeMin, H / sizeMin)) + ")";
+      D.numberToCss((H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToString(scale) + ")";
   }
 
   const mainScreenNode = document.querySelector(".demeter-main-screen")
   if (mainScreenNode) {
+    const scale = Math.min(1, W / sizeMin, H / sizeMax);
     mainScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss(H + (H - sizeMin) * 0.5) + ") scale(" +
-      D.numberToString(Math.min(1, W / sizeMin, H / sizeMax)) + ")";
+      D.numberToCss(H + (H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToString(scale) + ")";
   }
 };
 
 window.addEventListener("resize", () => {
-  resize();
+  resizeScreen();
 });
 
 
 window.addEventListener("orientationchange", () => {
-  resize();
+  resizeScreen();
 });
 
-window.addEventListener("keydown", ev => {
+window.addEventListener("keydown", async ev => {
   console.log("keydown", ev.code);
+
+  if (ev.code === "Enter") {
+    await nextParagraph();
+  }
+
 });
 
 window.addEventListener("keyup", ev => {
@@ -918,15 +1054,12 @@ const showMainScreen = () => {
 
 //-------------------------------------------------------------------------
 
-let music;
-let voice;
-
 document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
   initialize();
-  resize();
+  resizeScreen();
 }, { once: true });
 
 //-------------------------------------------------------------------------
