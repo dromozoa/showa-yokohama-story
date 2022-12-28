@@ -868,12 +868,102 @@ const unlockAudio = () => {
 
 //-------------------------------------------------------------------------
 
+D.TextAnimation = class {
+  constructor(textNode, speed) {
+    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
+    this.nodes.forEach(node => node.style.opacity = "0");
+    this.speed = speed;
+    this.finished = false;
+  }
+
+  async start() {
+    let index = 0;
+    let start;
+    L: while (!this.finished) {
+      const timestamp = await D.requestAnimationFrame();
+      if (start === undefined) {
+        start = timestamp;
+      }
+
+      while (true) {
+        const node = this.nodes[index];
+        if (!node) {
+          break L;
+        }
+
+        const duration = timestamp - start;
+        if (duration < this.speed) {
+          node.style.opacity = D.numberToString(duration / this.speed);
+          break;
+        } else {
+          node.style.opacity = "1";
+          start += this.speed;
+          ++index;
+        }
+      }
+    }
+    if (this.finished) {
+      this.nodes.forEach(node => node.style.opacity = "1");
+    }
+  }
+
+  finish() {
+    this.finished = true;
+  }
+}
+
+D.VoiceSprite = class {
+  constructor(sound, sprite) {
+    this.sound = sound;
+    this.sprite = sprite;
+    this.soundId = undefined;
+  }
+
+  async start() {
+    const promise = new Promise((resolve, reject) => {
+      this.sound.once("playerror", (soundId, message) => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          reject(new Error(message));
+        }
+      });
+
+      this.sound.once("end", soundId => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          resolve("end");
+        }
+      });
+
+      this.sound.once("stop", soundId => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          resolve("stop");
+        }
+      });
+
+      this.soundId = this.sound.play(this.sprite);
+    });
+    return await promise;
+  }
+
+  finish() {
+    if (this.soundId !== undefined) {
+      this.sound.stop(this.soundId);
+    }
+  }
+}
+
+//-------------------------------------------------------------------------
+
 let paragraphIndexPrev = 0;
 let paragraphIndex;
 let textNumber;
 let baseNumber;
 let baseState;
 let baseTimestamp;
+let textAnimation;
+let voiceSprite;
 
 const nextParagraph = async () => {
   if (paragraphIndex !== undefined) {
@@ -884,80 +974,31 @@ const nextParagraph = async () => {
   const paragraph = D.scenario[paragraphIndex - 1];
 
   const textNodes = [];
+  const textAnimations = [];
   D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
     const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
-    textNode.querySelectorAll(":scope > div > span").forEach(baseNode => baseNode.style.opacity = "0");
     textNodes.push(textNode);
+    textAnimations.push(new D.TextAnimation(textNode, 0));
   });
   document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
 
-  textNumber = 0;
-  baseNumber = undefined;
-  baseTimestamp = undefined;
-  const speed = 20;
-
-  let start;
-
-  while (true) {
-    const timestamp = await D.requestAnimationFrame();
-    if (start === undefined) {
-      start = timestamp;
-    }
-
-    if (baseTimestamp === undefined) {
-      ++textNumber;
-      baseNumber = 1;
-      baseTimestamp = 0;
-      start = undefined;
-    }
-
-    const textNode = textNodes[textNumber - 1];
-    if (!textNode) {
-      break;
-    }
-
-    const baseNode = textNode.querySelectorAll(":scope > div > span").item(baseNumber - 1);
-    if (!baseNode) {
-      ++textNumber;
-      baseNumber = 1;
-      baseTimestamp = 0;
-      start = undefined;
-      continue;
-    }
-
-    const duration = timestamp - start;
-    baseNode.style.opacity = D.numberToString(Math.min(1, duration / speed));
-
-    if (duration > speed) {
-      ++baseNumber;
-      baseTimestamp = 0;
-      start = undefined;
-    }
-  }
-
-  textNumber = 1;
-  baseNumber = undefined;
-
-  while (textNumber !== undefined) {
-    const textNode = textNodes[textNumber - 1];
-    if (!textNode) {
-    }
-
-
-
-
-    break;
-  }
-
-
-
-  await D.requestAnimationFrame();
-  textNodes.forEach(async (textNode, i) => {
-    // await D.requestAnimationFrame();
-    // textNode.style.opacity = "0.5";
+  const voiceKey = D.numberToString(paragraphIndex);
+  const voiceBasename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceKey.length)) + voiceKey;
+  const voiceSound = new Howl({
+    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+    sprite: D.voiceSprites[paragraphIndex - 1],
   });
 
-  // textNumber,baseNumber
+  for (let i = 0; i < textAnimations.length; ++i) {
+    textAnimation = textAnimations[i];
+    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1));
+    await Promise.all([
+      textAnimation.start(),
+      voiceSprite.start(),
+    ]);
+  }
+  textAnimation = undefined;
+  voiceSprite = undefined;
 
   paragraphIndexPrev = paragraphIndex;
   paragraphIndex = undefined;
@@ -1035,7 +1076,14 @@ window.addEventListener("keydown", async ev => {
   console.log("keydown", ev.code);
 
   if (ev.code === "Enter") {
-    await nextParagraph();
+    if (textAnimation) {
+      textAnimation.finish();
+      if (voiceSprite) {
+        voiceSprite.finish();
+      }
+    } else {
+      await nextParagraph();
+    }
   }
 
 });
