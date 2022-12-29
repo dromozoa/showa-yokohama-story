@@ -843,31 +843,6 @@ const sizeMax = fontSize * 48;
 
 //-------------------------------------------------------------------------
 
-let audioUnlocked;
-let music;
-let voice;
-
-const playMusic = (key, volume = 1) => {
-  const basename = "../output/music/sessions_" + key;
-  music = new Howl({
-    src: [ basename + ".webm", basename + ".mp3" ],
-    autoplay: true,
-    loop: true,
-    volume: volume,
-  });
-};
-
-const unlockAudio = () => {
-  if (audioUnlocked) {
-    return;
-  }
-  audioUnlocked = true;
-
-  playMusic("diana33");
-};
-
-//-------------------------------------------------------------------------
-
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -912,6 +887,8 @@ D.TextAnimation = class {
   }
 }
 
+//-------------------------------------------------------------------------
+
 D.VoiceSprite = class {
   constructor(sound, sprite) {
     this.sound = sound;
@@ -952,6 +929,31 @@ D.VoiceSprite = class {
     }
   }
 }
+
+//-------------------------------------------------------------------------
+
+let audioUnlocked;
+let music;
+let voice;
+
+const playMusic = (key, volume = 1) => {
+  const basename = "../output/music/sessions_" + key;
+  music = new Howl({
+    src: [ basename + ".webm", basename + ".mp3" ],
+    autoplay: true,
+    loop: true,
+    volume: volume,
+  });
+};
+
+const unlockAudio = () => {
+  if (audioUnlocked) {
+    return;
+  }
+  audioUnlocked = true;
+
+  playMusic("diana33");
+};
 
 //-------------------------------------------------------------------------
 
@@ -1072,7 +1074,7 @@ window.addEventListener("orientationchange", () => {
 });
 
 window.addEventListener("keydown", async ev => {
-  console.log("keydown", ev.code);
+  // console.log("keydown", ev.code);
 
   if (ev.code === "Enter") {
     if (textAnimation) {
@@ -1088,16 +1090,8 @@ window.addEventListener("keydown", async ev => {
 });
 
 window.addEventListener("keyup", ev => {
-  console.log("keyup", ev.code);
+  // console.log("keyup", ev.code);
 });
-
-//-------------------------------------------------------------------------
-
-const showTitleScreen = () => {
-};
-
-const showMainScreen = () => {
-};
 
 //-------------------------------------------------------------------------
 
