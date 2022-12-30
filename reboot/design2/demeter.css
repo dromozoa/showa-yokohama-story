@@ -20,16 +20,17 @@
 /*************************************************************************/
 
 :root {
-  --font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
   --font-size: 24px;
+  --font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
   --font-family-title-ja: 'Yuji Syuku', serif;
   --font-family-title-en: 'Averia Serif Libre', serif;
-  --font-family-console: 'Share Tech', sans-serif;
-  --color-title: #C63322;
-  --color-console: #029D93;
+  --font-family-console: 'Share Tech', serif;
+
   --size-min: calc(var(--font-size) * 27);
   --size-max: calc(var(--font-size) * 48);
 
+  --color-title: #C63322;
+  --color-console: #029D93;
   --color-fill: rgba(255, 255, 255, 0.1);
   --color-fill-active: rgba(2, 157, 147, 0.1);
   --color-stroke: #FFF;
@@ -51,6 +52,7 @@ body.demeter {
   color: #FFF;
   background-color: #000;
   /* TODO 背景画像を最適化する */
+  /* TODO 背景画像をスクロールする */
   background-image: url(../output/bg.png);
   background-repeat: none;
   background-attachment: fixed;
@@ -60,16 +62,23 @@ body.demeter {
 
 .demeter-title-screen {
   position: absolute;
-  width: var(--size-min);
-  height: var(--size-max);
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 48);
 }
 
-.demeter-debug .demeter-title-screen {
+.demeter-title {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 18);
+  top: calc(var(--font-size) * 15);
+  left: 0;
+}
+
+.demeter-debug .demeter-title {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
 .demeter-title-ja {
-  margin-top: calc(var(--font-size) * 15.75);
   color: var(--color-title);
   font-family: var(--font-family-title-ja);
   font-kerning: none;
@@ -122,8 +131,8 @@ body.demeter {
 
 .demeter-main-screen {
   position: absolute;
-  width: var(--size-min);
-  height: var(--size-max);
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 48);
 }
 
 .demeter-debug .demeter-main-screen {
@@ -132,10 +141,10 @@ body.demeter {
 
 .demeter-main-menu {
   position: absolute;
-  top: 0;
-  left: calc(var(--font-size) * 1.5);
   width: calc(var(--font-size) * 24);
   height: calc(var(--font-size) * 4.75);
+  top: 0;
+  left: calc(var(--font-size) * 1.5);
 }
 
 .demeter-main-menu-frame {
@@ -188,9 +197,9 @@ body.demeter {
 
 .demeter-main-menu-title {
   position: absolute;
+  width: calc(var(--font-size) * 9);
   top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 7.5);
-  width: calc(var(--font-size) * 9);
   font-family: var(--font-family-title-ja);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
@@ -200,9 +209,9 @@ body.demeter {
 
 .demeter-main-paragraph {
   position: absolute;
-  top: calc(var(--font-size) * 34);
-  left: var(--font-size);
   width: calc(var(--font-size) * 25);
+  top: calc(var(--font-size) * 33);
+  left: var(--font-size);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
@@ -218,12 +227,27 @@ body.demeter {
 }
 
 .demeter-main-paragraph-icon {
+  margin-top: var(--font-size);
   text-align: right;
-
   animation-name: demeter-bounce;
   animation-duration: 1.2s;
   animation-iteration-count: infinite;
   transform-origin: center bottom;
+}
+
+.demeter-main-system-ui {
+  position: absolute;
+  width: calc(var(--font-size) * 18);
+  height: calc(var(--font-size) * 18);
+  top: calc(var(--font-size) * 5);
+  left: calc(var(--font-size) * 4.5);
+  transform: scale(1.5);
+  transform-origin: left top;
+}
+
+.lil-gui {
+  --font-family: 'Share Tech', 'BIZ UDPMincho', serif;
+  /* monoは？ */
 }
 
 /*************************************************************************/

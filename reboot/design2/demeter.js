@@ -28,6 +28,8 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
+D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
+
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
@@ -46,14 +48,7 @@ let internalRoot;
 let internalCanvas;
 
 const initializeInternalRoot = () => {
-  let offscreenNode = document.querySelector(".demeter-offscreen");
-  if (!offscreenNode) {
-    offscreenNode = document.createElement("div");
-    offscreenNode.style.position = "absolute";
-    offscreenNode.style.top = "-8916px";
-    offscreenNode.style.left = "-2133px";
-    document.body.append(offscreenNode);
-  }
+  const offscreenNode = document.querySelector(".demeter-offscreen");
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
@@ -643,7 +638,7 @@ D.PathData = class {
   h(x) { return this.push("h", x); }
   V(y) { return this.push("V", y); }
   v(y) { return this.push("v", y); }
-}
+};
 
 //-------------------------------------------------------------------------
 
@@ -836,13 +831,6 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
-const fontSize = 24;
-const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const sizeMin = fontSize * 27;
-const sizeMax = fontSize * 48;
-
-//-------------------------------------------------------------------------
-
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -885,7 +873,7 @@ D.TextAnimation = class {
   finish() {
     this.finished = true;
   }
-}
+};
 
 //-------------------------------------------------------------------------
 
@@ -923,12 +911,60 @@ D.VoiceSprite = class {
     });
   }
 
+  volume(volume) {
+    if (this.soundId !== undefined) {
+      this.sound.volume(volume, this.soundId);
+    }
+  }
+
   finish() {
     if (this.soundId !== undefined) {
       this.sound.stop(this.soundId);
     }
   }
-}
+};
+
+//-------------------------------------------------------------------------
+
+let systemData;
+
+const upgradeDb = (db, oldVersion, newVersion, transaction, ev) => {
+  console.log("upgrade", oldVersion, newVersion);
+  db.createObjectStore("system", { keyPath: "id" });
+};
+
+const loadSystemData = async () => {
+  if (systemData !== undefined) {
+    return;
+  }
+
+  const db = await idb.openDB("demeter", 1, { upgrade: upgradeDb });
+
+  systemData = await db.get("system", "system");
+  if (!systemData) {
+    systemData = {
+      id: "system",
+      speed: 30,
+      musicVolume: 1,
+      voiceVolume: 1,
+    };
+  }
+
+  await db.close();
+};
+
+const saveSystemData = async () => {
+  const db = await idb.openDB("demeter", 1, { upgrade: upgradeDb });
+  await db.put("system", systemData);
+  await db.close();
+};
+
+//-------------------------------------------------------------------------
+
+const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+const sizeMin = fontSize * 27;
+const sizeMax = fontSize * 48;
 
 //-------------------------------------------------------------------------
 
@@ -936,7 +972,7 @@ let audioUnlocked;
 let music;
 let voice;
 
-const playMusic = (key, volume = 1) => {
+const playMusic = (key, volume) => {
   const basename = "../output/music/sessions_" + key;
   music = new Howl({
     src: [ basename + ".webm", basename + ".mp3" ],
@@ -946,13 +982,14 @@ const playMusic = (key, volume = 1) => {
   });
 };
 
-const unlockAudio = () => {
+const unlockAudio = async () => {
   if (audioUnlocked) {
     return;
   }
   audioUnlocked = true;
 
-  playMusic("diana33");
+  await loadSystemData();
+  playMusic("diana33", systemData.musicVolume);
 };
 
 //-------------------------------------------------------------------------
@@ -1017,19 +1054,70 @@ const initializeTitleScreen = () => {
   updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
 
   document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
-    unlockAudio();
+    await unlockAudio();
     await nextParagraph();
   });
 };
+
+let systemUi;
 
 const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
-  [...menuFrameNode.querySelectorAll(".button")].forEach(node => {
-    node.addEventListener("click", ev => console.log(ev.target));
-  });
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
+    console.log("system");
 
+    if (systemUi === undefined) {
+      await loadSystemData();
+      systemUi = new lil.GUI({
+        container: document.querySelector(".demeter-main-system-ui"),
+        width: fontSize * 12,
+        title: "System",
+        touchStyles: false,
+      });
+      systemUi.add(systemData, "speed", 0, 200, 10).name("文字表示時間");
+      systemUi.add(systemData, "musicVolume", 0, 1, 0.01)
+        .name("音楽音量")
+        .onChange(v => {
+          if (music) {
+            music.volume(v);
+          }
+        });
+      systemUi.add(systemData, "voiceVolume", 0, 1, 0.01).name("ボイス音量");
+
+      systemUi.$title.addEventListener("click", async () => {
+        // 300msでクローズのトランジションがはいるので、そのあとに隠す。
+        await D.setTimeout(400);
+        if (systemUi._closed) {
+          systemUi.hide();
+        }
+      });
+
+    } else {
+      if (systemUi._hidden) {
+        systemUi.show();
+        systemUi.openAnimated();
+      } else {
+        systemUi.openAnimated(false);
+        await D.setTimeout(400);
+        systemUi.hide();
+        await saveSystemData();
+      }
+    }
+  });
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
+    console.log("load");
+  });
+  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", () => {
+    console.log("save");
+  });
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", () => {
+    console.log("auto");
+  });
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
+    console.log("skip");
+  });
 };
 
 const initialize = () => {
@@ -1068,13 +1156,12 @@ window.addEventListener("resize", () => {
   resizeScreen();
 });
 
-
 window.addEventListener("orientationchange", () => {
   resizeScreen();
 });
 
 window.addEventListener("keydown", async ev => {
-  // console.log("keydown", ev.code);
+  console.log("keydown", ev.code);
 
   if (ev.code === "Enter") {
     if (textAnimation) {
