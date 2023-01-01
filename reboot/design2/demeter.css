@@ -24,7 +24,7 @@
   --font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
   --font-family-title-ja: 'Yuji Syuku', serif;
   --font-family-title-en: 'Averia Serif Libre', serif;
-  --font-family-console: 'Share Tech', serif;
+  --font-family-console: 'Share Tech', sans-serif;
 
   --size-min: calc(var(--font-size) * 27);
   --size-max: calc(var(--font-size) * 48);
@@ -72,10 +72,6 @@ body.demeter {
   height: calc(var(--font-size) * 18);
   top: calc(var(--font-size) * 15);
   left: 0;
-}
-
-.demeter-debug .demeter-title {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .demeter-title-ja {
@@ -133,10 +129,6 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 27);
   height: calc(var(--font-size) * 48);
-}
-
-.demeter-debug .demeter-main-screen {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .demeter-main-menu {
@@ -245,9 +237,11 @@ body.demeter {
   transform-origin: left top;
 }
 
+/*************************************************************************/
+
 .lil-gui {
-  --font-family: 'Share Tech', 'BIZ UDPMincho', serif;
-  /* monoは？ */
+  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
+  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
 }
 
 /*************************************************************************/

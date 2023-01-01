@@ -926,45 +926,81 @@ D.VoiceSprite = class {
 
 //-------------------------------------------------------------------------
 
-let systemData;
-
-const upgradeDb = (db, oldVersion, newVersion, transaction, ev) => {
-  console.log("upgrade", oldVersion, newVersion);
-  db.createObjectStore("system", { keyPath: "id" });
+const root = {
+  db: undefined,
+  systemDefault: {
+    id: "system",
+    speed: 30,
+    autoSpeed: 400,
+    mixerVolume: 1,
+    musicVolume: 1,
+    voiceVolume: 1,
+  },
+  system: undefined,
+  systemUi: undefined,
 };
 
-const loadSystemData = async () => {
-  if (systemData !== undefined) {
-    return;
+const upgradeDatabase = (db, oldVersion, newVersion) => {
+  switch (oldVersion) {
+    case 0:
+      db.createObjectStore("system", { keyPath: "id" });
+      break;
   }
+};
 
-  const db = await idb.openDB("demeter", 1, { upgrade: upgradeDb });
+const connectDatabase = async () => {
+  const db = root.db = await idb.openDB("昭和横濱物語", 1, { upgrade: upgradeDatabase });
 
-  systemData = await db.get("system", "system");
-  if (!systemData) {
-    systemData = {
-      id: "system",
-      speed: 30,
-      musicVolume: 1,
-      voiceVolume: 1,
-    };
-  }
+  const system = root.system = await db.get("system", "system") || {};
+  Object.entries(root.systemDefault).forEach(([k, v]) => {
+    if (system[k] === undefined) {
+      system[k] = v;
+    }
+  });
+  await db.put("system", system);
+};
 
-  await db.close();
+const initializeSystemUi = async () => {
+  // オフスクリーンで作成して移動する。
+  const system = root.system;
+  const systemUiContainer = document.querySelector(".demeter-main-system-ui");
+  const systemUi = root.systemUi = new lil.GUI({
+    container: systemUiContainer,
+    width: fontSize * 12,
+    title: "システム設定",
+    touchStyles: false,
+  });
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
+  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "mixerVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]");
+
+  systemUi.$title.addEventListener("click", async () => {
+    // 300msでクローズのトランジションがはいるので、そのあとに隠す。
+    await D.setTimeout(400);
+    if (systemUi._closed) {
+      systemUi.hide();
+    }
+  });
+
+  // トランジションつきのcloseをかけてから消す
+  systemUi.openAnimated(false);
+  // TODO 待ちがはいってしまうので修正する
+  await D.setTimeout(400);
+  systemUi.hide();
+
+  document.querySelector(".demeter-main-screen").append(systemUiContainer);
 };
 
 const saveSystemData = async () => {
-  const db = await idb.openDB("demeter", 1, { upgrade: upgradeDb });
-  await db.put("system", systemData);
-  await db.close();
+  await root.db.put("system", root.system);
 };
 
 //-------------------------------------------------------------------------
 
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const sizeMin = fontSize * 27;
-const sizeMax = fontSize * 48;
 
 //-------------------------------------------------------------------------
 
@@ -988,8 +1024,7 @@ const unlockAudio = async () => {
   }
   audioUnlocked = true;
 
-  await loadSystemData();
-  playMusic("diana33", systemData.musicVolume);
+  playMusic("diana33", root.system.musicVolume);
 };
 
 //-------------------------------------------------------------------------
@@ -1059,51 +1094,20 @@ const initializeTitleScreen = () => {
   });
 };
 
-let systemUi;
-
 const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
-    console.log("system");
-
-    if (systemUi === undefined) {
-      await loadSystemData();
-      systemUi = new lil.GUI({
-        container: document.querySelector(".demeter-main-system-ui"),
-        width: fontSize * 12,
-        title: "System",
-        touchStyles: false,
-      });
-      systemUi.add(systemData, "speed", 0, 200, 10).name("文字表示時間");
-      systemUi.add(systemData, "musicVolume", 0, 1, 0.01)
-        .name("音楽音量")
-        .onChange(v => {
-          if (music) {
-            music.volume(v);
-          }
-        });
-      systemUi.add(systemData, "voiceVolume", 0, 1, 0.01).name("ボイス音量");
-
-      systemUi.$title.addEventListener("click", async () => {
-        // 300msでクローズのトランジションがはいるので、そのあとに隠す。
-        await D.setTimeout(400);
-        if (systemUi._closed) {
-          systemUi.hide();
-        }
-      });
-
+    const systemUi = root.systemUi;
+    if (systemUi._hidden) {
+      systemUi.show();
+      systemUi.openAnimated();
     } else {
-      if (systemUi._hidden) {
-        systemUi.show();
-        systemUi.openAnimated();
-      } else {
-        systemUi.openAnimated(false);
-        await D.setTimeout(400);
-        systemUi.hide();
-        await saveSystemData();
-      }
+      systemUi.openAnimated(false);
+      await D.setTimeout(400);
+      systemUi.hide();
+      await saveSystemData();
     }
   });
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
@@ -1132,6 +1136,9 @@ const resizeScreen = () => {
   const H = document.documentElement.clientHeight;
 
   // TODO portraitとlandscapeを分ける
+
+  const sizeMin = fontSize * 27;
+  const sizeMax = fontSize * 48;
 
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
@@ -1186,8 +1193,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
+  await connectDatabase();
+
   initialize();
   resizeScreen();
+
+  await initializeSystemUi();
 }, { once: true });
 
 //-------------------------------------------------------------------------
