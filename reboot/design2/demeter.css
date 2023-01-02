@@ -229,7 +229,7 @@ body.demeter {
 
 .demeter-main-system-ui {
   position: absolute;
-  width: calc(var(--font-size) * 18);
+  width: calc(var(--font-size) * 12);
   height: calc(var(--font-size) * 18);
   top: calc(var(--font-size) * 5);
   left: calc(var(--font-size) * 4.5);

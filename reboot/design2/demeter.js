@@ -926,6 +926,11 @@ D.VoiceSprite = class {
 
 //-------------------------------------------------------------------------
 
+const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+
+//-------------------------------------------------------------------------
+
 const root = {
   db: undefined,
   systemDefault: {
@@ -960,12 +965,13 @@ const connectDatabase = async () => {
   await db.put("system", system);
 };
 
-const initializeSystemUi = async () => {
-  // オフスクリーンで作成して移動する。
+const initializeSystemUi = () => {
   const system = root.system;
-  const systemUiContainer = document.querySelector(".demeter-main-system-ui");
+
+  // オフスクリーンでUIを構築する。
+  const systemUiNode = document.querySelector(".demeter-main-system-ui");
   const systemUi = root.systemUi = new lil.GUI({
-    container: systemUiContainer,
+    container: systemUiNode,
     width: fontSize * 12,
     title: "システム設定",
     touchStyles: false,
@@ -976,31 +982,25 @@ const initializeSystemUi = async () => {
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]");
 
-  systemUi.$title.addEventListener("click", async () => {
-    // 300msでクローズのトランジションがはいるので、そのあとに隠す。
-    await D.setTimeout(400);
-    if (systemUi._closed) {
+  // openAnimated(false)のトランジションが終わったらUIを閉じる。
+  let moved = false;
+  systemUiNode.addEventListener("transitionend", ev => {
+    if (systemUi._closed && ev.target === systemUi.$children && ev.propertyName === "transform") {
       systemUi.hide();
+      // 初回のトランジション終了後、オフスクリーンからメインスクリーンに移す。
+      if (!moved) {
+        moved = true;
+        document.querySelector(".demeter-main-screen").append(systemUiNode);
+      }
     }
   });
 
-  // トランジションつきのcloseをかけてから消す
   systemUi.openAnimated(false);
-  // TODO 待ちがはいってしまうので修正する
-  await D.setTimeout(400);
-  systemUi.hide();
-
-  document.querySelector(".demeter-main-screen").append(systemUiContainer);
 };
 
 const saveSystemData = async () => {
   await root.db.put("system", root.system);
 };
-
-//-------------------------------------------------------------------------
-
-const fontSize = 24;
-const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
 //-------------------------------------------------------------------------
 
@@ -1105,8 +1105,6 @@ const initializeMainScreen = () => {
       systemUi.openAnimated();
     } else {
       systemUi.openAnimated(false);
-      await D.setTimeout(400);
-      systemUi.hide();
       await saveSystemData();
     }
   });
@@ -1198,7 +1196,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initialize();
   resizeScreen();
 
-  await initializeSystemUi();
+  initializeSystemUi();
 }, { once: true });
 
 //-------------------------------------------------------------------------
