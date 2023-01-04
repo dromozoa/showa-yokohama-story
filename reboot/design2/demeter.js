@@ -28,8 +28,6 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
-
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
@@ -831,6 +829,191 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
+D.RingBuffer = class {
+  constructor(limit) {
+    this.index = 0;
+    this.limit = limit;
+    this.data = [];
+  }
+
+  push(value) {
+    this.data[this.index] = value;
+    ++this.index;
+    this.index %= this.limit;
+  }
+
+  forEach(fn) {
+    let index = 0;
+    for (let i = this.index; i < this.data.length; ++i) {
+      fn(this.data[i], index++);
+    }
+    for (let i = 0; i < this.index; ++i) {
+      fn(this.data[i], index++);
+    }
+  }
+
+  empty() {
+    return this.data.length === 0;
+  }
+
+  last() {
+    return this.data[this.index > 0 ? this.index - 1 : this.data.length - 1];
+  }
+
+  min() {
+    return this.data.reduce((acc, value) => Math.min(acc, value), Infinity);
+  }
+
+  max() {
+    return this.data.reduce((acc, value) => Math.max(acc, value), -Infinity);
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.FrameRateVisualizer = class {
+  constructor(width, height, fontSize, font) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = "rgba(255, 255, 255, 0.1)";
+    context.font = D.numberToCss(fontSize) + " " + font;
+    context.textBaseline = "top";
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.fontSize = fontSize;
+    this.prevTime = undefined;
+    this.frameCount = 0;
+    this.frameRates = new D.RingBuffer(width);
+  }
+
+  update() {
+    const now = performance.now();
+    if (this.prevTime === undefined) {
+      this.prevTime = now;
+      return;
+    }
+    ++this.frameCount;
+    const duration = now - this.prevTime;
+    if (duration < 1000) {
+      return;
+    }
+    const frameRate = this.frameCount * 1000 / duration;
+
+    this.prevTime = now;
+    this.frameCount = 0;
+    this.frameRates.push(frameRate);
+  }
+
+  draw() {
+    if (this.frameRates.empty()) {
+      return;
+    }
+
+    const W = this.width;
+    const H = this.height;
+    const frameRate = this.frameRates.last();
+    const frameRateMin = this.frameRates.min();
+    const frameRateMax = this.frameRates.max();
+
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, W, H);
+    context.fillText(Math.round(frameRate) + "FPS [" + Math.round(frameRateMin) + "-" + Math.round(frameRateMax) + "]", 0, 0);
+
+    this.frameRates.forEach((v, i) => {
+      const h = (H - 16) * Math.min(v, 100) / 100;
+      context.fillRect(i, H - h, 1, h);
+    });
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.AudioVisualizer = class {
+  constructor(width, height) {
+    if (!Howler.masterGain) {
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = "rgba(255, 255, 255, 0.1)";
+
+    const analyser = Howler.ctx.createAnalyser();
+    analyser.fftSize = Math.pow(2, Math.ceil(Math.log2(width)));
+    analyser.connect(Howler.ctx.destination);
+    Howler.masterGain.connect(analyser);
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.analyser = analyser;
+    this.timeDomainData = new Float32Array(analyser.fftSize);
+    this.frequencyData = new Float32Array(analyser.fftSize / 2);
+  }
+
+  update() {
+    if (!Howler.masterGain) {
+      return;
+    }
+
+    this.analyser.getFloatTimeDomainData(this.timeDomainData);
+    this.analyser.getFloatFrequencyData(this.frequencyData);
+  }
+
+  draw() {
+    if (!Howler.masterGain) {
+      return;
+    }
+
+    const W = this.width;
+    const H = this.height;
+    const HH = H * 0.5;
+    const maxDecibels = -30;
+    const minDecibels = -100;
+    const rangeDecibels = maxDecibels - minDecibels;
+
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, W, H);
+
+    /*
+    const W1 = W / this.analyser.fftSize;
+    for (let i = 0; i < this.analyser.fftSize; ++i) {
+      const v = this.timeDomainData[i];
+      if (v > 0) {
+        const h = v * HH;
+        context.fillRect(i * W1, HH - h, W1, h);
+      } else {
+        const h = -v * HH;
+        context.fillRect(i * W1, HH, W1, h);
+      }
+    }
+    */
+
+    const W2 = W / this.analyser.frequencyBinCount;
+    for (let i = 0; i < this.analyser.frequencyBinCount; ++i) {
+      const v = (Math.max(minDecibels, Math.min(maxDecibels, this.frequencyData[i])) - minDecibels) / rangeDecibels;
+      const h = v * H;
+      context.fillRect(i * W2, HH - h * 0.5, W2, h);
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -1025,6 +1208,14 @@ const unlockAudio = async () => {
   audioUnlocked = true;
 
   playMusic("diana33", root.system.musicVolume);
+
+  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4);
+  const audioVisualizerNode = audioVisualizer.canvas;
+  audioVisualizerNode.style.display = "block";
+  audioVisualizerNode.style.position = "absolute";
+  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
+  audioVisualizerNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
 };
 
 //-------------------------------------------------------------------------
@@ -1120,6 +1311,14 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
     console.log("skip");
   });
+
+  const frameRateVisualizer = root.frameRateVisualizer = new D.FrameRateVisualizer(fontSize * 8, fontSize * 4, fontSize, "'Share Tech', sans-serif");
+  const frameRateNode = frameRateVisualizer.canvas;
+  frameRateNode.style.display = "block";
+  frameRateNode.style.position = "absolute";
+  frameRateNode.style.top = D.numberToCss(fontSize * 5);
+  frameRateNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(frameRateNode);
 };
 
 const initialize = () => {
@@ -1197,6 +1396,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   resizeScreen();
 
   initializeSystemUi();
+
+  while (true) {
+    await D.requestAnimationFrame();
+    root.frameRateVisualizer.update();
+    root.frameRateVisualizer.draw();
+
+    if (root.audioVisualizer) {
+      root.audioVisualizer.update();
+      root.audioVisualizer.draw();
+    }
+
+  }
 }, { once: true });
 
 //-------------------------------------------------------------------------
