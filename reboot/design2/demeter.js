@@ -32,6 +32,8 @@ D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
 
+D.toCssColor = (r, g, b, a) => "rgba(" + D.numberToCss(r * 100, "%,") + D.numberToCss(g * 100, "%,") + D.numberToCss(b * 100, "%,") + D.numberToCss(a * 100, "%)");
+
 //-------------------------------------------------------------------------
 
 let serialNumber = 0;
@@ -872,7 +874,7 @@ D.RingBuffer = class {
 //-------------------------------------------------------------------------
 
 D.FrameRateVisualizer = class {
-  constructor(width, height, fontSize, font) {
+  constructor(width, height, fontSize, font, color) {
     const canvas = document.createElement("canvas");
     canvas.width = width * devicePixelRatio;
     canvas.height = height * devicePixelRatio;
@@ -881,7 +883,7 @@ D.FrameRateVisualizer = class {
 
     const context = canvas.getContext("2d");
     context.scale(devicePixelRatio, devicePixelRatio);
-    context.fillStyle = "rgba(255, 255, 255, 0.1)";
+    context.fillStyle = color;
     context.font = D.numberToCss(fontSize) + " " + font;
     context.textBaseline = "top";
 
@@ -912,6 +914,11 @@ D.FrameRateVisualizer = class {
     this.frameRates.push(frameRate);
   }
 
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.fillStyle = color;
+  }
+
   draw() {
     if (this.frameRates.empty()) {
       return;
@@ -937,11 +944,7 @@ D.FrameRateVisualizer = class {
 //-------------------------------------------------------------------------
 
 D.AudioVisualizer = class {
-  constructor(width, height) {
-    if (!Howler.masterGain) {
-      return;
-    }
-
+  constructor(width, height, color) {
     const canvas = document.createElement("canvas");
     canvas.width = width * devicePixelRatio;
     canvas.height = height * devicePixelRatio;
@@ -950,7 +953,7 @@ D.AudioVisualizer = class {
 
     const context = canvas.getContext("2d");
     context.scale(devicePixelRatio, devicePixelRatio);
-    context.fillStyle = "rgba(255, 255, 255, 0.1)";
+    context.fillStyle = color;
 
     const analyser = Howler.ctx.createAnalyser();
     analyser.fftSize = Math.pow(2, Math.ceil(Math.log2(width)));
@@ -966,19 +969,16 @@ D.AudioVisualizer = class {
   }
 
   update() {
-    if (!Howler.masterGain) {
-      return;
-    }
-
     this.analyser.getFloatTimeDomainData(this.timeDomainData);
     this.analyser.getFloatFrequencyData(this.frequencyData);
   }
 
-  draw() {
-    if (!Howler.masterGain) {
-      return;
-    }
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.fillStyle = color;
+  }
 
+  draw() {
     const W = this.width;
     const H = this.height;
     const HH = H * 0.5;
@@ -1123,6 +1123,8 @@ const root = {
     mixerVolume: 1,
     musicVolume: 1,
     voiceVolume: 1,
+    componentColor: [ 1, 1, 1 ],
+    componentAlpha: 0.2,
   },
   system: undefined,
   systemUi: undefined,
@@ -1148,6 +1150,16 @@ const connectDatabase = async () => {
   await db.put("system", system);
 };
 
+const updateComponentColors = () => {
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  if (root.frameRateVisualizer) {
+    root.frameRateVisualizer.updateColor(color);
+  }
+  if (root.audioVisualizer) {
+    root.audioVisualizer.updateColor(color);
+  }
+};
+
 const initializeSystemUi = () => {
   const system = root.system;
 
@@ -1164,6 +1176,9 @@ const initializeSystemUi = () => {
   systemUi.add(system, "mixerVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]");
+  const componentFolder = systemUi.addFolder("コンポーネント設定");
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColors);
+  componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]").onChange(updateComponentColors);
 
   // openAnimated(false)のトランジションが終わったらUIを閉じる。
   let moved = false;
@@ -1209,7 +1224,8 @@ const unlockAudio = async () => {
 
   playMusic("diana33", root.system.musicVolume);
 
-  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4);
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
   const audioVisualizerNode = audioVisualizer.canvas;
   audioVisualizerNode.style.display = "block";
   audioVisualizerNode.style.position = "absolute";
@@ -1312,7 +1328,8 @@ const initializeMainScreen = () => {
     console.log("skip");
   });
 
-  const frameRateVisualizer = root.frameRateVisualizer = new D.FrameRateVisualizer(fontSize * 8, fontSize * 4, fontSize, "'Share Tech', sans-serif");
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const frameRateVisualizer = root.frameRateVisualizer = new D.FrameRateVisualizer(fontSize * 8, fontSize * 4, fontSize, "'Share Tech', sans-serif", color);
   const frameRateNode = frameRateVisualizer.canvas;
   frameRateNode.style.display = "block";
   frameRateNode.style.position = "absolute";
@@ -1406,7 +1423,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       root.audioVisualizer.update();
       root.audioVisualizer.draw();
     }
-
   }
 }, { once: true });
 
