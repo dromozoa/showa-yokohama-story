@@ -964,12 +964,10 @@ D.AudioVisualizer = class {
     this.width = width;
     this.height = height;
     this.analyser = analyser;
-    this.timeDomainData = new Float32Array(analyser.fftSize);
     this.frequencyData = new Float32Array(analyser.fftSize / 2);
   }
 
   update() {
-    this.analyser.getFloatTimeDomainData(this.timeDomainData);
     this.analyser.getFloatFrequencyData(this.frequencyData);
   }
 
@@ -989,25 +987,11 @@ D.AudioVisualizer = class {
     const context = this.canvas.getContext("2d");
     context.clearRect(0, 0, W, H);
 
-    /*
-    const W1 = W / this.analyser.fftSize;
-    for (let i = 0; i < this.analyser.fftSize; ++i) {
-      const v = this.timeDomainData[i];
-      if (v > 0) {
-        const h = v * HH;
-        context.fillRect(i * W1, HH - h, W1, h);
-      } else {
-        const h = -v * HH;
-        context.fillRect(i * W1, HH, W1, h);
-      }
-    }
-    */
-
-    const W2 = W / this.analyser.frequencyBinCount;
+    const w = W / this.analyser.frequencyBinCount;
     for (let i = 0; i < this.analyser.frequencyBinCount; ++i) {
       const v = (Math.max(minDecibels, Math.min(maxDecibels, this.frequencyData[i])) - minDecibels) / rangeDecibels;
       const h = v * H;
-      context.fillRect(i * W2, HH - h * 0.5, W2, h);
+      context.fillRect(i * w, HH - h * 0.5, w, h);
     }
   }
 };
@@ -1120,7 +1104,7 @@ const root = {
     id: "system",
     speed: 30,
     autoSpeed: 400,
-    mixerVolume: 1,
+    masterVolume: 1,
     musicVolume: 1,
     voiceVolume: 1,
     componentColor: [ 1, 1, 1 ],
@@ -1173,7 +1157,7 @@ const initializeSystemUi = () => {
   });
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
-  systemUi.add(system, "mixerVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]");
   const componentFolder = systemUi.addFolder("コンポーネント設定");
@@ -1221,6 +1205,12 @@ const unlockAudio = async () => {
     return;
   }
   audioUnlocked = true;
+
+
+
+
+
+
 
   playMusic("diana33", root.system.musicVolume);
 
