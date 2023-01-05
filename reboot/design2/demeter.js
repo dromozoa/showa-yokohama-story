@@ -998,6 +998,24 @@ D.AudioVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.MusicPlayer = class {
+  constructor(key, volume) {
+    const basename = "../output/music/sessions_" + key;
+    this.sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      autoplay: true,
+      loop: true,
+      volume: volume,
+    });
+  }
+
+  updateVolume(volume) {
+    this.sound.volume(volume);
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -1045,9 +1063,10 @@ D.TextAnimation = class {
 //-------------------------------------------------------------------------
 
 D.VoiceSprite = class {
-  constructor(sound, sprite) {
+  constructor(sound, sprite, volume) {
     this.sound = sound;
     this.sprite = sprite;
+    this.volume = volume;
     this.soundId = undefined;
   }
 
@@ -1075,10 +1094,11 @@ D.VoiceSprite = class {
       });
 
       this.soundId = this.sound.play(this.sprite);
+      this.updateVolume(this.volume);
     });
   }
 
-  volume(volume) {
+  updateVolume(volume) {
     if (this.soundId !== undefined) {
       this.sound.volume(volume, this.soundId);
     }
@@ -1112,6 +1132,9 @@ const root = {
   },
   system: undefined,
   systemUi: undefined,
+  musicPlayer: undefined,
+  textAnimation: undefined,
+  voiceSprite: undefined,
 };
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
@@ -1157,9 +1180,21 @@ const initializeSystemUi = () => {
   });
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
-  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
-  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
-  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]");
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
+    if (Howler.masterGain !== undefined) {
+      Howler.volume(v);
+    }
+  });
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(v => {
+    if (root.musicPlayer !== undefined) {
+      root.musicPlayer.updateVolume(v);
+    }
+  });
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]").onChange(v => {
+    if (root.voiceSprite !== undefined) {
+      root.voiceSprite.updateVolume(v);
+    }
+  });
   const componentFolder = systemUi.addFolder("コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColors);
   componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]").onChange(updateComponentColors);
@@ -1187,18 +1222,6 @@ const saveSystemData = async () => {
 //-------------------------------------------------------------------------
 
 let audioUnlocked;
-let music;
-let voice;
-
-const playMusic = (key, volume) => {
-  const basename = "../output/music/sessions_" + key;
-  music = new Howl({
-    src: [ basename + ".webm", basename + ".mp3" ],
-    autoplay: true,
-    loop: true,
-    volume: volume,
-  });
-};
 
 const unlockAudio = async () => {
   if (audioUnlocked) {
@@ -1206,13 +1229,8 @@ const unlockAudio = async () => {
   }
   audioUnlocked = true;
 
-
-
-
-
-
-
-  playMusic("diana33", root.system.musicVolume);
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
 
   const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
   const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
@@ -1232,8 +1250,6 @@ let textNumber;
 let baseNumber;
 let baseState;
 let baseTimestamp;
-let textAnimation;
-let voiceSprite;
 
 const nextParagraph = async () => {
   if (paragraphIndex !== undefined) {
@@ -1260,15 +1276,15 @@ const nextParagraph = async () => {
   });
 
   for (let i = 0; i < textAnimations.length; ++i) {
-    textAnimation = textAnimations[i];
-    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1));
+    root.textAnimation = textAnimations[i];
+    root.voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1), root.system.voiceVolume);
     await Promise.all([
-      textAnimation.start(),
-      voiceSprite.start(),
+      root.textAnimation.start(),
+      root.voiceSprite.start(),
     ]);
   }
-  textAnimation = undefined;
-  voiceSprite = undefined;
+  root.textAnimation = undefined;
+  root.voiceSprite = undefined;
 
   paragraphIndexPrev = paragraphIndex;
   paragraphIndex = undefined;
@@ -1375,10 +1391,10 @@ window.addEventListener("keydown", async ev => {
   console.log("keydown", ev.code);
 
   if (ev.code === "Enter") {
-    if (textAnimation) {
-      textAnimation.finish();
-      if (voiceSprite) {
-        voiceSprite.finish();
+    if (root.textAnimation !== undefined) {
+      root.textAnimation.finish();
+      if (root.voiceSprite !== undefined) {
+        root.voiceSprite.finish();
       }
     } else {
       await nextParagraph();
