@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+</head>
+<body>
+
+<div>
+  <div id="view" class="view" style="
+    width: 24em;
+    height: 12em;
+    font-family: 'Showa Yokohama Story', 'Share Tech', 'BIZ UDPMincho';
+    font-size: 24px;
+    line-height: 2;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    resize: both;
+  "></div>
+</div>
+
+<pre id="output"></pre>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = demeter;
+  await D.boot();
+
+  const start = performance.now();
+  const result = await D.loadFontFaces(10000);
+  console.log("loadFontFaces", performance.now() - start, result);
+
+  const view = document.getElementById("view");
+  const out = document.getElementById("output");
+
+  // letter-spacingと結果のサイズをこまかく見てみる
+  for (let i = 10000; i < 10200; i += 1) {
+    const s = (""+i).replace(/^(\d)(\d+)/, "$1.$2");
+    const node = document.createElement("span");
+    node.style.letterSpacing = s + "px";
+    node.textContent = "文";
+    view.append(node);
+    const r = node.getBoundingClientRect();
+    const v = r.width - (24 + i / 10000);
+    output.textContent += v.toFixed(8) + "\n";
+    node.remove();
+  }
+});
+</script>
+
+</body>
+</html>

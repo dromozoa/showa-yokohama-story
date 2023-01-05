@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&family=BIZ+UDGothic&family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Libre+Barcode+128&family=Share+Tech&family=Share+Tech+Mono&family=Source+Serif+Pro&display=swap" rel="stylesheet">
+
+  <!-- https://icons8.com/line-awesome/howto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <!-- https://github.com/tweenjs/tween.js/#installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
+
+  <!-- https://github.com/jakearchibald/idb/#installation -->
+  <script src="https://cdn.jsdelivr.net/npm/idb@7.1.1/build/umd.js" integrity="sha256-ekPnVXAfX/KotKCG3rac/xzpxda6Nl7jK2CU6/I+2tE=" crossorigin="anonymous"></script>
+
+  <script defer src="demeter-jlreq.js"></script>
+  <script defer src="demeter-scenario.js"></script>
+  <script defer src="demeter-voice-sprites.js"></script>
+  <script defer src="demeter.js"></script>
+</head>
+
+<body class="demeter">
+
+<div class="demeter-camera">
+  <div class="demeter-title-screen">
+    <div class="demeter-title">
+      <div class="demeter-title-ja"><span
+        style="letter-spacing: -0.06em">昭</span><span
+        style="letter-spacing: -0.02em">和</span><span
+        style="letter-spacing: -0.03em">横</span><span
+        style="letter-spacing: -0.05em">濱</span><span
+        style="letter-spacing: -0.07em">物</span><span
+        style="letter-spacing: 0">語</span></div>
+      <div class="demeter-title-en"><span
+        style="letter-spacing: 0">S</span><span
+        style="letter-spacing: -0.001em">H</span><span
+        style="letter-spacing: -0.006em">O</span><span
+        style="letter-spacing: -0.025em">W</span><span
+        style="letter-spacing: -0.021em">A</span><span
+        style="letter-spacing: 0"> </span><span
+        style="letter-spacing: -0.011em">Y</span><span
+        style="letter-spacing: -0.012em">O</span><span
+        style="letter-spacing: -0.012em">K</span><span
+        style="letter-spacing: -0.012em">O</span><span
+        style="letter-spacing: -0.001em">H</span><span
+        style="letter-spacing: 0">A</span><span
+        style="letter-spacing: 0">M</span><span
+        style="letter-spacing: 0">A</span><span
+        style="letter-spacing: 0"> </span><span
+        style="letter-spacing: -0.002em">S</span><span
+        style="letter-spacing: -0.011em">T</span><span
+        style="letter-spacing: -0.010em">O</span><span
+        style="letter-spacing: -0.009em">R</span><span
+        style="letter-spacing: 0">Y</span></div>
+      <div class="demeter-title-text">
+        <div>EVANGELIUM SECUNDUM STEPHANUS</div>
+        <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+      </div>
+      <div class="demeter-title-icon"><span class="demeter-icon"></span></div>
+    </div>
+  </div>
+  <div class="demeter-main-screen">
+    <div class="demeter-main-menu">
+      <div class="demeter-main-menu-frame"></div>
+      <div class="demeter-main-menu-items">
+        <div class="demeter-main-menu-item demeter-main-menu-item1"><span class="las la-cog"></span>SYSTEM</div>
+        <div class="demeter-main-menu-item demeter-main-menu-item2"><span class="las la-bible"></span>LOAD</div>
+        <div class="demeter-main-menu-item demeter-main-menu-item3"><span class="las la-save"></span>SAVE</div>
+        <div class="demeter-main-menu-item demeter-main-menu-item4"><span class="las la-play-circle"></span>AUTO</div>
+        <div class="demeter-main-menu-item demeter-main-menu-item5"><span class="las la-fast-forward"></span>SKIP</div>
+        <div class="demeter-main-menu-title"><span
+          style="letter-spacing: -0.06em">昭</span><span
+          style="letter-spacing: -0.02em">和</span><span
+          style="letter-spacing: -0.03em">横</span><span
+          style="letter-spacing: -0.05em">濱</span><span
+          style="letter-spacing: -0.07em">物</span><span
+          style="letter-spacing: 0">語</span></div>
+      </div>
+    </div>
+    <div class="demeter-main-paragraph">
+      <div class="demeter-main-paragraph-speaker"></div>
+      <div class="demeter-main-paragraph-text"></div>
+      <div class="demeter-main-paragraph-icon"><span class="demeter-icon"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="demeter-offscreen">
+<svg>
+  <defs>
+    <filter id="demeter-title-ja-filter">
+      <feFlood flood-color="#FFFEDA" flood-opacity="1" result="color"/>
+      <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="dilation"/>
+      <feComposite operator="in" in="color" in2="dilation" result="border"/>
+      <feMerge>
+        <feMergeNode in="border"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="demeter-title-en-filter">
+      <feFlood flood-color="#FFFEDA" flood-opacity="1" result="color"/>
+      <feMorphology operator="dilate" radius="0.5" in="SourceAlpha" result="dilation"/>
+      <feComposite operator="in" in="color" in2="dilation" result="border"/>
+      <feMerge>
+        <feMergeNode in="border"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
+<div class="demeter-main-system-ui"></div>
+<div class="demeter-loader">
+$loader
+</div>
+<div class="demeter-graph">
+$graph
+</div>
+</div>
+
+</body>
+</html>

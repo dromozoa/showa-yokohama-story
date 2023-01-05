@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- https://fonts.google.com/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<!-- https://github.com/goldfire/howler.js#quick-start -->
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+<title>実験</title>
+<style>
+body {
+  margin: 0;
+}
+button {
+  vertical-align: bottom;
+  width: 150px;
+  height: 100px;
+  font-family: "Share Tech Mono", "BIZ UDPGothic";
+  font-size: 30px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+</style>
+</head>
+<body>
+<div>
+
+<!--
+
+  画像サイズは 2963 x 3382
+
+-->
+
+<svg width="600" height="800" viewBox="0 0 600 800" style="background-color: #333">
+  <defs>
+    <style>
+      #silhouette1 {
+        transform: translateZ(0);
+        filter: url(#filter1);
+      }
+      #silhouette2 {
+        filter: url(#filter1);
+      }
+    </style>
+
+    <filter id="filter1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="0" result="turbulence">
+        <animate id="animate1" attributeName="seed" begin="indefinite" end="indefinite" dur="1s" from="0" to="1000" fill="freeze"/>
+      </feTurbulence>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" in="turbulence" result="color-matrix"/>
+      <feDisplacementMap in="SourceGraphic" in2="color-matrix" scale="400" xChannelSelector="R" yChannelSelector="A" result="displacement-map">
+        <animate id="animate2" attributeName="scale" begin="indefinite" end="indefinite" dur="1s" from="400" to="0" fill="freeze"/>
+      </feDisplacementMap>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" in="displacement-map">
+        <animate id="animate3" attributeName="values" begin="indefinite" end="indefinite" dur="1s"
+          from="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0" to="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" fill="freeze"/>
+      </feColorMatrix>
+    </filter>
+
+  </defs>
+
+  <image id="silhouette1" href="silhouette1.png" style="display: none"/>
+  <image id="silhouette2" href="silhouette2.png" style="display: none"/>
+
+</svg>
+
+<div>
+  <button id="start1">Start 1</button>
+  <button id="start2">Start 2</button>
+</div>
+
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", ev => {
+    document.getElementById("start1").addEventListener("click", ev => {
+      console.log("start1", ev);
+      document.getElementById("silhouette2").style.display = "none";
+      document.getElementById("animate1").beginElement();
+      document.getElementById("animate2").beginElement();
+      document.getElementById("animate3").beginElement();
+      document.getElementById("silhouette1").style.display = "inline";
+    });
+    document.getElementById("start2").addEventListener("click", ev => {
+      console.log("start2", ev);
+      document.getElementById("silhouette1").style.display = "none";
+      document.getElementById("animate1").beginElement();
+      document.getElementById("animate2").beginElement();
+      document.getElementById("animate3").beginElement();
+      document.getElementById("silhouette2").style.display = "inline";
+    });
+  });
+</script>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <!-- https://github.com/tweenjs/tween.js/#installation -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
+
+  <!-- https://icons8.com/line-awesome/howto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background-image: url(../output/bg.png);
+      background-color: #000;
+      color: #FFF;
+    }
+
+    .camera {
+      perspective: 2000px;
+    }
+
+    .panel {
+      position: absolute;
+      width: 320px;
+      height: 448px;
+      font-size: 32px;
+      line-height: 64px;
+      transform-style: preserve-3d;
+      /*
+      background-color: rgba(255, 255, 255, 0.2);
+      */
+    }
+
+    .title {
+      font-family: 'Yuji Syuku', serif;
+      font-kerning: none;
+    }
+
+    .menu {
+      font-family: 'Share Tech', sans-serif;
+    }
+
+    .back .in-the-ussr {
+      font-size: 16px;
+      opacity: 0;
+      transition: all 1s;
+    }
+
+    .back:hover .in-the-ussr {
+      opacity: 1;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="camera">
+  <div class="panel">
+    <div class="title"><span style="font-family: 'Showa Yokohama Story'">&#xE000;</span> <span
+      style="letter-spacing: -0.06em">昭</span><span
+      style="letter-spacing: -0.02em">和</span><span
+      style="letter-spacing: -0.03em">横</span><span
+      style="letter-spacing: -0.05em">濱</span><span
+      style="letter-spacing: -0.07em">物</span><span
+      style="letter-spacing: 0">語</span></div>
+    <div class="menu"><i class="las la-cog"></i> SYSTEM</div>
+    <div class="menu"><i class="las la-save"></i> SAVE</div>
+    <div class="menu"><i class="las la-bible"></i> LOAD</div>
+    <div class="menu"><i class="las la-play-circle"></i> AUTO</div>
+    <div class="menu"><i class="las la-fast-forward"></i> SKIP</div>
+    <div class="menu back"><i class="las la-hand-point-left"></i> BACK<span class="in-the-ussr"> in the U.S.S.R</span></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = demeter;
+  await D.boot();
+
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+
+  const cameraNode = document.querySelector(".camera");
+  cameraNode.style.width = D.numberToCss(W);
+  cameraNode.style.height = D.numberToCss(H);
+  cameraNode.style.transformStyle = "preserve-3d";
+
+  const panelNode = document.querySelector(".panel");
+  panelNode.style.top = D.numberToCss((H - 448) * 0.5);
+  panelNode.style.left = D.numberToCss((W - 320) * 0.5);
+
+  const gui = new lil.GUI();
+  const data = {
+    perspective: 1000,
+    setPerspective: () => {
+      cameraNode.style.perspective = D.numberToCss(data.perspective);
+    },
+    unsetPerspective: () => {
+      cameraNode.style.perspective = "none";
+    },
+    rotatePanel: () => {
+      new TWEEN.Tween({ rotation: 0 })
+        .to({ rotation: Math.PI * 2}, 5000)
+        .onUpdate(data => {
+          panelNode.style.transform = "rotate3d(0,1,0," + data.rotation + "rad)";
+          // panelNode.style.transform = new D.AxisAngle4(0, 1, 0, data.rotation).toString();
+          // フラットシェーディング。正面から光が当たっているとする。
+          // const y = Math.abs(Math.cos(data.rotation));
+          // panelNode.style.color = new D.Color4(y, y, y, 1).toString();
+        })
+        .start();
+    },
+    showPanel: () => {
+      new TWEEN.Tween({ value: 0 })
+        .to({ value: 1 }, 500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(data => {
+          [...panelNode.children].forEach((node, i) => {
+            if (i > 0) {
+              node.style.opacity = data.value;
+            }
+          });
+        })
+        .start();
+    },
+    hidePanel: () => {
+      new TWEEN.Tween({ value: 1 })
+        .to({ value: 0 }, 500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(data => {
+          [...panelNode.children].forEach((node, i) => {
+            if (i > 0) {
+              node.style.opacity = data.value;
+            }
+          });
+        })
+        .start();
+    },
+  };
+  gui.add(data, "perspective", 0, 10000, 50);
+  gui.add(data, "setPerspective");
+  gui.add(data, "unsetPerspective");
+  gui.add(data, "rotatePanel");
+  gui.add(data, "showPanel");
+  gui.add(data, "hidePanel");
+
+  while (true) {
+    await D.requestAnimationFrame();
+    TWEEN.update();
+  }
+
+});
+</script>
+
+</body>
+</html>

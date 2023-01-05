@@ -1,0 +1,58 @@
+// vim: filetype=glsl:
+
+uniform float seed;
+uniform float scaler;
+
+vec4 position(mat4 transform_projection, vec4 vertex_position) {
+  return transform_projection * vertex_position;
+}
+
+float rand(vec2 p) {
+  return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  // vec2 position = texture_coords;
+  // float distortion = 0.3;
+  // position -= vec2(0.5, 0.5);
+  // position *= vec2(pow(length(position), distortion));
+  // position *= vec2(1.25, 1.25);
+  // position += vec2(0.5, 0.5);
+  // position *= vec2(1.5, 1.5);
+
+  // vec2 screen_size = vec2(love_ScreenSize);
+  // position = screen_coords;
+  // position *= vec2(1.0 / screen_size.x, 1.0 / screen_size.y);
+
+  vec2 position = texture_coords;
+  position.y = (position.y - 0.5) * scaler + 0.5;
+  vec4 c = Texel(texture, position);
+
+  vec2 p = texture_coords * vec2(1280, 720);
+  float mx = mod(p.x, 3);
+  float my = mod(p.y, 4);
+  vec2 q = floor(p / vec2(3, 4)) + vec2(seed, seed);
+  float r = rand(q);
+
+  float x = 1.0;
+  float y = 0.25;
+
+  // x *= r + 0.5;
+  x *= r + 0.75;
+
+  if (my >= 3.0) {
+    x = 0.25;
+    y = 0.25;
+  }
+
+  if (mx < 1.0) {
+    c *= vec4(x, y, y, 1.0);
+  } else if (mx < 2.0) {
+    c *= vec4(y, x, y, 1.0);
+  } else {
+    c *= vec4(y, y, x, 1.0);
+  }
+
+  // return vec4(vec3(1.0, 1.0, 1.0) * (max(c.r, max(c.g, c.b))), c.a);
+  return c;
+}

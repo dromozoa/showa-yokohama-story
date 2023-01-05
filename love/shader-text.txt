@@ -1,0 +1,9 @@
+// vim: filetype=glsl:
+
+uniform float alpha;
+
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  vec4 c = Texel(texture, texture_coords);
+  c.a *= alpha;
+  return c;
+}

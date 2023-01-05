@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- https://fonts.google.com/ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&family=BIZ+UDPMincho&family=Share+Tech&family=VT323&display=swap" rel="stylesheet">
+
+<!-- https://github.com/goldfire/howler.js#quick-start -->
+<script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+<!-- https://threejs.org/docs/#manual/en/introduction/Installation -->
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js" integrity="sha256-OmYCVIx1jMpOJ2LVDoAqVAC0xmO2pjjXapFjWYRn3tQ=" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/renderers/CSS3DRenderer.js" integrity="sha256-JXtFOyJmY70SR18tpsIyBT4rr2U6lZhZvgQuHTn2Nv4=" crossorigin="anonymous"></script>
+
+<!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+<style>
+:root {
+  --main_background_color: #000000;
+  --main_color: #ffffff;
+  --main_font_family_western: 'Share Tech';
+  --main_font_family_japanese: 'BIZ UDPMincho';
+
+  --console_background_color: #000000;
+  --console_color: #029d93;
+  --console_font_family_western: 'VT323';
+  --console_font_family_japanese: 'BIZ UDGothic';
+}
+
+body {
+  margin: 0;
+  background-color: var(--main_background_color);
+  -webkit-text-size-adjust: 100%;
+}
+
+.main {
+  color: var(--main_color);
+  font-family: var(--main_font_family_western), var(--main_font_family_japanese);
+  font-size: 40px;
+  line-height: 200%;
+  text-align: justify;
+}
+
+.console {
+  color: var(--console_color);
+  font-family: var(--console_font_family_western), var(--console_font_family_japanese);
+  font-size: 40px;
+  line-height: 200%;
+}
+
+.kerning {
+  color: var(--main_color);
+  font-family: var(--main_font_family_western), var(--main_font_family_japanese);
+  font-size: 80px;
+  line-height: 150%;
+}
+
+.kerning > div > span > span:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.125);
+}
+
+.kerning > div > span > span:nth-child(even) {
+  color: var(--console_color);
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+/*
+.kerning > div > span.a {
+  border: 1px solid #f50002;
+}
+*/
+
+.kerning > div > span.b > span {
+  border: 1px solid #f50002;
+};
+
+</style>
+</head>
+
+<body>
+
+<div class="main">
+  <span>Showa Yokohama Story</span><span>昭和横濱物語</span>
+</div>
+<div class="main">
+  <span><ruby>死んでくれる？<rt>Die  for  me ?</rt></ruby></span>
+</div>
+<div class="main">あいうえおA&#196;&#197;</div>
+<div class="main">
+<span>昭和七十四年七月、ボクはキミに出逢った。</span><br>
+<span>人類が滅亡するまでの、最期のひとつきの、これは物語だ。</span><br>
+<span>日本国は国体を北海道以北に疎開した。</span><br>
+<span>一千万を切った人口の過半は、国家総動員体制の下、農業生産と石炭採掘に従事している。</span><br>
+<span>本州の生存者は四十万人内外と見られる。</span>
+
+</div>
+
+<div class="console">
+  <div>H.H.C MONITOR VER 1.3</div>
+  <div>スティーブンによる福音書 第二節</div>
+  <div>EVANGELIUM SECUNDUM STEPHANUS verse II</div>
+  <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
+  <div>あいうえおA&#196;&#197;</div>
+</div>
+
+<div class="kerning" style="font-kerning: normal">
+  <div><span class="a box"><span>ATATATATA</span></span></div>
+  <div><span class="a box3"><span>ATA</span><span>TAT</span><span>ATA</span></span></div>
+  <div><span class="a box2"><span>AT</span><span>AT</span><span>AT</span><span>AT</span><span>A</span></span></div>
+  <div><span class="a box1"><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span></span></div>
+  <div><span class="b"><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span><span>T</span><span>A</span></span></div>
+</div>
+
+<div class="kerning" style="font-kerning: normal; font-feature-settings: 'liga' 1">
+  <DIV><span class="a box"><span>flflflflf</span></span></DIV>
+  <DIV><span class="a box3"><span>flf</span><span>lfl</span><span>flf</span></span></DIV>
+  <DIV><span class="a box2"><span>fl</span><span>fl</span><span>fl</span><span>fl</span><span>f</span></span></DIV>
+  <DIV><span class="a box1"><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span></span></DIV>
+  <DIV><span class="b"><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span><span>l</span><span>f</span></span></DIV>
+</div>
+
+<!--
+syowa yokohama story
+EVANGELIUM SECUNDUM STEPHANUS
+APOCALYPSIS ALICIA
+GENESIS
+-->
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  Array.from(document.querySelectorAll(".console > div"), X => {
+    const Y = document.createElement("div");
+    for (const c of X.textContent) {
+      const Z = document.createElement("span");
+      Z.textContent = c;
+      Y.appendChild(Z);
+    }
+    X.innerHTML = Y.innerHTML;
+  });
+
+});
+</script>
+
+</body>
+</html>

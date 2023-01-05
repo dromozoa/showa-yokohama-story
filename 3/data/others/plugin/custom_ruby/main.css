@@ -1,0 +1,28 @@
+/*ルビ調整
+----------------------------------*/
+.current_span rt, .log_body rt, .save_list_item_area rt {
+	height: 0px;
+	display: none;
+}
+
+ruby.custom_ruby{
+	height: 1em;
+	line-height: 100%;
+	text-align: center;
+	transform-origin: bottom center;
+	bottom: calc(1em + 4px);
+	white-space: nowrap;
+	display: inline;
+}
+
+ruby.custom_ruby_rl{
+	line-height: 100%;
+	text-align: center;
+	transform-origin: center left;
+	left: 1em;
+	writing-mode: vertical-rl;
+	-webkit-writing-mode: vertical-rl;
+	width: 1em;
+	white-space: nowrap;
+	display: inline;
+}

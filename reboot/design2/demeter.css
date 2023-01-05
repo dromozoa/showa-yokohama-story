@@ -1,0 +1,337 @@
+/*
+ * Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+ *
+ * This file is part of 昭和横濱物語.
+ *
+ * 昭和横濱物語 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * 昭和横濱物語 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*************************************************************************/
+
+:root {
+  --font-size: 24px;
+  --font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
+  --font-family-title-ja: 'Yuji Syuku', serif;
+  --font-family-title-en: 'Averia Serif Libre', serif;
+  --font-family-console: 'Share Tech', sans-serif;
+
+  --size-min: calc(var(--font-size) * 27);
+  --size-max: calc(var(--font-size) * 48);
+
+  --color-title: #C63322;
+  --color-console: #029D93;
+  --color-fill: rgba(255, 255, 255, 0.1);
+  --color-fill-active: rgba(2, 157, 147, 0.1);
+  --color-stroke: #FFF;
+  --color-stroke-active: var(--color-console);
+}
+
+.demeter-icon {
+  font-family: 'Showa Yokohama Story';
+}
+
+.demeter-icon::before {
+  content: '\E000';
+}
+
+/*************************************************************************/
+
+body.demeter {
+  margin: 0;
+  color: #FFF;
+  background-color: #000;
+  /* TODO 背景画像を最適化する */
+  /* TODO 背景画像をスクロールする */
+  background-image: url(../output/bg.png);
+  background-repeat: none;
+  background-attachment: fixed;
+}
+
+/*************************************************************************/
+
+.demeter-title-screen {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 48);
+}
+
+.demeter-title {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 18);
+  top: calc(var(--font-size) * 15);
+  left: 0;
+}
+
+.demeter-title-ja {
+  color: var(--color-title);
+  font-family: var(--font-family-title-ja);
+  font-kerning: none;
+  font-size: calc(var(--font-size) * 4);
+  line-height: calc(var(--font-size) * 6);
+  text-align: center;
+}
+
+.demeter-title-ja > span {
+  filter: url(#demeter-title-ja-filter);
+}
+
+.demeter-title-en {
+  color: var(--color-title);
+  font-family: var(--font-family-title-en);
+  font-kerning: none;
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
+  text-align: center;
+}
+
+.demeter-title-en > span {
+  filter: url(#demeter-title-en-filter);
+}
+
+.demeter-title-text {
+  margin-top: calc(var(--font-size) * 3);
+  color: var(--color-console);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
+  text-align: center;
+}
+
+.demeter-title-icon {
+  margin-top: calc(var(--font-size) * 3);
+  color: var(--color-console);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
+  text-align: center;
+
+  animation-name: demeter-bounce;
+  animation-duration: 1.2s;
+  animation-iteration-count: infinite;
+  transform-origin: center bottom;
+}
+
+/*************************************************************************/
+
+.demeter-main-screen {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 48);
+}
+
+.demeter-main-menu {
+  position: absolute;
+  width: calc(var(--font-size) * 24);
+  height: calc(var(--font-size) * 4.75);
+  top: 0;
+  left: calc(var(--font-size) * 1.5);
+}
+
+.demeter-main-menu-frame {
+  position: absolute;
+}
+
+.demeter-main-menu-frame svg {
+  display: block;
+  stroke-width: 1px;
+}
+
+.demeter-main-menu-items {
+  position: absolute;
+}
+
+.demeter-main-menu-item {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-main-menu-item1 {
+  top: calc(var(--font-size) * 0.25);
+  left: calc(var(--font-size) * 8.5);
+}
+
+.demeter-main-menu-item2 {
+  top: calc(var(--font-size) * 0.25);
+  left: calc(var(--font-size) * 1.5);
+}
+
+.demeter-main-menu-item3 {
+  top: calc(var(--font-size) * 0.25);
+  left: calc(var(--font-size) * 15.5);
+}
+
+.demeter-main-menu-item4 {
+  top: calc(var(--font-size) * 2.5);
+  left: calc(var(--font-size) * 0.5);
+}
+
+.demeter-main-menu-item5 {
+  top: calc(var(--font-size) * 2.5);
+  left: calc(var(--font-size) * 16.5);
+}
+
+.demeter-main-menu-title {
+  position: absolute;
+  width: calc(var(--font-size) * 9);
+  top: calc(var(--font-size) * 2.5);
+  left: calc(var(--font-size) * 7.5);
+  font-family: var(--font-family-title-ja);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-main-paragraph {
+  position: absolute;
+  width: calc(var(--font-size) * 25);
+  top: calc(var(--font-size) * 33);
+  left: var(--font-size);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-main-paragraph-speaker {
+  text-align: center;
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-main-paragraph-text {
+  height: calc(var(--font-size) * 8);
+}
+
+.demeter-main-paragraph-icon {
+  margin-top: var(--font-size);
+  text-align: right;
+  animation-name: demeter-bounce;
+  animation-duration: 1.2s;
+  animation-iteration-count: infinite;
+  transform-origin: center bottom;
+}
+
+.demeter-main-system-ui {
+  position: absolute;
+  width: calc(var(--font-size) * 12);
+  height: calc(var(--font-size) * 18);
+  top: calc(var(--font-size) * 5);
+  left: calc(var(--font-size) * 4.5);
+  transform: scale(1.5);
+  transform-origin: left top;
+}
+
+/*************************************************************************/
+
+.lil-gui {
+  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
+  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
+}
+
+/*************************************************************************/
+
+.demeter-button {
+  fill: var(--color-fill);
+  stroke: var(--color-stroke);
+  transition: all 0.5s;
+}
+
+.demeter-button:active {
+  fill: var(--color-fill-active);
+}
+
+@media (hover: hover) {
+  .demeter-icon,
+  .demeter-button {
+    cursor: pointer;
+  }
+
+  .demeter-button:hover {
+    stroke: var(--color-stroke-active);
+  }
+}
+
+@keyframes demeter-bounce {
+  0% {
+    animation-timing-function: ease-out;
+    transform: translateY(0);
+  }
+
+  40% {
+    animation-timing-function: ease-in;
+    transform: translateY(-0.5em);
+  }
+
+  80% {
+    animation-timing-function: ease-out;
+    transform: translateY(0);
+  }
+
+  90% {
+    animation-timing-function: ease-in;
+    transform: scaleY(0.85);
+  }
+
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+/*************************************************************************/
+
+/* 1989-01-16 21:33Z */
+.demeter-offscreen {
+  position: absolute;
+  top: -8916px;
+  left: -2133px;
+}
+
+.demeter-loader {
+  font-family: var(--font-family);
+}
+
+.demeter-graph > svg {
+  display: block;
+}
+
+/*************************************************************************/
+
+div.demeter-text {
+  white-space: nowrap;
+}
+
+div.demeter-text > div > span {
+  display: inline-block;
+  position: relative;
+}
+
+div.demeter-text > div > span > span {
+  display: inline-block;
+}
+
+div.demeter-text > div > span > div {
+  position: absolute;
+  font-size: 50%;
+}
+
+div.demeter-text > div > span > div > span {
+  display: inline-block;
+}
+
+/*************************************************************************/

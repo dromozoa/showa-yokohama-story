@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&family=Share+Tech&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+
+  <style>
+    .title-ja {
+      font-family: 'Yuji Syuku', serif;
+      font-size: 96px;
+      font-kerning: none;
+      color: #C63322;
+      text-align: center;
+    }
+
+    .title-ja > span {
+      filter: url(#filter1b);
+      /*
+      filter: blur(1px);
+      filter: drop-shadow(0 0 8px #fff);
+      */
+    }
+
+    .title-en {
+      font-family: 'Averia Serif Libre', serif;
+      font-weight: 400;
+      font-size: 36px;
+      color: #C63322;
+      text-align: center;
+    }
+
+    .title-en > span {
+      filter: url(#filter1b);
+    }
+
+    .subtitle {
+      font-family: 'Share Tech', sans-serif;
+      font-size: 24px;
+      line-height: 1.5;
+      color: #029D93;
+      width: 600px;
+      text-align: center;
+    }
+
+  </style>
+</head>
+
+<body style="
+  margin: 0;
+  background-color: #000;
+  color: #FFF;
+">
+
+<div style="
+  width: 600px;
+  margin-left: 24px;
+">
+  <div class="title-ja"><span
+    style="letter-spacing: -0.06em">昭</span><span
+    style="letter-spacing: -0.02em">和</span><span
+    style="letter-spacing: -0.03em">横</span><span
+    style="letter-spacing: -0.05em">濱</span><span
+    style="letter-spacing: -0.07em">物</span><span
+    style="letter-spacing: 0">語</span></div>
+  <div class="title-en">SHOWA YOKOHAMA STORY</div>
+</div>
+
+<div style="margin-left: 24px; margin-top: 48px">
+  <div class="subtitle">EVANGELIUM SECUNDUM STEPHANUS verse I-III</div>
+  <div class="subtitle">INSERT 30 PIECES OF SILVER TO CONTINUE...</div>
+</div>
+
+<div style="position: absolute; top: -9999px; left: -9999px">
+  <svg>
+    <defs>
+      <filter id="filter1a">
+        <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <filter id="filter1b" primitiveUnits="objectBoundingBox" >
+        <feMorphology operator="dilate" radius="0.01" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <filter id="filter2">
+        <feMorphology operator="dilate" radius="0.5" in="SourceAlpha" result="dilated"/>
+        <feFlood flood-color="#FFFEDA" flood-opacity="1" result="filled"/>
+        <feComposite operator="in" in="filled" in2="dilated" result="background"/>
+        <feMerge>
+          <feMergeNode in="background"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = demeter;
+  await D.boot();
+
+  const spacingMap = new Map();
+  spacingMap.set("OW", -2);
+  spacingMap.set("WA", -4);
+
+  const adjustTitle = (source, fontSize, font) => {
+    const paragraph = D.parseParagraph(source, fontSize, font);
+    console.log(paragraph);
+    source.replaceChildren(...paragraph[0][0].base.map(u => {
+      const result = document.createElement("span");
+      result.textContent = u.char;
+      result.style.letterSpacing = D.numberToCss(-u.kerning);
+      return result;
+    }));
+  };
+
+  adjustTitle(document.querySelector(".title-en"), 36, "'Averia Serif Libre', serif");
+});
+</script>
+
+</body>
+</html>

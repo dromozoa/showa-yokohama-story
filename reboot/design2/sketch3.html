@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>昭和横濱物語</title>
+
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho&display=swap" rel="stylesheet">
+
+  <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-font.css" rel="stylesheet">
+
+  <link href="manifest.webmanifest" rel="manifest">
+  <link href="favicon.ico" rel="icon" sizes="any">
+  <link href="favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-jlreq.js"></script>
+</head>
+
+<body style="
+  margin: 0 0 0 24px;
+  background-color: #000;
+  color: #FFF;
+">
+
+<template>
+  <div>悪い報せだ。跳ねっかえりが、<ruby>携帯地対空誘導弾<rt>スティンガー</rt></ruby>を<ruby>窃<rt>パク</rt></ruby>って潜伏した。</div>
+</template>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const D = demeter;
+  await D.boot();
+
+  const start = performance.now();
+  const result = await D.loadFontFaces(10000);
+  console.log("loadFontFaces", performance.now() - start, result);
+
+  const fontSize = 24;
+  const font = "'Showa Yokohama Story', 'BIZ UDPMincho'";
+
+  const containerNode = document.createElement("div");
+  containerNode.style.font = D.numberToCss(fontSize) + " " + font;
+  containerNode.style.lineHeight = D.numberToCss(fontSize * 2);
+
+  const paragraphNode = containerNode.appendChild(document.createElement("div"));
+
+  const sourceNode = document.querySelector("template").content.firstElementChild;
+  const paragraph = D.parseParagraph(sourceNode, fontSize, font);
+  console.log(paragraph);
+  paragraph.forEach(text => {
+    const lines = D.composeText(text, fontSize * 20);
+    console.log(lines);
+    paragraphNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
+  });
+
+  document.body.append(containerNode);
+
+});
+</script>
+
+</body>
+</html>
