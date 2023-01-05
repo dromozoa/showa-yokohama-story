@@ -32,6 +32,8 @@ D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
 
+D.toCssColor = (r, g, b, a) => "rgba(" + D.numberToCss(r * 100, "%,") + D.numberToCss(g * 100, "%,") + D.numberToCss(b * 100, "%,") + D.numberToCss(a * 100, "%)");
+
 //-------------------------------------------------------------------------
 
 let serialNumber = 0;
@@ -46,14 +48,7 @@ let internalRoot;
 let internalCanvas;
 
 const initializeInternalRoot = () => {
-  let offscreenNode = document.querySelector(".demeter-offscreen");
-  if (!offscreenNode) {
-    offscreenNode = document.createElement("div");
-    offscreenNode.style.position = "absolute";
-    offscreenNode.style.top = "-8916px";
-    offscreenNode.style.left = "-2133px";
-    document.body.append(offscreenNode);
-  }
+  const offscreenNode = document.querySelector(".demeter-offscreen");
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
   internalCanvas = internalRoot.appendChild(document.createElement("canvas"));
@@ -643,7 +638,7 @@ D.PathData = class {
   h(x) { return this.push("h", x); }
   V(y) { return this.push("V", y); }
   v(y) { return this.push("v", y); }
-}
+};
 
 //-------------------------------------------------------------------------
 
@@ -836,26 +831,517 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
-const fontSize = 24;
-const sizeMin = fontSize * 27;
-const sizeMax = fontSize * 48;
+D.RingBuffer = class {
+  constructor(limit) {
+    this.index = 0;
+    this.limit = limit;
+    this.data = [];
+  }
+
+  push(value) {
+    this.data[this.index] = value;
+    ++this.index;
+    this.index %= this.limit;
+  }
+
+  forEach(fn) {
+    let index = 0;
+    for (let i = this.index; i < this.data.length; ++i) {
+      fn(this.data[i], index++);
+    }
+    for (let i = 0; i < this.index; ++i) {
+      fn(this.data[i], index++);
+    }
+  }
+
+  empty() {
+    return this.data.length === 0;
+  }
+
+  last() {
+    return this.data[this.index > 0 ? this.index - 1 : this.data.length - 1];
+  }
+
+  min() {
+    return this.data.reduce((acc, value) => Math.min(acc, value), Infinity);
+  }
+
+  max() {
+    return this.data.reduce((acc, value) => Math.max(acc, value), -Infinity);
+  }
+};
 
 //-------------------------------------------------------------------------
 
-const initializeTitleScreen = () => {
-  // セーブ状況により、サブタイトルが変化する
+D.FrameRateVisualizer = class {
+  constructor(width, height, fontSize, font, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = color;
+    context.font = D.numberToCss(fontSize) + " " + font;
+    context.textBaseline = "top";
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.fontSize = fontSize;
+    this.prevTime = undefined;
+    this.frameCount = 0;
+    this.frameRates = new D.RingBuffer(width);
+  }
+
+  update() {
+    const now = performance.now();
+    if (this.prevTime === undefined) {
+      this.prevTime = now;
+      return;
+    }
+    ++this.frameCount;
+    const duration = now - this.prevTime;
+    if (duration < 1000) {
+      return;
+    }
+    const frameRate = this.frameCount * 1000 / duration;
+
+    this.prevTime = now;
+    this.frameCount = 0;
+    this.frameRates.push(frameRate);
+  }
+
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.fillStyle = color;
+  }
+
+  draw() {
+    if (this.frameRates.empty()) {
+      return;
+    }
+
+    const W = this.width;
+    const H = this.height;
+    const frameRate = this.frameRates.last();
+    const frameRateMin = this.frameRates.min();
+    const frameRateMax = this.frameRates.max();
+
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, W, H);
+    context.fillText(Math.round(frameRate) + "FPS [" + Math.round(frameRateMin) + "-" + Math.round(frameRateMax) + "]", 0, 0);
+
+    this.frameRates.forEach((v, i) => {
+      const h = (H - 16) * Math.min(v, 100) / 100;
+      context.fillRect(i, H - h, 1, h);
+    });
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.AudioVisualizer = class {
+  constructor(width, height, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = color;
+
+    const analyser = Howler.ctx.createAnalyser();
+    analyser.fftSize = Math.pow(2, Math.ceil(Math.log2(width)));
+    analyser.connect(Howler.ctx.destination);
+    Howler.masterGain.connect(analyser);
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.analyser = analyser;
+    this.frequencyData = new Float32Array(analyser.fftSize / 2);
+  }
+
+  update() {
+    this.analyser.getFloatFrequencyData(this.frequencyData);
+  }
+
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.fillStyle = color;
+  }
+
+  draw() {
+    const W = this.width;
+    const H = this.height;
+    const HH = H * 0.5;
+    const maxDecibels = -30;
+    const minDecibels = -100;
+    const rangeDecibels = maxDecibels - minDecibels;
+
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, W, H);
+
+    const w = W / this.analyser.frequencyBinCount;
+    for (let i = 0; i < this.analyser.frequencyBinCount; ++i) {
+      const v = (Math.max(minDecibels, Math.min(maxDecibels, this.frequencyData[i])) - minDecibels) / rangeDecibels;
+      const h = v * H;
+      context.fillRect(i * w, HH - h * 0.5, w, h);
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.MusicPlayer = class {
+  constructor(key, volume) {
+    const basename = "../output/music/sessions_" + key;
+    this.sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      autoplay: true,
+      loop: true,
+      volume: volume,
+    });
+  }
+
+  updateVolume(volume) {
+    this.sound.volume(volume);
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.TextAnimation = class {
+  constructor(textNode, speed) {
+    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
+    this.nodes.forEach(node => node.style.opacity = "0");
+    this.speed = speed;
+    this.finished = false;
+  }
+
+  async start() {
+    let index = 0;
+    let start;
+    L: while (!this.finished) {
+      const timestamp = await D.requestAnimationFrame();
+      if (start === undefined) {
+        start = timestamp;
+      }
+
+      while (true) {
+        const node = this.nodes[index];
+        if (!node) {
+          break L;
+        }
+
+        const duration = timestamp - start;
+        if (duration < this.speed) {
+          node.style.opacity = D.numberToString(duration / this.speed);
+          break;
+        } else {
+          node.style.opacity = "1";
+          start += this.speed;
+          ++index;
+        }
+      }
+    }
+    if (this.finished) {
+      this.nodes.forEach(node => node.style.opacity = "1");
+    }
+  }
+
+  finish() {
+    this.finished = true;
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.VoiceSprite = class {
+  constructor(sound, sprite, volume) {
+    this.sound = sound;
+    this.sprite = sprite;
+    this.volume = volume;
+    this.soundId = undefined;
+  }
+
+  start() {
+    return new Promise((resolve, reject) => {
+      this.sound.once("playerror", (soundId, message) => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          reject(new Error(message));
+        }
+      });
+
+      this.sound.once("end", soundId => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          resolve("end");
+        }
+      });
+
+      this.sound.once("stop", soundId => {
+        if (this.soundId === soundId) {
+          this.soundId = undefined;
+          resolve("stop");
+        }
+      });
+
+      this.soundId = this.sound.play(this.sprite);
+      this.updateVolume(this.volume);
+    });
+  }
+
+  updateVolume(volume) {
+    if (this.soundId !== undefined) {
+      this.sound.volume(volume, this.soundId);
+    }
+  }
+
+  finish() {
+    if (this.soundId !== undefined) {
+      this.sound.stop(this.soundId);
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
+const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+
+//-------------------------------------------------------------------------
+
+const root = {
+  db: undefined,
+  systemDefault: {
+    id: "system",
+    speed: 30,
+    autoSpeed: 400,
+    masterVolume: 1,
+    musicVolume: 1,
+    voiceVolume: 1,
+    componentColor: [ 1, 1, 1 ],
+    componentAlpha: 0.2,
+  },
+  system: undefined,
+  systemUi: undefined,
+  musicPlayer: undefined,
+  textAnimation: undefined,
+  voiceSprite: undefined,
+};
+
+const upgradeDatabase = (db, oldVersion, newVersion) => {
+  switch (oldVersion) {
+    case 0:
+      db.createObjectStore("system", { keyPath: "id" });
+      break;
+  }
+};
+
+const connectDatabase = async () => {
+  const db = root.db = await idb.openDB("昭和横濱物語", 1, { upgrade: upgradeDatabase });
+
+  const system = root.system = await db.get("system", "system") || {};
+  Object.entries(root.systemDefault).forEach(([k, v]) => {
+    if (system[k] === undefined) {
+      system[k] = v;
+    }
+  });
+  await db.put("system", system);
+};
+
+const updateComponentColors = () => {
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  if (root.frameRateVisualizer) {
+    root.frameRateVisualizer.updateColor(color);
+  }
+  if (root.audioVisualizer) {
+    root.audioVisualizer.updateColor(color);
+  }
+};
+
+const initializeSystemUi = () => {
+  const system = root.system;
+
+  // オフスクリーンでUIを構築する。
+  const systemUiNode = document.querySelector(".demeter-main-system-ui");
+  const systemUi = root.systemUi = new lil.GUI({
+    container: systemUiNode,
+    width: fontSize * 12,
+    title: "システム設定",
+    touchStyles: false,
+  });
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
+  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
+    if (Howler.masterGain !== undefined) {
+      Howler.volume(v);
+    }
+  });
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(v => {
+    if (root.musicPlayer !== undefined) {
+      root.musicPlayer.updateVolume(v);
+    }
+  });
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("話声の音量 [0-1]").onChange(v => {
+    if (root.voiceSprite !== undefined) {
+      root.voiceSprite.updateVolume(v);
+    }
+  });
+  const componentFolder = systemUi.addFolder("コンポーネント設定");
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColors);
+  componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]").onChange(updateComponentColors);
+
+  // openAnimated(false)のトランジションが終わったらUIを閉じる。
+  let moved = false;
+  systemUiNode.addEventListener("transitionend", ev => {
+    if (systemUi._closed && ev.target === systemUi.$children && ev.propertyName === "transform") {
+      systemUi.hide();
+      // 初回のトランジション終了後、オフスクリーンからメインスクリーンに移す。
+      if (!moved) {
+        moved = true;
+        document.querySelector(".demeter-main-screen").append(systemUiNode);
+      }
+    }
+  });
+
+  systemUi.openAnimated(false);
+};
+
+const saveSystemData = async () => {
+  await root.db.put("system", root.system);
+};
+
+//-------------------------------------------------------------------------
+
+let audioUnlocked;
+
+const unlockAudio = async () => {
+  if (audioUnlocked) {
+    return;
+  }
+  audioUnlocked = true;
+
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
+
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
+  const audioVisualizerNode = audioVisualizer.canvas;
+  audioVisualizerNode.style.display = "block";
+  audioVisualizerNode.style.position = "absolute";
+  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
+  audioVisualizerNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
+};
+
+//-------------------------------------------------------------------------
+
+let paragraphIndexPrev = 0;
+let paragraphIndex;
+let textNumber;
+let baseNumber;
+let baseState;
+let baseTimestamp;
+
+const nextParagraph = async () => {
+  if (paragraphIndex !== undefined) {
+    return;
+  }
+  paragraphIndex = paragraphIndexPrev + 1;
+
+  const paragraph = D.scenario[paragraphIndex - 1];
+
+  const textNodes = [];
+  const textAnimations = [];
+  D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+    const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
+    textNodes.push(textNode);
+    textAnimations.push(new D.TextAnimation(textNode, 30));
+  });
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+
+  const voiceKey = D.numberToString(paragraphIndex);
+  const voiceBasename = "../output/voice/" + "0".repeat(Math.max(0, 4 - voiceKey.length)) + voiceKey;
+  const voiceSound = new Howl({
+    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+    sprite: D.voiceSprites[paragraphIndex - 1],
+  });
+
+  for (let i = 0; i < textAnimations.length; ++i) {
+    root.textAnimation = textAnimations[i];
+    root.voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1), root.system.voiceVolume);
+    await Promise.all([
+      root.textAnimation.start(),
+      root.voiceSprite.start(),
+    ]);
+  }
+  root.textAnimation = undefined;
+  root.voiceSprite = undefined;
+
+  paragraphIndexPrev = paragraphIndex;
+  paragraphIndex = undefined;
+};
+
+//-------------------------------------------------------------------------
+
+const updateTitleScreen = text => {
   const node = document.querySelector(".demeter-title-text").firstElementChild;
-  node.textContent = "EVANGELIUM SECUNDUM STEPHANUS verse I-III";
+  node.textContent = text;
+};
+
+const initializeTitleScreen = () => {
+  // TODO セーブ状況により、サブタイトルが変化する
+  updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
+
+  document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
+    await unlockAudio();
+    await nextParagraph();
+  });
 };
 
 const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
-  [...menuFrameNode.querySelectorAll(".button")].forEach(node => {
-    node.addEventListener("click", ev => console.log(ev.target));
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
+    const systemUi = root.systemUi;
+    if (systemUi._hidden) {
+      systemUi.show();
+      systemUi.openAnimated();
+    } else {
+      systemUi.openAnimated(false);
+      await saveSystemData();
+    }
+  });
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
+    console.log("load");
+  });
+  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", () => {
+    console.log("save");
+  });
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", () => {
+    console.log("auto");
+  });
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
+    console.log("skip");
   });
 
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const frameRateVisualizer = root.frameRateVisualizer = new D.FrameRateVisualizer(fontSize * 8, fontSize * 4, fontSize, "'Share Tech', sans-serif", color);
+  const frameRateNode = frameRateVisualizer.canvas;
+  frameRateNode.style.display = "block";
+  frameRateNode.style.position = "absolute";
+  frameRateNode.style.top = D.numberToCss(fontSize * 5);
+  frameRateNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(frameRateNode);
 };
 
 const initialize = () => {
@@ -865,63 +1351,85 @@ const initialize = () => {
 
 //-------------------------------------------------------------------------
 
-const resize = () => {
+const resizeScreen = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
+  // TODO portraitとlandscapeを分ける
+
+  const sizeMin = fontSize * 27;
+  const sizeMax = fontSize * 48;
+
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
+    const scale = Math.min(1, W / sizeMin, H / sizeMax);
     titleScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
-      D.numberToString(Math.min(1, W / sizeMin, H / sizeMin)) + ")";
+      D.numberToCss((H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToString(scale) + ")";
   }
 
   const mainScreenNode = document.querySelector(".demeter-main-screen")
   if (mainScreenNode) {
+    const scale = Math.min(1, W / sizeMin, H / sizeMax);
     mainScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss(H + (H - sizeMin) * 0.5) + ") scale(" +
-      D.numberToString(Math.min(1, W / sizeMin, H / sizeMax)) + ")";
+      D.numberToCss(H + (H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToString(scale) + ")";
   }
 };
 
 window.addEventListener("resize", () => {
-  resize();
+  resizeScreen();
 });
-
 
 window.addEventListener("orientationchange", () => {
-  resize();
+  resizeScreen();
 });
 
-window.addEventListener("keydown", ev => {
+window.addEventListener("keydown", async ev => {
   console.log("keydown", ev.code);
+
+  if (ev.code === "Enter") {
+    if (root.textAnimation !== undefined) {
+      root.textAnimation.finish();
+      if (root.voiceSprite !== undefined) {
+        root.voiceSprite.finish();
+      }
+    } else {
+      await nextParagraph();
+    }
+  }
+
 });
 
 window.addEventListener("keyup", ev => {
-  console.log("keyup", ev.code);
+  // console.log("keyup", ev.code);
 });
 
 //-------------------------------------------------------------------------
-
-const showTitleScreen = () => {
-};
-
-const showMainScreen = () => {
-};
-
-//-------------------------------------------------------------------------
-
-let music;
-let voice;
 
 document.addEventListener("DOMContentLoaded", async () => {
   Howler.autoUnlock = false;
 
   initializeInternalRoot();
+  await connectDatabase();
+
   initialize();
-  resize();
+  resizeScreen();
+
+  initializeSystemUi();
+
+  while (true) {
+    await D.requestAnimationFrame();
+    root.frameRateVisualizer.update();
+    root.frameRateVisualizer.draw();
+
+    if (root.audioVisualizer) {
+      root.audioVisualizer.update();
+      root.audioVisualizer.draw();
+    }
+  }
 }, { once: true });
 
 //-------------------------------------------------------------------------
