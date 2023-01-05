@@ -1116,8 +1116,6 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
-//-------------------------------------------------------------------------
-
 const root = {
   db: undefined,
   systemDefault: {
@@ -1136,6 +1134,8 @@ const root = {
   textAnimation: undefined,
   voiceSprite: undefined,
 };
+
+//-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
   switch (oldVersion) {
