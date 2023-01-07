@@ -1137,6 +1137,60 @@ const root = {
 
 //-------------------------------------------------------------------------
 
+const initializeGame = () => {
+};
+
+const initializeAudio = () => {
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer("vi03", root.system.musicVolume);
+
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
+  const audioVisualizerNode = audioVisualizer.canvas;
+  audioVisualizerNode.style.display = "block";
+  audioVisualizerNode.style.position = "absolute";
+  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
+  audioVisualizerNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
+};
+
+//-------------------------------------------------------------------------
+
+let audioUnlocked = false;
+
+const audioUnlockerOptions = {
+  capture: true,
+  once: false,
+  passive: true,
+};
+
+const audioUnlock = ev => {
+  console.log(ev);
+  if (ev.type === "keydown" && (ev.key === "Control" || ev.key === "Meta" || ev.key === "Shift")) {
+    console.log("skipped");
+    return;
+  }
+
+  if (audioUnlocked) {
+    return;
+  }
+  audioUnlocked = true;
+
+  document.removeEventListener("click", audioUnlock, audioUnlockerOptions);
+  document.removeEventListener("touchstart", audioUnlock, audioUnlockerOptions);
+  document.removeEventListener("keydown", audioUnlock, audioUnlockerOptions);
+
+  initializeAudio();
+};
+
+const installAudioUnlocker = () => {
+  document.addEventListener("click", audioUnlock, audioUnlockerOptions);
+  document.addEventListener("touchstart", audioUnlock, audioUnlockerOptions);
+  document.addEventListener("keydown", audioUnlock, audioUnlockerOptions);
+};
+
+//-------------------------------------------------------------------------
+
 const upgradeDatabase = (db, oldVersion, newVersion) => {
   switch (oldVersion) {
     case 0:
@@ -1221,25 +1275,25 @@ const saveSystemData = async () => {
 
 //-------------------------------------------------------------------------
 
-let audioUnlocked;
+// let audioUnlocked;
 
-const unlockAudio = async () => {
-  if (audioUnlocked) {
-    return;
-  }
-  audioUnlocked = true;
+const unlockAudio2 = async () => {
+  // if (audioUnlocked) {
+  //   return;
+  // }
+  // audioUnlocked = true;
 
-  Howler.volume(root.system.masterVolume);
-  root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
+  // Howler.volume(root.system.masterVolume);
+  // root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
 
-  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
-  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
-  const audioVisualizerNode = audioVisualizer.canvas;
-  audioVisualizerNode.style.display = "block";
-  audioVisualizerNode.style.position = "absolute";
-  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
-  audioVisualizerNode.style.left = D.numberToCss(fontSize);
-  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
+  // const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  // const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
+  // const audioVisualizerNode = audioVisualizer.canvas;
+  // audioVisualizerNode.style.display = "block";
+  // audioVisualizerNode.style.position = "absolute";
+  // audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
+  // audioVisualizerNode.style.left = D.numberToCss(fontSize);
+  // document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
 };
 
 //-------------------------------------------------------------------------
@@ -1302,8 +1356,8 @@ const initializeTitleScreen = () => {
   updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
 
   document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
-    await unlockAudio();
-    await nextParagraph();
+    // await unlockAudio2();
+    // await nextParagraph();
   });
 };
 
@@ -1416,6 +1470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await connectDatabase();
 
   initialize();
+  installAudioUnlocker();
   resizeScreen();
 
   initializeSystemUi();
