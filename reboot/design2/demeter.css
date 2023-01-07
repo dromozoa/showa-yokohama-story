@@ -37,12 +37,9 @@
   --color-stroke-active: var(--color-console);
 }
 
-.demeter-icon {
-  font-family: 'Showa Yokohama Story';
-}
-
-.demeter-icon::before {
-  content: '\E000';
+.lil-gui {
+  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
+  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
 }
 
 /*************************************************************************/
@@ -123,6 +120,12 @@ body.demeter {
   transform-origin: center bottom;
 }
 
+@media (hover: hover) {
+  .demeter-title-screen {
+    cursor: pointer;
+  }
+}
+
 /*************************************************************************/
 
 .demeter-main-screen {
@@ -199,6 +202,16 @@ body.demeter {
   pointer-events: none;
 }
 
+.demeter-main-system-ui {
+  position: absolute;
+  width: calc(var(--font-size) * 12);
+  height: calc(var(--font-size) * 18);
+  top: calc(var(--font-size) * 5);
+  left: calc(var(--font-size) * 4.5);
+  transform: scale(1.5);
+  transform-origin: left top;
+}
+
 .demeter-main-paragraph {
   position: absolute;
   width: calc(var(--font-size) * 25);
@@ -227,21 +240,31 @@ body.demeter {
   transform-origin: center bottom;
 }
 
-.demeter-main-system-ui {
+/*************************************************************************/
+
+/* 1989-01-16 21:33Z */
+.demeter-offscreen {
   position: absolute;
-  width: calc(var(--font-size) * 12);
-  height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 5);
-  left: calc(var(--font-size) * 4.5);
-  transform: scale(1.5);
-  transform-origin: left top;
+  top: -8916px;
+  left: -2133px;
+}
+
+.demeter-loader {
+  font-family: var(--font-family);
+}
+
+.demeter-graph > svg {
+  display: block;
 }
 
 /*************************************************************************/
 
-.lil-gui {
-  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
-  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
+.demeter-icon {
+  font-family: 'Showa Yokohama Story';
+}
+
+.demeter-icon::before {
+  content: '\E000';
 }
 
 /*************************************************************************/
@@ -257,7 +280,6 @@ body.demeter {
 }
 
 @media (hover: hover) {
-  .demeter-icon,
   .demeter-button {
     cursor: pointer;
   }
@@ -266,6 +288,8 @@ body.demeter {
     stroke: var(--color-stroke-active);
   }
 }
+
+/*************************************************************************/
 
 @keyframes demeter-bounce {
   0% {
@@ -291,23 +315,6 @@ body.demeter {
   100% {
     transform: scaleY(1);
   }
-}
-
-/*************************************************************************/
-
-/* 1989-01-16 21:33Z */
-.demeter-offscreen {
-  position: absolute;
-  top: -8916px;
-  left: -2133px;
-}
-
-.demeter-loader {
-  font-family: var(--font-family);
-}
-
-.demeter-graph > svg {
-  display: block;
 }
 
 /*************************************************************************/

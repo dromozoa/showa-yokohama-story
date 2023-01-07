@@ -999,18 +999,57 @@ D.AudioVisualizer = class {
 //-------------------------------------------------------------------------
 
 D.MusicPlayer = class {
-  constructor(key, volume) {
+  constructor(volume) {
+    this.volume = volume;
+    this.sound = undefined;
+    this.soundId = undefined;
+  }
+
+  start(key) {
     const basename = "../output/music/sessions_" + key;
     this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
-      autoplay: true,
+      volume: this.volume,
       loop: true,
-      volume: volume,
+      onloaderror: (soundId, message) => {
+        console.log("onloaderror", soundId, message);
+      },
+      onplayerror: (soundId, message) => {
+        console.log("onplayerror", soundId, message);
+      },
+      // onfade: soundId => {
+      //   console.log("onfade", soundId);
+      // },
+      onunlock: () => {
+        console.log("onunlock");
+      },
     });
+    this.soundId = this.sound.play();
+    console.log("start", key, this.soundId);
+  }
+
+  fade(key) {
+    const basename = "../output/music/sessions_" + key;
+    const sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: 0,
+      loop: true,
+    });
+    const soundId = sound.play();
+
+    this.sound.once("fade", sid => {
+      console.log("fade", this.soundId, sid, soundId);
+      this.sound.stop();
+      this.sound = sound;
+      this.soundId = soundId;
+    });
+
+    this.sound.fade(this.volume, 0, 5000, this.soundId);
+    sound.fade(0, this.volume, 5000, soundId);
   }
 
   updateVolume(volume) {
-    this.sound.volume(volume);
+    this.volume = volume;
   }
 };
 
@@ -1156,41 +1195,6 @@ const initializeAudio = () => {
 
 //-------------------------------------------------------------------------
 
-let audioUnlocked = false;
-
-const audioUnlockerOptions = {
-  capture: true,
-  once: false,
-  passive: true,
-};
-
-const audioUnlock = ev => {
-  console.log(ev);
-  if (ev.type === "keydown" && (ev.key === "Control" || ev.key === "Meta" || ev.key === "Shift")) {
-    console.log("skipped");
-    return;
-  }
-
-  if (audioUnlocked) {
-    return;
-  }
-  audioUnlocked = true;
-
-  document.removeEventListener("click", audioUnlock, audioUnlockerOptions);
-  document.removeEventListener("touchstart", audioUnlock, audioUnlockerOptions);
-  document.removeEventListener("keydown", audioUnlock, audioUnlockerOptions);
-
-  initializeAudio();
-};
-
-const installAudioUnlocker = () => {
-  document.addEventListener("click", audioUnlock, audioUnlockerOptions);
-  document.addEventListener("touchstart", audioUnlock, audioUnlockerOptions);
-  document.addEventListener("keydown", audioUnlock, audioUnlockerOptions);
-};
-
-//-------------------------------------------------------------------------
-
 const upgradeDatabase = (db, oldVersion, newVersion) => {
   switch (oldVersion) {
     case 0:
@@ -1275,29 +1279,6 @@ const saveSystemData = async () => {
 
 //-------------------------------------------------------------------------
 
-// let audioUnlocked;
-
-const unlockAudio2 = async () => {
-  // if (audioUnlocked) {
-  //   return;
-  // }
-  // audioUnlocked = true;
-
-  // Howler.volume(root.system.masterVolume);
-  // root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
-
-  // const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
-  // const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
-  // const audioVisualizerNode = audioVisualizer.canvas;
-  // audioVisualizerNode.style.display = "block";
-  // audioVisualizerNode.style.position = "absolute";
-  // audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
-  // audioVisualizerNode.style.left = D.numberToCss(fontSize);
-  // document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
-};
-
-//-------------------------------------------------------------------------
-
 let paragraphIndexPrev = 0;
 let paragraphIndex;
 let textNumber;
@@ -1356,6 +1337,7 @@ const initializeTitleScreen = () => {
   updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
 
   document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
+    root.musicPlayer.fade("diana33");
     // await unlockAudio2();
     // await nextParagraph();
   });
@@ -1464,13 +1446,15 @@ window.addEventListener("keyup", ev => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
-  Howler.autoUnlock = false;
-
   initializeInternalRoot();
   await connectDatabase();
 
   initialize();
-  installAudioUnlocker();
+
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer(root.system.musicVolume);
+  root.musicPlayer.start("vi03");
+
   resizeScreen();
 
   initializeSystemUi();
