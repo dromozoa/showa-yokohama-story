@@ -38,7 +38,7 @@
 }
 
 .lil-gui {
-  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
+  --font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
   --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
 }
 
