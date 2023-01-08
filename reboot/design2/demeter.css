@@ -60,14 +60,14 @@ body.demeter {
 .demeter-title-screen {
   position: absolute;
   width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 48);
+  height: calc(var(--font-size) * 27);
 }
 
 .demeter-title {
   position: absolute;
   width: calc(var(--font-size) * 27);
   height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 15);
+  top: calc(var(--font-size) * 4.5);
   left: 0;
 }
 

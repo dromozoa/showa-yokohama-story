@@ -1398,10 +1398,10 @@ const resizeScreen = () => {
 
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
-    const scale = Math.min(1, W / sizeMin, H / sizeMax);
+    const scale = Math.min(1, W / sizeMin, H / sizeMin);
     titleScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss((H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
       D.numberToString(scale) + ")";
   }
 
@@ -1446,9 +1446,11 @@ window.addEventListener("keyup", ev => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
+  resizeScreen();
   initializeInternalRoot();
   await connectDatabase();
 
+/*
   initialize();
 
   Howler.volume(root.system.masterVolume);
@@ -1469,6 +1471,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       root.audioVisualizer.draw();
     }
   }
+*/
 }, { once: true });
 
 //-------------------------------------------------------------------------
