@@ -47,7 +47,7 @@ D.getSerialNumber = () => {
 let internalRoot;
 let internalCanvas;
 
-const initializeInternalRoot = () => {
+const initializeInternal = () => {
   const offscreenNode = document.querySelector(".demeter-offscreen");
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
@@ -1155,6 +1155,32 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
+//-------------------------------------------------------------------------
+
+const resizeTitleScreen = () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+  const w = fontSize * 27;
+  const h = w;
+
+  document.querySelector(".demeter-title-screen").style.transform = "translate(" +
+    D.numberToCss((W - w) * 0.5) + "," +
+    D.numberToCss((H - h) * 0.5) + ") scale(" +
+    D.numberToString(Math.min(1, W / w, H / h)) + ")";
+};
+
+//-------------------------------------------------------------------------
+
+document.addEventListener("DOMContentLoaded", async () => {
+  initializeInternal();
+  resizeTitleScreen();
+  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
+
+}, { once: true });
+
+//-------------------------------------------------------------------------
+
+/*
 const root = {
   db: undefined,
   systemDefault: {
@@ -1392,6 +1418,7 @@ const resizeScreen = () => {
   const H = document.documentElement.clientHeight;
 
   // TODO portraitとlandscapeを分ける
+  const isPortrait = W <= H;
 
   const sizeMin = fontSize * 27;
   const sizeMax = fontSize * 48;
@@ -1446,11 +1473,10 @@ window.addEventListener("keyup", ev => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
+  initializeInternal();
   resizeScreen();
-  initializeInternalRoot();
   await connectDatabase();
 
-/*
   initialize();
 
   Howler.volume(root.system.masterVolume);
@@ -1471,8 +1497,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       root.audioVisualizer.draw();
     }
   }
-*/
 }, { once: true });
+*/
 
 //-------------------------------------------------------------------------
 
