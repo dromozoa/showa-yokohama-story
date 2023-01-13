@@ -26,9 +26,6 @@
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', sans-serif;
 
-  --size-min: calc(var(--font-size) * 27);
-  --size-max: calc(var(--font-size) * 48);
-
   --color-title: #C63322;
   --color-console: #029D93;
   --color-fill: rgba(255, 255, 255, 0.1);
@@ -238,6 +235,12 @@ body.demeter {
   animation-duration: 1.2s;
   animation-iteration-count: infinite;
   transform-origin: center bottom;
+}
+
+@media (orientation: landscape) {
+}
+
+@media (orientation: portrait) {
 }
 
 /*************************************************************************/

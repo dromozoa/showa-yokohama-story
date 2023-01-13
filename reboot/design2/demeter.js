@@ -1157,23 +1157,32 @@ const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
 //-------------------------------------------------------------------------
 
-const resizeTitleScreen = () => {
+const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  const w = fontSize * 27;
-  const h = w;
+  const sizeMin = fontSize * 27;
+  const sizeMax = fontSize * 48;
+
+  let scale;
+  if (W <= H) {
+    scale = Math.min(1, W / sizeMin, H / sizeMax);
+  } else {
+    scale = Math.min(1, W / sizeMax, H / sizeMin);
+  }
 
   document.querySelector(".demeter-title-screen").style.transform = "translate(" +
-    D.numberToCss((W - w) * 0.5) + "," +
-    D.numberToCss((H - h) * 0.5) + ") scale(" +
-    D.numberToString(Math.min(1, W / w, H / h)) + ")";
+    D.numberToCss((W - sizeMin) * 0.5) + "," +
+    D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
+    D.numberToString(scale) + ")";
 };
 
 //-------------------------------------------------------------------------
 
+window.addEventListener("resize", resize);
+
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
-  resizeTitleScreen();
+  resize();
   document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
 
 }, { once: true });
