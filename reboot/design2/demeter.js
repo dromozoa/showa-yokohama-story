@@ -1160,19 +1160,22 @@ const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
-  const sizeMin = fontSize * 27;
-  const sizeMax = fontSize * 48;
 
-  let scale;
+  let screenWidth;
+  let screenHeight;
   if (W <= H) {
-    scale = Math.min(1, W / sizeMin, H / sizeMax);
+    screenWidth = fontSize * 27;
+    screenHeight = fontSize * 48;
   } else {
-    scale = Math.min(1, W / sizeMax, H / sizeMin);
+    screenWidth = fontSize * 48;
+    screenHeight = fontSize * 27;
   }
 
+  const scale = Math.min(1, W / screenWidth, H / screenHeight);
+
   document.querySelector(".demeter-title-screen").style.transform = "translate(" +
-    D.numberToCss((W - sizeMin) * 0.5) + "," +
-    D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
+    D.numberToCss((W - screenWidth) * 0.5) + "," +
+    D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
 };
 

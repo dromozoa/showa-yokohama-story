@@ -34,6 +34,26 @@
   --color-stroke-active: var(--color-console);
 }
 
+@media (orientation: portrait) {
+  :root {
+    --screen-width: calc(var(--font-size) * 27);
+    --screen-height: calc(var(--font-size) * 48);
+  }
+}
+
+@media (orientation: landscape) {
+  :root {
+    --screen-width: calc(var(--font-size) * 48);
+    --screen-height: calc(var(--font-size) * 27);
+  }
+}
+
+@media (hover: hover) {
+  :root {
+    --cursor-pointer: pointer;
+  }
+}
+
 .lil-gui {
   --font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
   --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
@@ -56,16 +76,17 @@ body.demeter {
 
 .demeter-title-screen {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 27);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  cursor: var(--cursor-pointer, auto);
 }
 
 .demeter-title {
   position: absolute;
   width: calc(var(--font-size) * 27);
   height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 4.5);
-  left: 0;
+  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 18) * 0.5);
 }
 
 .demeter-title-ja {
@@ -115,12 +136,6 @@ body.demeter {
   animation-duration: 1.2s;
   animation-iteration-count: infinite;
   transform-origin: center bottom;
-}
-
-@media (hover: hover) {
-  .demeter-title-screen {
-    cursor: pointer;
-  }
 }
 
 /*************************************************************************/
