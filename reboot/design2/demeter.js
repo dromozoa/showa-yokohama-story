@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of 昭和横濱物語.
 //
@@ -47,7 +47,7 @@ D.getSerialNumber = () => {
 let internalRoot;
 let internalCanvas;
 
-const initializeInternalRoot = () => {
+const initializeInternal = () => {
   const offscreenNode = document.querySelector(".demeter-offscreen");
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
@@ -58,30 +58,30 @@ const initializeInternalRoot = () => {
 
 const isWhiteSpace = u => (
   // " " (SPACE)
-  u === 0x20
+  u === 0x20 ||
   // "\t" (CHARACTER TABULATION)
-  || u === 0x09
+  u === 0x09 ||
   // "\n" (LINE FEED)
-  || u === 0x0A
+  u === 0x0A ||
   // "\r" (CARRIAGE RETURN)
-  || u === 0x0D
+  u === 0x0D
 ) ? 1 : 0;
 
 // 『日本語組版処理の要件』の分割禁止規則を参考に、てきとうに作成した。連続する
 // ダッシュ・三点リーダ・二点リーダは、連続する欧文用文字に含まれるので省略した。
 const canBreak = (u, v) => (
   // 行頭禁則
-  D.jlreq.isLineStartProhibited(v)
+  D.jlreq.isLineStartProhibited(v) ||
   // 行末禁則
-  || D.jlreq.isLineEndProhibited(u)
+  D.jlreq.isLineEndProhibited(u) ||
   // くの字
-  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  (u === 0x3033 || u === 0x3034) && v === 0x3035 ||
   // 前置省略記号とアラビア数字
-  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39 ||
   // アラビア数字と後置省略記号
-  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v) ||
   // 連続する欧文用文字
-  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
+  D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
 ) ? 0 : 1;
 
 const canSeparate = (u, v) => (canBreak(u, v) && !D.jlreq.isInseparable(u) && !D.jlreq.isInseparable(v)) ? 1: 0;
@@ -999,18 +999,57 @@ D.AudioVisualizer = class {
 //-------------------------------------------------------------------------
 
 D.MusicPlayer = class {
-  constructor(key, volume) {
+  constructor(volume) {
+    this.volume = volume;
+    this.sound = undefined;
+    this.soundId = undefined;
+  }
+
+  start(key) {
     const basename = "../output/music/sessions_" + key;
     this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
-      autoplay: true,
+      volume: this.volume,
       loop: true,
-      volume: volume,
+      onloaderror: (soundId, message) => {
+        console.log("onloaderror", soundId, message);
+      },
+      onplayerror: (soundId, message) => {
+        console.log("onplayerror", soundId, message);
+      },
+      // onfade: soundId => {
+      //   console.log("onfade", soundId);
+      // },
+      onunlock: () => {
+        console.log("onunlock");
+      },
     });
+    this.soundId = this.sound.play();
+    console.log("start", key, this.soundId);
+  }
+
+  fade(key) {
+    const basename = "../output/music/sessions_" + key;
+    const sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: 0,
+      loop: true,
+    });
+    const soundId = sound.play();
+
+    this.sound.once("fade", sid => {
+      console.log("fade", this.soundId, sid, soundId);
+      this.sound.stop();
+      this.sound = sound;
+      this.soundId = soundId;
+    });
+
+    this.sound.fade(this.volume, 0, 5000, this.soundId);
+    sound.fade(0, this.volume, 5000, soundId);
   }
 
   updateVolume(volume) {
-    this.sound.volume(volume);
+    this.volume = volume;
   }
 };
 
@@ -1116,6 +1155,47 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
+//-------------------------------------------------------------------------
+
+const resize = () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+
+  let screenWidth;
+  let screenHeight;
+  if (W <= H) {
+    screenWidth = fontSize * 27;
+    screenHeight = fontSize * 48;
+  } else {
+    screenWidth = fontSize * 48;
+    screenHeight = fontSize * 27;
+  }
+
+  const transform = "translate(" +
+    D.numberToCss((W - screenWidth) * 0.5) + "," +
+    D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
+    D.numberToString(Math.min(1, W / screenWidth, H / screenHeight)) + ")";
+
+  document.querySelector(".demeter-title-screen").style.transform = transform;
+  document.querySelector(".demeter-main-screen").style.transform = transform;
+};
+
+//-------------------------------------------------------------------------
+
+window.addEventListener("resize", resize);
+
+document.addEventListener("DOMContentLoaded", async () => {
+  initializeInternal();
+  resize();
+  document.querySelector(".demeter-camera").append(
+    // document.querySelector(".demeter-title-screen"),
+    document.querySelector(".demeter-main-screen"));
+
+}, { once: true });
+
+//-------------------------------------------------------------------------
+
+/*
 const root = {
   db: undefined,
   systemDefault: {
@@ -1133,6 +1213,25 @@ const root = {
   musicPlayer: undefined,
   textAnimation: undefined,
   voiceSprite: undefined,
+};
+
+//-------------------------------------------------------------------------
+
+const initializeGame = () => {
+};
+
+const initializeAudio = () => {
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer("vi03", root.system.musicVolume);
+
+  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
+  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
+  const audioVisualizerNode = audioVisualizer.canvas;
+  audioVisualizerNode.style.display = "block";
+  audioVisualizerNode.style.position = "absolute";
+  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
+  audioVisualizerNode.style.left = D.numberToCss(fontSize);
+  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
 };
 
 //-------------------------------------------------------------------------
@@ -1221,29 +1320,6 @@ const saveSystemData = async () => {
 
 //-------------------------------------------------------------------------
 
-let audioUnlocked;
-
-const unlockAudio = async () => {
-  if (audioUnlocked) {
-    return;
-  }
-  audioUnlocked = true;
-
-  Howler.volume(root.system.masterVolume);
-  root.musicPlayer = new D.MusicPlayer("diana33", root.system.musicVolume);
-
-  const color = D.toCssColor(...root.system.componentColor, root.system.componentAlpha);
-  const audioVisualizer = root.audioVisualizer = new D.AudioVisualizer(fontSize * 8, fontSize * 4, color);
-  const audioVisualizerNode = audioVisualizer.canvas;
-  audioVisualizerNode.style.display = "block";
-  audioVisualizerNode.style.position = "absolute";
-  audioVisualizerNode.style.top = D.numberToCss(fontSize * 10);
-  audioVisualizerNode.style.left = D.numberToCss(fontSize);
-  document.querySelector(".demeter-main-screen").append(audioVisualizerNode);
-};
-
-//-------------------------------------------------------------------------
-
 let paragraphIndexPrev = 0;
 let paragraphIndex;
 let textNumber;
@@ -1302,8 +1378,9 @@ const initializeTitleScreen = () => {
   updateTitleScreen("EVANGELIUM SECUNDUM STEPHANUS verse I-III");
 
   document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
-    await unlockAudio();
-    await nextParagraph();
+    root.musicPlayer.fade("diana33");
+    // await unlockAudio2();
+    // await nextParagraph();
   });
 };
 
@@ -1356,16 +1433,17 @@ const resizeScreen = () => {
   const H = document.documentElement.clientHeight;
 
   // TODO portraitとlandscapeを分ける
+  const isPortrait = W <= H;
 
   const sizeMin = fontSize * 27;
   const sizeMax = fontSize * 48;
 
   const titleScreenNode = document.querySelector(".demeter-title-screen");
   if (titleScreenNode) {
-    const scale = Math.min(1, W / sizeMin, H / sizeMax);
+    const scale = Math.min(1, W / sizeMin, H / sizeMin);
     titleScreenNode.style.transform = "translate(" +
       D.numberToCss((W - sizeMin) * 0.5) + "," +
-      D.numberToCss((H - sizeMax) * 0.5) + ") scale(" +
+      D.numberToCss((H - sizeMin) * 0.5) + ") scale(" +
       D.numberToString(scale) + ")";
   }
 
@@ -1410,12 +1488,16 @@ window.addEventListener("keyup", ev => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
-  Howler.autoUnlock = false;
-
-  initializeInternalRoot();
+  initializeInternal();
+  resizeScreen();
   await connectDatabase();
 
   initialize();
+
+  Howler.volume(root.system.masterVolume);
+  root.musicPlayer = new D.MusicPlayer(root.system.musicVolume);
+  root.musicPlayer.start("vi03");
+
   resizeScreen();
 
   initializeSystemUi();
@@ -1431,6 +1513,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 }, { once: true });
+*/
 
 //-------------------------------------------------------------------------
 

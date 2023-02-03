@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+ * Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
  *
  * This file is part of 昭和横濱物語.
  *
@@ -26,9 +26,6 @@
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', sans-serif;
 
-  --size-min: calc(var(--font-size) * 27);
-  --size-max: calc(var(--font-size) * 48);
-
   --color-title: #C63322;
   --color-console: #029D93;
   --color-fill: rgba(255, 255, 255, 0.1);
@@ -37,12 +34,29 @@
   --color-stroke-active: var(--color-console);
 }
 
-.demeter-icon {
-  font-family: 'Showa Yokohama Story';
+@media (orientation: portrait) {
+  :root {
+    --screen-width: calc(var(--font-size) * 27);
+    --screen-height: calc(var(--font-size) * 48);
+  }
 }
 
-.demeter-icon::before {
-  content: '\E000';
+@media (orientation: landscape) {
+  :root {
+    --screen-width: calc(var(--font-size) * 48);
+    --screen-height: calc(var(--font-size) * 27);
+  }
+}
+
+@media (hover: hover) {
+  :root {
+    --cursor-pointer: pointer;
+  }
+}
+
+.lil-gui {
+  --font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
+  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
 }
 
 /*************************************************************************/
@@ -62,16 +76,17 @@ body.demeter {
 
 .demeter-title-screen {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 48);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  cursor: var(--cursor-pointer, auto);
 }
 
 .demeter-title {
   position: absolute;
   width: calc(var(--font-size) * 27);
   height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 15);
-  left: 0;
+  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 18) * 0.5);
 }
 
 .demeter-title-ja {
@@ -127,16 +142,17 @@ body.demeter {
 
 .demeter-main-screen {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 48);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  cursor: var(--cursor-pointer, auto);
 }
 
 .demeter-main-menu {
   position: absolute;
   width: calc(var(--font-size) * 24);
   height: calc(var(--font-size) * 4.75);
+  left: calc((var(--screen-width) - var(--font-size) * 24) * 0.5);
   top: 0;
-  left: calc(var(--font-size) * 1.5);
 }
 
 .demeter-main-menu-frame {
@@ -163,55 +179,64 @@ body.demeter {
 }
 
 .demeter-main-menu-item1 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 8.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item2 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 1.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item3 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 15.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item4 {
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 0.5);
+  top: calc(var(--font-size) * 2.5);
 }
 
 .demeter-main-menu-item5 {
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 16.5);
+  top: calc(var(--font-size) * 2.5);
 }
 
 .demeter-main-menu-title {
   position: absolute;
   width: calc(var(--font-size) * 9);
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 7.5);
+  top: calc(var(--font-size) * 2.5);
   font-family: var(--font-family-title-ja);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
-  pointer-events: none;
+}
+
+.demeter-main-system-ui {
+  position: absolute;
+  width: calc(var(--font-size) * 12);
+  height: calc(var(--font-size) * 18);
+  left: calc(var(--font-size) * 4.5);
+  top: calc(var(--font-size) * 5);
+  transform: scale(1.5);
+  transform-origin: left top;
 }
 
 .demeter-main-paragraph {
   position: absolute;
   width: calc(var(--font-size) * 25);
-  top: calc(var(--font-size) * 33);
   left: var(--font-size);
+  top: calc(var(--font-size) * 33);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
 }
 
 .demeter-main-paragraph-speaker {
-  text-align: center;
   height: calc(var(--font-size) * 2);
+  text-align: center;
 }
 
 .demeter-main-paragraph-text {
@@ -227,21 +252,31 @@ body.demeter {
   transform-origin: center bottom;
 }
 
-.demeter-main-system-ui {
+/*************************************************************************/
+
+/* 1989-01-16 21:33Z */
+.demeter-offscreen {
   position: absolute;
-  width: calc(var(--font-size) * 12);
-  height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 5);
-  left: calc(var(--font-size) * 4.5);
-  transform: scale(1.5);
-  transform-origin: left top;
+  top: -8916px;
+  left: -2133px;
+}
+
+.demeter-loader {
+  font-family: var(--font-family);
+}
+
+.demeter-graph > svg {
+  display: block;
 }
 
 /*************************************************************************/
 
-.lil-gui {
-  --font-family: 'Share Tech', 'BIZ UDPGothic', serif;
-  --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
+.demeter-icon {
+  font-family: 'Showa Yokohama Story';
+}
+
+.demeter-icon::before {
+  content: '\E000';
 }
 
 /*************************************************************************/
@@ -257,15 +292,12 @@ body.demeter {
 }
 
 @media (hover: hover) {
-  .demeter-icon,
-  .demeter-button {
-    cursor: pointer;
-  }
-
   .demeter-button:hover {
     stroke: var(--color-stroke-active);
   }
 }
+
+/*************************************************************************/
 
 @keyframes demeter-bounce {
   0% {
@@ -291,23 +323,6 @@ body.demeter {
   100% {
     transform: scaleY(1);
   }
-}
-
-/*************************************************************************/
-
-/* 1989-01-16 21:33Z */
-.demeter-offscreen {
-  position: absolute;
-  top: -8916px;
-  left: -2133px;
-}
-
-.demeter-loader {
-  font-family: var(--font-family);
-}
-
-.demeter-graph > svg {
-  display: block;
 }
 
 /*************************************************************************/
