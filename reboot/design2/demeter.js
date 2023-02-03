@@ -58,30 +58,30 @@ const initializeInternal = () => {
 
 const isWhiteSpace = u => (
   // " " (SPACE)
-  u === 0x20
+  u === 0x20 ||
   // "\t" (CHARACTER TABULATION)
-  || u === 0x09
+  u === 0x09 ||
   // "\n" (LINE FEED)
-  || u === 0x0A
+  u === 0x0A ||
   // "\r" (CARRIAGE RETURN)
-  || u === 0x0D
+  u === 0x0D
 ) ? 1 : 0;
 
 // 『日本語組版処理の要件』の分割禁止規則を参考に、てきとうに作成した。連続する
 // ダッシュ・三点リーダ・二点リーダは、連続する欧文用文字に含まれるので省略した。
 const canBreak = (u, v) => (
   // 行頭禁則
-  D.jlreq.isLineStartProhibited(v)
+  D.jlreq.isLineStartProhibited(v) ||
   // 行末禁則
-  || D.jlreq.isLineEndProhibited(u)
+  D.jlreq.isLineEndProhibited(u) ||
   // くの字
-  || (u === 0x3033 || u === 0x3034) && v === 0x3035
+  (u === 0x3033 || u === 0x3034) && v === 0x3035 ||
   // 前置省略記号とアラビア数字
-  || D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39
+  D.jlreq.isPrefixedAbbreviation(u) && 0x30 <= v && v <= 0x39 ||
   // アラビア数字と後置省略記号
-  || 0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v)
+  0x30 <= u && u <= 0x39 && D.jlreq.isPostfixedAbbreviation(v) ||
   // 連続する欧文用文字
-  || D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
+  D.jlreq.isWesternCharacter(u) && D.jlreq.isWesternCharacter(v)
 ) ? 0 : 1;
 
 const canSeparate = (u, v) => (canBreak(u, v) && !D.jlreq.isInseparable(u) && !D.jlreq.isInseparable(v)) ? 1: 0;
@@ -1171,12 +1171,13 @@ const resize = () => {
     screenHeight = fontSize * 27;
   }
 
-  const scale = Math.min(1, W / screenWidth, H / screenHeight);
-
-  document.querySelector(".demeter-title-screen").style.transform = "translate(" +
+  const transform = "translate(" +
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
-    D.numberToString(scale) + ")";
+    D.numberToString(Math.min(1, W / screenWidth, H / screenHeight)) + ")";
+
+  document.querySelector(".demeter-title-screen").style.transform = transform;
+  document.querySelector(".demeter-main-screen").style.transform = transform;
 };
 
 //-------------------------------------------------------------------------
@@ -1186,7 +1187,9 @@ window.addEventListener("resize", resize);
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
   resize();
-  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
+  document.querySelector(".demeter-camera").append(
+    // document.querySelector(".demeter-title-screen"),
+    document.querySelector(".demeter-main-screen"));
 
 }, { once: true });
 

@@ -142,16 +142,17 @@ body.demeter {
 
 .demeter-main-screen {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 48);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  cursor: var(--cursor-pointer, auto);
 }
 
 .demeter-main-menu {
   position: absolute;
   width: calc(var(--font-size) * 24);
   height: calc(var(--font-size) * 4.75);
+  left: calc((var(--screen-width) - var(--font-size) * 24) * 0.5);
   top: 0;
-  left: calc(var(--font-size) * 1.5);
 }
 
 .demeter-main-menu-frame {
@@ -178,48 +179,47 @@ body.demeter {
 }
 
 .demeter-main-menu-item1 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 8.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item2 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 1.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item3 {
-  top: calc(var(--font-size) * 0.25);
   left: calc(var(--font-size) * 15.5);
+  top: calc(var(--font-size) * 0.25);
 }
 
 .demeter-main-menu-item4 {
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 0.5);
+  top: calc(var(--font-size) * 2.5);
 }
 
 .demeter-main-menu-item5 {
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 16.5);
+  top: calc(var(--font-size) * 2.5);
 }
 
 .demeter-main-menu-title {
   position: absolute;
   width: calc(var(--font-size) * 9);
-  top: calc(var(--font-size) * 2.5);
   left: calc(var(--font-size) * 7.5);
+  top: calc(var(--font-size) * 2.5);
   font-family: var(--font-family-title-ja);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
-  pointer-events: none;
 }
 
 .demeter-main-system-ui {
   position: absolute;
   width: calc(var(--font-size) * 12);
   height: calc(var(--font-size) * 18);
-  top: calc(var(--font-size) * 5);
   left: calc(var(--font-size) * 4.5);
+  top: calc(var(--font-size) * 5);
   transform: scale(1.5);
   transform-origin: left top;
 }
@@ -227,16 +227,16 @@ body.demeter {
 .demeter-main-paragraph {
   position: absolute;
   width: calc(var(--font-size) * 25);
-  top: calc(var(--font-size) * 33);
   left: var(--font-size);
+  top: calc(var(--font-size) * 33);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
 }
 
 .demeter-main-paragraph-speaker {
-  text-align: center;
   height: calc(var(--font-size) * 2);
+  text-align: center;
 }
 
 .demeter-main-paragraph-text {
@@ -250,12 +250,6 @@ body.demeter {
   animation-duration: 1.2s;
   animation-iteration-count: infinite;
   transform-origin: center bottom;
-}
-
-@media (orientation: landscape) {
-}
-
-@media (orientation: portrait) {
 }
 
 /*************************************************************************/
@@ -298,10 +292,6 @@ body.demeter {
 }
 
 @media (hover: hover) {
-  .demeter-button {
-    cursor: pointer;
-  }
-
   .demeter-button:hover {
     stroke: var(--color-stroke-active);
   }
