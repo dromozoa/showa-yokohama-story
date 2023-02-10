@@ -1157,6 +1157,17 @@ const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
 //-------------------------------------------------------------------------
 
+const initializeTitleScreen = () => {
+};
+
+const initializeMainScreen = () => {
+  const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
+  document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
+
+};
+
+//-------------------------------------------------------------------------
+
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -1186,9 +1197,11 @@ window.addEventListener("resize", resize);
 
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
+  initializeTitleScreen();
+  initializeMainScreen();
   resize();
   document.querySelector(".demeter-camera").append(
-    // document.querySelector(".demeter-title-screen"),
+    // document.querySelector(".demeter-title-screen"));
     document.querySelector(".demeter-main-screen"));
 
 }, { once: true });
