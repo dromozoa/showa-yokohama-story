@@ -1155,14 +1155,36 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
+let systemUi;
+
+//-------------------------------------------------------------------------
+
+const initializeSystemUi = () => {
+};
+
 //-------------------------------------------------------------------------
 
 const initializeTitleScreen = () => {
 };
 
 const initializeMainScreen = () => {
+  initializeSystemUi();
+
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
+
+  // システムメニュー
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
+    // const systemUi = root.systemUi;
+    // if (systemUi._hidden) {
+    //   systemUi.show();
+    //   systemUi.openAnimated();
+    // } else {
+    //   systemUi.openAnimated(false);
+    //   await saveSystemData();
+    // }
+  });
+
 
 };
 

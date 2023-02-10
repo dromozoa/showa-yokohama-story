@@ -38,6 +38,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
+    --main-paragraph-width: calc(var(--font-size) * 25);
+    --main-paragraph-height: calc(var(--font-size) * 14);
   }
 }
 
@@ -45,6 +47,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
+    --main-paragraph-width: calc(var(--font-size) * 46);
+    --main-paragraph-height: calc(var(--font-size) * 8);
   }
 }
 
@@ -214,11 +218,12 @@ body.demeter {
   text-align: center;
 }
 
+/* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
 .demeter-main-system-ui {
   position: absolute;
   width: calc(var(--font-size) * 12);
-  height: calc(var(--font-size) * 18);
-  left: calc(var(--font-size) * 4.5);
+  height: calc((var(--screen-height) - var(--font-size) * 6 - var(--main-paragraph-height)) / 1.5);
+  left: calc((var(--screen-width) - var(--font-size) * 18) * 0.5);
   top: calc(var(--font-size) * 5);
   transform: scale(1.5);
   transform-origin: left top;
@@ -226,9 +231,10 @@ body.demeter {
 
 .demeter-main-paragraph {
   position: absolute;
-  width: calc(var(--font-size) * 25);
+  width: var(--main-paragraph-width);
+  height: var(--main-paragraph-height);
   left: var(--font-size);
-  top: calc(var(--font-size) * 33);
+  bottom: var(--font-size);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
@@ -245,6 +251,7 @@ body.demeter {
 
 .demeter-main-paragraph-icon {
   margin-top: var(--font-size);
+  height: calc(var(--font-size) * 2);
   text-align: right;
   animation-name: demeter-bounce;
   animation-duration: 1.2s;
