@@ -38,8 +38,6 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --main-paragraph-width: calc(var(--font-size) * 25);
-    --main-paragraph-height: calc(var(--font-size) * 14);
   }
 }
 
@@ -47,8 +45,6 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --main-paragraph-width: calc(var(--font-size) * 46);
-    --main-paragraph-height: calc(var(--font-size) * 8);
   }
 }
 
@@ -143,6 +139,20 @@ body.demeter {
 }
 
 /*************************************************************************/
+
+@media (orientation: portrait) {
+  :root {
+    --main-paragraph-width: calc(var(--font-size) * 25);
+    --main-paragraph-height: calc(var(--font-size) * 14);
+  }
+}
+
+@media (orientation: landscape) {
+  :root {
+    --main-paragraph-width: calc(var(--font-size) * 46);
+    --main-paragraph-height: calc(var(--font-size) * 8);
+  }
+}
 
 .demeter-main-screen {
   position: absolute;
