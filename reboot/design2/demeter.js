@@ -1223,8 +1223,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeMainScreen();
   resize();
   document.querySelector(".demeter-camera").append(
-    // document.querySelector(".demeter-title-screen"));
-    document.querySelector(".demeter-main-screen"));
+    document.querySelector(".demeter-title-screen"));
+    // document.querySelector(".demeter-main-screen"));
 
 }, { once: true });
 

@@ -38,6 +38,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
+    --screen-background-image: url(../output/bg-portrait.png);
   }
 }
 
@@ -45,6 +46,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
+    --screen-background-image: url(../output/bg-landscape.png);
   }
 }
 
@@ -65,11 +67,6 @@ body.demeter {
   margin: 0;
   color: #FFF;
   background-color: #000;
-  /* TODO 背景画像を最適化する */
-  /* TODO 背景画像をスクロールする */
-  background-image: url(../output/bg.png);
-  background-repeat: none;
-  background-attachment: fixed;
 }
 
 /*************************************************************************/
@@ -79,6 +76,9 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   cursor: var(--cursor-pointer, auto);
+  background-image: var(--screen-background-image);
+  background-repeat: none;
+  background-attachment: fixed;
 }
 
 .demeter-title {
