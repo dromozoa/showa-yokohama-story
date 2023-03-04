@@ -159,6 +159,9 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   cursor: var(--cursor-pointer, auto);
+  background-image: var(--screen-background-image);
+  background-repeat: none;
+  background-attachment: fixed;
 }
 
 .demeter-main-menu {
@@ -231,18 +234,29 @@ body.demeter {
 /* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
 .demeter-main-system-ui {
   position: absolute;
-  width: calc(var(--font-size) * 12);
-  height: calc((var(--screen-height) - var(--font-size) * 6 - var(--main-paragraph-height)) / 1.5);
   left: calc((var(--screen-width) - var(--font-size) * 18) * 0.5);
   top: calc(var(--font-size) * 5);
   transform: scale(1.5);
   transform-origin: left top;
+  /* TODO スクロールの設定 */
+}
+
+@media (orientation: portrait) {
+  .demeter-main-system-ui {
+    width: calc(var(--font-size) * 18 / 1.5);
+    height: calc(var(--font-size) * 28 / 1.5);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-main-system-ui {
+    width: calc(var(--font-size) * 18 / 1.5);
+    height: calc(var(--font-size) * 13 / 1.5);
+  }
 }
 
 .demeter-main-paragraph {
   position: absolute;
-  width: var(--main-paragraph-width);
-  height: var(--main-paragraph-height);
   left: var(--font-size);
   bottom: var(--font-size);
   font-family: var(--font-family);
@@ -250,17 +264,65 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
 }
 
+@media (orientation: portrait) {
+  .demeter-main-paragraph {
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 14);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-main-paragraph {
+    width: calc(var(--font-size) * 46);
+    height: calc(var(--font-size) * 8);
+  }
+}
+
 .demeter-main-paragraph-speaker {
-  height: calc(var(--font-size) * 2);
-  text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@media (orientation: portrait) {
+  .demeter-main-paragraph-speaker {
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 2);
+    text-align: center;
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-main-paragraph-speaker {
+    width: calc(var(--font-size) * 6);
+    height: calc(var(--font-size) * 2);
+  }
 }
 
 .demeter-main-paragraph-text {
+  position: absolute;
+  width: calc(var(--font-size) * 25);
   height: calc(var(--font-size) * 8);
 }
 
+@media (orientation: portrait) {
+  .demeter-main-paragraph-text {
+    top: calc(var(--font-size) * 2);
+    left: 0;
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-main-paragraph-text {
+    top: 0;
+    left: calc(var(--font-size) * 6);
+  }
+}
+
 .demeter-main-paragraph-icon {
-  margin-top: var(--font-size);
+  position: absolute;
+  bottom: 0;
+  right: 0;
   height: calc(var(--font-size) * 2);
   text-align: right;
   animation-name: demeter-bounce;
@@ -271,7 +333,7 @@ body.demeter {
 
 /*************************************************************************/
 
-/* 1989-01-16 21:33Z */
+/* 1989-01-06 21:33Z */
 .demeter-offscreen {
   position: absolute;
   top: -8916px;
