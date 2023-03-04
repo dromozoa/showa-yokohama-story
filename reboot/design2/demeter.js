@@ -1155,10 +1155,18 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
-const system = {
-  speed: 100,
-  autoSpeed: 1000,
+const systemDefault = {
+  speed: 30,
+  autoSpeed: 400,
+  masterVolume: 1,
+  musicVolume: 1,
+  voiceVolume: 1,
+  componentColor: [1, 1, 1],
+  componentAlpha: 0.2,
+  frameRateVisualizer: true,
+  audioVisualizer: true,
 };
+const system = systemDefault;
 let systemUi;
 
 //-------------------------------------------------------------------------
@@ -1175,6 +1183,14 @@ const initializeSystemUi = () => {
   });
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]");
+  const componentFolder = systemUi.addFolder("コンポーネント設定");
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]");
+  componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]");
+  componentFolder.add(system, "frameRateVisualizer").name("可視化: フレームレート");
+  componentFolder.add(system, "audioVisualizer").name("可視化: オーディオ周波数");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   systemUiNode.addEventListener("transitionend", ev => {

@@ -238,7 +238,7 @@ body.demeter {
   top: calc(var(--font-size) * 5);
   transform: scale(1.5);
   transform-origin: left top;
-  /* TODO スクロールの設定 */
+  overflow: scroll;
 }
 
 @media (orientation: portrait) {
