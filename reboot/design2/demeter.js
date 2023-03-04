@@ -1155,11 +1155,35 @@ D.VoiceSprite = class {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
+const system = {
+  speed: 100,
+  autoSpeed: 1000,
+};
 let systemUi;
 
 //-------------------------------------------------------------------------
 
+/* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
 const initializeSystemUi = () => {
+  const systemUiNode = document.querySelector(".demeter-main-system-ui");
+
+  systemUi = new lil.GUI({
+    container: systemUiNode,
+    width: fontSize * 12,
+    title: "システム設定",
+    touchStyles: false,
+  });
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
+  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+
+  // openAnimated(false)のトランジションが終わったらUIを隠す。
+  systemUiNode.addEventListener("transitionend", ev => {
+    if (systemUi._closed && ev.target === systemUi.$children && ev.propertyName === "transform") {
+      systemUi.hide();
+    }
+  });
+
+  systemUi.openAnimated(false);
 };
 
 //-------------------------------------------------------------------------
@@ -1175,17 +1199,14 @@ const initializeMainScreen = () => {
 
   // システムメニュー
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
-    // const systemUi = root.systemUi;
-    // if (systemUi._hidden) {
-    //   systemUi.show();
-    //   systemUi.openAnimated();
-    // } else {
-    //   systemUi.openAnimated(false);
-    //   await saveSystemData();
-    // }
+    if (systemUi._hidden) {
+      systemUi.show();
+      systemUi.openAnimated();
+    } else {
+      systemUi.openAnimated(false);
+      // await saveSystemData();
+    }
   });
-
-
 };
 
 //-------------------------------------------------------------------------
