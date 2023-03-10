@@ -1165,13 +1165,26 @@ const systemDefault = {
   componentAlpha: 0.2,
   frameRateVisualizer: true,
   audioVisualizer: true,
+  logging: true,
+  silhouette: true,
+  unionSetting: "ろうそ",
 };
 const system = systemDefault;
 let systemUi;
 
 //-------------------------------------------------------------------------
 
-/* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
+// gui.addFolderはtouchStylesを継承しないので、自前で作成する。
+const addFolder = (gui, title) => {
+  const folder = new lil.GUI({
+    parent: gui,
+    title: title,
+    touchStyles: false,
+  });
+  return folder;
+};
+
+// 実際のサイズはtransformのscale(1.5)がかかることに注意
 const initializeSystemUi = () => {
   const systemUiNode = document.querySelector(".demeter-main-system-ui");
 
@@ -1181,16 +1194,21 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
+
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]");
-  const componentFolder = systemUi.addFolder("コンポーネント設定");
+
+  const componentFolder = addFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]");
   componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]");
-  componentFolder.add(system, "frameRateVisualizer").name("可視化: フレームレート");
-  componentFolder.add(system, "audioVisualizer").name("可視化: オーディオ周波数");
+  componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート");
+  componentFolder.add(system, "audioVisualizer").name("表示: オーディオ");
+  componentFolder.add(system, "logging").name("表示: ロギング");
+  componentFolder.add(system, "silhouette").name("表示: シルエット");
+  componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   systemUiNode.addEventListener("transitionend", ev => {
