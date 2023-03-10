@@ -986,8 +986,8 @@ D.FrameRateVisualizer = class {
     const context = canvas.getContext("2d");
     context.scale(devicePixelRatio, devicePixelRatio);
     context.lineWidth = 1;
-    context.strokeStyle = color;
     context.fillStyle = color;
+    context.strokeStyle = color;
     context.font = D.numberToCss(fontSize) + " " + font;
     context.textBaseline = "top";
 
@@ -1020,8 +1020,8 @@ D.FrameRateVisualizer = class {
 
   updateColor(color) {
     const context = this.canvas.getContext("2d");
-    context.strokeStyle = color;
     context.fillStyle = color;
+    context.strokeStyle = color;
   }
 
   draw() {
