@@ -25,6 +25,7 @@
   --font-family-title-ja: 'Yuji Syuku', serif;
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', sans-serif;
+  --font-family-logging: 'Share Tech Mono', 'BIZ UDGothic', monospace;
 
   --color-title: #C63322;
   --color-console: #029D93;
@@ -231,6 +232,107 @@ body.demeter {
   text-align: center;
 }
 
+.demeter-main-logging {
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 5);
+  font-family: var(--font-family-logging);
+  font-size: calc(var(--font-size) * 0.5);
+  line-height: var(--font-size);
+  overflow: auto;
+  scrollbar-width: none;
+  /* debug
+  */
+  background-color: rgba(100%, 100%, 100%, 20%);
+}
+
+.demeter-main-logging::-webkit-scrollbar {
+  display: none;
+}
+
+@media(orientation: portrait) {
+  .demeter-main-logging {
+    top: calc(var(--font-size) * 6);
+    left: var(--font-size);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-logging {
+    top: var(--font-size);
+    left: var(--font-size);
+  }
+}
+
+.demeter-main-audio-visualizer {
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 5);
+  /* debug
+  */
+  background-color: rgba(100%, 100%, 100%, 20%);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-audio-visualizer {
+    top: calc(var(--font-size) * 12);
+    left: var(--font-size);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-audio-visualizer {
+    top: calc(var(--font-size) * 6.5);
+    left: var(--font-size);
+  }
+}
+
+.demeter-main-frame-rate-visualizer {
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 5);
+  /* debug
+  */
+  background-color: rgba(100%, 100%, 100%, 20%);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-frame-rate-visualizer {
+    top: calc(var(--font-size) * 18);
+    left: var(--font-size);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-frame-rate-visualizer {
+    top: calc(var(--font-size) * 12);
+    left: var(--font-size);
+  }
+}
+
+.demeter-main-silhouette {
+  position: absolute;
+  width: calc(var(--font-size) * 14);
+  height: calc(var(--font-size) * 25);
+  /* debug
+  */
+  background-color: rgba(100%, 100%, 100%, 20%);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-silhouette {
+    top: calc(var(--font-size) * 6);
+    right: var(--font-size);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-silhouette {
+    top: var(--font-size);
+    right: var(--font-size);
+  }
+}
+
 /* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
 .demeter-main-system-ui {
   position: absolute;
@@ -238,7 +340,12 @@ body.demeter {
   top: calc(var(--font-size) * 5);
   transform: scale(1.5);
   transform-origin: left top;
-  overflow: scroll;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.demeter-main-system-ui::-webkit-scrollbar {
+  display: none;
 }
 
 @media (orientation: portrait) {

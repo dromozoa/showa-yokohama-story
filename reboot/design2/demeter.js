@@ -1163,9 +1163,9 @@ const systemDefault = {
   voiceVolume: 1,
   componentColor: [1, 1, 1],
   componentAlpha: 0.2,
-  frameRateVisualizer: true,
-  audioVisualizer: true,
   logging: true,
+  audioVisualizer: true,
+  frameRateVisualizer: true,
   silhouette: true,
   unionSetting: "ろうそ",
 };
@@ -1174,8 +1174,13 @@ let systemUi;
 
 //-------------------------------------------------------------------------
 
+const initializeComponents = () => {
+};
+
+//-------------------------------------------------------------------------
+
 // gui.addFolderはtouchStylesを継承しないので、自前で作成する。
-const addFolder = (gui, title) => {
+const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
     parent: gui,
     title: title,
@@ -1201,19 +1206,21 @@ const initializeSystemUi = () => {
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]");
 
-  const componentFolder = addFolder(systemUi, "コンポーネント設定");
+  const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]");
   componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]");
-  componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート");
-  componentFolder.add(system, "audioVisualizer").name("表示: オーディオ");
   componentFolder.add(system, "logging").name("表示: ロギング");
+  componentFolder.add(system, "audioVisualizer").name("表示: オーディオ");
+  componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート");
   componentFolder.add(system, "silhouette").name("表示: シルエット");
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   systemUiNode.addEventListener("transitionend", ev => {
-    if (systemUi._closed && ev.target === systemUi.$children && ev.propertyName === "transform") {
+    if (systemUi._closed && !systemUi._hidden && ev.target === systemUi.$children) {
       systemUi.hide();
+      systemUiNode.style.display = "none";
+      // await saveSystemData();
     }
   });
 
@@ -1234,11 +1241,12 @@ const initializeMainScreen = () => {
   // システムメニュー
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
     if (systemUi._hidden) {
+      const systemUiNode = document.querySelector(".demeter-main-system-ui");
+      systemUiNode.style.display = "initial";
       systemUi.show();
       systemUi.openAnimated();
     } else {
       systemUi.openAnimated(false);
-      // await saveSystemData();
     }
   });
 };
