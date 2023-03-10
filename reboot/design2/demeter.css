@@ -126,16 +126,13 @@ body.demeter {
 }
 
 .demeter-title-icon {
+  display: none;
   margin-top: calc(var(--font-size) * 3);
   color: var(--color-console);
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 1.5);
   text-align: center;
-
-  animation-name: demeter-bounce;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
   transform-origin: center bottom;
 }
 
@@ -159,7 +156,9 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
+  /*
   cursor: var(--cursor-pointer, auto);
+  */
   background-image: var(--screen-background-image);
   background-repeat: none;
   background-attachment: fixed;
@@ -241,9 +240,8 @@ body.demeter {
   line-height: var(--font-size);
   overflow: auto;
   scrollbar-width: none;
-  /* debug
-  */
-  background-color: rgba(100%, 100%, 100%, 20%);
+  color: var(--component-color, #FFF);
+  opacity: var(--component-opacity, 0.25);
 }
 
 .demeter-main-logging::-webkit-scrollbar {
@@ -268,9 +266,6 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 5);
-  /* debug
-  */
-  background-color: rgba(100%, 100%, 100%, 20%);
 }
 
 @media(orientation: portrait) {
@@ -291,9 +286,6 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 5);
-  /* debug
-  */
-  background-color: rgba(100%, 100%, 100%, 20%);
 }
 
 @media(orientation: portrait) {
@@ -374,7 +366,7 @@ body.demeter {
 @media (orientation: portrait) {
   .demeter-main-paragraph {
     width: calc(var(--font-size) * 25);
-    height: calc(var(--font-size) * 14);
+    height: calc(var(--font-size) * 12);
   }
 }
 
@@ -427,14 +419,12 @@ body.demeter {
 }
 
 .demeter-main-paragraph-icon {
+  display: none;
   position: absolute;
   bottom: 0;
   right: 0;
   height: calc(var(--font-size) * 2);
   text-align: right;
-  animation-name: demeter-bounce;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
   transform-origin: center bottom;
 }
 
@@ -470,7 +460,7 @@ body.demeter {
 .demeter-button {
   fill: var(--color-fill);
   stroke: var(--color-stroke);
-  transition: all 0.5s;
+  transition: fill 0.5s, stroke 0.5s;
 }
 
 .demeter-button:active {
@@ -480,34 +470,6 @@ body.demeter {
 @media (hover: hover) {
   .demeter-button:hover {
     stroke: var(--color-stroke-active);
-  }
-}
-
-/*************************************************************************/
-
-@keyframes demeter-bounce {
-  0% {
-    animation-timing-function: ease-out;
-    transform: translateY(0);
-  }
-
-  40% {
-    animation-timing-function: ease-in;
-    transform: translateY(-0.5em);
-  }
-
-  80% {
-    animation-timing-function: ease-out;
-    transform: translateY(0);
-  }
-
-  90% {
-    animation-timing-function: ease-in;
-    transform: scaleY(0.85);
-  }
-
-  100% {
-    transform: scaleY(1);
   }
 }
 

@@ -32,7 +32,7 @@ D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
 
-D.toCssColor = (r, g, b, a) => "rgba(" + D.numberToCss(r * 100, "%,") + D.numberToCss(g * 100, "%,") + D.numberToCss(b * 100, "%,") + D.numberToCss(a * 100, "%)");
+D.toCssColor = (r, g, b, a = 1) => "rgba(" + D.numberToCss(r * 100, "%,") + D.numberToCss(g * 100, "%,") + D.numberToCss(b * 100, "%,") + D.numberToCss(a * 100, "%)");
 
 //-------------------------------------------------------------------------
 
@@ -831,113 +831,48 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
 
 //-------------------------------------------------------------------------
 
-D.RingBuffer = class {
+D.Logging = class {
   constructor(limit) {
-    this.index = 0;
     this.limit = limit;
-    this.data = [];
   }
 
-  push(value) {
-    this.data[this.index] = value;
-    ++this.index;
-    this.index %= this.limit;
-  }
-
-  forEach(fn) {
-    let index = 0;
-    for (let i = this.index; i < this.data.length; ++i) {
-      fn(this.data[i], index++);
+  log(message) {
+    const loggingNode = document.querySelector(".demeter-main-logging");
+    const messageNode = document.createElement("div");
+    messageNode.textContent = message;
+    loggingNode.append(messageNode);
+    while (loggingNode.children.length > this.limit) {
+      loggingNode.firstElementChild.remove();
     }
-    for (let i = 0; i < this.index; ++i) {
-      fn(this.data[i], index++);
-    }
-  }
-
-  empty() {
-    return this.data.length === 0;
-  }
-
-  last() {
-    return this.data[this.index > 0 ? this.index - 1 : this.data.length - 1];
-  }
-
-  min() {
-    return this.data.reduce((acc, value) => Math.min(acc, value), Infinity);
-  }
-
-  max() {
-    return this.data.reduce((acc, value) => Math.max(acc, value), -Infinity);
+    messageNode.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
   }
 };
 
 //-------------------------------------------------------------------------
 
-D.FrameRateVisualizer = class {
-  constructor(width, height, fontSize, font, color) {
-    const canvas = document.createElement("canvas");
-    canvas.width = width * devicePixelRatio;
-    canvas.height = height * devicePixelRatio;
-    canvas.style.width = D.numberToCss(width);
-    canvas.style.height = D.numberToCss(height);
-
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.fillStyle = color;
-    context.font = D.numberToCss(fontSize) + " " + font;
-    context.textBaseline = "top";
-
-    this.canvas = canvas;
-    this.width = width;
-    this.height = height;
-    this.fontSize = fontSize;
+D.TaskSet = class {
+  constructor() {
     this.prevTime = undefined;
-    this.frameCount = 0;
-    this.frameRates = new D.RingBuffer(width);
+    this.set = new Set();
   }
 
-  update() {
+  async update() {
     const now = performance.now();
     if (this.prevTime === undefined) {
       this.prevTime = now;
       return;
     }
-    ++this.frameCount;
     const duration = now - this.prevTime;
     if (duration < 1000) {
       return;
     }
-    const frameRate = this.frameCount * 1000 / duration;
-
-    this.prevTime = now;
-    this.frameCount = 0;
-    this.frameRates.push(frameRate);
+    await Promise.all([...this.set].map(task => task()));
+    this.set.clear();
+    this.prevTime = performance.now();
   }
 
-  updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.fillStyle = color;
-  }
-
-  draw() {
-    if (this.frameRates.empty()) {
-      return;
-    }
-
-    const W = this.width;
-    const H = this.height;
-    const frameRate = this.frameRates.last();
-    const frameRateMin = this.frameRates.min();
-    const frameRateMax = this.frameRates.max();
-
-    const context = this.canvas.getContext("2d");
-    context.clearRect(0, 0, W, H);
-    context.fillText(Math.round(frameRate) + "FPS [" + Math.round(frameRateMin) + "-" + Math.round(frameRateMax) + "]", 0, 0);
-
-    this.frameRates.forEach((v, i) => {
-      const h = (H - 16) * Math.min(v, 100) / 100;
-      context.fillRect(i, H - h, 1, h);
-    });
+  add(task) {
+    this.set.add(task);
   }
 };
 
@@ -998,6 +933,166 @@ D.AudioVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.RingBuffer = class {
+  constructor(limit) {
+    this.index = 0;
+    this.limit = limit;
+    this.data = [];
+  }
+
+  push(value) {
+    this.data[this.index] = value;
+    ++this.index;
+    this.index %= this.limit;
+  }
+
+  forEach(fn) {
+    let index = 0;
+    for (let i = this.index; i < this.data.length; ++i) {
+      fn(this.data[i], index++);
+    }
+    for (let i = 0; i < this.index; ++i) {
+      fn(this.data[i], index++);
+    }
+  }
+
+  empty() {
+    return this.data.length === 0;
+  }
+
+  last() {
+    return this.data[this.index > 0 ? this.index - 1 : this.data.length - 1];
+  }
+
+  min() {
+    return this.data.reduce((acc, value) => Math.min(acc, value), Infinity);
+  }
+
+  max() {
+    return this.data.reduce((acc, value) => Math.max(acc, value), -Infinity);
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.FrameRateVisualizer = class {
+  constructor(width, height, fontSize, font, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 1;
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.font = D.numberToCss(fontSize) + " " + font;
+    context.textBaseline = "top";
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.fontSize = fontSize;
+    this.prevTime = undefined;
+    this.frameCount = 0;
+    this.frameRates = new D.RingBuffer(width - 2);
+  }
+
+  update() {
+    const now = performance.now();
+    if (this.prevTime === undefined) {
+      this.prevTime = now;
+      return;
+    }
+    ++this.frameCount;
+    const duration = now - this.prevTime;
+    if (duration < 1000) {
+      return;
+    }
+    const frameRate = this.frameCount * 1000 / duration;
+
+    this.prevTime = now;
+    this.frameCount = 0;
+    this.frameRates.push(frameRate);
+  }
+
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.strokeStyle = color;
+    context.fillStyle = color;
+  }
+
+  draw() {
+    const W = this.width;
+    const H = this.height;
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, W, H);
+    context.strokeRect(0.5, this.fontSize + 0.5, W - 1, H - this.fontSize - 1);
+
+    if (this.frameRates.empty()) {
+      return;
+    }
+
+    const frameRate = this.frameRates.last();
+    const frameRateMin = this.frameRates.min();
+    const frameRateMax = this.frameRates.max();
+
+    context.fillText(Math.round(frameRate) + "FPS [" + Math.round(frameRateMin) + "-" + Math.round(frameRateMax) + "]", 0, 0);
+
+    this.frameRates.forEach((v, i) => {
+      const h = (H - this.fontSize - 2) * Math.min(v, 100) / 100;
+      context.fillRect(i + 1, H - h - 1, 1, h);
+    });
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.IconAnimation = class {
+  constructor(node) {
+    this.node = node;
+    this.startTime = undefined;
+  }
+
+  start() {
+    this.node.style.display = "block";
+    this.node.style.transform = "scaleY(1) translateY(0)";
+    this.startTime = performance.now();
+  }
+
+  stop() {
+    this.node.style.display = "none";
+    this.startTime = undefined;
+  }
+
+  update() {
+    if (!this.startTime) {
+      return;
+    }
+
+    const now = performance.now();
+    const x = (now - this.startTime) % 1200 / 1200;
+
+    let scale = 1;
+    let translate = 0;
+
+    if (x < 0.8) {
+      const y = (x - 0.4) / 0.4;
+      translate = (y * y - 1) * 0.5;
+    } else {
+      const y = (x - 0.9) / 0.1;
+      scale = 1 + (y * y - 1) * 0.15;
+    }
+
+    this.node.style.transform = "scaleY(" + D.numberToString(scale) + ") translateY(" + D.numberToCss(translate, "em");
+  }
+};
+
+
+//-------------------------------------------------------------------------
+
 D.MusicPlayer = class {
   constructor(volume) {
     this.volume = volume;
@@ -1017,15 +1112,20 @@ D.MusicPlayer = class {
       onplayerror: (soundId, message) => {
         console.log("onplayerror", soundId, message);
       },
-      // onfade: soundId => {
-      //   console.log("onfade", soundId);
-      // },
+      onfade: soundId => {
+        console.log("onfade", soundId);
+      },
       onunlock: () => {
-        console.log("onunlock");
+        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+        audioVisualizer.canvas.style.display = "block";
+        audioVisualizer.canvas.style.position = "absolute";
+        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+        logging.log("オーディオロック: 解除");
       },
     });
     this.soundId = this.sound.play();
-    console.log("start", key, this.soundId);
+    logging.log("音楽開始: " + key);
   }
 
   fade(key) {
@@ -1050,6 +1150,9 @@ D.MusicPlayer = class {
 
   updateVolume(volume) {
     this.volume = volume;
+    if (this.sound) {
+      this.sound.volume(volume);
+    }
   }
 };
 
@@ -1156,30 +1259,157 @@ const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
 const systemDefault = {
+  id: "system",
   speed: 30,
   autoSpeed: 400,
   masterVolume: 1,
   musicVolume: 1,
   voiceVolume: 1,
   componentColor: [1, 1, 1],
-  componentAlpha: 0.2,
+  componentOpacity: 0.25,
   logging: true,
   audioVisualizer: true,
   frameRateVisualizer: true,
   silhouette: true,
   unionSetting: "ろうそ",
 };
-const system = systemDefault;
+
+const logging = new D.Logging(100);
+const taskSet = new D.TaskSet();
+let database;
+
+let system;
 let systemUi;
+let audioVisualizer;
+let frameRateVisualizer;
+let musicPlayer;
+let voiceSprite;
+
+let iconAnimation;
 
 //-------------------------------------------------------------------------
 
-const initializeComponents = () => {
+const saveSystemTask = async () => {
+  try {
+    await database.put("system", system);
+    logging.log("システム設定保存: 成功");
+  } catch (e) {
+    logging.log("システム設定保存: 失敗");
+    logging.log(e.message);
+  }
 };
 
 //-------------------------------------------------------------------------
 
-// gui.addFolderはtouchStylesを継承しないので、自前で作成する。
+const upgradeDatabase = (db, oldVersion, newVersion) => {
+  switch (oldVersion) {
+    case 0:
+      db.createObjectStore("system", { keyPath: "id" });
+      break;
+  }
+};
+
+const initializeDatabase = async () => {
+  try {
+    database = await idb.openDB("昭和横濱物語", 1, { upgrade: upgradeDatabase });
+
+    system = await database.get("system", "system") || {};
+    Object.entries(systemDefault).forEach(([k, v]) => {
+      if (system[k] === undefined) {
+        system[k] = v;
+      }
+    });
+    await database.put("system", system);
+
+    logging.log("ローカルデータベース接続: 成功");
+  } catch (e) {
+    logging.log("ローカルデータベース接続: 失敗");
+    logging.log(e.message);
+  }
+};
+
+//-------------------------------------------------------------------------
+
+const updateComponentColor = () => {
+  document.documentElement.style.setProperty("--component-color", D.toCssColor(...system.componentColor));
+  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+  if (audioVisualizer) {
+    audioVisualizer.updateColor(color);
+  }
+  frameRateVisualizer.updateColor(color);
+};
+
+const updateComponentOpacity = () => {
+  document.documentElement.style.setProperty("--component-opacity", system.componentOpacity);
+  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+  if (audioVisualizer) {
+    audioVisualizer.updateColor(color);
+  }
+  frameRateVisualizer.updateColor(color);
+};
+
+const updateComponents = () => {
+  const W = document.documentElement.clientWidth;
+  const H = document.documentElement.clientHeight;
+
+  let top;
+  let spacing;
+  if (W <= H) {
+    top = fontSize * 6;
+    spacing = fontSize;
+  } else {
+    top = fontSize;
+    spacing = fontSize * 0.5;
+  }
+
+  if (system.logging) {
+    const node = document.querySelector(".demeter-main-logging");
+    node.style.display = "block";
+    node.style.top = D.numberToCss(top);
+    top += fontSize * 5 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-logging");
+    node.style.display = "none";
+  }
+
+  if (system.audioVisualizer) {
+    const node = document.querySelector(".demeter-main-audio-visualizer");
+    node.style.display = "block";
+    node.style.top = D.numberToCss(top);
+    top += fontSize * 5 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-audio-visualizer");
+    node.style.display = "none";
+  }
+
+  if (system.frameRateVisualizer) {
+    const node = document.querySelector(".demeter-main-frame-rate-visualizer");
+    node.style.display = "block";
+    node.style.top = D.numberToCss(top);
+    top += fontSize * 5 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-frame-rate-visualizer");
+    node.style.display = "none";
+  }
+};
+
+const initializeComponents = () => {
+  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+  frameRateVisualizer = new D.FrameRateVisualizer(fontSize * 10, fontSize * 5, fontSize * 0.5, "'Share Tech Mono', monospace", color);
+  frameRateVisualizer.canvas.style.display = "block";
+  frameRateVisualizer.canvas.style.position = "absolute";
+  document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
+
+  updateComponentColor();
+  updateComponentOpacity();
+  updateComponents();
+
+  logging.log("コンポーネント初期化: 完了");
+};
+
+//-------------------------------------------------------------------------
+
+// gui.addFolderはtouchStylesを継承しないので、で作成する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
     parent: gui,
@@ -1191,6 +1421,8 @@ const addSystemUiFolder = (gui, title) => {
 
 // 実際のサイズはtransformのscale(1.5)がかかることに注意
 const initializeSystemUi = () => {
+  initializeComponents();
+
   const systemUiNode = document.querySelector(".demeter-main-system-ui");
 
   systemUi = new lil.GUI({
@@ -1199,28 +1431,41 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
+  systemUi.onChange(() => taskSet.add(saveSystemTask));
 
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
-  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]");
-  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]");
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
+    if (Howler.masterGain) {
+      Howler.volume(v);
+    }
+  });
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(v => {
+    if (musicPlayer) {
+      musicPlayer.updateVolume(v);
+    }
+  });
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
-  componentFolder.addColor(system, "componentColor").name("色 [#RGB]");
-  componentFolder.add(system, "componentAlpha", 0, 1, 0.01).name("透明度 [0-1]");
-  componentFolder.add(system, "logging").name("表示: ロギング");
-  componentFolder.add(system, "audioVisualizer").name("表示: オーディオ");
-  componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート");
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
+  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(updateComponentOpacity);
+  componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
+  componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
+  componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
   componentFolder.add(system, "silhouette").name("表示: シルエット");
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
+  let initialized = false;
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   systemUiNode.addEventListener("transitionend", ev => {
     if (systemUi._closed && !systemUi._hidden && ev.target === systemUi.$children) {
       systemUi.hide();
       systemUiNode.style.display = "none";
-      // await saveSystemData();
+      if (!initialized) {
+        initialized = true;
+        logging.log("システム設定初期化: 完了");
+      }
     }
   });
 
@@ -1230,6 +1475,18 @@ const initializeSystemUi = () => {
 //-------------------------------------------------------------------------
 
 const initializeTitleScreen = () => {
+  document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
+    document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
+    document.querySelector(".demeter-camera").append(document.querySelector(".demeter-main-screen"));
+    iconAnimation.stop();
+    iconAnimation = undefined;
+
+    // debug
+    iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
+    iconAnimation.start();
+  });
+  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
+  iconAnimation.start();
 };
 
 const initializeMainScreen = () => {
@@ -1242,13 +1499,22 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
     if (systemUi._hidden) {
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
-      systemUiNode.style.display = "initial";
+      systemUiNode.style.display = "block";
       systemUi.show();
       systemUi.openAnimated();
     } else {
       systemUi.openAnimated(false);
     }
   });
+};
+
+//-------------------------------------------------------------------------
+
+const initializeAudio = () => {
+  Howler.volume(system.masterVolume);
+  musicPlayer = new D.MusicPlayer(system.musicVolume);
+  musicPlayer.start("vi03");
+  logging.log("オーディオ初期化: 完了");
 };
 
 //-------------------------------------------------------------------------
@@ -1274,6 +1540,7 @@ const resize = () => {
 
   document.querySelector(".demeter-title-screen").style.transform = transform;
   document.querySelector(".demeter-main-screen").style.transform = transform;
+  updateComponents();
 };
 
 //-------------------------------------------------------------------------
@@ -1282,12 +1549,28 @@ window.addEventListener("resize", resize);
 
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
+  await initializeDatabase();
   initializeTitleScreen();
   initializeMainScreen();
+  initializeAudio();
   resize();
-  document.querySelector(".demeter-camera").append(
-    // document.querySelector(".demeter-title-screen"));
-    document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
+
+  while (true) {
+    await D.requestAnimationFrame();
+    await taskSet.update();
+    if (audioVisualizer) {
+      audioVisualizer.update();
+      audioVisualizer.draw();
+    }
+    if (frameRateVisualizer) {
+      frameRateVisualizer.update();
+      frameRateVisualizer.draw();
+    }
+    if (iconAnimation) {
+      iconAnimation.update();
+    }
+  }
 
 }, { once: true });
 
