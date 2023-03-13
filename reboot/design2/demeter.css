@@ -152,24 +152,24 @@ body.demeter {
 
 .demeter-main-silhouette {
   position: absolute;
-  width: calc(var(--font-size) * 14);
+  width: calc(var(--font-size) * 16);
   height: calc(var(--font-size) * 25);
   /* debug
   */
-  background-color: rgba(100%, 10%, 10%, 100%);
+  background-color: rgba(100%, 100%, 100%, 30%);
 }
 
 @media(orientation: portrait) {
   .demeter-main-silhouette {
     top: calc(var(--font-size) * 6);
-    right: var(--font-size);
+    right: 0;
   }
 }
 
 @media(orientation: landscape) {
   .demeter-main-silhouette {
     top: var(--font-size);
-    right: var(--font-size);
+    right: 0;
   }
 }
 

@@ -28,4 +28,3 @@
   - 画像の縮小はPixelmatorでてきとうに
   - サイズと配置はOmniGraffleで調整する
 
-

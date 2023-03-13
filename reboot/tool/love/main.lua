@@ -637,6 +637,31 @@ function commands.mapping(expression, source_pathname1, source_pathname2, result
   end
 end
 
+function commands.extend(W, H, X, Y, source_pathname, result_pathname)
+  local W = tonumber(W)
+  local H = tonumber(H)
+  local X = tonumber(X)
+  local Y = tonumber(Y)
+
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = love.image.newImageData(W, H)
+
+  for y = 0, source_image_data:getHeight() - 1 do
+    local ry = y + Y
+    if ry < H then
+      for x = 0, source_image_data:getWidth() - 1 do
+        if grayscale(source_image_data:getPixel(x, y)) > 0.5 then
+          local rx = x + X
+          if rx < W then
+            result_image_data:setPixel(rx, ry, 1, 1, 1, 1)
+          end
+        end
+      end
+    end
+  end
+  write_image_data(result_image_data, result_pathname)
+end
+
 --------------------------------------------------------------------------------
 
 local font
