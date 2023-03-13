@@ -138,20 +138,6 @@ body.demeter {
 
 /*************************************************************************/
 
-@media (orientation: portrait) {
-  :root {
-    --main-paragraph-width: calc(var(--font-size) * 25);
-    --main-paragraph-height: calc(var(--font-size) * 14);
-  }
-}
-
-@media (orientation: landscape) {
-  :root {
-    --main-paragraph-width: calc(var(--font-size) * 46);
-    --main-paragraph-height: calc(var(--font-size) * 8);
-  }
-}
-
 .demeter-main-screen {
   position: absolute;
   width: var(--screen-width);
@@ -231,6 +217,29 @@ body.demeter {
   text-align: center;
 }
 
+.demeter-main-silhouette {
+  position: absolute;
+  width: calc(var(--font-size) * 14);
+  height: calc(var(--font-size) * 25);
+  /* debug
+  */
+  background-color: rgba(100%, 10%, 10%, 100%);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-silhouette {
+    top: calc(var(--font-size) * 6);
+    right: var(--font-size);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-silhouette {
+    top: var(--font-size);
+    right: var(--font-size);
+  }
+}
+
 .demeter-main-logging {
   position: absolute;
   width: calc(var(--font-size) * 10);
@@ -299,29 +308,6 @@ body.demeter {
   .demeter-main-frame-rate-visualizer {
     top: calc(var(--font-size) * 12);
     left: var(--font-size);
-  }
-}
-
-.demeter-main-silhouette {
-  position: absolute;
-  width: calc(var(--font-size) * 14);
-  height: calc(var(--font-size) * 25);
-  /* debug
-  */
-  background-color: rgba(100%, 100%, 100%, 20%);
-}
-
-@media(orientation: portrait) {
-  .demeter-main-silhouette {
-    top: calc(var(--font-size) * 6);
-    right: var(--font-size);
-  }
-}
-
-@media(orientation: landscape) {
-  .demeter-main-silhouette {
-    top: var(--font-size);
-    right: var(--font-size);
   }
 }
 

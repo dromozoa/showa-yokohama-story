@@ -1102,6 +1102,9 @@ D.MusicPlayer = class {
 
   start(key) {
     const basename = "../output/music/sessions_" + key;
+
+    // onunlockは複数回呼ばれうる。
+    let unlocked = false;
     this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
@@ -1116,14 +1119,18 @@ D.MusicPlayer = class {
         console.log("onfade", soundId);
       },
       onunlock: () => {
-        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-        audioVisualizer.canvas.style.display = "block";
-        audioVisualizer.canvas.style.position = "absolute";
-        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-        logging.log("オーディオロック: 解除");
+        if (!unlocked) {
+          unlocked = true;
+          const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+          audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+          audioVisualizer.canvas.style.display = "block";
+          audioVisualizer.canvas.style.position = "absolute";
+          document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+          logging.log("オーディオロック: 解除");
+        }
       },
     });
+
     this.soundId = this.sound.play();
     logging.log("音楽開始: " + key);
   }
@@ -1456,8 +1463,9 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "silhouette").name("表示: シルエット");
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
-  let initialized = false;
   // openAnimated(false)のトランジションが終わったらUIを隠す。
+  // ev.propertyNameは安定しないので判定に利用しない。
+  let initialized = false;
   systemUiNode.addEventListener("transitionend", ev => {
     if (systemUi._closed && !systemUi._hidden && ev.target === systemUi.$children) {
       systemUi.hide();
