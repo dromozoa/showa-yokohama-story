@@ -150,73 +150,6 @@ body.demeter {
   background-attachment: fixed;
 }
 
-.demeter-main-menu {
-  position: absolute;
-  width: calc(var(--font-size) * 24);
-  height: calc(var(--font-size) * 4.75);
-  left: calc((var(--screen-width) - var(--font-size) * 24) * 0.5);
-  top: 0;
-}
-
-.demeter-main-menu-frame {
-  position: absolute;
-}
-
-.demeter-main-menu-frame svg {
-  display: block;
-  stroke-width: 1px;
-}
-
-.demeter-main-menu-items {
-  position: absolute;
-}
-
-.demeter-main-menu-item {
-  position: absolute;
-  width: calc(var(--font-size) * 7);
-  font-family: var(--font-family-console);
-  font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 2);
-  text-align: center;
-  pointer-events: none;
-}
-
-.demeter-main-menu-item1 {
-  left: calc(var(--font-size) * 8.5);
-  top: calc(var(--font-size) * 0.25);
-}
-
-.demeter-main-menu-item2 {
-  left: calc(var(--font-size) * 1.5);
-  top: calc(var(--font-size) * 0.25);
-}
-
-.demeter-main-menu-item3 {
-  left: calc(var(--font-size) * 15.5);
-  top: calc(var(--font-size) * 0.25);
-}
-
-.demeter-main-menu-item4 {
-  left: calc(var(--font-size) * 0.5);
-  top: calc(var(--font-size) * 2.5);
-}
-
-.demeter-main-menu-item5 {
-  left: calc(var(--font-size) * 16.5);
-  top: calc(var(--font-size) * 2.5);
-}
-
-.demeter-main-menu-title {
-  position: absolute;
-  width: calc(var(--font-size) * 9);
-  left: calc(var(--font-size) * 7.5);
-  top: calc(var(--font-size) * 2.5);
-  font-family: var(--font-family-title-ja);
-  font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 2);
-  text-align: center;
-}
-
 .demeter-main-silhouette {
   position: absolute;
   width: calc(var(--font-size) * 14);
@@ -309,6 +242,73 @@ body.demeter {
     top: calc(var(--font-size) * 12);
     left: var(--font-size);
   }
+}
+
+.demeter-main-menu {
+  position: absolute;
+  width: calc(var(--font-size) * 24);
+  height: calc(var(--font-size) * 4.75);
+  left: calc((var(--screen-width) - var(--font-size) * 24) * 0.5);
+  top: 0;
+}
+
+.demeter-main-menu-frame {
+  position: absolute;
+}
+
+.demeter-main-menu-frame svg {
+  display: block;
+  stroke-width: 1px;
+}
+
+.demeter-main-menu-items {
+  position: absolute;
+}
+
+.demeter-main-menu-item {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-main-menu-item1 {
+  left: calc(var(--font-size) * 8.5);
+  top: calc(var(--font-size) * 0.25);
+}
+
+.demeter-main-menu-item2 {
+  left: calc(var(--font-size) * 1.5);
+  top: calc(var(--font-size) * 0.25);
+}
+
+.demeter-main-menu-item3 {
+  left: calc(var(--font-size) * 15.5);
+  top: calc(var(--font-size) * 0.25);
+}
+
+.demeter-main-menu-item4 {
+  left: calc(var(--font-size) * 0.5);
+  top: calc(var(--font-size) * 2.5);
+}
+
+.demeter-main-menu-item5 {
+  left: calc(var(--font-size) * 16.5);
+  top: calc(var(--font-size) * 2.5);
+}
+
+.demeter-main-menu-title {
+  position: absolute;
+  width: calc(var(--font-size) * 9);
+  left: calc(var(--font-size) * 7.5);
+  top: calc(var(--font-size) * 2.5);
+  font-family: var(--font-family-title-ja);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
 }
 
 /* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
