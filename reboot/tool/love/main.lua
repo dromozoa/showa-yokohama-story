@@ -18,6 +18,7 @@
 package.path = "../?.lua;"..package.path
 local ffi = require "ffi"
 local basename = require "basename"
+local quote_js = require "quote_js"
 local write_json = require "write_json"
 local table_unpack = table.unpack or unpack
 
@@ -263,6 +264,51 @@ local function write_line_data(line_data, result_pathname)
   end
 
   handle:write "</svg>\n"
+  handle:close()
+end
+
+local function write_line_data_js(line_data, result_pathname)
+  local handle = assert(io.open(result_pathname, "wb"))
+
+  local name = assert(result_pathname:match "([^/.]+)%.[^.]+$")
+
+  handle:write [[
+(() => {
+"use strict";
+
+const D = globalThis.demeter ||= {};
+if (D.scanlines) {
+  return;
+}
+
+D.scanlines = {
+]]
+
+  -- line_dataのサイズは1px余裕がある
+  local w = line_data.width - 1
+  local h = line_data.height - 1
+
+  handle:write(quote_js(name), ":{width:", w, ",height:", h, ",data=[\n")
+
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      handle:write("[", x1, ",", y1, ",", x2 - x1, "],\n")
+    end
+  end
+
+  handle:write [[
+]},
+};
+
+})();
+]]
+
+
+
   handle:close()
 end
 
@@ -611,7 +657,14 @@ end
 function commands.scanline(expression, source_pathname, result_pathname)
   local image_data = new_image_data(source_pathname)
   local line_data = scanline(image_data, parse_expression(expression))
-  write_line_data(line_data, result_pathname)
+
+  local format = assert(result_pathname:match "[^.]+$"):lower()
+  assert(format == "svg" or format == "js")
+  if format == "svg" then
+    write_line_data(line_data, result_pathname)
+  else
+    write_line_data_js(line_data, result_pathname)
+  end
 end
 
 function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
