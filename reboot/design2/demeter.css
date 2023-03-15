@@ -150,29 +150,6 @@ body.demeter {
   background-attachment: fixed;
 }
 
-.demeter-main-silhouette {
-  position: absolute;
-  width: calc(var(--font-size) * 16);
-  height: calc(var(--font-size) * 25);
-  /* debug
-  */
-  background-color: rgba(100%, 100%, 100%, 30%);
-}
-
-@media(orientation: portrait) {
-  .demeter-main-silhouette {
-    top: calc(var(--font-size) * 6);
-    right: 0;
-  }
-}
-
-@media(orientation: landscape) {
-  .demeter-main-silhouette {
-    top: var(--font-size);
-    right: 0;
-  }
-}
-
 .demeter-main-logging {
   position: absolute;
   width: calc(var(--font-size) * 10);
@@ -241,6 +218,26 @@ body.demeter {
   .demeter-main-frame-rate-visualizer {
     top: calc(var(--font-size) * 12);
     left: var(--font-size);
+  }
+}
+
+.demeter-main-silhouette {
+  position: absolute;
+  width: calc(var(--font-size) * 16);
+  height: calc(var(--font-size) * 25);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-silhouette {
+    top: calc(var(--font-size) * 6);
+    right: 0;
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-silhouette {
+    top: var(--font-size);
+    right: 0;
   }
 }
 

@@ -1050,6 +1050,60 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.Silhouette = class {
+  constructor(width, height, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    const context = canvas.getContext("2d");
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 0.5;
+    context.strokeStyle = color;
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
+    this.speaker = undefined;
+  }
+
+  updateColor(color) {
+    const context = this.canvas.getContext("2d");
+    context.strokeStyle = color;
+  }
+
+  updateSpeaker(speaker) {
+    this.speaker = speaker;
+  }
+
+  draw() {
+    const context = this.canvas.getContext("2d");
+    context.clearRect(0, 0, this.width, this.height);
+
+    if (!this.speaker) {
+      return;
+    }
+    const scanline = D.scanlines[this.speaker];
+    if (!scanline) {
+      return;
+    }
+
+    context.beginPath();
+    scanline.data.forEach(segment => {
+      const x = segment[0] * 0.5;
+      const y = segment[1] * 0.5;
+      const w = segment[2] * 0.5;
+      context.moveTo(x, y);
+      context.lineTo(x + w, y);
+    });
+    context.stroke();
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.IconAnimation = class {
   constructor(node) {
     this.node = node;
@@ -1289,6 +1343,7 @@ let system;
 let systemUi;
 let audioVisualizer;
 let frameRateVisualizer;
+let silhouette;
 let musicPlayer;
 let voiceSprite;
 
@@ -1344,6 +1399,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  silhouette.updateColor(color);
 };
 
 const updateComponentOpacity = () => {
@@ -1353,6 +1409,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  silhouette.updateColor(color);
 };
 
 const updateComponents = () => {
@@ -1398,6 +1455,14 @@ const updateComponents = () => {
     const node = document.querySelector(".demeter-main-frame-rate-visualizer");
     node.style.display = "none";
   }
+
+  if (system.silhouette) {
+    const node = document.querySelector(".demeter-main-silhouette");
+    node.style.display = "block";
+  } else {
+    const node = document.querySelector(".demeter-main-silhouette");
+    node.style.display = "none";
+  }
 };
 
 const initializeComponents = () => {
@@ -1406,6 +1471,11 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
+  silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
+  silhouette.canvas.style.display = "block";
+  silhouette.canvas.style.position = "absolute";
+  silhouette.updateSpeaker("demeter");
+  document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
   updateComponentOpacity();
@@ -1460,7 +1530,7 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
-  componentFolder.add(system, "silhouette").name("表示: シルエット");
+  componentFolder.add(system, "silhouette").name("表示: シルエット").onChange(updateComponents);
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
@@ -1574,6 +1644,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (frameRateVisualizer) {
       frameRateVisualizer.update();
       frameRateVisualizer.draw();
+    }
+    if (silhouette) {
+      silhouette.draw();
     }
     if (iconAnimation) {
       iconAnimation.update();
