@@ -1092,8 +1092,15 @@ D.Silhouette = class {
 
     context.beginPath();
     scanline.data.forEach(segment => {
-      const x = segment[0] * 0.5;
-      const y = segment[1] * 0.5;
+      // Box-Muller法で正規分布に従う乱数を生成する
+      // 参考: https://kumpei.ikuta.me/benchmark-normal-variates/
+      const a = Math.sqrt(-2 * Math.log(1 - Math.random()));
+      const b = 2 * Math.PI * (1 - Math.random());
+      const z1 = a * Math.cos(b);
+      const z2 = a * Math.sin(b);
+
+      const x = segment[0] * 0.5 + z1 * 2;
+      const y = segment[1] * 0.5 + z2 * 0.125;
       const w = segment[2] * 0.5;
       context.moveTo(x, y);
       context.lineTo(x + w, y);
@@ -1474,7 +1481,7 @@ const initializeComponents = () => {
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
-  silhouette.updateSpeaker("alice");
+  silhouette.updateSpeaker("narrator");
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
