@@ -1481,7 +1481,7 @@ const initializeComponents = () => {
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
-  silhouette.updateSpeaker("steven");
+  silhouette.updateSpeaker("danu");
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
