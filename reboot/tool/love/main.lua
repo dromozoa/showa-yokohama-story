@@ -307,8 +307,6 @@ D.scanlines = {
 })();
 ]]
 
-
-
   handle:close()
 end
 
