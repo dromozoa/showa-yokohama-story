@@ -1419,7 +1419,7 @@ const updateComponents = () => {
   let top;
   let spacing;
   if (W <= H) {
-    top = fontSize * 6;
+    top = fontSize * 7;
     spacing = fontSize;
   } else {
     top = fontSize;
@@ -1474,7 +1474,7 @@ const initializeComponents = () => {
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
-  silhouette.updateSpeaker("demeter");
+  silhouette.updateSpeaker("alice");
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();

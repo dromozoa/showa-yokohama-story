@@ -169,7 +169,7 @@ body.demeter {
 
 @media(orientation: portrait) {
   .demeter-main-logging {
-    top: calc(var(--font-size) * 6);
+    top: calc(var(--font-size) * 7);
     left: var(--font-size);
   }
 }
@@ -189,7 +189,7 @@ body.demeter {
 
 @media(orientation: portrait) {
   .demeter-main-audio-visualizer {
-    top: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 13);
     left: var(--font-size);
   }
 }
@@ -209,7 +209,7 @@ body.demeter {
 
 @media(orientation: portrait) {
   .demeter-main-frame-rate-visualizer {
-    top: calc(var(--font-size) * 18);
+    top: calc(var(--font-size) * 19);
     left: var(--font-size);
   }
 }
@@ -229,7 +229,7 @@ body.demeter {
 
 @media(orientation: portrait) {
   .demeter-main-silhouette {
-    top: calc(var(--font-size) * 6);
+    top: calc(var(--font-size) * 7);
     right: 0;
   }
 }
