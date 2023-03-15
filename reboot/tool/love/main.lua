@@ -288,7 +288,7 @@ D.scanlines = {
   local w = line_data.width - 1
   local h = line_data.height - 1
 
-  handle:write(quote_js(name), ":{width:", w, ",height:", h, ",data=[\n")
+  handle:write(quote_js(name), ":{width:", w, ",height:", h, ",data:[\n")
 
   for _, line in ipairs(line_data) do
     local y1 = line.y1
