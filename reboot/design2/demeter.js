@@ -770,7 +770,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
 //-------------------------------------------------------------------------
 
-D.createMainMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
+D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const U1 = buttonHeight;
   const U2 = buttonHeight * 0.5;
   const U3 = buttonHeight / 3;
@@ -823,6 +823,61 @@ D.createMainMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
         <g class="demeter-button demeter-button3"><path d="${button3PathData}"/></g>
         <g class="demeter-button demeter-button4"><path d="${button4PathData}"/></g>
         <g class="demeter-button demeter-button5"><path d="${button5PathData}"/></g>
+      </g>
+    </svg>
+  `;
+  return template.content.firstElementChild;
+};
+
+//-------------------------------------------------------------------------
+
+D.createBackFrame = (width, height, buttonWidth, buttonHeight, strokeWidth) => {
+  const U1 = buttonHeight;
+  const U3 = buttonHeight / 3;
+  const BW = buttonWidth;
+
+  const strokePathData = new D.PathData()
+    .M(BW,0).V(U1-U3).l(-U3,U3).H(0)
+    ;
+
+  const fillPathData = new D.PathData()
+    .M(0,0).L(BW,0).V(U1-U3).l(-U3,U3).H(0).z();
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
+      style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
+      xmlns="http://www.w3.org/2000/svg">
+      <g class="demeter-buttons">
+        <g class="demeter-button demeter-button1">
+          <path stroke="none" d="${fillPathData}"/>
+          <path fill="none" stroke-width="${D.numberToString(strokeWidth)}" d="${strokePathData}"/>
+        </g>
+      </g>
+    </svg>
+  `;
+  return template.content.firstElementChild;
+};
+
+//-------------------------------------------------------------------------
+
+D.createTitleFrame = (width, height, titleWidth, titleHeight) => {
+  const U1 = titleHeight;
+  const U3 = titleHeight / 3;
+  const TX = (width - titleWidth) * 0.5;
+  const TW = titleWidth;
+
+  const pathData = new D.PathData()
+    .M(TX,0).V(U1-U3).l(U3,U3).h(U1-U3)
+    .M(TX+TW,0).V(U1-U3).l(-U3,U3).h(-U1+U3);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
+      style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
+      xmlns="http://www.w3.org/2000/svg">
+      <g class="demeter-title">
+        <path fill="none" d="${pathData}"/>
       </g>
     </svg>
   `;
@@ -1559,17 +1614,43 @@ const initializeSystemUi = () => {
 
 //-------------------------------------------------------------------------
 
-const initializeTitleScreen = () => {
-  document.querySelector(".demeter-title-screen").addEventListener("click", async () => {
-    document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
-    document.querySelector(".demeter-camera").append(document.querySelector(".demeter-main-screen"));
-    iconAnimation.stop();
-    iconAnimation = undefined;
+const leaveTitleScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
+  iconAnimation.stop();
+  iconAnimation = undefined;
+};
 
-    // debug
-    iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
-    iconAnimation.start();
+const leaveMainScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
+  // debug
+  iconAnimation.stop();
+  iconAnimation = undefined;
+};
+
+const leaveLoadScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-load-screen"));
+};
+
+const enterMainScreen = () => {
+  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-main-screen"));
+  // debug
+  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
+  iconAnimation.start();
+};
+
+const enterLoadScreen = () => {
+  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-load-screen"));
+};
+
+
+//-------------------------------------------------------------------------
+
+const initializeTitleScreen = () => {
+  document.querySelector(".demeter-title-screen").addEventListener("click", () => {
+    leaveTitleScreen();
+    enterMainScreen();
   });
+  // TODO iconAnimationは分離したほうがよい？
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
   iconAnimation.start();
 };
@@ -1577,11 +1658,11 @@ const initializeTitleScreen = () => {
 const initializeMainScreen = () => {
   initializeSystemUi();
 
-  const menuFrameNode = D.createMainMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
+  const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
-  // システムメニュー
-  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async () => {
+  // SYSTEM
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", () => {
     if (systemUi._hidden) {
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
       systemUiNode.style.display = "block";
@@ -1590,6 +1671,25 @@ const initializeMainScreen = () => {
     } else {
       systemUi.openAnimated(false);
     }
+  });
+
+  // LOAD
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
+    leaveMainScreen();
+    enterLoadScreen();
+  });
+};
+
+const initializeLoadScreen = () => {
+  const backFrameNode = D.createBackFrame(fontSize * 11, fontSize * 3, fontSize * 10, fontSize * 2, 1);
+  document.querySelector(".demeter-load-back-frame").append(backFrameNode);
+
+  const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
+  document.querySelector(".demeter-load-title-frame").append(titleFrameNode);
+
+  backFrameNode.querySelector(".demeter-button1").addEventListener("click", () => {
+    leaveLoadScreen();
+    enterMainScreen();
   });
 };
 
@@ -1625,6 +1725,7 @@ const resize = () => {
 
   document.querySelector(".demeter-title-screen").style.transform = transform;
   document.querySelector(".demeter-main-screen").style.transform = transform;
+  document.querySelector(".demeter-load-screen").style.transform = transform;
   updateComponents();
 };
 
@@ -1637,6 +1738,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initializeDatabase();
   initializeTitleScreen();
   initializeMainScreen();
+  initializeLoadScreen();
   initializeAudio();
   resize();
   document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
