@@ -770,7 +770,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
 
 //-------------------------------------------------------------------------
 
-D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
+D.createMainMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
   const U1 = buttonHeight;
   const U2 = buttonHeight * 0.5;
   const U3 = buttonHeight / 3;
@@ -1577,7 +1577,7 @@ const initializeTitleScreen = () => {
 const initializeMainScreen = () => {
   initializeSystemUi();
 
-  const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
+  const menuFrameNode = D.createMainMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
   // システムメニュー
