@@ -421,8 +421,8 @@ body.demeter {
 
 .demeter-load-back {
   position: absolute;
-  width: calc(var(--font-size) * 11);
-  height: calc(var(--font-size) * 3);
+  width: calc(var(--font-size) * 10 + 1);
+  height: calc(var(--font-size) * 2 + 1);
 }
 
 .demeter-load-back-frame {
@@ -446,6 +446,12 @@ body.demeter {
 
 .demeter-load-back-in-the-ussr {
   font-size: 50%;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.demeter-load-back:hover .demeter-load-back-in-the-ussr {
+  opacity: 1;
 }
 
 .demeter-load-title {

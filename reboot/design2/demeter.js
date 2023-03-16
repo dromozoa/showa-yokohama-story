@@ -1681,7 +1681,7 @@ const initializeMainScreen = () => {
 };
 
 const initializeLoadScreen = () => {
-  const backFrameNode = D.createBackFrame(fontSize * 11, fontSize * 3, fontSize * 10, fontSize * 2, 1);
+  const backFrameNode = D.createBackFrame(fontSize * 10 + 1, fontSize * 2 + 1, fontSize * 10, fontSize * 2, 1);
   document.querySelector(".demeter-load-back-frame").append(backFrameNode);
 
   const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
