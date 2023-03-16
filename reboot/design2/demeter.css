@@ -496,6 +496,125 @@ body.demeter {
   text-align: center;
 }
 
+@media (orientation: portrait) {
+  .demeter-data-tapes {
+    position: absolute;
+    width: calc(var(--font-size) * 23);
+    height: calc(var(--font-size) * 25);
+    left: calc(var(--font-size) * 2);
+    top: calc(var(--font-size) * 12);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-data-tapes {
+    position: absolute;
+    width: calc(var(--font-size) * 38);
+    height: calc(var(--font-size) * 17);
+    left: calc(var(--font-size) * 5);
+    top: calc(var(--font-size) * 6);
+  }
+}
+
+.demeter-data-tape {
+  display: block;
+  position: absolute;
+  width: calc(var(--font-size) * 11);
+  height: calc(var(--font-size) * 7);
+}
+
+/*************************************************************************/
+
+@media (orientation: portrait) {
+  .demeter-load-tape-tutorial {
+    left: 0;
+    top: calc(var(--font-size) * 9);
+  }
+
+  .demeter-load-tape-trailer {
+    left: 0;
+    top: calc(var(--font-size) * 18);
+  }
+
+  .demeter-load-tape-save1 {
+    left: calc(var(--font-size) * 12);
+    top: 0;
+  }
+
+  .demeter-load-tape-save2 {
+    left: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 9);
+  }
+
+  .demeter-load-tape-save3 {
+    left: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 18);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-load-tape-tutorial {
+    left: calc(var(--font-size) * 13.5);
+    top: 0;
+  }
+
+  .demeter-load-tape-trailer {
+    left: calc(var(--font-size) * 27);
+    top: 0;
+  }
+
+  .demeter-load-tape-save1 {
+    left: 0;
+    top: calc(var(--font-size) * 10);
+  }
+
+  .demeter-load-tape-save2 {
+    left: calc(var(--font-size) * 13.5);
+    top: calc(var(--font-size) * 10);
+  }
+
+  .demeter-load-tape-save3 {
+    left: calc(var(--font-size) * 27);
+    top: calc(var(--font-size) * 10);
+  }
+}
+
+/*************************************************************************/
+
+@media (orientation: portrait) {
+  .demeter-save-tape-save1 {
+    left: calc(var(--font-size) * 6);
+    top: 0;
+  }
+
+  .demeter-save-tape-save2 {
+    left: calc(var(--font-size) * 6);
+    top: calc(var(--font-size) * 9);
+  }
+
+  .demeter-save-tape-save3 {
+    left: calc(var(--font-size) * 6);
+    top: calc(var(--font-size) * 18);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-save-tape-save1 {
+    left: 0;
+    top: calc(var(--font-size) * 4);
+  }
+
+  .demeter-save-tape-save2 {
+    left: calc(var(--font-size) * 13.5);
+    top: calc(var(--font-size) * 4);
+  }
+
+  .demeter-save-tape-save3 {
+    left: calc(var(--font-size) * 27);
+    top: calc(var(--font-size) * 4);
+  }
+}
+
 /*************************************************************************/
 
 /* 1989-01-06 21:33Z */
