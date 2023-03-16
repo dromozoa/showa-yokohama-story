@@ -26,6 +26,7 @@
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', sans-serif;
   --font-family-logging: 'Share Tech Mono', 'BIZ UDGothic', monospace;
+  --font-family-label: var(--font-family-console);
 
   --color-title: #C63322;
   --color-console: #029D93;
@@ -517,10 +518,37 @@ body.demeter {
 }
 
 .demeter-data-tape {
-  display: block;
   position: absolute;
   width: calc(var(--font-size) * 11);
   height: calc(var(--font-size) * 7);
+}
+
+.demeter-data-tape > img {
+  position: absolute;
+  display: block;
+  width: calc(var(--font-size) * 11);
+  height: calc(var(--font-size) * 7);
+}
+
+.demeter-data-tape-label1,
+.demeter-data-tape-label2 {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+  color: #000;
+  font-family: var(--font-family-label);
+  font-size: calc(var(--font-size) * 0.5);
+  line-height: calc(var(--font-size) * 0.5);
+  pointer-events: none;
+}
+
+.demeter-data-tape-label1 {
+  left: calc(var(--font-size) * 1.5);
+  top: 26px;
+}
+
+.demeter-data-tape-label2 {
+  left: calc(var(--font-size) * 1.5);
+  top: 23px;
 }
 
 /*************************************************************************/
