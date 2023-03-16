@@ -645,6 +645,15 @@ body.demeter {
 
 /*************************************************************************/
 
+.demeter-overlay {
+  display: none;
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+/*************************************************************************/
+
 /* 1989-01-06 21:33Z */
 .demeter-offscreen {
   position: absolute;

@@ -1802,6 +1802,7 @@ const resize = () => {
   document.querySelector(".demeter-main-screen").style.transform = transform;
   document.querySelector(".demeter-load-screen").style.transform = transform;
   document.querySelector(".demeter-save-screen").style.transform = transform;
+  document.querySelector(".demeter-overlay").style.transform = transform;
   updateComponents();
 };
 
