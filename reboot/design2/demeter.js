@@ -36,6 +36,18 @@ D.toCssColor = (r, g, b, a = 1) => "rgba(" + D.numberToCss(r * 100, "%,") + D.nu
 
 //-------------------------------------------------------------------------
 
+const dateToStringImpl = v => v < 10 ? "0" + v : v;
+
+D.dateToString = v => (
+  v.getFullYear() + "/" +
+  dateToStringImpl(v.getMonth() + 1) + "/" +
+  dateToStringImpl(v.getDate()) + " " +
+  dateToStringImpl(v.getHours()) + ":" +
+  dateToStringImpl(v.getMinutes())
+);
+
+//-------------------------------------------------------------------------
+
 let serialNumber = 0;
 
 D.getSerialNumber = () => {
@@ -1702,6 +1714,30 @@ const initializeLoadScreen = () => {
     leaveLoadScreen();
     enterMainScreen();
   });
+
+  document.querySelector(".demeter-load-tape-autosave").addEventListener("click", () => {
+    console.log("autosave");
+  });
+
+  document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", () => {
+    console.log("tutorial");
+  });
+
+  document.querySelector(".demeter-load-tape-trailer").addEventListener("click", () => {
+    console.log("trailer");
+  });
+
+  document.querySelector(".demeter-load-tape-save1").addEventListener("click", () => {
+    console.log("save1");
+  });
+
+  document.querySelector(".demeter-load-tape-save2").addEventListener("click", () => {
+    console.log("save2");
+  });
+
+  document.querySelector(".demeter-load-tape-save3").addEventListener("click", () => {
+    console.log("save3");
+  });
 };
 
 const initializeSaveScreen = () => {
@@ -1714,6 +1750,21 @@ const initializeSaveScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
     leaveSaveScreen();
     enterMainScreen();
+  });
+
+  document.querySelector(".demeter-save-tape-save1").addEventListener("click", () => {
+    console.log("save1");
+    document.querySelector(".demeter-save-tape-save1-text").textContent = " / saved: " + D.dateToString(new Date());
+  });
+
+  document.querySelector(".demeter-save-tape-save2").addEventListener("click", () => {
+    console.log("save2");
+    document.querySelector(".demeter-save-tape-save2-text").textContent = " / saved: " + D.dateToString(new Date());
+  });
+
+  document.querySelector(".demeter-save-tape-save3").addEventListener("click", () => {
+    console.log("save3");
+    document.querySelector(".demeter-save-tape-save3-text").textContent = " / saved: " + D.dateToString(new Date());
   });
 };
 
