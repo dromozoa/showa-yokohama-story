@@ -1432,24 +1432,26 @@ const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
 
+let iconAnimation;
 let system;
 let systemUi;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
 let musicPlayer;
-let textAnimation;
-let voiceSprite;
-let iconAnimation;
 
-let paragraphIndexPrev = 38;
+let paragraphIndexPrev = 46;
 let paragraphIndex;
-let paragraphLineNumber;
 let paragraph;
+let paragraphLineNumber;
 let textAnimations;
+let textAnimation;
 let voiceSound;
+let voiceSprite;
 let choices;
 let waitForChoice;
+
+let save = {};
 
 //-------------------------------------------------------------------------
 
@@ -1462,6 +1464,8 @@ const saveSystemTask = async () => {
     logging.log(e.message);
   }
 };
+
+const createContext = () => { system: system };
 
 //-------------------------------------------------------------------------
 
@@ -1868,10 +1872,18 @@ const next = async () => {
 
   if (paragraphIndex === undefined) {
     paragraphIndex = paragraphIndexPrev + 1;
-    paragraphLineNumber = 1;
     paragraph = D.scenario[paragraphIndex - 1];
-    textAnimations = [];
 
+    if (paragraph[0].when) {
+      const paragraphIndexWhen = paragraph[0].when(save, createContext());
+      if (paragraphIndexWhen !== undefined) {
+        paragraphIndex = paragraphIndexWhen;
+        paragraph = D.scenario[paragraphIndex - 1];
+      }
+    }
+
+    paragraphLineNumber = 1;
+    textAnimations = [];
     const textNodes = [];
     D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
       const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
@@ -1902,6 +1914,12 @@ const next = async () => {
 
   ++paragraphLineNumber;
   if (paragraphLineNumber > textAnimations.length) {
+    paragraphIndexPrev = paragraphIndex;
+
+    if (paragraph[0].jump !== undefined) {
+      paragraphIndexPrev = paragraph[0].jump - 1;
+    }
+
     choices = paragraph[0].choices;
     if (choices) {
       const choiceNodes = [
@@ -1924,19 +1942,25 @@ const next = async () => {
       document.querySelector(".demeter-main-choices").style.display = "block";
 
       const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+      if (choice.action) {
+        choice.action(save, createContext());
+      }
+
       paragraphIndexPrev = choice.label - 1;
       waitForChoice = undefined;
       choices = undefined;
       cont = true;
 
       document.querySelector(".demeter-main-choices").style.display = "none";
-    } else {
-      paragraphIndexPrev = paragraphIndex;
+    }
+
+    if (paragraph[0].leave) {
+      paragraph[0].leave(save, createContext());
     }
 
     paragraphIndex = undefined;
-    paragraphLineNumber = undefined;
     paragraph = undefined;
+    paragraphLineNumber = undefined;
     textAnimations = undefined;
     voiceSound = undefined;
   }

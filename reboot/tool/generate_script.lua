@@ -60,7 +60,7 @@ for i, paragraph in ipairs(scenario) do
     for _, jump in ipairs(paragraph.choice_jumps) do
       handle:write("{choice:", encode_text(jump.choice))
       if jump.action then
-        handle:write(",action:$=>{", jump.action, ";}")
+        handle:write(",action:($,ctx)=>{", jump.action, ";}")
       end
       if jump.barcode then
         handle:write(",barcode:", quote_js(jump.barcode))
@@ -70,14 +70,14 @@ for i, paragraph in ipairs(scenario) do
     handle:write "]"
   end
   if paragraph.when_jumps then
-    handle:write ",when:$=>{\n"
+    handle:write ",when:($,ctx)=>{\n"
     for _, jump in ipairs(paragraph.when_jumps) do
       handle:write("if(", jump.when, ")return ", scenario.labels[jump.label].index, ";\n")
     end
     handle:write "}"
   end
   if paragraph.leave then
-    handle:write(",leave:$=>{", paragraph.leave, ";}")
+    handle:write(",leave:($,ctx)=>{", paragraph.leave, ";}")
   end
   if paragraph.finish then
     handle:write ",finish:true"
