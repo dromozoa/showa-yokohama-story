@@ -530,25 +530,25 @@ body.demeter {
   height: calc(var(--font-size) * 7);
 }
 
-.demeter-data-tape-label1,
-.demeter-data-tape-label2 {
+.demeter-data-tape-label,
+.demeter-data-tape-label-autosave {
   position: absolute;
   width: calc(var(--font-size) * 8);
   color: #000;
   font-family: var(--font-family-label);
-  font-size: calc(var(--font-size) * 0.5);
-  line-height: calc(var(--font-size) * 0.5);
+  font-size: calc(var(--font-size) * 0.75);
+  line-height: calc(var(--font-size) * 0.75);
   pointer-events: none;
 }
 
-.demeter-data-tape-label1 {
+.demeter-data-tape-label {
   left: calc(var(--font-size) * 1.5);
-  top: 26px;
+  top: 24px;
 }
 
-.demeter-data-tape-label2 {
+.demeter-data-tape-label-autosave {
   left: calc(var(--font-size) * 1.5);
-  top: 23px;
+  top: 26px;
 }
 
 /*************************************************************************/

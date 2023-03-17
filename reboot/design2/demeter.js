@@ -1754,17 +1754,17 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", () => {
     console.log("save1");
-    document.querySelector(".demeter-save-tape-save1-text").textContent = " / saved: " + D.dateToString(new Date());
+    document.querySelector(".demeter-save-tape-save1-text").textContent = " : " + D.dateToString(new Date());
   });
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", () => {
     console.log("save2");
-    document.querySelector(".demeter-save-tape-save2-text").textContent = " / saved: " + D.dateToString(new Date());
+    document.querySelector(".demeter-save-tape-save2-text").textContent = " : " + D.dateToString(new Date());
   });
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", () => {
     console.log("save3");
-    document.querySelector(".demeter-save-tape-save3-text").textContent = " / saved: " + D.dateToString(new Date());
+    document.querySelector(".demeter-save-tape-save3-text").textContent = " : " + D.dateToString(new Date());
   });
 };
 
