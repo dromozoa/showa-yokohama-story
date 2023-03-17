@@ -1646,18 +1646,18 @@ const leaveSaveScreen = () => {
 };
 
 const enterMainScreen = () => {
-  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
   // debug
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
   iconAnimation.start();
 };
 
 const enterLoadScreen = () => {
-  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-load-screen"));
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-load-screen"));
 };
 
 const enterSaveScreen = () => {
-  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-save-screen"));
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-save-screen"));
 };
 
 //-------------------------------------------------------------------------
@@ -1819,7 +1819,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeSaveScreen();
   initializeAudio();
   resize();
-  document.querySelector(".demeter-camera").append(document.querySelector(".demeter-title-screen"));
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
 
   while (true) {
     await D.requestAnimationFrame();
