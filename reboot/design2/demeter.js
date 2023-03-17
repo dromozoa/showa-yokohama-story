@@ -1294,6 +1294,56 @@ D.MusicPlayer = class {
 
 //-------------------------------------------------------------------------
 
+D.TextAnimation = class {
+  constructor(textNode, speed) {
+    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
+    this.nodes.forEach(node => node.style.opacity = "0");
+    this.speed = speed;
+    this.finished = false;
+  }
+
+  updateSpeed(speed) {
+    this.speed = speed;
+  }
+
+  async start() {
+    let index = 0;
+    let start;
+    L: while (!this.finished) {
+      const timestamp = await D.requestAnimationFrame();
+      if (start === undefined) {
+        start = timestamp;
+      }
+
+      while (true) {
+        const node = this.nodes[index];
+        if (!node) {
+          break L;
+        }
+
+        const duration = timestamp - start;
+        if (duration < this.speed) {
+          node.style.opacity = D.numberToString(duration / this.speed);
+          break;
+        } else {
+          node.style.opacity = "1";
+          start += this.speed;
+          ++index;
+        }
+      }
+    }
+    if (this.finished) {
+      this.nodes.forEach(node => node.style.opacity = "1");
+    }
+  }
+
+  finish() {
+    this.finished = true;
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.VoiceSprite = class {
   constructor(sound, sprite, volume) {
     this.sound = sound;
@@ -1345,56 +1395,6 @@ D.VoiceSprite = class {
 
 //-------------------------------------------------------------------------
 
-D.TextAnimation = class {
-  constructor(textNode, speed) {
-    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
-    this.nodes.forEach(node => node.style.opacity = "0");
-    this.speed = speed;
-    this.finished = false;
-  }
-
-  updateSpeed(speed) {
-    this.speed = speed;
-  }
-
-  async start() {
-    let index = 0;
-    let start;
-    L: while (!this.finished) {
-      const timestamp = await D.requestAnimationFrame();
-      if (start === undefined) {
-        start = timestamp;
-      }
-
-      while (true) {
-        const node = this.nodes[index];
-        if (!node) {
-          break L;
-        }
-
-        const duration = timestamp - start;
-        if (duration < this.speed) {
-          node.style.opacity = D.numberToString(duration / this.speed);
-          break;
-        } else {
-          node.style.opacity = "1";
-          start += this.speed;
-          ++index;
-        }
-      }
-    }
-    if (this.finished) {
-      this.nodes.forEach(node => node.style.opacity = "1");
-    }
-  }
-
-  finish() {
-    this.finished = true;
-  }
-};
-
-//-------------------------------------------------------------------------
-
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 
@@ -1436,8 +1436,8 @@ let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
 let musicPlayer;
-let voiceSprite;
 let textAnimation;
+let voiceSprite;
 let iconAnimation;
 
 let paragraphIndexPrev = 0;
@@ -1665,9 +1665,6 @@ const leaveTitleScreen = () => {
 
 const leaveMainScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
-  // debug
-  iconAnimation.stop();
-  iconAnimation = undefined;
 };
 
 const leaveLoadScreen = () => {
@@ -1680,9 +1677,6 @@ const leaveSaveScreen = () => {
 
 const enterMainScreen = () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
-  // debug
-  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
-  iconAnimation.start();
 };
 
 const enterLoadScreen = () => {
@@ -1818,6 +1812,11 @@ const nextParagraph = async () => {
   }
   paragraphIndex = paragraphIndexPrev + 1;
 
+  if (iconAnimation) {
+    iconAnimation.stop();
+    iconAnimation = undefined;
+  }
+
   const paragraph = D.scenario[paragraphIndex - 1];
   const textNodes = [];
   const textAnimations = [];
@@ -1855,6 +1854,11 @@ const nextParagraph = async () => {
 
   paragraphIndexPrev = paragraphIndex;
   paragraphIndex = undefined;
+
+  if (!iconAnimation) {
+    iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
+    iconAnimation.start();
+  }
 };
 
 //-------------------------------------------------------------------------

@@ -362,6 +362,7 @@ body.demeter {
   position: absolute;
   left: 0;
   top: 0;
+  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -383,6 +384,7 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 25);
   height: calc(var(--font-size) * 8);
+  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -407,6 +409,7 @@ body.demeter {
   height: calc(var(--font-size) * 2);
   text-align: right;
   transform-origin: center bottom;
+  pointer-events: none;
 }
 
 /*************************************************************************/
