@@ -1442,10 +1442,10 @@ let iconAnimation;
 
 let paragraphIndexPrev = 0;
 let paragraphIndex;
-let textNumber;
-let baseNumber;
-let baseState;
-let baseTimestamp;
+let paragraphLineNumber;
+let paragraph;
+let textAnimations;
+let voiceSound;
 
 //-------------------------------------------------------------------------
 
@@ -1732,7 +1732,7 @@ const initializeMainScreen = () => {
     enterSaveScreen();
   });
 
-  document.querySelector(".demeter-main-paragraph").addEventListener("click", nextParagraph);
+  document.querySelector(".demeter-main-paragraph").addEventListener("click", next);
 };
 
 const initializeLoadScreen = () => {
@@ -1811,65 +1811,88 @@ const initializeAudio = () => {
 
 //-------------------------------------------------------------------------
 
-const nextParagraph = async () => {
-  if (paragraphIndex !== undefined) {
-    if (textAnimation) {
-      textAnimation.finish();
-    }
-    if (voiceSprite) {
-      voiceSprite.finish();
-    }
-    return;
-  }
-
-  paragraphIndex = paragraphIndexPrev + 1;
-
+const runTextAnimation = async () => {
   if (iconAnimation) {
     iconAnimation.stop();
     iconAnimation = undefined;
   }
 
-  const paragraph = D.scenario[paragraphIndex - 1];
-  const textNodes = [];
-  const textAnimations = [];
-
-  D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
-    const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
-    textNodes.push(textNode);
-    textAnimations.push(new D.TextAnimation(textNode, system.speed));
-  });
-
-  const speaker = paragraph[0].speaker;
-  if (silhouette) {
-    silhouette.updateSpeaker(speaker);
-  }
-  document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
-  document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
-
-  const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new Howl({
-    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
-    sprite: D.voiceSprites[paragraphIndex - 1],
-  });
-
-  for (let i = 0; i < textAnimations.length; ++i) {
-    textAnimation = textAnimations[i];
-    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1), system.voiceVolume);
-    await Promise.all([
-      textAnimation.start(),
-      voiceSprite.start(),
-    ]);
-  }
-
+  await textAnimation.start();
   textAnimation = undefined;
-  voiceSprite = undefined;
-
-  paragraphIndexPrev = paragraphIndex;
-  paragraphIndex = undefined;
 
   if (!iconAnimation) {
     iconAnimation = new D.IconAnimation(document.querySelector(".demeter-main-paragraph-icon"));
     iconAnimation.start();
+  }
+};
+
+const runVoiceSprite = async () => {
+  await voiceSprite.start();
+  // テキストアニメーションが終了している場合は次の行に進む。
+  const cont = textAnimation === undefined;
+  voiceSprite = undefined;
+  return cont;
+};
+
+const next = async () => {
+  // テキストアニメーションをしていたら終了させる。
+  if (textAnimation) {
+    textAnimation.finish();
+    return;
+  }
+
+  // テキストアニメーションは終了しているが、音声は再生中なので、音声を終了する。
+  if (voiceSprite) {
+    voiceSprite.finish();
+    return;
+  }
+
+  if (paragraphIndex === undefined) {
+    paragraphIndex = paragraphIndexPrev + 1;
+    paragraphLineNumber = 1;
+    paragraph = D.scenario[paragraphIndex - 1];
+    textAnimations = [];
+
+    const textNodes = [];
+    D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+      const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
+      textNodes.push(textNode);
+      textAnimations.push(new D.TextAnimation(textNode, system.speed));
+    });
+    const speaker = paragraph[0].speaker;
+    if (silhouette) {
+      silhouette.updateSpeaker(speaker);
+    }
+    document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
+    document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+
+    const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+    voiceSound = new Howl({
+      src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+      sprite: D.voiceSprites[paragraphIndex - 1],
+    });
+  }
+
+  textAnimation = textAnimations[paragraphLineNumber - 1];
+  voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
+
+  const [ notUsed, cont ] = await Promise.all([
+    runTextAnimation(),
+    runVoiceSprite(),
+  ]);
+
+  ++paragraphLineNumber;
+  if (paragraphLineNumber > textAnimations.length) {
+    paragraphIndexPrev = paragraphIndex;
+    paragraphIndex = undefined;
+    paragraphLineNumber = undefined;
+    paragraph = undefined;
+    textAnimations = undefined;
+    voiceSound = undefined;
+  }
+
+  if (cont) {
+    await next();
   }
 };
 
@@ -1908,7 +1931,7 @@ addEventListener("resize", resize);
 
 addEventListener("keydown", async ev => {
   if (ev.code === "Enter") {
-    await nextParagraph();
+    await next();
   }
 });
 
