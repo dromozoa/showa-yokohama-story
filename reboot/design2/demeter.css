@@ -342,6 +342,7 @@ body.demeter {
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
+  cursor: var(--cursor-pointer, auto);
 }
 
 @media (orientation: portrait) {

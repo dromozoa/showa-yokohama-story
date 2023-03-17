@@ -1675,6 +1675,12 @@ const leaveSaveScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-save-screen"));
 };
 
+const enterTitleScreen = () => {
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
+  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
+  iconAnimation.start();
+};
+
 const enterMainScreen = () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
 };
@@ -1694,9 +1700,6 @@ const initializeTitleScreen = () => {
     leaveTitleScreen();
     enterMainScreen();
   });
-  // TODO iconAnimationは分離したほうがよい？
-  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
-  iconAnimation.start();
 };
 
 const initializeMainScreen = () => {
@@ -1728,6 +1731,8 @@ const initializeMainScreen = () => {
     leaveMainScreen();
     enterSaveScreen();
   });
+
+  document.querySelector(".demeter-main-paragraph").addEventListener("click", nextParagraph);
 };
 
 const initializeLoadScreen = () => {
@@ -1808,8 +1813,15 @@ const initializeAudio = () => {
 
 const nextParagraph = async () => {
   if (paragraphIndex !== undefined) {
+    if (textAnimation) {
+      textAnimation.finish();
+    }
+    if (voiceSprite) {
+      voiceSprite.finish();
+    }
     return;
   }
+
   paragraphIndex = paragraphIndexPrev + 1;
 
   if (iconAnimation) {
@@ -1896,16 +1908,7 @@ addEventListener("resize", resize);
 
 addEventListener("keydown", async ev => {
   if (ev.code === "Enter") {
-    if (textAnimation || voiceSprite) {
-      if (textAnimation) {
-        textAnimation.finish();
-      }
-      if (voiceSprite) {
-        voiceSprite.finish();
-      }
-    } else {
-      await nextParagraph();
-    }
+    await nextParagraph();
   }
 });
 
@@ -1918,7 +1921,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeSaveScreen();
   initializeAudio();
   resize();
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
+  enterTitleScreen();
 
   while (true) {
     await D.requestAnimationFrame();
@@ -1938,7 +1941,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       iconAnimation.update();
     }
   }
-
 }, { once: true });
 
 //-------------------------------------------------------------------------
