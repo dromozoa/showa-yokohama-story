@@ -36,14 +36,17 @@ D.toCssColor = (r, g, b, a = 1) => "rgba(" + D.numberToCss(r * 100, "%,") + D.nu
 
 //-------------------------------------------------------------------------
 
-const dateToStringImpl = v => v < 10 ? "0" + v : v;
+D.padStart = (v, n, pad = "0") => {
+  const s = v.toString();
+  return pad.repeat(Math.max(0, n - s.length)) + s;
+};
 
 D.dateToString = v => (
   v.getFullYear() + "/" +
-  dateToStringImpl(v.getMonth() + 1) + "/" +
-  dateToStringImpl(v.getDate()) + " " +
-  dateToStringImpl(v.getHours()) + ":" +
-  dateToStringImpl(v.getMinutes())
+  D.padStart(v.getMonth() + 1, 2) + "/" +
+  D.padStart(v.getDate(), 2) + " " +
+  D.padStart(v.getHours(), 2) + ":" +
+  D.padStart(v.getMinutes(), 2)
 );
 
 //-------------------------------------------------------------------------
@@ -1291,52 +1294,6 @@ D.MusicPlayer = class {
 
 //-------------------------------------------------------------------------
 
-D.TextAnimation = class {
-  constructor(textNode, speed) {
-    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
-    this.nodes.forEach(node => node.style.opacity = "0");
-    this.speed = speed;
-    this.finished = false;
-  }
-
-  async start() {
-    let index = 0;
-    let start;
-    L: while (!this.finished) {
-      const timestamp = await D.requestAnimationFrame();
-      if (start === undefined) {
-        start = timestamp;
-      }
-
-      while (true) {
-        const node = this.nodes[index];
-        if (!node) {
-          break L;
-        }
-
-        const duration = timestamp - start;
-        if (duration < this.speed) {
-          node.style.opacity = D.numberToString(duration / this.speed);
-          break;
-        } else {
-          node.style.opacity = "1";
-          start += this.speed;
-          ++index;
-        }
-      }
-    }
-    if (this.finished) {
-      this.nodes.forEach(node => node.style.opacity = "1");
-    }
-  }
-
-  finish() {
-    this.finished = true;
-  }
-};
-
-//-------------------------------------------------------------------------
-
 D.VoiceSprite = class {
   constructor(sound, sprite, volume) {
     this.sound = sound;
@@ -1388,8 +1345,70 @@ D.VoiceSprite = class {
 
 //-------------------------------------------------------------------------
 
+D.TextAnimation = class {
+  constructor(textNode, speed) {
+    this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
+    this.nodes.forEach(node => node.style.opacity = "0");
+    this.speed = speed;
+    this.finished = false;
+  }
+
+  updateSpeed(speed) {
+    this.speed = speed;
+  }
+
+  async start() {
+    let index = 0;
+    let start;
+    L: while (!this.finished) {
+      const timestamp = await D.requestAnimationFrame();
+      if (start === undefined) {
+        start = timestamp;
+      }
+
+      while (true) {
+        const node = this.nodes[index];
+        if (!node) {
+          break L;
+        }
+
+        const duration = timestamp - start;
+        if (duration < this.speed) {
+          node.style.opacity = D.numberToString(duration / this.speed);
+          break;
+        } else {
+          node.style.opacity = "1";
+          start += this.speed;
+          ++index;
+        }
+      }
+    }
+    if (this.finished) {
+      this.nodes.forEach(node => node.style.opacity = "1");
+    }
+  }
+
+  finish() {
+    this.finished = true;
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+
+const speakerNames = {
+  narrator: "",
+  alice:    "アリス",
+  danu:     "ダヌー",
+  demeter:  "デメテル",
+  yukio:    "ユキヲ",
+  priest:   "神父",
+  engineer: "課長",
+  activist: "店主",
+  steven:   "STEVEN",
+};
 
 const systemDefault = {
   id: "system",
@@ -1418,8 +1437,15 @@ let frameRateVisualizer;
 let silhouette;
 let musicPlayer;
 let voiceSprite;
-
+let textAnimation;
 let iconAnimation;
+
+let paragraphIndexPrev = 0;
+let paragraphIndex;
+let textNumber;
+let baseNumber;
+let baseState;
+let baseTimestamp;
 
 //-------------------------------------------------------------------------
 
@@ -1546,7 +1572,6 @@ const initializeComponents = () => {
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
-  silhouette.updateSpeaker("danu");
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
@@ -1582,7 +1607,11 @@ const initializeSystemUi = () => {
   });
   systemUi.onChange(() => taskSet.add(saveSystemTask));
 
-  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]");
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(v => {
+    if (textAnimation) {
+      textAnimation.updateSpeed(v);
+    }
+  });
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
     if (Howler.masterGain) {
@@ -1594,7 +1623,11 @@ const initializeSystemUi = () => {
       musicPlayer.updateVolume(v);
     }
   });
-  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]");
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(v => {
+    if (voiceSprite) {
+      voiceSprite.updateVolume(v);
+    }
+  });
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -1779,6 +1812,53 @@ const initializeAudio = () => {
 
 //-------------------------------------------------------------------------
 
+const nextParagraph = async () => {
+  if (paragraphIndex !== undefined) {
+    return;
+  }
+  paragraphIndex = paragraphIndexPrev + 1;
+
+  const paragraph = D.scenario[paragraphIndex - 1];
+  const textNodes = [];
+  const textAnimations = [];
+
+  D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+    const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
+    textNodes.push(textNode);
+    textAnimations.push(new D.TextAnimation(textNode, system.speed));
+  });
+
+  const speaker = paragraph[0].speaker;
+  if (silhouette) {
+    silhouette.updateSpeaker(speaker);
+  }
+  document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+
+  const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+  const voiceSound = new Howl({
+    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+    sprite: D.voiceSprites[paragraphIndex - 1],
+  });
+
+  for (let i = 0; i < textAnimations.length; ++i) {
+    textAnimation = textAnimations[i];
+    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(i + 1), system.voiceVolume);
+    await Promise.all([
+      textAnimation.start(),
+      voiceSprite.start(),
+    ]);
+  }
+
+  textAnimation = undefined;
+  voiceSprite = undefined;
+
+  paragraphIndexPrev = paragraphIndex;
+  paragraphIndex = undefined;
+};
+
+//-------------------------------------------------------------------------
+
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -1808,7 +1888,22 @@ const resize = () => {
 
 //-------------------------------------------------------------------------
 
-window.addEventListener("resize", resize);
+addEventListener("resize", resize);
+
+addEventListener("keydown", async ev => {
+  if (ev.code === "Enter") {
+    if (textAnimation || voiceSprite) {
+      if (textAnimation) {
+        textAnimation.finish();
+      }
+      if (voiceSprite) {
+        voiceSprite.finish();
+      }
+    } else {
+      await nextParagraph();
+    }
+  }
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
