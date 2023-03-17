@@ -696,7 +696,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
           <path d="${clipPathData}"/>
         </clipPath>
       </defs>
-      <g clip-path="url(#${clipId})">
+      <g class="demeter-button" clip-path="url(#${clipId})">
         <path fill="none" stroke-width="${D.numberToString(U4+2)}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
       </g>
@@ -1350,6 +1350,7 @@ D.VoiceSprite = class {
     this.sprite = sprite;
     this.volume = volume;
     this.soundId = undefined;
+    this.finished = false;
   }
 
   start() {
@@ -1388,6 +1389,7 @@ D.VoiceSprite = class {
 
   finish() {
     if (this.soundId !== undefined) {
+      this.finished = true;
       this.sound.stop(this.soundId);
     }
   }
@@ -1732,6 +1734,11 @@ const initializeMainScreen = () => {
     enterSaveScreen();
   });
 
+  [...document.querySelectorAll(".demeter-main-choice")].forEach(node => {
+    const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
+    node.append(choiceFrameNode);
+  });
+
   document.querySelector(".demeter-main-paragraph").addEventListener("click", next);
 };
 
@@ -1828,20 +1835,21 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   await voiceSprite.start();
-  // テキストアニメーションが終了している場合は次の行に進む。
-  const cont = textAnimation === undefined;
+  // テキストアニメーションが終了していて、音声を明示的に終了した場合、次の行に
+  // 進める。
+  const cont = textAnimation === undefined && voiceSprite.finished;
   voiceSprite = undefined;
   return cont;
 };
 
 const next = async () => {
-  // テキストアニメーションをしていたら終了させる。
+  // テキストアニメーション中である場合、終了させる。
   if (textAnimation) {
     textAnimation.finish();
     return;
   }
 
-  // テキストアニメーションは終了しているが、音声は再生中なので、音声を終了する。
+  // テキストアニメーションは終了しているが、音声は再生中である場合、音声を終了する。
   if (voiceSprite) {
     voiceSprite.finish();
     return;
@@ -1921,7 +1929,6 @@ const resize = () => {
   document.querySelector(".demeter-main-screen").style.transform = transform;
   document.querySelector(".demeter-load-screen").style.transform = transform;
   document.querySelector(".demeter-save-screen").style.transform = transform;
-  document.querySelector(".demeter-overlay").style.transform = transform;
   updateComponents();
 };
 
