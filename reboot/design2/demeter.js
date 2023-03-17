@@ -1442,12 +1442,14 @@ let textAnimation;
 let voiceSprite;
 let iconAnimation;
 
-let paragraphIndexPrev = 0;
+let paragraphIndexPrev = 38;
 let paragraphIndex;
 let paragraphLineNumber;
 let paragraph;
 let textAnimations;
 let voiceSound;
+let choices;
+let waitForChoice;
 
 //-------------------------------------------------------------------------
 
@@ -1734,9 +1736,12 @@ const initializeMainScreen = () => {
     enterSaveScreen();
   });
 
-  [...document.querySelectorAll(".demeter-main-choice")].forEach(node => {
+  [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
-    node.append(choiceFrameNode);
+    choiceNode.append(choiceFrameNode);
+    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
+      waitForChoice(choices[choices.length === 2 ? i - 1 : i]);
+    });
   });
 
   document.querySelector(".demeter-main-paragraph").addEventListener("click", next);
@@ -1835,8 +1840,8 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   await voiceSprite.start();
-  // テキストアニメーションが終了していて、音声を明示的に終了した場合、次の行に
-  // 進める。
+  // テキストアニメーションが終了していて、音声を明示的に終了した場合、処理を継
+  // 続する。
   const cont = textAnimation === undefined && voiceSprite.finished;
   voiceSprite = undefined;
   return cont;
@@ -1849,9 +1854,15 @@ const next = async () => {
     return;
   }
 
-  // テキストアニメーションは終了しているが、音声は再生中である場合、音声を終了する。
+  // テキストアニメーションは終了しているが、音声は再生中である場合、音声を終了
+  // する。
   if (voiceSprite) {
     voiceSprite.finish();
+    return;
+  }
+
+  // 選択肢の選択待ちである場合
+  if (waitForChoice) {
     return;
   }
 
@@ -1884,14 +1895,45 @@ const next = async () => {
   textAnimation = textAnimations[paragraphLineNumber - 1];
   voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
 
-  const [ notUsed, cont ] = await Promise.all([
+  let [ notUsed, cont ] = await Promise.all([
     runTextAnimation(),
     runVoiceSprite(),
   ]);
 
   ++paragraphLineNumber;
   if (paragraphLineNumber > textAnimations.length) {
-    paragraphIndexPrev = paragraphIndex;
+    choices = paragraph[0].choices;
+    if (choices) {
+      const choiceNodes = [
+        document.querySelector(".demeter-main-choice1"),
+        document.querySelector(".demeter-main-choice2"),
+        document.querySelector(".demeter-main-choice3"),
+      ];
+      if (choices.length === 2) {
+        choiceNodes[0].style.display = "none";
+        choiceNodes.shift();
+      } else {
+        choiceNodes[0].style.display = "block";
+      }
+      choices.forEach((choice, i) => {
+        const choiceNode = choiceNodes[i];
+        const textNode = D.layoutText(D.composeText(D.parseText(choice.choice, fontSize, font), fontSize * 21), fontSize, fontSize * 2);
+        choiceNode.querySelector(".demeter-main-choice-text").replaceChildren(textNode);
+        choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
+      });
+      document.querySelector(".demeter-main-choices").style.display = "block";
+
+      const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+      paragraphIndexPrev = choice.label - 1;
+      waitForChoice = undefined;
+      choices = undefined;
+      cont = true;
+
+      document.querySelector(".demeter-main-choices").style.display = "none";
+    } else {
+      paragraphIndexPrev = paragraphIndex;
+    }
+
     paragraphIndex = undefined;
     paragraphLineNumber = undefined;
     paragraph = undefined;

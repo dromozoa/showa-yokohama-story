@@ -353,7 +353,7 @@ body.demeter {
 @media (orientation: landscape) {
   .demeter-main-choices {
     left: calc(var(--font-size) * 11.5);
-    top: calc(var(--font-size) * 6);
+    top: calc(var(--font-size) * 5.5);
   }
 }
 

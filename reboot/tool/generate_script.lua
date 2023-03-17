@@ -49,7 +49,8 @@ if (D.scenario) {
 D.scenario = [
 ]]
 
-for _, paragraph in ipairs(scenario) do
+for i, paragraph in ipairs(scenario) do
+  handle:write("// index:", i, "\n")
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
