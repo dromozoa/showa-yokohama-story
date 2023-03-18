@@ -1453,7 +1453,7 @@ let choices;
 let waitForChoice;
 
 const autosaveDefault = {
-  paragraphIndex: 1, // debug
+  paragraphIndex: 1,
   state: {},
 };
 let state = {};
@@ -1795,8 +1795,8 @@ const initializeLoadScreen = () => {
     enterMainScreen();
   });
 
-  document.querySelector(".demeter-load-tape-autosave").addEventListener("click", () => {
-    console.log("autosave");
+  document.querySelector(".demeter-load-tape-select").addEventListener("click", () => {
+    console.log("select");
   });
 
   document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", () => {
