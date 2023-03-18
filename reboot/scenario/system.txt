@@ -2,24 +2,38 @@
 
 @system
 
-@dialog{save1}
+@dialog{save-tape-save1}
 #narrator
 一番のテープに@r{保存}{セーブ}します。
 よろしいですか？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
-@dialog{save2}
+@dialog{save-tape-save2}
 #narrator
 二番のテープに@r{保存}{セーブ}します。
 よろしいですか？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
-@dialog{save3}
+@dialog{save-tape-save3}
 #narrator
 三番のテープに@r{保存}{セーブ}します。
 よろしいですか？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
+@dialog{load-tape-save1}
+#narrator
+一番のテープを@r{読出}{ロード}します。
+よろしいですか？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{load-tape-empty}
+#narrator
+このテープは、なんにも記録されていません。
+@dialog_choice{了解}{ok}
+
+@# このテープは、ねじれてよじれてからまりあって、こわれちゃってる。
+@# だから、再生できない。

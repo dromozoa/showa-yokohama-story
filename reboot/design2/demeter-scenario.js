@@ -1907,6 +1907,15 @@ if($.genesis)return 323;
 ["三番のテープに",["保存","セーブ"],"します。"],
 ["よろしいですか？"],
 ]],
+// index:336
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["一番のテープを",["読出","ロード"],"します。"],
+["よろしいですか？"],
+]],
+// index:337
+[{speaker:"narrator",dialog:[{choice:"了解",result:"ok"},]},[
+["このテープは、なんにも記録されていません。"],
+]],
 ],
 labels:{
 "銃の持ち主":14,
@@ -1932,9 +1941,11 @@ labels:{
 "創世記":323,
 },
 dialogs:{
-"save1":333,
-"save2":334,
-"save3":335,
+"save-tape-save1":333,
+"save-tape-save2":334,
+"save-tape-save3":335,
+"load-tape-save1":336,
+"load-tape-empty":337,
 },
 };
 

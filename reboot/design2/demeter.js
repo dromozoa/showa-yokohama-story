@@ -1405,14 +1405,14 @@ D.VoiceSprite = class {
   }
 
   pause() {
-    if (this.soundId !== undefined) {
+    if (this.soundId !== undefined && !this.paused) {
       this.paused = true;
       this.sound.pause(this.soundId);
     }
   }
 
   restart() {
-    if (this.soundId !== undefined) {
+    if (this.soundId !== undefined && this.paused) {
       this.paused = false;
       this.sound.play(this.soundId);
     }
@@ -1541,6 +1541,11 @@ const putSave = async (key, name) => {
   }
 };
 
+const setSave = save => {
+  paragraphIndexPrev = save.paragraphIndex - 1;
+  state = save.state;
+};
+
 const createContext = () => { system: system };
 
 //-------------------------------------------------------------------------
@@ -1573,8 +1578,7 @@ const initializeDatabase = async () => {
     await database.put("system", system);
 
     const autosave = await database.get("save", "autosave") || autosaveDefault;
-    paragraphIndexPrev = autosave.paragraphIndex - 1;
-    state = autosave.state;
+    setSave(autosave);
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -1837,26 +1841,24 @@ const initializeMainScreen = () => {
 
   // LOAD
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
+    pause();
     leaveMainScreen();
     enterLoadScreen();
   });
 
   // SAVE
   menuFrameNode.querySelector(".demeter-button3").addEventListener("click", () => {
+    pause();
     leaveMainScreen();
     enterSaveScreen();
   });
 
   // AUTO
   menuFrameNode.querySelector(".demeter-button4").addEventListener("click", () => {
-    // debug
-    pause();
   });
 
   // SKIP
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
-    // debug
-    stop();
   });
 
 
@@ -1881,6 +1883,7 @@ const initializeLoadScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
     leaveLoadScreen();
     enterMainScreen();
+    restart();
   });
 
   document.querySelector(".demeter-load-tape-select").addEventListener("click", () => {
@@ -1896,22 +1899,48 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
-    console.log("load1");
     const save = await database.get("save", "save1");
     if (save) {
-      if (await dialog("load-save1") == "yes") {
-        // pause => stop, load, next
+      if (await dialog("load-tape-save1") == "yes") {
+        await stop();
+        setSave(save);
+        leaveLoadScreen();
+        enterMainScreen();
+        next();
       }
     } else {
+      await dialog("load-tape-empty");
     }
   });
 
-  document.querySelector(".demeter-load-tape-save2").addEventListener("click", () => {
-    console.log("load2");
+  document.querySelector(".demeter-load-tape-save2").addEventListener("click", async () => {
+    const save = await database.get("save", "save2");
+    if (save) {
+      if (await dialog("load-tape-save2") == "yes") {
+        await stop();
+        setSave(save);
+        leaveLoadScreen();
+        enterMainScreen();
+        next();
+      }
+    } else {
+      await dialog("load-tape-empty");
+    }
   });
 
-  document.querySelector(".demeter-load-tape-save3").addEventListener("click", () => {
-    console.log("load3");
+  document.querySelector(".demeter-load-tape-save3").addEventListener("click", async () => {
+    const save = await database.get("save", "save3");
+    if (save) {
+      if (await dialog("load-tape-save3") == "yes") {
+        await stop();
+        setSave(save);
+        leaveLoadScreen();
+        enterMainScreen();
+        next();
+      }
+    } else {
+      await dialog("load-tape-empty");
+    }
   });
 };
 
@@ -1925,10 +1954,11 @@ const initializeSaveScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
     leaveSaveScreen();
     enterMainScreen();
+    restart();
   });
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
-    if (await dialog("save1") === "yes") {
+    if (await dialog("save-tape-save1") === "yes") {
       putSave("save1", "#1");
       leaveSaveScreen();
       enterMainScreen();
@@ -1936,7 +1966,7 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
-    if (await dialog("save2") === "yes") {
+    if (await dialog("save-tape-save2") === "yes") {
       putSave("save2", "#2");
       leaveSaveScreen();
       enterMainScreen();
@@ -1944,7 +1974,7 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
-    if (await dialog("save3") === "yes") {
+    if (await dialog("save-tape-save3") === "yes") {
       putSave("save3", "#3");
       leaveSaveScreen();
       enterMainScreen();
@@ -2129,9 +2159,12 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-text").replaceChildren(textNode);
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
-      document.querySelector(".demeter-main-choices").style.display = "block";
 
+      document.querySelector(".demeter-main-choices").style.display = "block";
       const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+      waitForChoice = undefined;
+      document.querySelector(".demeter-main-choices").style.display = "none";
+
       if (waitForStop) {
         resetParagraph();
         return waitForStop();
@@ -2141,11 +2174,8 @@ const next = async () => {
       }
 
       paragraphIndexPrev = choice.label - 1;
-      waitForChoice = undefined;
       choices = undefined;
       cont = true;
-
-      document.querySelector(".demeter-main-choices").style.display = "none";
     }
 
     if (paragraph[0].leave) {
@@ -2236,6 +2266,7 @@ const dialog = async key => {
   };
 
   const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
+  waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
   return dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
