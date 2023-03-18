@@ -86,6 +86,9 @@ for i, paragraph in ipairs(scenario) do
   if paragraph.finish then
     handle:write ",finish:true"
   end
+  if paragraph.music then
+    handle:write(",music:", quote_js(paragraph.music))
+  end
   if paragraph.dialog then
     handle:write ",dialog:["
     for _, choice in ipairs(paragraph.dialog.choices) do
