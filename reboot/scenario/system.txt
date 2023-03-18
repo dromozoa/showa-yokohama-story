@@ -2,38 +2,62 @@
 
 @system
 
-@dialog{save-tape-save1}
-#narrator
-一番のテープに@r{保存}{セーブ}します。
-よろしいですか？
-@dialog_choice{はい}{yes}
-@dialog_choice{いいえ}{no}
+@#==============================================================================
 
-@dialog{save-tape-save2}
+@dialog{load-tape-broken}
 #narrator
-二番のテープに@r{保存}{セーブ}します。
-よろしいですか？
-@dialog_choice{はい}{yes}
-@dialog_choice{いいえ}{no}
-
-@dialog{save-tape-save3}
-#narrator
-三番のテープに@r{保存}{セーブ}します。
-よろしいですか？
-@dialog_choice{はい}{yes}
-@dialog_choice{いいえ}{no}
+この@r{因果}{テープ}はねじれてよじれてからまりあっている。
+再生できない。
+今のところは。
+@dialog_choice{了解}{ok}
 
 @dialog{load-tape-save1}
 #narrator
-一番のテープを@r{読出}{ロード}します。
-よろしいですか？
+第一巻の@r{読出}{ロード}準備完了。
+再生する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{load-tape-save2}
+#narrator
+第二巻の@r{読出}{ロード}準備完了。
+再生する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{load-tape-save3}
+#narrator
+第三巻の@r{読出}{ロード}準備完了。
+再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-empty}
 #narrator
-このテープは、なんにも記録されていません。
+このテープはからっぽだ。
+なにも記録されていない。
 @dialog_choice{了解}{ok}
 
-@# このテープは、ねじれてよじれてからまりあって、こわれちゃってる。
-@# だから、再生できない。
+@#==============================================================================
+
+@dialog{save-tape-save1}
+#narrator
+第一巻への@r{書込}{セーブ}準備完了。
+保存する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{save-tape-save2}
+#narrator
+第二巻への@r{書込}{セーブ}準備完了。
+保存する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{save-tape-save3}
+#narrator
+第三巻への@r{書込}{セーブ}準備完了。
+保存する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+

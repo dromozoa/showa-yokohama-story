@@ -1894,8 +1894,8 @@ const initializeLoadScreen = () => {
     console.log("tutorial");
   });
 
-  document.querySelector(".demeter-load-tape-trailer").addEventListener("click", () => {
-    console.log("trailer");
+  document.querySelector(".demeter-load-tape-trailer").addEventListener("click", async () => {
+    await dialog("load-tape-broken");
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
@@ -2095,10 +2095,6 @@ const next = async () => {
       waitForStart = paragraph[0].start;
       await runStartScreen();
       waitForStart = undefined;
-      if (waitForStop) {
-        resetParagraph();
-        return waitForStop();
-      }
     }
 
     paragraphLineNumber = 1;
@@ -2209,18 +2205,22 @@ const restart = () => {
 };
 
 const stop = async () => {
-  const run = new Promise(resolve => waitForStop = () => resolve());
-  if (textAnimation) {
-    textAnimation.finish();
+  if (textAnimation || voiceSprite || waitForChoice) {
+    const run = new Promise(resolve => waitForStop = () => resolve());
+    if (textAnimation) {
+      textAnimation.finish();
+    }
+    if (voiceSprite) {
+      voiceSprite.finish();
+    }
+    if (waitForChoice) {
+      waitForChoice(undefined);
+    }
+    await run;
+    waitForStop = undefined;
+  } else {
+    resetParagraph();
   }
-  if (voiceSprite) {
-    voiceSprite.finish();
-  }
-  if (waitForChoice) {
-    waitForChoice(undefined);
-  }
-  await run;
-  waitForStop = undefined;
 };
 
 //-------------------------------------------------------------------------

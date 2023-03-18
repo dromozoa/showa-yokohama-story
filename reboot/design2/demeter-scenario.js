@@ -1893,28 +1893,45 @@ if($.genesis)return 323;
 ["了。"],
 ]],
 // index:333
-[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["一番のテープに",["保存","セーブ"],"します。"],
-["よろしいですか？"],
+[{speaker:"narrator",dialog:[{choice:"了解",result:"ok"},]},[
+["この",["因果","テープ"],"はねじれてよじれてからまりあっている。"],
+["再生できない。"],
+["今のところは。"],
 ]],
 // index:334
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["二番のテープに",["保存","セーブ"],"します。"],
-["よろしいですか？"],
+["第一巻の",["読出","ロード"],"準備完了。"],
+["再生する？"],
 ]],
 // index:335
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["三番のテープに",["保存","セーブ"],"します。"],
-["よろしいですか？"],
+["第二巻の",["読出","ロード"],"準備完了。"],
+["再生する？"],
 ]],
 // index:336
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["一番のテープを",["読出","ロード"],"します。"],
-["よろしいですか？"],
+["第三巻の",["読出","ロード"],"準備完了。"],
+["再生する？"],
 ]],
 // index:337
 [{speaker:"narrator",dialog:[{choice:"了解",result:"ok"},]},[
-["このテープは、なんにも記録されていません。"],
+["このテープはからっぽだ。"],
+["なにも記録されていない。"],
+]],
+// index:338
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["第一巻への",["書込","セーブ"],"準備完了。"],
+["保存する？"],
+]],
+// index:339
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["第二巻への",["書込","セーブ"],"準備完了。"],
+["保存する？"],
+]],
+// index:340
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["第三巻への",["書込","セーブ"],"準備完了。"],
+["保存する？"],
 ]],
 ],
 labels:{
@@ -1941,11 +1958,14 @@ labels:{
 "創世記":323,
 },
 dialogs:{
-"save-tape-save1":333,
-"save-tape-save2":334,
-"save-tape-save3":335,
-"load-tape-save1":336,
+"load-tape-broken":333,
+"load-tape-save1":334,
+"load-tape-save2":335,
+"load-tape-save3":336,
 "load-tape-empty":337,
+"save-tape-save1":338,
+"save-tape-save2":339,
+"save-tape-save3":340,
 },
 };
 
