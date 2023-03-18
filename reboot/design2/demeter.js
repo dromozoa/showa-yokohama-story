@@ -1301,6 +1301,7 @@ D.TextAnimation = class {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
     this.nodes.forEach(node => node.style.opacity = "0");
     this.speed = speed;
+    this.paused = false;
     this.finished = false;
   }
 
@@ -1310,11 +1311,17 @@ D.TextAnimation = class {
 
   async start() {
     let index = 0;
-    let start;
+    let timestampPrev;
+    let duration = 0;
     L: while (!this.finished) {
       const timestamp = await D.requestAnimationFrame();
-      if (start === undefined) {
-        start = timestamp;
+      if (timestampPrev !== undefined && !this.paused) {
+        duration += timestamp - timestampPrev;
+      }
+      timestampPrev = timestamp;
+
+      if (this.paused) {
+        continue;
       }
 
       while (true) {
@@ -1323,13 +1330,12 @@ D.TextAnimation = class {
           break L;
         }
 
-        const duration = timestamp - start;
         if (duration < this.speed) {
           node.style.opacity = D.numberToString(duration / this.speed);
           break;
         } else {
           node.style.opacity = "1";
-          start += this.speed;
+          duration -= this.speed;
           ++index;
         }
       }
@@ -1337,6 +1343,14 @@ D.TextAnimation = class {
     if (this.finished) {
       this.nodes.forEach(node => node.style.opacity = "1");
     }
+  }
+
+  pause() {
+    this.paused = true;
+  }
+
+  restart() {
+    this.paused = false;
   }
 
   finish() {
@@ -1352,6 +1366,7 @@ D.VoiceSprite = class {
     this.sprite = sprite;
     this.volume = volume;
     this.soundId = undefined;
+    this.paused = false;
     this.finished = false;
   }
 
@@ -1386,6 +1401,20 @@ D.VoiceSprite = class {
   updateVolume(volume) {
     if (this.soundId !== undefined) {
       this.sound.volume(volume, this.soundId);
+    }
+  }
+
+  pause() {
+    if (this.soundId !== undefined) {
+      this.paused = true;
+      this.sound.pause(this.soundId);
+    }
+  }
+
+  restart() {
+    if (this.soundId !== undefined) {
+      this.paused = false;
+      this.sound.play(this.soundId);
     }
   }
 
@@ -1817,6 +1846,19 @@ const initializeMainScreen = () => {
     enterSaveScreen();
   });
 
+  // AUTO
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", () => {
+    // debug
+    pause();
+  });
+
+  // SKIP
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
+    // debug
+    restart();
+  });
+
+
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
     choiceNode.append(choiceFrameNode);
@@ -1852,8 +1894,15 @@ const initializeLoadScreen = () => {
     console.log("trailer");
   });
 
-  document.querySelector(".demeter-load-tape-save1").addEventListener("click", () => {
+  document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
     console.log("load1");
+    const save = await database.get("save", "save1");
+    if (save) {
+      if (await dialog("load-save1") == "yes") {
+        // pause => stop, load, next
+      }
+    } else {
+    }
   });
 
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", () => {
@@ -2088,6 +2137,24 @@ const next = async () => {
 
   if (cont) {
     requestAnimationFrame(next);
+  }
+};
+
+const pause = () => {
+  if (textAnimation) {
+    textAnimation.pause();
+  }
+  if (voiceSprite) {
+    voiceSprite.pause();
+  }
+};
+
+const restart = () => {
+  if (textAnimation) {
+    textAnimation.restart();
+  }
+  if (voiceSprite) {
+    voiceSprite.restart();
   }
 };
 
