@@ -227,6 +227,11 @@ local function parse(scenario, include_path, filename)
       -- 以降の段落をシステム用とする
       scenario = update(scenario, "system", true)
 
+    elseif match "^@music{([^}]*)}" then
+      -- @music{キー}
+      -- 段落に音楽を割り当てる
+      paragraph = update(paragraph, "music", trim(_1))
+
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
       paragraph = update(paragraph, "dialog", { dialog = trim(_1) })
@@ -262,6 +267,17 @@ local function parse(scenario, include_path, filename)
   end
 
   return scenario
+end
+
+local function process_speakers(scenario)
+  for i, paragraph in ipairs(scenario) do
+    if not paragraph.speaker then
+      error("speaker is nil at paragraph "..i)
+    end
+    if not speaker_definitions[paragraph.speaker] then
+      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
+    end
+  end
 end
 
 local function process_labels(scenario)
@@ -315,23 +331,12 @@ local function process_dialogs(scenario)
   scenario.dialogs = dialogs
 end
 
-local function process_speakers(scenario)
-  for i, paragraph in ipairs(scenario) do
-    if not paragraph.speaker then
-      error("speaker is nil at paragraph "..i)
-    end
-    if not speaker_definitions[paragraph.speaker] then
-      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
-    end
-  end
-end
-
 return function (scenario_pathname)
   local scenario_dirname = dirname(scenario_pathname)
   local scenario_filename = basename(scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
+  process_speakers(scenario)
   process_labels(scenario)
   process_dialogs(scenario)
-  process_speakers(scenario)
   return scenario
 end
