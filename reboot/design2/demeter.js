@@ -1227,11 +1227,13 @@ D.IconAnimation = class {
 D.MusicPlayer = class {
   constructor(volume) {
     this.volume = volume;
+    this.key = undefined;
     this.sound = undefined;
     this.soundId = undefined;
   }
 
   start(key) {
+    this.key = key;
     const basename = "../output/music/sessions_" + key;
 
     // onunlockは複数回呼ばれうる。
@@ -1267,6 +1269,7 @@ D.MusicPlayer = class {
   }
 
   fade(key) {
+    this.key = key;
     const basename = "../output/music/sessions_" + key;
     const sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
@@ -2083,6 +2086,10 @@ const next = async () => {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
       }
+    }
+
+    if (musicPlayer.key !== paragraph[0].music) {
+      musicPlayer.fade(paragraph[0].music);
     }
 
     // 自動保存
