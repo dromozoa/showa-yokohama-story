@@ -140,6 +140,53 @@ body.demeter {
 
 /*************************************************************************/
 
+.demeter-start-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  background-image: var(--screen-background-image);
+  background-repeat: none;
+  background-attachment: fixed;
+}
+
+.demeter-start {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 14);
+  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 14) * 0.5);
+}
+
+.demeter-start-display {
+  position: absolute;
+  width: calc(var(--font-size) * 15);
+  height: calc(var(--font-size) * 12);
+  left: var(--screen-width);
+  top: 0;
+}
+
+.demeter-start-display {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  left: 0;
+  top: calc(var(--font-size) * 12);
+
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 1.5);
+  /* debug
+   */
+  text-align: center;
+}
+
+.demeter-start-image {
+  display: block;
+  width: calc(var(--font-size) * 15);
+  height: calc(var(--font-size) * 12);
+}
+
+/*************************************************************************/
+
 .demeter-main-screen {
   position: absolute;
   width: var(--screen-width);

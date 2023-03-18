@@ -1702,6 +1702,10 @@ const leaveTitleScreen = () => {
   iconAnimation = undefined;
 };
 
+const leaveStartScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-start-screen"));
+};
+
 const leaveMainScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
 };
@@ -1718,6 +1722,10 @@ const enterTitleScreen = () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
   iconAnimation.start();
+};
+
+const enterStartScreen = () => {
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
@@ -1741,6 +1749,8 @@ const initializeTitleScreen = () => {
     next();
   });
 };
+
+const initializeStartScreen = () => {};
 
 const initializeMainScreen = () => {
   initializeSystemUi();
@@ -2038,9 +2048,9 @@ const resize = () => {
 
 addEventListener("resize", resize);
 
-addEventListener("keydown", async ev => {
+addEventListener("keydown", ev => {
   if (ev.code === "Enter") {
-    await next();
+    next();
   }
 });
 
@@ -2048,6 +2058,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeInternal();
   await initializeDatabase();
   initializeTitleScreen();
+  initializeStartScreen();
   initializeMainScreen();
   initializeLoadScreen();
   initializeSaveScreen();
