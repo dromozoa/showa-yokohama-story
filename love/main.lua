@@ -154,6 +154,10 @@ local function prepare_mesh(sw, sh, tw, th, xn, yn)
   -- local W2 = math.sin(XDEG * (sw / sh) / (5 / 4)) * R * 2
   -- local scale = math.min(tw / W2, th / H)
   local scale = math.min(tw / (px * 2 * pf), th / (qy * 2 * qf))
+  print("sx", tw / (px * 2 * pf))
+  print("sy", th / (qy * 2 * qf))
+  -- ワイドだと計算があわない: たぶん有効高・幅と比がちがいすぎるから
+  scale = scale * 0.875
 
   -- 角度計算の分母
   local xn2 = yn * (5 / 4)
@@ -246,6 +250,8 @@ function love.load(arg)
   canvases.text2 = g.newCanvas(W, H)
   canvases.crt = g.newCanvas(W, H)
 ]]
+  canvases.crt = g.newCanvas(W, H, { format = "rgba8" })
+  canvases.out = g.newCanvas(W, H, { format = "rgba8" })
 
   shaders.text = assert(g.newShader "shader-text.txt")
   shaders.crt = assert(g.newShader "shader-crt.txt")
@@ -424,10 +430,10 @@ function love.draw()
     g.setCanvas(canvas)
 
     --======================================================================
+]]
 
     local canvas = g.getCanvas()
     g.setCanvas(canvases.crt)
-    g.clear()
 
     local seed = current_frame * (1280 * 720 / 3 / 4) % (1280 + 42)
     local scaler = 1
@@ -435,20 +441,33 @@ function love.draw()
     shaders.crt:send("seed", seed)
     shaders.crt:send("scaler", scaler)
     g.setShader(shaders.crt)
+
+    g.clear()
+    g.draw(background_texture, 0, 0)
+
     g.setShader()
 
     g.setCanvas(canvas)
 
     --======================================================================
-]]
 
-    -- mesh:setTexture(canvases.crt)
-    mesh:setTexture(background_texture)
+    mesh:setTexture(canvases.crt)
+    -- mesh:setTexture(background_texture)
     g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
 
     if screenshot then
-      screenshot = false
-      g.captureScreenshot "ss.png"
+      -- print "screenshot"
+      -- screenshot = false
+      -- g.captureScreenshot "ss.png"
+      local canvas = g.getCanvas()
+      g.setCanvas(canvases.out)
+      g.clear()
+      mesh:setTexture(canvases.crt)
+      -- mesh:setTexture(background_texture)
+      g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
+      g.setCanvas(canvas)
+      local image_data = canvases.out:newImageData();
+      image_data:encode("png", "ssx.png")
     end
 
 --[[
