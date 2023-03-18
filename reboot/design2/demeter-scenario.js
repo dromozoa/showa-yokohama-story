@@ -9,7 +9,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index:1
-[{speaker:"narrator"},[
+[{speaker:"narrator",start:"verse1"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -300,7 +300,7 @@ paragraphs:[
 // index:48
 [{speaker:"narrator",leave:($,ctx)=>{delete $.priest;
   delete $.engineer;
-  delete $.activist;;}},[
+  delete $.activist;;},start:"verse2"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -973,7 +973,7 @@ if($.activist)return 144;
 ["了。（つづく）"],
 ]],
 // index:169
-[{speaker:"narrator"},[
+[{speaker:"narrator",start:"verse3"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],

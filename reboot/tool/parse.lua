@@ -214,6 +214,10 @@ local function parse(scenario, include_path, filename)
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))
 
+    elseif match "^@start{([^}]*)}" then
+      -- @start{キー}
+      paragraph = update(paragraph, "start", trim(_1))
+
     elseif match "^@finish" then
       -- @finish
       paragraph = update(paragraph, "finish", true)

@@ -170,7 +170,6 @@ body.demeter {
   width: calc(var(--font-size) * 27);
   left: 0;
   top: calc(var(--font-size) * 12);
-
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 1.5);

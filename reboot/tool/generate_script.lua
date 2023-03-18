@@ -80,6 +80,9 @@ for i, paragraph in ipairs(scenario) do
   if paragraph.leave then
     handle:write(",leave:($,ctx)=>{", paragraph.leave, ";}")
   end
+  if paragraph.start then
+    handle:write(",start:", quote_js(paragraph.start))
+  end
   if paragraph.finish then
     handle:write ",finish:true"
   end
