@@ -161,15 +161,16 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 15);
   height: calc(var(--font-size) * 12);
-  left: var(--screen-width);
+  left: calc(var(--font-size) * 6);
   top: 0;
 }
 
-.demeter-start-display {
+.demeter-start-text {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  left: 0;
+  width: calc(var(--font-size) * 25);
+  left: var(--font-size);
   top: calc(var(--font-size) * 12);
+  color: var(--color-console);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 1.5);

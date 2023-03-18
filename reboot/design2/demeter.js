@@ -28,6 +28,8 @@ D.includeGuard = true;
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
+D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
+
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
 D.numberToCss = (v, unit = "px") => D.numberToString(v) + unit;
@@ -1399,6 +1401,7 @@ D.VoiceSprite = class {
 
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+const consoleFont = "'Share Tech', sans-serif";
 
 const speakerNames = {
   narrator: "",
@@ -1410,6 +1413,12 @@ const speakerNames = {
   engineer: "課長",
   activist: "店主",
   steven:   "STEVEN",
+};
+
+const startTexts = {
+  verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
+  verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
+  verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
 };
 
 const systemDefault = {
@@ -1451,6 +1460,7 @@ let voiceSound;
 let voiceSprite;
 let choices;
 let waitForChoice;
+let waitForStart;
 
 const autosaveDefault = {
   paragraphIndex: 1,
@@ -1647,8 +1657,8 @@ const initializeSystemUi = () => {
   systemUi.onChange(() => taskSet.add(putSystemTask));
 
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(v => {
-    if (textAnimation) {
-      textAnimation.updateSpeed(v);
+    if (textAnimations) {
+      textAnimations.forEach(textAnimation => textAnimation.updateSpeed(v));
     }
   });
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
@@ -1893,6 +1903,26 @@ const runVoiceSprite = async () => {
   return cont;
 };
 
+const runStartScreen = async () => {
+  const imageNode = document.querySelector(".demeter-start-image-" + waitForStart);
+  document.querySelector(".demeter-start-display").append(imageNode);
+
+  const textNode = D.layoutText(D.composeText(D.parseText([startTexts[waitForStart]], fontSize, consoleFont)), fontSize, fontSize * 2);
+  document.querySelector(".demeter-start-text").replaceChildren(textNode);
+  const textAnimation = new D.TextAnimation(textNode, 30);
+
+  leaveMainScreen();
+  enterStartScreen();
+
+  await textAnimation.start();
+  await D.setTimeout(1500);
+
+  leaveStartScreen();
+  enterMainScreen();
+
+  document.querySelector(".demeter-offscreen").append(imageNode);
+};
+
 const next = async () => {
   // テキストアニメーション中である場合、終了させる。
   if (textAnimation) {
@@ -1907,8 +1937,7 @@ const next = async () => {
     return;
   }
 
-  // 選択肢の選択待ちである場合
-  if (waitForChoice) {
+  if (waitForChoice || waitForStart) {
     return;
   }
 
@@ -1924,9 +1953,17 @@ const next = async () => {
       }
     }
 
+    // 自動保存
     putAutosave();
 
     // 既読処理
+
+    // 開始画面
+    if (paragraph[0].start) {
+      waitForStart = paragraph[0].start;
+      await runStartScreen();
+      waitForStart = undefined;
+    }
 
     paragraphLineNumber = 1;
     textAnimations = [];
@@ -2038,6 +2075,7 @@ const resize = () => {
     D.numberToString(Math.min(1, W / screenWidth, H / screenHeight)) + ")";
 
   document.querySelector(".demeter-title-screen").style.transform = transform;
+  document.querySelector(".demeter-start-screen").style.transform = transform;
   document.querySelector(".demeter-main-screen").style.transform = transform;
   document.querySelector(".demeter-load-screen").style.transform = transform;
   document.querySelector(".demeter-save-screen").style.transform = transform;
