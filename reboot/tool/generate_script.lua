@@ -46,11 +46,12 @@ if (D.scenario) {
   return;
 }
 
-D.scenario = [
+D.scenario = {
 ]]
 
+handle:write "paragraphs:[\n"
 for i, paragraph in ipairs(scenario) do
-  handle:write("// index:", i, "\n")
+  handle:write("// index:", i, "\n") -- debug
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
@@ -90,9 +91,16 @@ for i, paragraph in ipairs(scenario) do
 
   handle:write "]],\n"
 end
+handle:write "],\n"
+
+handle:write "labels:{\n"
+for _, label in ipairs(scenario.labels) do
+  handle:write(quote_js(label.label), ":", label.index, ",\n")
+end
+handle:write "},\n"
 
 handle:write [[
-];
+};
 
 })();
 ]]

@@ -1904,13 +1904,13 @@ const next = async () => {
 
   if (paragraphIndex === undefined) {
     paragraphIndex = paragraphIndexSave = paragraphIndexPrev + 1;
-    paragraph = D.scenario[paragraphIndex - 1];
+    paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
       const paragraphIndexWhen = paragraph[0].when(state, createContext());
       if (paragraphIndexWhen !== undefined) {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
-        paragraph = D.scenario[paragraphIndex - 1];
+        paragraph = D.scenario.paragraphs[paragraphIndex - 1];
       }
     }
 
