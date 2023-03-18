@@ -2031,10 +2031,7 @@ const next = async () => {
   textAnimation = textAnimations[paragraphLineNumber - 1];
   voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
 
-  let [ notUsed, cont ] = await Promise.all([
-    runTextAnimation(),
-    runVoiceSprite(),
-  ]);
+  let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
 
   ++paragraphLineNumber;
   if (paragraphLineNumber > textAnimations.length) {
@@ -2117,8 +2114,26 @@ const dialog = async key => {
     document.querySelector(".demeter-dialog-item1").textContent = dialog[1].choice;
   }
 
+  // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
+  const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+  const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
+  let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
+
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-dialog-overlay"));
-  const resultIndex = await new Promise(resolve => waitForDialog = choice => resolve(choice));
+
+  const runDialog = new Promise(resolve => waitForDialog = choice => {
+    if (voiceSprite) {
+      voiceSprite.finish();
+    }
+    resolve(choice);
+  });
+
+  const runVoiceSprite = async () => {
+    await voiceSprite.start();
+    voiceSprite = undefined;
+  };
+
+  const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
   return dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;

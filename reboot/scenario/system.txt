@@ -16,3 +16,10 @@
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
+@dialog{save3}
+#narrator
+三番のテープに@r{保存}{セーブ}します。
+よろしいですか？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
