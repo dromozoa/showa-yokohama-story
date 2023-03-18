@@ -1440,7 +1440,8 @@ let frameRateVisualizer;
 let silhouette;
 let musicPlayer;
 
-let paragraphIndexPrev = 46;
+let paragraphIndexPrev;
+let paragraphIndexSave;
 let paragraphIndex;
 let paragraph;
 let paragraphLineNumber;
@@ -1451,11 +1452,15 @@ let voiceSprite;
 let choices;
 let waitForChoice;
 
-let save = {};
+const autosaveDefault = {
+  paragraphIndex: 1, // debug
+  state: {},
+};
+let state = {};
 
 //-------------------------------------------------------------------------
 
-const saveSystemTask = async () => {
+const putSystemTask = async () => {
   try {
     await database.put("system", system);
     logging.log("システム設定保存: 成功");
@@ -1465,21 +1470,43 @@ const saveSystemTask = async () => {
   }
 };
 
+const putAutosave = async () => {
+  try {
+    await database.put("save", {
+      id: "autosave",
+      saved: D.dateToString(new Date()),
+      paragraphIndex: paragraphIndexSave,
+      state: state,
+    });
+    logging.log("自動保存: 成功");
+  } catch (e) {
+    logging.log("自動保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
 const createContext = () => { system: system };
 
 //-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
-  switch (oldVersion) {
-    case 0:
-      db.createObjectStore("system", { keyPath: "id" });
-      break;
+  console.log("upgradeDatabase", oldVersion, newVersion);
+
+  for (let version = oldVersion + 1; version <= newVersion; ++version) {
+    switch (version) {
+      case 1:
+        db.createObjectStore("system", { keyPath: "id" });
+        break;
+      case 2:
+        db.createObjectStore("save", { keyPath: "id" });
+        break;
+    }
   }
 };
 
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 1, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 2, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
     Object.entries(systemDefault).forEach(([k, v]) => {
@@ -1488,6 +1515,10 @@ const initializeDatabase = async () => {
       }
     });
     await database.put("system", system);
+
+    const autosave = await database.get("save", "autosave") || autosaveDefault;
+    paragraphIndexPrev = autosave.paragraphIndex - 1;
+    state = autosave.state;
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -1613,7 +1644,7 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
-  systemUi.onChange(() => taskSet.add(saveSystemTask));
+  systemUi.onChange(() => taskSet.add(putSystemTask));
 
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(v => {
     if (textAnimation) {
@@ -1707,6 +1738,7 @@ const initializeTitleScreen = () => {
   document.querySelector(".demeter-title-screen").addEventListener("click", () => {
     leaveTitleScreen();
     enterMainScreen();
+    next();
   });
 };
 
@@ -1871,16 +1903,20 @@ const next = async () => {
   }
 
   if (paragraphIndex === undefined) {
-    paragraphIndex = paragraphIndexPrev + 1;
+    paragraphIndex = paragraphIndexSave = paragraphIndexPrev + 1;
     paragraph = D.scenario[paragraphIndex - 1];
 
     if (paragraph[0].when) {
-      const paragraphIndexWhen = paragraph[0].when(save, createContext());
+      const paragraphIndexWhen = paragraph[0].when(state, createContext());
       if (paragraphIndexWhen !== undefined) {
-        paragraphIndex = paragraphIndexWhen;
+        paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario[paragraphIndex - 1];
       }
     }
+
+    putAutosave();
+
+    // 既読処理
 
     paragraphLineNumber = 1;
     textAnimations = [];
@@ -1943,7 +1979,7 @@ const next = async () => {
 
       const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
       if (choice.action) {
-        choice.action(save, createContext());
+        choice.action(state, createContext());
       }
 
       paragraphIndexPrev = choice.label - 1;
@@ -1955,7 +1991,7 @@ const next = async () => {
     }
 
     if (paragraph[0].leave) {
-      paragraph[0].leave(save, createContext());
+      paragraph[0].leave(state, createContext());
     }
 
     paragraphIndex = undefined;
@@ -1966,7 +2002,7 @@ const next = async () => {
   }
 
   if (cont) {
-    await next();
+    requestAnimationFrame(next);
   }
 };
 

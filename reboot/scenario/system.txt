@@ -2,9 +2,9 @@
 
 @system
 
-@dialog{save_slot1}
+@dialog{save_tape1}
 #narrator
-一番のスロットに上書き@r{保存}{セーブ}します。
+一番のテープに上書き@r{保存}{セーブ}します。
 @# よろしいですか？
 @# @choice{はい}{:yes}
 @# @choice{いいえ}{:no}
