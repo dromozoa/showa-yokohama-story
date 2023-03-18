@@ -1490,6 +1490,7 @@ let voiceSprite;
 let choices;
 let waitForChoice;
 let waitForStart;
+let waitForStop;
 let waitForDialog;
 
 const autosaveDefault = {
@@ -1855,7 +1856,7 @@ const initializeMainScreen = () => {
   // SKIP
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
     // debug
-    restart();
+    stop();
   });
 
 
@@ -2013,7 +2014,22 @@ const runStartScreen = async () => {
   document.querySelector(".demeter-offscreen").append(imageNode);
 };
 
+const resetParagraph = () => {
+  paragraphIndex = undefined;
+  paragraph = undefined;
+  paragraphLineNumber = undefined;
+  textAnimations = undefined;
+  textAnimation = undefined;
+  voiceSound = undefined;
+  voiceSprite = undefined;
+  choices = undefined;
+};
+
 const next = async () => {
+  if (waitForChoice || waitForStart || waitForStop || waitForDialog) {
+    return;
+  }
+
   // テキストアニメーション中である場合、終了させる。
   if (textAnimation) {
     textAnimation.finish();
@@ -2024,10 +2040,6 @@ const next = async () => {
   // する。
   if (voiceSprite) {
     voiceSprite.finish();
-    return;
-  }
-
-  if (waitForChoice || waitForStart) {
     return;
   }
 
@@ -2053,6 +2065,10 @@ const next = async () => {
       waitForStart = paragraph[0].start;
       await runStartScreen();
       waitForStart = undefined;
+      if (waitForStop) {
+        resetParagraph();
+        return waitForStop();
+      }
     }
 
     paragraphLineNumber = 1;
@@ -2081,6 +2097,10 @@ const next = async () => {
   voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
+  if (waitForStop) {
+    resetParagraph();
+    return waitForStop();
+  }
 
   ++paragraphLineNumber;
   if (paragraphLineNumber > textAnimations.length) {
@@ -2112,6 +2132,10 @@ const next = async () => {
       document.querySelector(".demeter-main-choices").style.display = "block";
 
       const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+      if (waitForStop) {
+        resetParagraph();
+        return waitForStop();
+      }
       if (choice.action) {
         choice.action(state, createContext());
       }
@@ -2128,11 +2152,7 @@ const next = async () => {
       paragraph[0].leave(state, createContext());
     }
 
-    paragraphIndex = undefined;
-    paragraph = undefined;
-    paragraphLineNumber = undefined;
-    textAnimations = undefined;
-    voiceSound = undefined;
+    resetParagraph();
   }
 
   if (cont) {
@@ -2156,6 +2176,21 @@ const restart = () => {
   if (voiceSprite) {
     voiceSprite.restart();
   }
+};
+
+const stop = async () => {
+  const run = new Promise(resolve => waitForStop = () => resolve());
+  if (textAnimation) {
+    textAnimation.finish();
+  }
+  if (voiceSprite) {
+    voiceSprite.finish();
+  }
+  if (waitForChoice) {
+    waitForChoice(undefined);
+  }
+  await run;
+  waitForStop = undefined;
 };
 
 //-------------------------------------------------------------------------
