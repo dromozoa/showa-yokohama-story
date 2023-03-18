@@ -1893,8 +1893,14 @@ if($.genesis)return 323;
 ["了。"],
 ]],
 // index:333
-[{speaker:"narrator"},[
-["一番のテープに上書き",["保存","セーブ"],"します。"],
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["一番のテープに",["保存","セーブ"],"します。"],
+["よろしいですか？"],
+]],
+// index:334
+[{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["二番のテープに",["保存","セーブ"],"します。"],
+["よろしいですか？"],
 ]],
 ],
 labels:{
@@ -1919,6 +1925,10 @@ labels:{
 "択ばない":280,
 "三節黙示録了":290,
 "創世記":323,
+},
+dialogs:{
+"save1":333,
+"save2":334,
 },
 };
 

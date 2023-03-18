@@ -733,7 +733,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
     .M(U2+U4,U4).h(W-U1-U2).V(H4+U4*C3).l(U8,U8).V(H-H4-U4*C3-U8).l(-U8,U8).V(H-U4)
     .h(U1+U2-W).V(H-H4-U4*C3).l(-U8,-U8).V(H4+U4*C3+U8).l(U8,-U8).z();
 
-  let buttonsHtml = '<g class="buttons">';
+  let buttonsHtml = '<g class="demeter-buttons">';
   for (let i = 1; i <= buttons; ++i) {
     // ボタン（反時計回り）
     clipPathData
@@ -753,7 +753,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
       .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
     buttonsHtml += `
-      <g class="button button${i}">
+      <g class="demeter-button demeter-button${i}">
         <path fill="none" stroke-width="${D.numberToString(U8)}" d="${buttonBarPathData}"/>
         <path stroke-width="1" d="${buttonPathData}"/>
       </g>
@@ -1828,15 +1828,15 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", () => {
-    console.log("save1");
+    console.log("load1");
   });
 
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", () => {
-    console.log("save2");
+    console.log("load2");
   });
 
   document.querySelector(".demeter-load-tape-save3").addEventListener("click", () => {
-    console.log("save3");
+    console.log("load3");
   });
 };
 
@@ -1853,19 +1853,25 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", () => {
-    console.log("save1");
-    document.querySelector(".demeter-save-tape-save1-text").textContent = " : " + D.dateToString(new Date());
+    // debug
+    // console.log("save1");
+    // document.querySelector(".demeter-save-tape-save1-text").textContent = " : " + D.dateToString(new Date());
+    dialog("save1");
   });
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", () => {
-    console.log("save2");
-    document.querySelector(".demeter-save-tape-save2-text").textContent = " : " + D.dateToString(new Date());
+    dialog("save2");
   });
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", () => {
     console.log("save3");
     document.querySelector(".demeter-save-tape-save3-text").textContent = " : " + D.dateToString(new Date());
   });
+};
+
+const initializeDialogOverlay = () => {
+  const dialogFrameNode = D.createDialogFrame(fontSize * 25, fontSize * 12, fontSize, 2, fontSize * 8, fontSize * 2);
+  document.querySelector(".demeter-dialog-frame").append(dialogFrameNode);
 };
 
 //-------------------------------------------------------------------------
@@ -2055,6 +2061,35 @@ const next = async () => {
 
 //-------------------------------------------------------------------------
 
+const dialog = async key => {
+  // const screen = document.querySelector(".demeter-projector > .demeter-data-screen");
+  // screen.querySelector(".demeter-data-back").style.display = "none";
+  // screen.querySelector(".demeter-data-tapes").style.display = "none";
+
+  const paragraphIndex = D.scenario.dialogs[key];
+  const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+  const textNodes = [];
+  D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+    const textNode = D.layoutText(D.composeText(text, fontSize * 21), fontSize, fontSize * 2);
+    textNodes.push(textNode);
+  });
+  document.querySelector(".demeter-dialog-text").replaceChildren(...textNodes);
+
+  const dialog = paragraph[0].dialog
+  if (dialog.length === 1) {
+    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "none";
+    document.querySelector(".demeter-dialog-item1").textContent = dialog[0].choice;
+  } else {
+    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "inline";
+    document.querySelector(".demeter-dialog-item2").textContent = dialog[0].choice;
+    document.querySelector(".demeter-dialog-item1").textContent = dialog[1].choice;
+  }
+
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-dialog-overlay"));
+};
+
+//-------------------------------------------------------------------------
+
 const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -2079,6 +2114,7 @@ const resize = () => {
   document.querySelector(".demeter-main-screen").style.transform = transform;
   document.querySelector(".demeter-load-screen").style.transform = transform;
   document.querySelector(".demeter-save-screen").style.transform = transform;
+  document.querySelector(".demeter-dialog-overlay").style.transform = transform;
   updateComponents();
 };
 
@@ -2100,6 +2136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeMainScreen();
   initializeLoadScreen();
   initializeSaveScreen();
+  initializeDialogOverlay();
   initializeAudio();
   resize();
   enterTitleScreen();

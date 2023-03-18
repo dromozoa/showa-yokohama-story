@@ -228,7 +228,12 @@ local function parse(scenario, include_path, filename)
       scenario = update(scenario, "system", true)
 
     elseif match "^@dialog{([^}]*)}" then
-      paragraph = update(paragraph, "dialog", trim(_1))
+      -- @dialog{キー}
+      paragraph = update(paragraph, "dialog", { dialog = trim(_1) })
+
+    elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
+      local dialog = assert(paragraph.dialog)
+      dialog.choices = append(dialog.choices, { choice = trim(_1), result = trim(_2) })
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -292,6 +297,24 @@ local function process_labels(scenario)
   scenario.labels = labels
 end
 
+local function process_dialogs(scenario)
+  local dialogs = {}
+  for index, paragraph in ipairs(scenario) do
+    paragraph.index = index
+    local dialog = paragraph.dialog
+    if dialog then
+      local key = dialog.dialog
+      if dialogs[key] then
+        error("dialog '"..key.."' already defined")
+      end
+      local item = { dialog = key, index = index }
+      append(dialogs, item)
+      dialogs[key] = item
+    end
+  end
+  scenario.dialogs = dialogs
+end
+
 local function process_speakers(scenario)
   for i, paragraph in ipairs(scenario) do
     if not paragraph.speaker then
@@ -308,6 +331,7 @@ return function (scenario_pathname)
   local scenario_filename = basename(scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
   process_labels(scenario)
+  process_dialogs(scenario)
   process_speakers(scenario)
   return scenario
 end

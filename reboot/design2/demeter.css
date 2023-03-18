@@ -31,8 +31,8 @@
 
   --color-title: #C63322;
   --color-console: #029D93;
-  --color-fill: rgba(255, 255, 255, 0.1);
-  --color-fill-active: rgba(2, 157, 147, 0.1);
+  --color-fill: rgba(255, 255, 255, 0.25);
+  --color-fill-active: rgba(2, 157, 147, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
 }
@@ -151,9 +151,9 @@ body.demeter {
 
 .demeter-start {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: calc(var(--font-size) * 25);
   height: calc(var(--font-size) * 14);
-  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
+  left: calc((var(--screen-width) - var(--font-size) * 25) * 0.5);
   top: calc((var(--screen-height) - var(--font-size) * 14) * 0.5);
 }
 
@@ -161,21 +161,19 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 15);
   height: calc(var(--font-size) * 12);
-  left: calc(var(--font-size) * 6);
+  left: calc(var(--font-size) * 5);
   top: 0;
 }
 
 .demeter-start-text {
   position: absolute;
   width: calc(var(--font-size) * 25);
-  left: var(--font-size);
+  left: 0;
   top: calc(var(--font-size) * 12);
   color: var(--color-console);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 1.5);
-  /* debug
-   */
+  line-height: calc(var(--font-size) * 2);
   text-align: center;
 }
 
@@ -609,8 +607,8 @@ body.demeter {
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
-  pointer-events: none;
   text-align: center;
+  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -757,6 +755,73 @@ body.demeter {
     left: calc(var(--font-size) * 27);
     top: calc(var(--font-size) * 4);
   }
+}
+
+/*************************************************************************/
+
+.demeter-dialog-overlay {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+.demeter-dialog {
+  position: absolute;
+  width: calc(var(--font-size) * 25);
+  height: calc(var(--font-size) * 12);
+  left: calc((var(--screen-width) - var(--font-size) * 25) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 12) * 0.5);
+}
+
+@media (orientation: portrait) {
+}
+
+@media (orientation: landscape) {
+}
+
+.demeter-dialog-frame {
+  position: absolute;
+}
+
+.demeter-dialog-frame svg {
+  display: block;
+  fill: var(--color-fill);
+  stroke: var(--color-stroke);
+}
+
+.demeter-dialog-text {
+  position: absolute;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 8);
+  left: calc(var(--font-size) * 2);
+  top: var(--font-size);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  pointer-events: none;
+}
+
+.demeter-dialog-item {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+  height: calc(var(--font-size) * 2);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-dialog-item1 {
+  position: absolute;
+  left: calc(var(--font-size) * 15.5);
+  top: calc(var(--font-size) * 9);
+}
+
+.demeter-dialog-item2 {
+  position: absolute;
+  left: calc(var(--font-size) * 6.5);
+  top: calc(var(--font-size) * 9);
 }
 
 /*************************************************************************/

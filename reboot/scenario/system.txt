@@ -2,10 +2,17 @@
 
 @system
 
-@dialog{save_tape1}
+@dialog{save1}
 #narrator
-一番のテープに上書き@r{保存}{セーブ}します。
-@# よろしいですか？
-@# @choice{はい}{:yes}
-@# @choice{いいえ}{:no}
+一番のテープに@r{保存}{セーブ}します。
+よろしいですか？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{save2}
+#narrator
+二番のテープに@r{保存}{セーブ}します。
+よろしいですか？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
 

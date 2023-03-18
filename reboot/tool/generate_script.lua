@@ -86,6 +86,13 @@ for i, paragraph in ipairs(scenario) do
   if paragraph.finish then
     handle:write ",finish:true"
   end
+  if paragraph.dialog then
+    handle:write ",dialog:["
+    for _, choice in ipairs(paragraph.dialog.choices) do
+      handle:write("{choice:", quote_js(choice.choice), ",result:", quote_js(choice.result), "},")
+    end
+    handle:write "]"
+  end
   handle:write "},[\n"
 
   for _, text in ipairs(paragraph) do
@@ -101,6 +108,13 @@ for _, label in ipairs(scenario.labels) do
   handle:write(quote_js(label.label), ":", label.index, ",\n")
 end
 handle:write "},\n"
+
+handle:write "dialogs:{\n"
+for _, dialog in ipairs(scenario.dialogs) do
+  handle:write(quote_js(dialog.dialog), ":", dialog.index, ",\n")
+end
+handle:write "},\n"
+
 
 handle:write [[
 };
