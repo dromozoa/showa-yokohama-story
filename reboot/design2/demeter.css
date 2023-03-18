@@ -31,7 +31,7 @@
 
   --color-title: #C63322;
   --color-console: #029D93;
-  --color-fill: rgba(255, 255, 255, 0.25);
+  --color-fill: rgba(31, 31, 31, 0.5);
   --color-fill-active: rgba(2, 157, 147, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);

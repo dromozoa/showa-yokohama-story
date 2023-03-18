@@ -1461,6 +1461,7 @@ let voiceSprite;
 let choices;
 let waitForChoice;
 let waitForStart;
+let waitForDialog;
 
 const autosaveDefault = {
   paragraphIndex: 1,
@@ -1491,6 +1492,21 @@ const putAutosave = async () => {
     logging.log("自動保存: 成功");
   } catch (e) {
     logging.log("自動保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
+const putSave = async (key, name) => {
+  try {
+    await database.put("save", {
+      id: key,
+      saved: D.dateToString(new Date()),
+      paragraphIndex: paragraphIndexSave,
+      state: state,
+    });
+    logging.log(name + "保存: 成功");
+  } catch (e) {
+    logging.log(name + "保存: 失敗");
     logging.log(e.message);
   }
 };
@@ -1742,12 +1758,21 @@ const enterMainScreen = () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
 };
 
-const enterLoadScreen = () => {
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-load-screen"));
+const enterDataScreen = async screenNode => {
+  for (let i = 1; i <= 3; ++i) {
+    const key = "save" + i;
+    const save = await database.get("save", key);
+    screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = save ? " : " + save.saved : "";
+  }
+  document.querySelector(".demeter-projector").append(screenNode);
 };
 
-const enterSaveScreen = () => {
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-save-screen"));
+const enterLoadScreen = async () => {
+  await enterDataScreen(document.querySelector(".demeter-load-screen"));
+};
+
+const enterSaveScreen = async () => {
+  await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
 //-------------------------------------------------------------------------
@@ -1852,26 +1877,36 @@ const initializeSaveScreen = () => {
     enterMainScreen();
   });
 
-  document.querySelector(".demeter-save-tape-save1").addEventListener("click", () => {
-    // debug
-    // console.log("save1");
-    // document.querySelector(".demeter-save-tape-save1-text").textContent = " : " + D.dateToString(new Date());
-    dialog("save1");
+  document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
+    if (await dialog("save1") === "yes") {
+      putSave("save1", "#1");
+      leaveSaveScreen();
+      enterMainScreen();
+    }
   });
 
-  document.querySelector(".demeter-save-tape-save2").addEventListener("click", () => {
-    dialog("save2");
+  document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
+    if (await dialog("save2") === "yes") {
+      putSave("save2", "#2");
+      leaveSaveScreen();
+      enterMainScreen();
+    }
   });
 
-  document.querySelector(".demeter-save-tape-save3").addEventListener("click", () => {
-    console.log("save3");
-    document.querySelector(".demeter-save-tape-save3-text").textContent = " : " + D.dateToString(new Date());
+  document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
+    if (await dialog("save3") === "yes") {
+      putSave("save3", "#3");
+      leaveSaveScreen();
+      enterMainScreen();
+    }
   });
 };
 
 const initializeDialogOverlay = () => {
   const dialogFrameNode = D.createDialogFrame(fontSize * 25, fontSize * 12, fontSize, 2, fontSize * 8, fontSize * 2);
   document.querySelector(".demeter-dialog-frame").append(dialogFrameNode);
+  dialogFrameNode.querySelector(".demeter-button1").addEventListener("click", () => waitForDialog(1));
+  dialogFrameNode.querySelector(".demeter-button2").addEventListener("click", () => waitForDialog(2));
 };
 
 //-------------------------------------------------------------------------
@@ -2062,10 +2097,6 @@ const next = async () => {
 //-------------------------------------------------------------------------
 
 const dialog = async key => {
-  // const screen = document.querySelector(".demeter-projector > .demeter-data-screen");
-  // screen.querySelector(".demeter-data-back").style.display = "none";
-  // screen.querySelector(".demeter-data-tapes").style.display = "none";
-
   const paragraphIndex = D.scenario.dialogs[key];
   const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
   const textNodes = [];
@@ -2078,6 +2109,7 @@ const dialog = async key => {
   const dialog = paragraph[0].dialog
   if (dialog.length === 1) {
     document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "none";
+    document.querySelector(".demeter-dialog-item2").textContent = "";
     document.querySelector(".demeter-dialog-item1").textContent = dialog[0].choice;
   } else {
     document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "inline";
@@ -2086,6 +2118,10 @@ const dialog = async key => {
   }
 
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-dialog-overlay"));
+  const resultIndex = await new Promise(resolve => waitForDialog = choice => resolve(choice));
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
+
+  return dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
 };
 
 //-------------------------------------------------------------------------
