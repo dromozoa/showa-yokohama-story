@@ -37,14 +37,14 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ]],
 // index:4
 [{speaker:"narrator",choices:[
-{choice:[["第一節","VERSE I"]],label:6},
-{choice:[["第二節","VERSE II"]],label:53},
-{choice:[["第三節","VERSE III"]],label:174},
+{choice:["第一節"],label:6},
+{choice:["第二節"],label:53},
+{choice:["第三節"],label:174},
 ],music:"vi03"},[
-["頭出しなんて言葉、キミはまだおぼえているかな。"],
+["頭出しなんて言葉、キミはまだおぼえているだろうか。"],
 ]],
 // index:5
-[{speaker:"danu",jump:1,music:"vi04"},[
+[{speaker:"danu",jump:1,music:"vi03"},[
 ["良き、終末を。"],
 ]],
 // index:6
@@ -1934,8 +1934,8 @@ if($.genesis)return 328;
 // index:338
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
-["既読の",["節","VERSE"],"を択べるようだ。"],
-["再生する？"],
+["既読の","節","を択べるようだ。"],
+["選択する？"],
 ]],
 // index:339
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[

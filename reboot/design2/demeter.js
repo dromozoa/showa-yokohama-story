@@ -1488,7 +1488,7 @@ const saveNewGame = {
 };
 
 const saveSelect = {
-  paragraphIndex: D.scenario.labels["チュートリアル"],
+  paragraphIndex: D.scenario.labels["節選択"],
   state: {},
 };
 
@@ -2053,8 +2053,8 @@ const initializeLoadScreen = () => {
     restart();
   });
 
-  document.querySelector(".demeter-load-tape-select").addEventListener("click", () => {
-    if (await dialog("load-tape-select") == "yes") {
+  document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {
+    if (await dialog("load-tape-select") === "yes") {
       await stop();
       setSave(saveSelect);
       leaveLoadScreen();
@@ -2064,7 +2064,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", async () => {
-    if (await dialog("load-tape-tutorial") == "yes") {
+    if (await dialog("load-tape-tutorial") === "yes") {
       await stop();
       setSave(saveTutorial);
       leaveLoadScreen();
@@ -2080,7 +2080,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
     const save = await database.get("save", "save1");
     if (save) {
-      if (await dialog("load-tape-save1") == "yes") {
+      if (await dialog("load-tape-save1") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();
@@ -2095,7 +2095,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", async () => {
     const save = await database.get("save", "save2");
     if (save) {
-      if (await dialog("load-tape-save2") == "yes") {
+      if (await dialog("load-tape-save2") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();
@@ -2110,7 +2110,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save3").addEventListener("click", async () => {
     const save = await database.get("save", "save3");
     if (save) {
-      if (await dialog("load-tape-save3") == "yes") {
+      if (await dialog("load-tape-save3") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();

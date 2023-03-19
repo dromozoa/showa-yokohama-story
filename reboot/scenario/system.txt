@@ -7,8 +7,8 @@
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-既読の@r{節}{VERSE}{節}を択べるようだ。
-再生する？
+既読の@v{節}{せつ}を択べるようだ。
+選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
