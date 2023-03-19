@@ -12,8 +12,6 @@ local background_textures = {}
 local canvases = {}
 local shaders = {}
 local mesh
-local background_texture
-local screenshot
 
 local function prepare_font(filename, size)
   local key = filename .. "/" .. size
@@ -154,10 +152,6 @@ local function prepare_mesh(sw, sh, tw, th, xn, yn)
   -- local W2 = math.sin(XDEG * (sw / sh) / (5 / 4)) * R * 2
   -- local scale = math.min(tw / W2, th / H)
   local scale = math.min(tw / (px * 2 * pf), th / (qy * 2 * qf))
-  print("sx", tw / (px * 2 * pf))
-  print("sy", th / (qy * 2 * qf))
-  -- ワイドだと計算があわない: たぶん有効高・幅と比がちがいすぎるから
-  scale = scale * 0.875
 
   -- 角度計算の分母
   local xn2 = yn * (5 / 4)
@@ -211,7 +205,6 @@ end
 function love.load(arg)
   love.keyboard.setKeyRepeat(true)
 
---[[
   for speaker, def in pairs(scenario.speakers) do
     if def.font_filename then
       def.text_font = prepare_font(def.font_filename, def.font_size)
@@ -236,22 +229,14 @@ function love.load(arg)
     local data = scenario_measures[i]
     data.background_texture = prepare_background_texture(data.background)
   end
-]]
-
-  -- steven.png
-  background_texture = prepare_background_texture(arg[1])
 
   local W = g.getWidth()
   local H = g.getHeight()
 
---[[
   canvases.text_char = g.newCanvas(W, H)
   canvases.text1 = g.newCanvas(W, H)
   canvases.text2 = g.newCanvas(W, H)
   canvases.crt = g.newCanvas(W, H)
-]]
-  canvases.crt = g.newCanvas(W, H, { format = "rgba8" })
-  canvases.out = g.newCanvas(W, H, { format = "rgba8" })
 
   shaders.text = assert(g.newShader "shader-text.txt")
   shaders.crt = assert(g.newShader "shader-crt.txt")
@@ -387,7 +372,6 @@ local encoding
 local encoder
 
 function love.draw()
---[[
   local measure_data
   local measure_frame
   local measure_frame_end
@@ -426,25 +410,58 @@ function love.draw()
     local canvas = g.getCanvas()
     g.setCanvas(canvases.text2)
     g.clear()
-    g.draw(background_texture, 0, 0)
+
+    g.draw(measure_data.background_texture, 0, 0)
+    if render_text then
+      local n = 16
+      local alpha = 1
+      if measure_frame >= measure_frame_end - n then
+        local beta = (measure_frame_end - measure_frame) / n
+        alpha = (math.sin((beta - 0.5) * math.pi) + 1) / 2
+      end
+
+      shaders.text:send("alpha", alpha)
+      g.setShader(shaders.text)
+      g.draw(canvases.text1, 0, 0)
+      g.setShader()
+    end
+
     g.setCanvas(canvas)
 
     --======================================================================
-]]
 
     local canvas = g.getCanvas()
     g.setCanvas(canvases.crt)
+    g.clear()
 
     local seed = current_frame * (1280 * 720 / 3 / 4) % (1280 + 42)
     local scaler = 1
 
+    if measure_data.measure_first then
+      local n = 30
+      if measure_frame < n then
+        if measure_frame == 0 then
+          scaler = g.getHeight()
+        else
+          scaler = (n - measure_frame) * 2
+        end
+      end
+    end
+    if measure_data.measure_last then
+      local n = 30
+      if measure_frame >= measure_frame_end - n then
+        if measure_frame == measure_frame_end - 1 then
+          scaler = g.getHeight()
+        else
+          scaler = (measure_frame - measure_frame_end + n + 1) * 2
+        end
+      end
+    end
+
     shaders.crt:send("seed", seed)
     shaders.crt:send("scaler", scaler)
     g.setShader(shaders.crt)
-
-    g.clear()
-    g.draw(background_texture, 0, 0)
-
+    g.draw(canvases.text2, 0, 0)
     g.setShader()
 
     g.setCanvas(canvas)
@@ -452,25 +469,8 @@ function love.draw()
     --======================================================================
 
     mesh:setTexture(canvases.crt)
-    -- mesh:setTexture(background_texture)
     g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
 
-    if screenshot then
-      -- print "screenshot"
-      -- screenshot = false
-      -- g.captureScreenshot "ss.png"
-      local canvas = g.getCanvas()
-      g.setCanvas(canvases.out)
-      g.clear()
-      mesh:setTexture(canvases.crt)
-      -- mesh:setTexture(background_texture)
-      g.draw(mesh, g.getWidth() / 2, g.getHeight() / 2)
-      g.setCanvas(canvas)
-      local image_data = canvases.out:newImageData();
-      image_data:encode("png", "ssx.png")
-    end
-
---[[
     if encoder then
       g.captureScreenshot(function (image_data)
         -- encoder:write(data:getString())
@@ -481,7 +481,6 @@ function love.draw()
       -- local contents, size = assert(love.filesystem.read(filename))
       -- encoder:write(contents)
     end
-
   else
     if encoder then
       encoder:close()
@@ -493,7 +492,6 @@ function love.draw()
   if running or encoder then
     current_frame = current_frame + 1
   end
-]]
 end
 
 function love.keypressed(key)
@@ -519,8 +517,6 @@ function love.keypressed(key)
   elseif key == "w" then
     g.captureScreenshot "ss.png"
   elseif key == "e" then
-    screenshot = true
---[==[
     if encoder then
       encoder:close()
       encoder = nil
@@ -529,7 +525,6 @@ function love.keypressed(key)
           encoder_command, frames_per_second, encoder_filename), "w"))
     end
     current_frame = 0
-]==]
   end
 end
 

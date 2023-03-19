@@ -1,0 +1,7 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@label{第一節}
+@music{vi04}
+#danu
+
+

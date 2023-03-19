@@ -36,6 +36,7 @@
   <script src="https://cdn.jsdelivr.net/npm/idb@7.1.1/build/umd.js" integrity="sha256-ekPnVXAfX/KotKCG3rac/xzpxda6Nl7jK2CU6/I+2tE=" crossorigin="anonymous"></script>
 
   <script defer src="demeter-jlreq.js"></script>
+  <script defer src="demeter-scanlines.js"></script>
   <script defer src="demeter-scenario.js"></script>
   <script defer src="demeter-voice-sprites.js"></script>
   <script defer src="demeter.js"></script>
@@ -43,7 +44,7 @@
 
 <body class="demeter">
 
-<div class="demeter-camera"></div>
+<div class="demeter-projector"></div>
 
 <div class="demeter-offscreen">
 <svg>
@@ -69,7 +70,7 @@
   </defs>
 </svg>
 
-<div class="demeter-title-screen">
+<div class="demeter-title-screen demeter-title-unlock-audio">
   <div class="demeter-title">
     <div class="demeter-title-ja"><span
       style="letter-spacing: -0.06em">昭</span><span
@@ -99,15 +100,38 @@
       style="letter-spacing: -0.010em">O</span><span
       style="letter-spacing: -0.009em">R</span><span
       style="letter-spacing: 0">Y</span></div>
-    <div class="demeter-title-text">
-      <div>EVANGELIUM SECUNDUM STEPHANUS</div>
-      <div>INSERT 30 PIECES OF SILVER TO CONTINUE</div>
-    </div>
+    <div class="demeter-title-text">INSERT 30 PIECES OF SILVER TO CONTINUE</div>
     <div class="demeter-title-icon"><span class="demeter-icon"></span></div>
+    <div class="demeter-title-choices">
+      <div class="demeter-title-choice demeter-title-choice1">
+        <div class="demeter-title-choice-text">NEW GAME</div>
+      </div>
+      <div class="demeter-title-choice demeter-title-choice2">
+        <div class="demeter-title-choice-text">LOAD GAME</div>
+      </div>
+      <div class="demeter-title-choice demeter-title-choice3">
+        <div class="demeter-title-choice-text">CONTINUE</div>
+      </div>
+    </div>
   </div>
 </div>
 
+<div class="demeter-start-screen">
+  <div class="demeter-start">
+    <div class="demeter-start-display"></div>
+    <div class="demeter-start-text"></div>
+  </div>
+</div>
+
+<img class="demeter-start-image demeter-start-image-verse1" src="verse1.png">
+<img class="demeter-start-image demeter-start-image-verse2" src="verse2.png">
+<img class="demeter-start-image demeter-start-image-verse3" src="verse3.png">
+
 <div class="demeter-main-screen">
+  <div class="demeter-main-logging"></div>
+  <div class="demeter-main-audio-visualizer"></div>
+  <div class="demeter-main-frame-rate-visualizer"></div>
+  <div class="demeter-main-silhouette"></div>
   <div class="demeter-main-menu">
     <div class="demeter-main-menu-frame"></div>
     <div class="demeter-main-menu-items">
@@ -126,21 +150,102 @@
     </div>
   </div>
   <div class="demeter-main-system-ui"></div>
-  <div class="demeter-main-paragraph">
-    <div class="demeter-main-paragraph-speaker">デメテル</div>
-    <div class="demeter-main-paragraph-text">
-      えっと、書きかわりつつある、たぶん。<br>
-      ダヌー姐さんは、ちょっとだけまちがってた。<br>
-      構造が寄生するのは、生物の脳だけじゃない。<br>
-      たがいに依存して、三位一体計算が成立した。
+  <div class="demeter-main-choices">
+    <div class="demeter-main-choice demeter-main-choice1">
+      <div class="demeter-main-choice-text"></div>
+      <div class="demeter-main-choice-barcode"></div>
     </div>
+    <div class="demeter-main-choice demeter-main-choice2">
+      <div class="demeter-main-choice-text"></div>
+      <div class="demeter-main-choice-barcode"></div>
+    </div>
+    <div class="demeter-main-choice demeter-main-choice3">
+      <div class="demeter-main-choice-text"></div>
+      <div class="demeter-main-choice-barcode"></div>
+    </div>
+  </div>
+  <div class="demeter-main-paragraph">
+    <div class="demeter-main-paragraph-speaker"></div>
+    <div class="demeter-main-paragraph-text"></div>
     <div class="demeter-main-paragraph-icon"><span class="demeter-icon"></span></div>
+  </div>
+</div>
+
+<div class="demeter-data-screen demeter-load-screen">
+  <div class="demeter-data-back">
+    <div class="demeter-data-back-frame demeter-load-back-frame"></div>
+    <div class="demeter-data-back-item"><span class="las la-hand-point-left"></span>BACK <span class="demeter-data-back-in-the-ussr">in the U.S.S.R</span></div>
+  </div>
+  <div class="demeter-data-title">
+    <div class="demeter-data-title-frame demeter-load-title-frame"></div>
+    <div class="demeter-data-title-item"><span class="las la-bible"></span>LOAD GAME</div>
+  </div>
+  <div class="demeter-data-tapes">
+    <div class="demeter-data-tape demeter-load-tape-select">
+      <img src="tape/select.png">
+      <div class="demeter-data-tape-label-select">VERSE SELECT</div>
+    </div>
+    <div class="demeter-data-tape demeter-load-tape-tutorial">
+      <img src="tape/tutorial.png">
+      <div class="demeter-data-tape-label">TUTORIAL</div>
+    </div>
+    <div class="demeter-data-tape demeter-load-tape-trailer">
+      <img src="tape/trailer.png">
+      <div class="demeter-data-tape-label"><span class="demeter-load-tape-trailer-text">broken : 1969/01/19 17:46</span></div>
+    </div>
+    <div class="demeter-data-tape demeter-load-tape-save1">
+      <img src="tape/save1.png">
+      <div class="demeter-data-tape-label">#1<span class="demeter-data-tape-save1-text"></span></div>
+    </div>
+    <div class="demeter-data-tape demeter-load-tape-save2">
+      <img src="tape/save2.png">
+      <div class="demeter-data-tape-label">#2<span class="demeter-data-tape-save2-text"></span></div>
+    </div>
+    <div class="demeter-data-tape demeter-load-tape-save3">
+      <img src="tape/save3.png">
+      <div class="demeter-data-tape-label">#3<span class="demeter-data-tape-save3-text"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="demeter-data-screen demeter-save-screen">
+  <div class="demeter-data-back">
+    <div class="demeter-data-back-frame demeter-save-back-frame"></div>
+    <div class="demeter-data-back-item"><span class="las la-hand-point-left"></span>BACK <span class="demeter-data-back-in-the-ussr">in the U.S.S.R</span></div>
+  </div>
+  <div class="demeter-data-title">
+    <div class="demeter-data-title-frame demeter-save-title-frame"></div>
+    <div class="demeter-data-title-item"><span class="las la-save"></span>SAVE GAME</div>
+  </div>
+  <div class="demeter-data-tapes">
+    <div class="demeter-data-tape demeter-save-tape-save1">
+      <img src="tape/save1.png">
+      <div class="demeter-data-tape-label">#1<span class="demeter-data-tape-save1-text"></span></div>
+    </div>
+    <div class="demeter-data-tape demeter-save-tape-save2">
+      <img src="tape/save2.png">
+      <div class="demeter-data-tape-label">#2<span class="demeter-data-tape-save2-text"></span></div>
+    </div>
+    <div class="demeter-data-tape demeter-save-tape-save3">
+      <img src="tape/save3.png">
+      <div class="demeter-data-tape-label">#3<span class="demeter-data-tape-save3-text"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="demeter-dialog-overlay">
+  <div class="demeter-dialog">
+    <div class="demeter-dialog-frame"></div>
+    <div class="demeter-dialog-text"></div>
+    <div class="demeter-dialog-item demeter-dialog-item1"></div>
+    <div class="demeter-dialog-item demeter-dialog-item2"></div>
   </div>
 </div>
 
 <div class="demeter-loader">
 $loader
 </div>
+
 <div class="demeter-graph">
 $graph
 </div>

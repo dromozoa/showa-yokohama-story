@@ -214,6 +214,10 @@ local function parse(scenario, include_path, filename)
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))
 
+    elseif match "^@start{([^}]*)}" then
+      -- @start{キー}
+      paragraph = update(paragraph, "start", trim(_1))
+
     elseif match "^@finish" then
       -- @finish
       paragraph = update(paragraph, "finish", true)
@@ -223,8 +227,18 @@ local function parse(scenario, include_path, filename)
       -- 以降の段落をシステム用とする
       scenario = update(scenario, "system", true)
 
+    elseif match "^@music{([^}]*)}" then
+      -- @music{キー}
+      -- 段落に音楽を割り当てる
+      paragraph = update(paragraph, "music", trim(_1))
+
     elseif match "^@dialog{([^}]*)}" then
-      paragraph = update(paragraph, "dialog", trim(_1))
+      -- @dialog{キー}
+      paragraph = update(paragraph, "dialog", { dialog = trim(_1) })
+
+    elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
+      local dialog = assert(paragraph.dialog)
+      dialog.choices = append(dialog.choices, { choice = trim(_1), result = trim(_2) })
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -253,6 +267,17 @@ local function parse(scenario, include_path, filename)
   end
 
   return scenario
+end
+
+local function process_speakers(scenario)
+  for i, paragraph in ipairs(scenario) do
+    if not paragraph.speaker then
+      error("speaker is nil at paragraph "..i)
+    end
+    if not speaker_definitions[paragraph.speaker] then
+      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
+    end
+  end
 end
 
 local function process_labels(scenario)
@@ -288,22 +313,83 @@ local function process_labels(scenario)
   scenario.labels = labels
 end
 
-local function process_speakers(scenario)
-  for i, paragraph in ipairs(scenario) do
-    if not paragraph.speaker then
-      error("speaker is nil at paragraph "..i)
-    end
-    if not speaker_definitions[paragraph.speaker] then
-      error("speaker '"..paragraph.speaker.."' not found at paragraph "..i)
+local function jump_index(scenario, jump)
+  return scenario.labels[jump.label].index
+end
+
+local function visit(scenario, i, u, starts, color)
+  color[i] = 1
+
+  local indices = {}
+  if u.when_jumps then
+    for _, jump in ipairs(u.when_jumps) do
+      append(indices, jump_index(scenario, jump))
     end
   end
+  if u.jump then
+    append(indices, jump_index(scenario, u.jump))
+  elseif u.choice_jumps then
+    for _, jump in ipairs(u.choice_jumps) do
+      append(indices, jump_index(scenario, jump))
+    end
+  elseif not u.finish then
+    append(indices, i + 1)
+  end
+
+  for _, j in ipairs(indices) do
+    if not starts[j] and not color[j] then
+      local v = assert(scenario[j])
+      assert(not v.system)
+      if v.music then
+        error("conflicts between "..u.music.." and "..v.music.." at paragraph "..j)
+      end
+      v.music = u.music
+      visit(scenario, j, v, starts, color)
+    end
+  end
+
+  color[i] = 2
+end
+
+local function process_musics(scenario)
+  local starts = {}
+  for index, paragraph in ipairs(scenario) do
+    if not paragraph.system and paragraph.music then
+      starts[index] = paragraph
+    end
+  end
+  for index, paragraph in pairs(starts) do
+    if not paragraph.system and paragraph.music then
+      visit(scenario, index, paragraph, starts, {})
+    end
+  end
+end
+
+local function process_dialogs(scenario)
+  local dialogs = {}
+  for index, paragraph in ipairs(scenario) do
+    paragraph.index = index
+    local dialog = paragraph.dialog
+    if dialog then
+      local key = dialog.dialog
+      if dialogs[key] then
+        error("dialog '"..key.."' already defined")
+      end
+      local item = { dialog = key, index = index }
+      append(dialogs, item)
+      dialogs[key] = item
+    end
+  end
+  scenario.dialogs = dialogs
 end
 
 return function (scenario_pathname)
   local scenario_dirname = dirname(scenario_pathname)
   local scenario_filename = basename(scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
-  process_labels(scenario)
   process_speakers(scenario)
+  process_labels(scenario)
+  process_musics(scenario)
+  process_dialogs(scenario)
   return scenario
 end
