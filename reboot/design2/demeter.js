@@ -1232,61 +1232,58 @@ D.MusicPlayer = class {
     this.soundId = undefined;
   }
 
-  start(key) {
-    this.key = key;
+  start(key, processUnlock) {
     const basename = "../output/music/sessions_" + key;
 
-    // onunlockは複数回呼ばれうる。
-    let unlocked = false;
-    this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
-      volume: this.volume,
-      loop: true,
-      onloaderror: (soundId, message) => {
-        console.log("onloaderror", soundId, message);
-      },
-      onplayerror: (soundId, message) => {
-        console.log("onplayerror", soundId, message);
-      },
-      onfade: soundId => {
-        console.log("onfade", soundId);
-      },
-      onunlock: () => {
-        if (!unlocked) {
-          unlocked = true;
-          const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-          audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-          audioVisualizer.canvas.style.display = "block";
-          audioVisualizer.canvas.style.position = "absolute";
-          document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-          logging.log("オーディオロック: 解除");
-        }
-      },
-    });
-
-    this.soundId = this.sound.play();
-    logging.log("音楽開始: " + key);
-  }
-
-  fade(key) {
-    this.key = key;
-    const basename = "../output/music/sessions_" + key;
     const sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
-      volume: 0,
+      volume: this.volume,
       loop: true,
     });
     const soundId = sound.play();
 
-    this.sound.once("fade", sid => {
-      console.log("fade", this.soundId, sid, soundId);
-      this.sound.stop();
-      this.sound = sound;
-      this.soundId = soundId;
+    sound.on("loaderror", (notUsed, message) => {
+      logging.log("音楽読出: 失敗");
+      logging.log(message);
     });
 
-    this.sound.fade(this.volume, 0, 5000, this.soundId);
-    sound.fade(0, this.volume, 5000, soundId);
+    sound.on("playerror", (notUsed, message) => {
+      logging.log("音楽再生: 失敗");
+      logging.log(message);
+    });
+
+    if (processUnlock) {
+      sound.once("unlock", () => {
+        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+        audioVisualizer.canvas.style.display = "block";
+        audioVisualizer.canvas.style.position = "absolute";
+        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+        logging.log("オーディオロック: 解除");
+      });
+    }
+
+    this.key = key;
+    this.sound = sound;
+    this.soundId = soundId;
+    logging.log("音楽開始: " + key);
+  }
+
+  fade(key) {
+    const oldKey = this.key;
+    const oldSound = this.sound;
+    const oldSoundId = this.soundId;
+    this.start(key);
+    const newSound = this.sound;
+    const newSoundId = this.soundId;
+
+    this.sound.once("fade", soundId=> {
+      oldSound.stop();
+      logging.log("音楽終了: " + oldKey);
+    });
+
+    oldSound.fade(this.volume, 0, 5000, oldSoundId);
+    newSound.fade(0, this.volume, 5000, newSoundId);
   }
 
   updateVolume(volume) {
@@ -1997,7 +1994,7 @@ const initializeDialogOverlay = () => {
 const initializeAudio = () => {
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume);
-  musicPlayer.start("vi03");
+  musicPlayer.start("vi03", true);
   logging.log("オーディオ初期化: 完了");
 };
 
