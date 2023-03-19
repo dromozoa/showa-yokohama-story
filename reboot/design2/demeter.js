@@ -1470,13 +1470,13 @@ const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
 
-let iconAnimation;
 let system;
 let systemUi;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
 let musicPlayer;
+let iconAnimation;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
@@ -1758,8 +1758,6 @@ const initializeSystemUi = () => {
 
 const leaveTitleScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
-  iconAnimation.stop();
-  iconAnimation = undefined;
 };
 
 const leaveStartScreen = () => {
@@ -1780,8 +1778,6 @@ const leaveSaveScreen = () => {
 
 const enterTitleScreen = () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
-  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
-  iconAnimation.start();
 };
 
 const enterStartScreen = () => {
@@ -1817,6 +1813,17 @@ const initializeTitleScreen = () => {
     enterMainScreen();
     next();
   });
+
+  [...document.querySelectorAll(".demeter-title-choice")].forEach((choiceNode, i) => {
+    const choiceFrameNode = D.createChoiceFrame(fontSize * 11, fontSize * 4, fontSize);
+    choiceNode.append(choiceFrameNode);
+    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
+      console.log("click");
+    });
+  });
+
+  // debug
+  document.querySelector(".demeter-title-choices").style.display = "block";
 };
 
 const initializeStartScreen = () => {};

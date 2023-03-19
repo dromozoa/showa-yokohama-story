@@ -26,7 +26,6 @@
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', sans-serif;
   --font-family-logging: 'Share Tech Mono', 'BIZ UDGothic', monospace;
-  --font-family-label: var(--font-family-console);
   --font-family-barcode: 'Libre Barcode 128';
 
   --color-title: #C63322;
@@ -81,18 +80,20 @@ body.demeter {
   background-image: var(--screen-background-image);
   background-repeat: none;
   background-attachment: fixed;
-  cursor: var(--cursor-pointer, auto);
 }
 
 .demeter-title {
   position: absolute;
   width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 18);
+  height: calc(var(--font-size) * 22);
   left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
-  top: calc((var(--screen-height) - var(--font-size) * 18) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 22) * 0.5);
 }
 
 .demeter-title-ja {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 6);
   color: var(--color-title);
   font-family: var(--font-family-title-ja);
   font-kerning: none;
@@ -106,11 +107,16 @@ body.demeter {
 }
 
 .demeter-title-en {
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: var(--font-size);
+  left: 0;
+  top: calc(var(--font-size) * 6);
   color: var(--color-title);
   font-family: var(--font-family-title-en);
   font-kerning: none;
   font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 1.5);
+  line-height: var(--font-size);
   text-align: center;
 }
 
@@ -119,23 +125,53 @@ body.demeter {
 }
 
 .demeter-title-text {
-  margin-top: calc(var(--font-size) * 3);
-  color: var(--color-console);
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 2);
+  left: 0;
+  top: calc(var(--font-size) * 12);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 1.5);
+  line-height: calc(var(--font-size) * 2);
   text-align: center;
 }
 
-.demeter-title-icon {
+.demeter-title-choices {
   display: none;
-  margin-top: calc(var(--font-size) * 3);
-  color: var(--color-console);
-  font-family: var(--font-family);
+  position: absolute;
+  width: calc(var(--font-size) * 23);
+  height: calc(var(--font-size) * 8);
+  left: calc(var(--font-size) * 2);
+  top: calc(var(--font-size) * 14);
+}
+
+.demeter-title-choice {
+  position: absolute;
+  width: calc(var(--font-size) * 11);
+  height: calc(var(--font-size) * 4);
+}
+
+.demeter-title-choice2 {
+  left: calc(var(--font-size) * 12);
+  top: 0;
+}
+
+.demeter-title-choice3 {
+  left: calc(var(--font-size) * 6);
+  top: calc(var(--font-size) * 4);
+}
+
+.demeter-title-choice-text {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 2);
+  top: var(--font-size);
+  font-family: var(--font-family-console);
   font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 1.5);
+  line-height: calc(var(--font-size) * 2);
   text-align: center;
-  transform-origin: center bottom;
+  pointer-events: none;
 }
 
 /*************************************************************************/
@@ -650,7 +686,7 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 8);
   color: #000;
-  font-family: var(--font-family-label);
+  font-family: var(--font-family-console);
   font-size: calc(var(--font-size) * 0.75);
   line-height: calc(var(--font-size) * 0.75);
   pointer-events: none;

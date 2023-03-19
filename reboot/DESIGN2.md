@@ -34,6 +34,14 @@
 - シルエット
   - 左右反転させて右に6(12)
 
+- タイトル画面の選択肢
+  - 左右に1.5emつけて+3em
+  - 5文字なら幅は8文字
+
+- つづきから / CONTINUE
+- はじめから / NEW GAME
+- ロード / LOAD GAME
+
 ## タスク
 
 - [x] autosave => verse select
