@@ -4,9 +4,17 @@
 
 @#==============================================================================
 
-@dialog{load-tape-save1}
+@dialog{load-tape-select}
 #narrator
-第一巻の@r{読出}{ロード}準備完了。
+頭出し用の信号が記録されている。
+既読の@r{節}{VERSE}{節}を択べるようだ。
+再生する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{load-tape-tutorial}
+#narrator
+このテープにはチュートリアルが記録されている。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -20,21 +28,21 @@
 
 @dialog{load-tape-save1}
 #narrator
-第一巻の@r{読出}{ロード}準備完了。
+第一巻のテープ、@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-save2}
 #narrator
-第二巻の@r{読出}{ロード}準備完了。
+第二巻のテープ、@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-save3}
 #narrator
-第三巻の@r{読出}{ロード}準備完了。
+第三巻のテープ、@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -49,21 +57,21 @@
 
 @dialog{save-tape-save1}
 #narrator
-第一巻への@r{書込}{セーブ}準備完了。
+第一巻のテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{save-tape-save2}
 #narrator
-第二巻への@r{書込}{セーブ}準備完了。
+第二巻のテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{save-tape-save3}
 #narrator
-第三巻への@r{書込}{セーブ}準備完了。
+第三巻のテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}

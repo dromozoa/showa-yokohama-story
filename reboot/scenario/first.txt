@@ -27,3 +27,13 @@
 こんにちは。
 @choice{チュートリアル}
 @choice{第一節}
+
+@label_root{節選択}
+@music{vi03}
+@# TODO 条件分岐
+#narrator
+頭出しなんて言葉、キミはまだおぼえているかな。
+@choice{@r{第一節}{VERSE I}}
+@choice{@r{第二節}{VERSE II}}
+@choice{@r{第三節}{VERSE III}}
+

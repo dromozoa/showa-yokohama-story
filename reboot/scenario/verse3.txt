@@ -1,5 +1,6 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
+@label{第三節}
 @music{diana23}
 #narrator
 昭和七十四年七月、ボクはキミに出逢った。
