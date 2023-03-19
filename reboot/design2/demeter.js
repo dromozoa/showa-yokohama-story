@@ -1493,7 +1493,7 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
-const autosaveDefault = {
+const newGame = {
   paragraphIndex: 1,
   state: {},
 };
@@ -1576,9 +1576,6 @@ const initializeDatabase = async () => {
       }
     });
     await database.put("system", system);
-
-    const autosave = await database.get("save", "autosave") || autosaveDefault;
-    setSave(autosave);
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -1758,6 +1755,7 @@ const initializeSystemUi = () => {
 
 const leaveTitleScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
+  document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
 const leaveStartScreen = () => {
@@ -1776,8 +1774,35 @@ const leaveSaveScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-save-screen"));
 };
 
-const enterTitleScreen = () => {
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-title-screen"));
+const enterTitleScreen = async () => {
+  const showChoices = async () => {
+    const autosave = await database.get("save", "autosave");
+    if (autosave) {
+      document.querySelector(".demeter-title-choice3").style.display = "block";
+    } else {
+      document.querySelector(".demeter-title-choice3").style.display = "none";
+    }
+    document.querySelector(".demeter-title-choices").style.display = "block";
+  };
+
+  const screenNode = document.querySelector(".demeter-title-screen");
+  if (screenNode.classList.contains("demeter-title-unlock-audio")) {
+    const unlockAudio = async () => {
+      screenNode.classList.remove("demeter-title-unlock-audio");
+      screenNode.removeEventListener("click", unlockAudio);
+      if (iconAnimation) {
+        iconAnimation.stop();
+        iconAnimation = undefined;
+      }
+      await showChoices();
+    };
+    screenNode.addEventListener("click", unlockAudio);
+    iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
+    iconAnimation.start();
+  } else {
+    await showChoices();
+  }
+  document.querySelector(".demeter-projector").append(screenNode);
 };
 
 const enterStartScreen = () => {
@@ -1808,22 +1833,29 @@ const enterSaveScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeTitleScreen = () => {
-  document.querySelector(".demeter-title-screen").addEventListener("click", () => {
-    leaveTitleScreen();
+  const choiceButtonNodes = [...document.querySelectorAll(".demeter-title-choice")].map(choiceNode => {
+    const choiceFrameNode = D.createChoiceFrame(fontSize * 11, fontSize * 4, fontSize);
+    choiceNode.append(choiceFrameNode);
+    return choiceFrameNode.querySelector(".demeter-button");
+  });
+
+  // NEW GAME
+  choiceButtonNodes[0].addEventListener("click", () => {
+    setSave(newGame);
     enterMainScreen();
     next();
   });
 
-  [...document.querySelectorAll(".demeter-title-choice")].forEach((choiceNode, i) => {
-    const choiceFrameNode = D.createChoiceFrame(fontSize * 11, fontSize * 4, fontSize);
-    choiceNode.append(choiceFrameNode);
-    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
-      console.log("click");
-    });
+  // LOAD GAME
+  choiceButtonNodes[1].addEventListener("click", () => {
   });
 
-  // debug
-  document.querySelector(".demeter-title-choices").style.display = "block";
+  // CONTINUE
+  choiceButtonNodes[2].addEventListener("click", async () => {
+    setSave(await database.get("save", "autosave"));
+    enterMainScreen();
+    next();
+  });
 };
 
 const initializeStartScreen = () => {};
@@ -1867,7 +1899,6 @@ const initializeMainScreen = () => {
   // SKIP
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
   });
-
 
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
@@ -2334,7 +2365,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeDialogOverlay();
   initializeAudio();
   resize();
-  enterTitleScreen();
+  await enterTitleScreen();
 
   while (true) {
     await D.requestAnimationFrame();

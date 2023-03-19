@@ -82,6 +82,10 @@ body.demeter {
   background-attachment: fixed;
 }
 
+.demeter-title-unlock-audio {
+  cursor: var(--cursor-pointer, auto);
+}
+
 .demeter-title {
   position: absolute;
   width: calc(var(--font-size) * 27);
@@ -134,6 +138,20 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+}
+
+.demeter-title-icon {
+  display: none;
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 2);
+  left: 0;
+  top: calc(var(--font-size) * 16);
+  height: calc(var(--font-size) * 2);
+  line-height: calc(var(--font-size) * 2); /* debug */
+  text-align: center;
+  transform-origin: center bottom;
+  pointer-events: none;
 }
 
 .demeter-title-choices {
@@ -551,9 +569,10 @@ body.demeter {
 .demeter-main-paragraph-icon {
   display: none;
   position: absolute;
-  bottom: 0;
   right: 0;
+  bottom: 0;
   height: calc(var(--font-size) * 2);
+  line-height: calc(var(--font-size) * 2); /* debug */
   text-align: right;
   transform-origin: center bottom;
   pointer-events: none;
