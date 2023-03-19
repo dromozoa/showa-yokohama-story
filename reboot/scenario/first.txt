@@ -1,0 +1,29 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@label{ニューゲーム}
+@music{vi03}
+@when{{
+  (() => {
+    ctx.hour = new Date().getHours();
+    return 4 <= ctx.hour && ctx.hour < 10;
+  })()
+}}{おはよう}
+@when{{
+  10 <= ctx.hour && ctx.hour < 18
+}}{こんにちは}
+#narrator
+こんばんは。
+@choice{チュートリアル}
+@choice{第一節}
+
+@label{おはよう}
+#narrator
+おはよう。
+@choice{チュートリアル}
+@choice{第一節}
+
+@label{こんにちは}
+#narrator
+こんにちは。
+@choice{チュートリアル}
+@choice{第一節}

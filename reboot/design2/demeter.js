@@ -948,6 +948,120 @@ D.TaskSet = class {
 
 //-------------------------------------------------------------------------
 
+D.IconAnimation = class {
+  constructor(node) {
+    this.node = node;
+    this.startTime = undefined;
+  }
+
+  start() {
+    this.node.style.display = "block";
+    this.node.style.transform = "scaleY(1) translateY(0)";
+    this.startTime = performance.now();
+  }
+
+  stop() {
+    this.node.style.display = "none";
+    this.startTime = undefined;
+  }
+
+  update() {
+    if (!this.startTime) {
+      return;
+    }
+
+    const now = performance.now();
+    const x = (now - this.startTime) % 1200 / 1200;
+
+    let scale = 1;
+    let translate = 0;
+
+    if (x < 0.8) {
+      const y = (x - 0.4) / 0.4;
+      translate = (y * y - 1) * 0.5;
+    } else {
+      const y = (x - 0.9) / 0.1;
+      scale = 1 + (y * y - 1) * 0.15;
+    }
+
+    this.node.style.transform = "scaleY(" + D.numberToString(scale) + ") translateY(" + D.numberToCss(translate, "em");
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.MusicPlayer = class {
+  constructor(volume) {
+    this.volume = volume;
+    this.key = undefined;
+    this.sound = undefined;
+    this.soundId = undefined;
+  }
+
+  start(key, processUnlock) {
+    const basename = "../output/music/sessions_" + key;
+
+    const sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: this.volume,
+      loop: true,
+    });
+    const soundId = sound.play();
+
+    sound.on("loaderror", (notUsed, message) => {
+      logging.log("音楽読出: 失敗");
+      logging.log(message);
+    });
+
+    sound.on("playerror", (notUsed, message) => {
+      logging.log("音楽再生: 失敗");
+      logging.log(message);
+    });
+
+    if (processUnlock) {
+      sound.once("unlock", () => {
+        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+        audioVisualizer.canvas.style.display = "block";
+        audioVisualizer.canvas.style.position = "absolute";
+        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+        logging.log("オーディオロック: 解除");
+      });
+    }
+
+    this.key = key;
+    this.sound = sound;
+    this.soundId = soundId;
+    logging.log("音楽開始: " + key);
+  }
+
+  fade(key) {
+    const oldKey = this.key;
+    const oldSound = this.sound;
+    const oldSoundId = this.soundId;
+    this.start(key);
+    const newSound = this.sound;
+    const newSoundId = this.soundId;
+
+    this.sound.once("fade", soundId=> {
+      oldSound.stop();
+      logging.log("音楽終了: " + oldKey);
+    });
+
+    oldSound.fade(this.volume, 0, 5000, oldSoundId);
+    newSound.fade(0, this.volume, 5000, newSoundId);
+  }
+
+  updateVolume(volume) {
+    this.volume = volume;
+    if (this.sound) {
+      this.sound.volume(volume);
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.AudioVisualizer = class {
   constructor(width, height, color) {
     const canvas = document.createElement("canvas");
@@ -1181,121 +1295,6 @@ D.Silhouette = class {
 
 //-------------------------------------------------------------------------
 
-D.IconAnimation = class {
-  constructor(node) {
-    this.node = node;
-    this.startTime = undefined;
-  }
-
-  start() {
-    this.node.style.display = "block";
-    this.node.style.transform = "scaleY(1) translateY(0)";
-    this.startTime = performance.now();
-  }
-
-  stop() {
-    this.node.style.display = "none";
-    this.startTime = undefined;
-  }
-
-  update() {
-    if (!this.startTime) {
-      return;
-    }
-
-    const now = performance.now();
-    const x = (now - this.startTime) % 1200 / 1200;
-
-    let scale = 1;
-    let translate = 0;
-
-    if (x < 0.8) {
-      const y = (x - 0.4) / 0.4;
-      translate = (y * y - 1) * 0.5;
-    } else {
-      const y = (x - 0.9) / 0.1;
-      scale = 1 + (y * y - 1) * 0.15;
-    }
-
-    this.node.style.transform = "scaleY(" + D.numberToString(scale) + ") translateY(" + D.numberToCss(translate, "em");
-  }
-};
-
-
-//-------------------------------------------------------------------------
-
-D.MusicPlayer = class {
-  constructor(volume) {
-    this.volume = volume;
-    this.key = undefined;
-    this.sound = undefined;
-    this.soundId = undefined;
-  }
-
-  start(key, processUnlock) {
-    const basename = "../output/music/sessions_" + key;
-
-    const sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
-      volume: this.volume,
-      loop: true,
-    });
-    const soundId = sound.play();
-
-    sound.on("loaderror", (notUsed, message) => {
-      logging.log("音楽読出: 失敗");
-      logging.log(message);
-    });
-
-    sound.on("playerror", (notUsed, message) => {
-      logging.log("音楽再生: 失敗");
-      logging.log(message);
-    });
-
-    if (processUnlock) {
-      sound.once("unlock", () => {
-        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-        audioVisualizer.canvas.style.display = "block";
-        audioVisualizer.canvas.style.position = "absolute";
-        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-        logging.log("オーディオロック: 解除");
-      });
-    }
-
-    this.key = key;
-    this.sound = sound;
-    this.soundId = soundId;
-    logging.log("音楽開始: " + key);
-  }
-
-  fade(key) {
-    const oldKey = this.key;
-    const oldSound = this.sound;
-    const oldSoundId = this.soundId;
-    this.start(key);
-    const newSound = this.sound;
-    const newSoundId = this.soundId;
-
-    this.sound.once("fade", soundId=> {
-      oldSound.stop();
-      logging.log("音楽終了: " + oldKey);
-    });
-
-    oldSound.fade(this.volume, 0, 5000, oldSoundId);
-    newSound.fade(0, this.volume, 5000, newSoundId);
-  }
-
-  updateVolume(volume) {
-    this.volume = volume;
-    if (this.sound) {
-      this.sound.volume(volume);
-    }
-  }
-};
-
-//-------------------------------------------------------------------------
-
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -1466,17 +1465,27 @@ const systemDefault = {
   unionSetting: "ろうそ",
 };
 
+const newGame = {
+  paragraphIndex: D.scenario.labels["ニューゲーム"],
+  state: {},
+};
+
 const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
-
 let system;
+let game;
+let state;
+
+let screenNamePrev;
+let screenName;
 let systemUi;
+
+let iconAnimation;
+let musicPlayer;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
-let musicPlayer;
-let iconAnimation;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
@@ -1492,14 +1501,6 @@ let waitForChoice;
 let waitForStart;
 let waitForStop;
 let waitForDialog;
-
-let screenNamePrev;
-let screenName;
-const newGame = {
-  paragraphIndex: 1,
-  state: {},
-};
-let state = {};
 
 //-------------------------------------------------------------------------
 
@@ -1548,7 +1549,7 @@ const setSave = save => {
   state = save.state;
 };
 
-const createContext = () => { system: system };
+const createContext = () => ({ system: system });
 
 const setScreenName = screenNameNext => {
   screenNamePrev = screenName;
