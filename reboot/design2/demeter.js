@@ -991,14 +991,19 @@ D.IconAnimation = class {
 //-------------------------------------------------------------------------
 
 D.MusicPlayer = class {
-  constructor(volume) {
+  constructor(volume, unlock) {
     this.volume = volume;
     this.key = undefined;
     this.sound = undefined;
     this.soundId = undefined;
+    this.unlock = unlock;
   }
 
-  start(key, processUnlock) {
+  resetUnlock() {
+    this.unlock = undefined;
+  }
+
+  start(key) {
     const basename = "../output/music/sessions_" + key;
 
     const sound = new Howl({
@@ -1018,14 +1023,17 @@ D.MusicPlayer = class {
       logging.log(message);
     });
 
-    if (processUnlock) {
+    if (this.unlock) {
       sound.once("unlock", () => {
-        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-        audioVisualizer.canvas.style.display = "block";
-        audioVisualizer.canvas.style.position = "absolute";
-        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-        logging.log("オーディオロック: 解除");
+        if (this.unlock) {
+          this.unlock();
+        }
+        // const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+        // audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+        // audioVisualizer.canvas.style.display = "block";
+        // audioVisualizer.canvas.style.position = "absolute";
+        // document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+        // logging.log("オーディオロック: 解除");
       });
     }
 
@@ -1598,6 +1606,38 @@ const evaluate = fn => {
 
 //-------------------------------------------------------------------------
 
+const showTitleChoices = async () => {
+  const autosave = await database.get("save", "autosave");
+  if (autosave) {
+    document.querySelector(".demeter-title-choice3").style.display = "block";
+  } else {
+    document.querySelector(".demeter-title-choice3").style.display = "none";
+  }
+  document.querySelector(".demeter-title-choices").style.display = "block";
+}
+
+const unlockAudio = async () => {
+  musicPlayer.resetUnlock();
+
+  const screenNode = document.querySelector(".demeter-title-screen");
+  screenNode.removeEventListener("click", unlockAudio);
+
+  screenNode.classList.remove("demeter-title-unlock-audio");
+  iconAnimation.stop();
+  iconAnimation = undefined;
+  await showTitleChoices();
+
+  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+  audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+  audioVisualizer.canvas.style.display = "block";
+  audioVisualizer.canvas.style.position = "absolute";
+  document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+
+  logging.log("オーディオロック: 解除");
+};
+
+//-------------------------------------------------------------------------
+
 const upgradeDatabase = (db, oldVersion, newVersion) => {
   console.log("upgradeDatabase", oldVersion, newVersion);
 
@@ -1841,32 +1881,32 @@ const leaveSaveScreen = () => {
 const enterTitleScreen = async () => {
   setScreenName("title");
 
-  const showChoices = async () => {
-    const autosave = await database.get("save", "autosave");
-    if (autosave) {
-      document.querySelector(".demeter-title-choice3").style.display = "block";
-    } else {
-      document.querySelector(".demeter-title-choice3").style.display = "none";
-    }
-    document.querySelector(".demeter-title-choices").style.display = "block";
-  };
+  // const showChoices = async () => {
+  //   const autosave = await database.get("save", "autosave");
+  //   if (autosave) {
+  //     document.querySelector(".demeter-title-choice3").style.display = "block";
+  //   } else {
+  //     document.querySelector(".demeter-title-choice3").style.display = "none";
+  //   }
+  //   document.querySelector(".demeter-title-choices").style.display = "block";
+  // };
 
   const screenNode = document.querySelector(".demeter-title-screen");
   if (screenNode.classList.contains("demeter-title-unlock-audio")) {
-    const unlockAudio = async () => {
-      screenNode.classList.remove("demeter-title-unlock-audio");
-      screenNode.removeEventListener("click", unlockAudio);
-      if (iconAnimation) {
-        iconAnimation.stop();
-        iconAnimation = undefined;
-      }
-      await showChoices();
-    };
+    // const unlockAudio = async () => {
+    //   screenNode.classList.remove("demeter-title-unlock-audio");
+    //   screenNode.removeEventListener("click", unlockAudio);
+    //   if (iconAnimation) {
+    //     iconAnimation.stop();
+    //     iconAnimation = undefined;
+    //   }
+    //   await showChoices();
+    // };
     screenNode.addEventListener("click", unlockAudio);
     iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
     iconAnimation.start();
   } else {
-    await showChoices();
+    await showTitleChoices();
   }
   document.querySelector(".demeter-projector").append(screenNode);
 };
@@ -2110,8 +2150,8 @@ const initializeDialogOverlay = () => {
 
 const initializeAudio = () => {
   Howler.volume(system.masterVolume);
-  musicPlayer = new D.MusicPlayer(system.musicVolume);
-  musicPlayer.start("vi03", true);
+  musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
+  musicPlayer.start("vi03");
   logging.log("オーディオ初期化: 完了");
 };
 
