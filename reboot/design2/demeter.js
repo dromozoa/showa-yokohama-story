@@ -1493,6 +1493,7 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
+let screenPrev;
 const newGame = {
   paragraphIndex: 1,
   state: {},
@@ -1754,23 +1755,28 @@ const initializeSystemUi = () => {
 //-------------------------------------------------------------------------
 
 const leaveTitleScreen = () => {
+  screenPrev = "title";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
 const leaveStartScreen = () => {
+  screenPrev = "start";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const leaveMainScreen = () => {
+  screenPrev = "main";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
 };
 
 const leaveLoadScreen = () => {
+  screenPrev = "load";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-load-screen"));
 };
 
 const leaveSaveScreen = () => {
+  screenPrev = "save";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-save-screen"));
 };
 
@@ -1842,17 +1848,21 @@ const initializeTitleScreen = () => {
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", () => {
     setSave(newGame);
+    leaveTitleScreen();
     enterMainScreen();
     next();
   });
 
   // LOAD GAME
   choiceButtonNodes[1].addEventListener("click", () => {
+    leaveTitleScreen();
+    enterLoadScreen();
   });
 
   // CONTINUE
   choiceButtonNodes[2].addEventListener("click", async () => {
     setSave(await database.get("save", "autosave"));
+    leaveTitleScreen();
     enterMainScreen();
     next();
   });
@@ -1919,8 +1929,13 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-title-frame").append(titleFrameNode);
 
   backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
-    leaveLoadScreen();
-    enterMainScreen();
+    if (screenPrev === "title") {
+      leaveLoadScreen();
+      enterTitleScreen();
+    } else {
+      leaveLoadScreen();
+      enterMainScreen();
+    }
     restart();
   });
 
