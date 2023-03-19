@@ -1482,8 +1482,13 @@ const readStateDefault = {
   map: new Map(),
 };
 
-const newGame = {
+const saveNewGame = {
   paragraphIndex: D.scenario.labels["ニューゲーム"],
+  state: {},
+};
+
+const saveTutorial = {
+  paragraphIndex: D.scenario.labels["チュートリアル"],
   state: {},
 };
 
@@ -1951,7 +1956,7 @@ const initializeTitleScreen = () => {
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", () => {
-    setSave(newGame);
+    setSave(saveNewGame);
     leaveTitleScreen();
     enterMainScreen();
     next();
@@ -2047,8 +2052,12 @@ const initializeLoadScreen = () => {
     console.log("select");
   });
 
-  document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", () => {
-    console.log("tutorial");
+  document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", async () => {
+    await stop();
+    setSave(saveTutorial);
+    leaveLoadScreen();
+    enterMainScreen();
+    next();
   });
 
   document.querySelector(".demeter-load-tape-trailer").addEventListener("click", async () => {

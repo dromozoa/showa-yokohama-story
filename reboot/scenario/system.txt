@@ -4,6 +4,13 @@
 
 @#==============================================================================
 
+@dialog{load-tape-save1}
+#narrator
+第一巻の@r{読出}{ロード}準備完了。
+再生する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
 @dialog{load-tape-broken}
 #narrator
 この@r{因果}{テープ}はねじれてよじれてからまりあっている。
