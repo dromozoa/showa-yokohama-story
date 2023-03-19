@@ -1465,6 +1465,15 @@ const systemDefault = {
   unionSetting: "ろうそ",
 };
 
+const gameStateDefault = {
+  id: "game",
+};
+
+const readStateDefault = {
+  id: "read",
+  map: new Map(),
+};
+
 const newGame = {
   paragraphIndex: D.scenario.labels["ニューゲーム"],
   state: {},
@@ -1474,7 +1483,8 @@ const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
 let system;
-let game;
+let gameState;
+let readState;
 let state;
 
 let screenNamePrev;
@@ -1504,12 +1514,38 @@ let waitForDialog;
 
 //-------------------------------------------------------------------------
 
+const setScreenName = screenNameNext => {
+  screenNamePrev = screenName;
+  screenName = screenNameNext;
+};
+
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
     logging.log("システム設定保存: 成功");
   } catch (e) {
     logging.log("システム設定保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
+const putGameState = async () => {
+  try {
+    await database.put("game", gameState);
+    logging.log("ゲーム状態保存: 成功");
+  } catch (e) {
+    logging.log("ゲーム状態保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
+const putReadState = async () => {
+  try {
+    readState.map.set(paragraphIndex, Date.now());
+    await database.put("read", readState);
+    logging.log("既読状態保存: 成功");
+  } catch (e) {
+    logging.log("既読状態保存: 失敗");
     logging.log(e.message);
   }
 };
@@ -1549,11 +1585,15 @@ const setSave = save => {
   state = save.state;
 };
 
-const createContext = () => ({ system: system });
-
-const setScreenName = screenNameNext => {
-  screenNamePrev = screenName;
-  screenName = screenNameNext;
+const evaluate = fn => {
+  const result = fn(state, {
+    system: system,
+    game: gameState,
+    read: readState,
+    logging: logging,
+  });
+  putGameState();
+  return result;
 };
 
 //-------------------------------------------------------------------------
@@ -1569,21 +1609,37 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
       case 2:
         db.createObjectStore("save", { keyPath: "id" });
         break;
+      case 3:
+        db.createObjectStore("game", { keyPath: "id" });
+        db.createObjectStore("read", { keyPath: "id" });
+        break;
     }
   }
 };
 
+const setItemDefault = (item, itemDefault) => {
+  Object.entries(itemDefault).forEach(([k, v]) => {
+    if (item[k] === undefined) {
+      item[k] = v;
+    }
+  });
+};
+
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 2, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 3, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
-    Object.entries(systemDefault).forEach(([k, v]) => {
-      if (system[k] === undefined) {
-        system[k] = v;
-      }
-    });
+    setItemDefault(system, systemDefault);
     await database.put("system", system);
+
+    gameState = await database.get("game", "game") || {};
+    setItemDefault(gameState, gameStateDefault);
+    await database.put("game", gameState);
+
+    readState = await database.get("read", "read") || {};
+    setItemDefault(readState, readStateDefault);
+    await database.put("read", readState);
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -2139,7 +2195,7 @@ const next = async () => {
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
-      const paragraphIndexWhen = paragraph[0].when(state, createContext());
+      const paragraphIndexWhen = evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
@@ -2150,10 +2206,11 @@ const next = async () => {
       musicPlayer.fade(paragraph[0].music);
     }
 
+    // 既読処理
+    putReadState();
+
     // 自動保存
     putAutosave();
-
-    // 既読処理
 
     // 開始画面
     if (paragraph[0].start) {
@@ -2231,7 +2288,7 @@ const next = async () => {
         return waitForStop();
       }
       if (choice.action) {
-        choice.action(state, createContext());
+        evaluate(choice.action);
       }
 
       paragraphIndexPrev = choice.label - 1;
@@ -2240,7 +2297,7 @@ const next = async () => {
     }
 
     if (paragraph[0].leave) {
-      paragraph[0].leave(state, createContext());
+      evaluate(paragraph[0].leave);
     }
 
     resetParagraph();
