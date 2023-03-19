@@ -1,11 +1,14 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@# verse1 Sessions: Diana 33
-@# verse2 Sessions: Diana 19
-@# verse3 Sessions: Diana 23, 12 (ED)
-@# 偽典   Sessions: Vi 03
-@# if...  Sessions: Vi 10
+@music{vi03}
+#narrator
+@choice{チュートリアル}
+@choice{第一節}
+@# おはよう
+@# こんにちは
+@# こんばんは
 
+@include{tutorial.txt}
 @include{verse1.txt}
 @include{verse2.txt}
 @include{verse3.txt}

@@ -1493,7 +1493,8 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
-let screenPrev;
+let screenNamePrev;
+let screenName;
 const newGame = {
   paragraphIndex: 1,
   state: {},
@@ -1548,6 +1549,11 @@ const setSave = save => {
 };
 
 const createContext = () => { system: system };
+
+const setScreenName = screenNameNext => {
+  screenNamePrev = screenName;
+  screenName = screenNameNext;
+};
 
 //-------------------------------------------------------------------------
 
@@ -1755,32 +1761,29 @@ const initializeSystemUi = () => {
 //-------------------------------------------------------------------------
 
 const leaveTitleScreen = () => {
-  screenPrev = "title";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-title-screen"));
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
 const leaveStartScreen = () => {
-  screenPrev = "start";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const leaveMainScreen = () => {
-  screenPrev = "main";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
 };
 
 const leaveLoadScreen = () => {
-  screenPrev = "load";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-load-screen"));
 };
 
 const leaveSaveScreen = () => {
-  screenPrev = "save";
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-save-screen"));
 };
 
 const enterTitleScreen = async () => {
+  setScreenName("title");
+
   const showChoices = async () => {
     const autosave = await database.get("save", "autosave");
     if (autosave) {
@@ -1812,10 +1815,12 @@ const enterTitleScreen = async () => {
 };
 
 const enterStartScreen = () => {
+  setScreenName("start");
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
+  setScreenName("main");
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
 };
 
@@ -1829,10 +1834,12 @@ const enterDataScreen = async screenNode => {
 };
 
 const enterLoadScreen = async () => {
+  setScreenName("load");
   await enterDataScreen(document.querySelector(".demeter-load-screen"));
 };
 
 const enterSaveScreen = async () => {
+  setScreenName("save");
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
@@ -1929,7 +1936,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-title-frame").append(titleFrameNode);
 
   backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
-    if (screenPrev === "title") {
+    if (screenNamePrev === "title") {
       leaveLoadScreen();
       enterTitleScreen();
     } else {
@@ -2365,7 +2372,9 @@ addEventListener("resize", resize);
 
 addEventListener("keydown", ev => {
   if (ev.code === "Enter") {
-    next();
+    if (screenName === "main") {
+      next();
+    }
   }
 });
 
