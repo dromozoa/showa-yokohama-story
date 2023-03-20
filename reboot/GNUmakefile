@@ -34,6 +34,9 @@ all:: $(voicepeak_dic) $(targets)
 clean::
 	rm -f $(targets)
 
+clean_voice::
+	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
+
 convert_voice::
 	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice2 "*-voice*.wav"
 	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js

@@ -77,6 +77,9 @@ for i, paragraph in ipairs(scenario) do
     end
     handle:write "}"
   end
+  if paragraph.enter then
+    handle:write(",enter:($,ctx)=>{", paragraph.enter, ";}")
+  end
   if paragraph.leave then
     handle:write(",leave:($,ctx)=>{", paragraph.leave, ";}")
   end

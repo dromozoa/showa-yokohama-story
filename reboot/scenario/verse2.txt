@@ -6,6 +6,9 @@
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 @start{verse2}
+@enter{{
+  ctx.game.visitedVerse2 = true;
+}}
 @leave{{
   delete $.priest;
   delete $.engineer;

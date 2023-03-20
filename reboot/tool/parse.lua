@@ -215,6 +215,10 @@ local function parse(scenario, include_path, filename)
       -- @when{{式}}{ラベル}
       paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
 
+    elseif match "^@enter{{(.-)}}" then
+      -- @enter{{文}}
+      paragraph = update(paragraph, "enter", trim(_1))
+
     elseif match "^@leave{{(.-)}}" then
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))

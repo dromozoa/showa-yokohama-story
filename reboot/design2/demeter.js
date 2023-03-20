@@ -1525,6 +1525,11 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
+// !!!debug!!!
+D.debugState = () => {
+  return [ system, gameState, readState, state ];
+}
+
 //-------------------------------------------------------------------------
 
 const setScreenName = screenNameNext => {
@@ -2019,7 +2024,7 @@ const initializeMainScreen = () => {
     choiceNode.append(choiceFrameNode);
     choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
       ev.stopPropagation();
-      waitForChoice(choices[choices.length === 2 ? i - 1 : i]);
+      waitForChoice(choices[i + choices.length - 3]);
     });
   });
 };
@@ -2273,6 +2278,10 @@ const next = async () => {
       waitForStart = undefined;
     }
 
+    if (paragraph[0].enter) {
+      evaluate(paragraph[0].enter);
+    }
+
     paragraphLineNumber = 1;
     textAnimations = [];
     const textNodes = [];
@@ -2319,12 +2328,10 @@ const next = async () => {
         document.querySelector(".demeter-main-choice2"),
         document.querySelector(".demeter-main-choice3"),
       ];
-      if (choices.length === 2) {
-        choiceNodes[0].style.display = "none";
-        choiceNodes.shift();
-      } else {
-        choiceNodes[0].style.display = "block";
-      }
+      const n = 3 - choices.length;
+      choiceNodes.forEach((choiceNode, i) => choiceNode.style.display = i < n ? "none" : "block");
+      choiceNodes.splice(0, n);
+
       choices.forEach((choice, i) => {
         const choiceNode = choiceNodes[i];
         const textNode = D.layoutText(D.composeText(D.parseText(choice.choice, fontSize, font), fontSize * 21), fontSize, fontSize * 2);

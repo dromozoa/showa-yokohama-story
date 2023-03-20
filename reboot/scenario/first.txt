@@ -30,7 +30,19 @@
 
 @label_root{節選択}
 @music{vi03}
-@# TODO 条件分岐
+@when{{ctx.game.visitedVerse3}}{節選択3}
+@when{{ctx.game.visitedVerse2}}{節選択2}
+#narrator
+頭出しなんて言葉、キミはまだおぼえているだろうか。
+@choice{第一節}
+
+@label_root{節選択2}
+#narrator
+頭出しなんて言葉、キミはまだおぼえているだろうか。
+@choice{第一節}
+@choice{第二節}
+
+@label_root{節選択3}
 #narrator
 頭出しなんて言葉、キミはまだおぼえているだろうか。
 @choice{第一節}

@@ -49,6 +49,7 @@ syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript c
 syntax region sysChoice start=/@choice{/ end=/}/ contains=sysRawString,sysRuby,sysVoice nextgroup=sysChoiceScript,sysChoiceLabel
 
 syntax region sysWhen start=/@when{{/ end=/}}/ keepend contains=@javascript nextgroup=sysLabelArg
+syntax region sysEnter start=/@enter{{/ end=/}}/ keepend contains=@javascript
 syntax region sysLeave start=/@leave{{/ end=/}}/ keepend contains=@javascript
 
 highlight default link sysRawString String
@@ -66,6 +67,7 @@ highlight default link sysChoiceScript Conditional
 highlight default link sysChoice Conditional
 highlight default link sysInclude Include
 highlight default link sysWhen Conditional
+highlight default link sysEnter Statement
 highlight default link sysLeave Statement
 highlight default link sysStart Statement
 highlight default link sysFinish Statement
