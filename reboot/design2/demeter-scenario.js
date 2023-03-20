@@ -1950,17 +1950,17 @@ if($.genesis)return 328;
 ]],
 // index:341
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第一巻のテープ、",["読出","ロード"],"準備完了。"],
+["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index:342
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第二巻のテープ、",["読出","ロード"],"準備完了。"],
+["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index:343
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第三巻のテープ、",["読出","ロード"],"準備完了。"],
+["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index:344
@@ -1970,17 +1970,17 @@ if($.genesis)return 328;
 ]],
 // index:345
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第一巻のテープへの",["書込","セーブ"],"準備完了。"],
+["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index:346
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第二巻のテープへの",["書込","セーブ"],"準備完了。"],
+["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index:347
 [{speaker:"narrator",dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["第三巻のテープへの",["書込","セーブ"],"準備完了。"],
+["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 ],

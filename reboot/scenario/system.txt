@@ -28,21 +28,21 @@
 
 @dialog{load-tape-save1}
 #narrator
-第一巻のテープ、@r{読出}{ロード}準備完了。
+@v{一巻}{いっかん}めのテープの@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-save2}
 #narrator
-第二巻のテープ、@r{読出}{ロード}準備完了。
+二巻めのテープの@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-save3}
 #narrator
-第三巻のテープ、@r{読出}{ロード}準備完了。
+三巻めのテープの@r{読出}{ロード}準備完了。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -57,21 +57,21 @@
 
 @dialog{save-tape-save1}
 #narrator
-第一巻のテープへの@r{書込}{セーブ}準備完了。
+@v{一巻}{いっかん}めのテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{save-tape-save2}
 #narrator
-第二巻のテープへの@r{書込}{セーブ}準備完了。
+二巻めのテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{save-tape-save3}
 #narrator
-第三巻のテープへの@r{書込}{セーブ}準備完了。
+三巻めのテープへの@r{書込}{セーブ}準備完了。
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
