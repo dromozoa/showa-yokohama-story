@@ -1890,28 +1890,8 @@ const leaveSaveScreen = () => {
 
 const enterTitleScreen = async () => {
   setScreenName("title");
-
-  // const showChoices = async () => {
-  //   const autosave = await database.get("save", "autosave");
-  //   if (autosave) {
-  //     document.querySelector(".demeter-title-choice3").style.display = "block";
-  //   } else {
-  //     document.querySelector(".demeter-title-choice3").style.display = "none";
-  //   }
-  //   document.querySelector(".demeter-title-choices").style.display = "block";
-  // };
-
   const screenNode = document.querySelector(".demeter-title-screen");
   if (screenNode.classList.contains("demeter-title-unlock-audio")) {
-    // const unlockAudio = async () => {
-    //   screenNode.classList.remove("demeter-title-unlock-audio");
-    //   screenNode.removeEventListener("click", unlockAudio);
-    //   if (iconAnimation) {
-    //     iconAnimation.stop();
-    //     iconAnimation = undefined;
-    //   }
-    //   await showChoices();
-    // };
     screenNode.addEventListener("click", unlockAudio);
     iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
     iconAnimation.start();
