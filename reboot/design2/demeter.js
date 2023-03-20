@@ -1000,6 +1000,7 @@ D.MusicPlayer = class {
   }
 
   resetUnlock() {
+    this.sound.off("unlock");
     this.unlock = undefined;
   }
 
@@ -1028,12 +1029,6 @@ D.MusicPlayer = class {
         if (this.unlock) {
           this.unlock();
         }
-        // const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-        // audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-        // audioVisualizer.canvas.style.display = "block";
-        // audioVisualizer.canvas.style.position = "absolute";
-        // document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-        // logging.log("オーディオロック: 解除");
       });
     }
 
