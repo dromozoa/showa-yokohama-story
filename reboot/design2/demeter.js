@@ -1965,8 +1965,19 @@ const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
+  document.querySelector(".demeter-main-screen").addEventListener("click", ev => {
+    ev.stopPropagation();
+    next();
+  });
+
+  document.querySelector(".demeter-main-system-ui").addEventListener("click", ev => {
+    // システムUIの表示中はバブリングを伝播させない。
+    ev.stopPropagation();
+  });
+
   // SYSTEM
-  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", () => {
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", ev => {
+    ev.stopPropagation();
     if (systemUi._hidden) {
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
       systemUiNode.style.display = "block";
@@ -1978,36 +1989,39 @@ const initializeMainScreen = () => {
   });
 
   // LOAD
-  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", () => {
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", ev => {
+    ev.stopPropagation();
     pause();
     leaveMainScreen();
     enterLoadScreen();
   });
 
   // SAVE
-  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", () => {
+  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", ev => {
+    ev.stopPropagation();
     pause();
     leaveMainScreen();
     enterSaveScreen();
   });
 
   // AUTO
-  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", () => {
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", ev => {
+    ev.stopPropagation();
   });
 
   // SKIP
-  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", () => {
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", ev => {
+    ev.stopPropagation();
   });
 
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
     choiceNode.append(choiceFrameNode);
-    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
+    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
+      ev.stopPropagation();
       waitForChoice(choices[choices.length === 2 ? i - 1 : i]);
     });
   });
-
-  document.querySelector(".demeter-main-paragraph").addEventListener("click", next);
 };
 
 const initializeLoadScreen = () => {
@@ -2116,6 +2130,7 @@ const initializeSaveScreen = () => {
       putSave("save1", "#1");
       leaveSaveScreen();
       enterMainScreen();
+      restart();
     }
   });
 
@@ -2124,6 +2139,7 @@ const initializeSaveScreen = () => {
       putSave("save2", "#2");
       leaveSaveScreen();
       enterMainScreen();
+      restart();
     }
   });
 
@@ -2132,6 +2148,7 @@ const initializeSaveScreen = () => {
       putSave("save3", "#3");
       leaveSaveScreen();
       enterMainScreen();
+      restart();
     }
   });
 };
