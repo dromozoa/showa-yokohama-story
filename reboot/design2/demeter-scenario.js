@@ -139,9 +139,9 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index:20
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:($,ctx)=>{$.father = 1;;},barcode:"Sam Spade",label:21},
-{choice:["フィリップ・マーロウ"],action:($,ctx)=>{$.father = 2;;},barcode:"Philip Marlowe",label:21},
-{choice:["マイク・ハマー"],action:($,ctx)=>{$.father = 3;;},barcode:"Mike Hammer",label:21},
+{choice:["サム・スペード"],action:($,ctx)=>{ctx.game.father = 1;;},barcode:"Sam Spade",label:21},
+{choice:["フィリップ・マーロウ"],action:($,ctx)=>{ctx.game.father = 2;;},barcode:"Philip Marlowe",label:21},
+{choice:["マイク・ハマー"],action:($,ctx)=>{ctx.game.father = 3;;},barcode:"Mike Hammer",label:21},
 ],music:"diana33"},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
