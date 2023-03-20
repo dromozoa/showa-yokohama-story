@@ -1,13 +1,6 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@music{vi03}
-#narrator
-@choice{チュートリアル}
-@choice{第一節}
-@# おはよう
-@# こんにちは
-@# こんばんは
-
+@include{first.txt}
 @include{tutorial.txt}
 @include{verse1.txt}
 @include{verse2.txt}

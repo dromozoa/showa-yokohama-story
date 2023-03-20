@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -17,11 +17,16 @@
 
 local source = io.read "a"
 
-local width, height, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 %1%.00 %2%.00".->%s*(.*)]])
+local width, height, vb_width, vb_height, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 (%1%.%d%d) (%2%.%d%d)".->%s*(.*)]])
 local tx, ty, source = assert(source:match [[^<g id="graph0" class="graph" transform="scale%(1 1%) rotate%(0%) translate%(([%-%d]+) ([%-%d]+)%)">%s*(.*)]])
 
 local width = tonumber(width)
 local height = tonumber(height)
+local vb_width = tonumber(vb_width)
+local vb_height = tonumber(vb_height)
+width = math.max(width, math.ceil(vb_width))
+height = math.max(height, math.ceil(vb_height))
+
 local tx = tonumber(tx)
 local ty = tonumber(ty)
 
@@ -36,7 +41,7 @@ for group_id, group_class, title, data in source:gmatch [[<g id="(.-)" class="(.
     local n = tonumber(assert(group_id:match "^node(%d+)$"))
     node_max = math.max(node_max, n)
 
-    local cx, cy, rx, ry = data:match [[^<ellipse fill="none" stroke="black" cx="([%-%d]+)" cy="([%-%d]+)" rx="(%d+)" ry="(%d+)"/>$]]
+    local cx, cy, rx, ry = data:match [[^<ellipse fill="none" stroke="black" cx="([%-%.%d]+)" cy="([%-%.%d]+)" rx="(%d+)" ry="(%d+)"/>$]]
     if cx then
       cx = tonumber(cx)
       cy = tonumber(cy)
@@ -52,7 +57,7 @@ for group_id, group_class, title, data in source:gmatch [[<g id="(.-)" class="(.
       }
 
     else
-      local s = assert(data:match [[^<polygon fill="none" stroke="black" points="(.*)"/>$]])
+      local s = assert(data:match [[^<polygon fill="none" stroke="black" points="(.*)"/>$]], "error:"..data)
       local points = {}
       for x, y in s:gmatch "([%-%.%d]+)[%s,]+([%-%.%d]+)" do
         points[#points + 1] = { x = tonumber(x), y = tonumber(y) }

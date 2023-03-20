@@ -1,4 +1,4 @@
-" Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+" Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
 "
 " This file is part of 昭和横濱物語.
 "
@@ -34,6 +34,7 @@ syntax keyword sysTodo TODO FIXME XXX NOTE contained
 syntax match sysComment /@#.*$/ contains=sysTodo
 syntax match sysLabelArg /{[^}]*}/ contained
 syntax match sysLabel /@label{[^}]*}/ contains=sysLabelArg
+syntax match sysLabelRoot /@label_root{[^}]*}/ contains=sysLabelArg
 syntax match sysJump /@jump{[^}]*}/ contains=sysLabelArg
 syntax match sysInclude /@include{[^}]*}/
 syntax match sysStart /@start{[^}]*}/
@@ -58,6 +59,7 @@ highlight default link sysTodo Todo
 highlight default link sysComment Comment
 highlight default link sysLabelArg Macro
 highlight default link sysLabel Statement
+highlight default link sysLabelRoot Statement
 highlight default link sysJump Statement
 highlight default link sysChoiceLabel Macro
 highlight default link sysChoiceScript Conditional

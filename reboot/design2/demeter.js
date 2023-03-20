@@ -948,6 +948,128 @@ D.TaskSet = class {
 
 //-------------------------------------------------------------------------
 
+D.IconAnimation = class {
+  constructor(node) {
+    this.node = node;
+    this.startTime = undefined;
+  }
+
+  start() {
+    this.node.style.display = "block";
+    this.node.style.transform = "scaleY(1) translateY(0)";
+    this.startTime = performance.now();
+  }
+
+  stop() {
+    this.node.style.display = "none";
+    this.startTime = undefined;
+  }
+
+  update() {
+    if (!this.startTime) {
+      return;
+    }
+
+    const now = performance.now();
+    const x = (now - this.startTime) % 1200 / 1200;
+
+    let scale = 1;
+    let translate = 0;
+
+    if (x < 0.8) {
+      const y = (x - 0.4) / 0.4;
+      translate = (y * y - 1) * 0.5;
+    } else {
+      const y = (x - 0.9) / 0.1;
+      scale = 1 + (y * y - 1) * 0.15;
+    }
+
+    this.node.style.transform = "scaleY(" + D.numberToString(scale) + ") translateY(" + D.numberToCss(translate, "em");
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.MusicPlayer = class {
+  constructor(volume, unlock) {
+    this.volume = volume;
+    this.key = undefined;
+    this.sound = undefined;
+    this.soundId = undefined;
+    this.unlock = unlock;
+  }
+
+  resetUnlock() {
+    this.unlock = undefined;
+  }
+
+  start(key) {
+    const basename = "../output/music/sessions_" + key;
+
+    const sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: this.volume,
+      loop: true,
+    });
+    const soundId = sound.play();
+
+    sound.on("loaderror", (notUsed, message) => {
+      logging.log("音楽読出: 失敗");
+      logging.log(message);
+    });
+
+    sound.on("playerror", (notUsed, message) => {
+      logging.log("音楽再生: 失敗");
+      logging.log(message);
+    });
+
+    if (this.unlock) {
+      sound.once("unlock", () => {
+        if (this.unlock) {
+          this.unlock();
+        }
+        // const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+        // audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+        // audioVisualizer.canvas.style.display = "block";
+        // audioVisualizer.canvas.style.position = "absolute";
+        // document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+        // logging.log("オーディオロック: 解除");
+      });
+    }
+
+    this.key = key;
+    this.sound = sound;
+    this.soundId = soundId;
+    logging.log("音楽開始: " + key);
+  }
+
+  fade(key) {
+    const oldKey = this.key;
+    const oldSound = this.sound;
+    const oldSoundId = this.soundId;
+    this.start(key);
+    const newSound = this.sound;
+    const newSoundId = this.soundId;
+
+    this.sound.once("fade", soundId=> {
+      oldSound.stop();
+      logging.log("音楽終了: " + oldKey);
+    });
+
+    oldSound.fade(this.volume, 0, 5000, oldSoundId);
+    newSound.fade(0, this.volume, 5000, newSoundId);
+  }
+
+  updateVolume(volume) {
+    this.volume = volume;
+    if (this.sound) {
+      this.sound.volume(volume);
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.AudioVisualizer = class {
   constructor(width, height, color) {
     const canvas = document.createElement("canvas");
@@ -1181,121 +1303,6 @@ D.Silhouette = class {
 
 //-------------------------------------------------------------------------
 
-D.IconAnimation = class {
-  constructor(node) {
-    this.node = node;
-    this.startTime = undefined;
-  }
-
-  start() {
-    this.node.style.display = "block";
-    this.node.style.transform = "scaleY(1) translateY(0)";
-    this.startTime = performance.now();
-  }
-
-  stop() {
-    this.node.style.display = "none";
-    this.startTime = undefined;
-  }
-
-  update() {
-    if (!this.startTime) {
-      return;
-    }
-
-    const now = performance.now();
-    const x = (now - this.startTime) % 1200 / 1200;
-
-    let scale = 1;
-    let translate = 0;
-
-    if (x < 0.8) {
-      const y = (x - 0.4) / 0.4;
-      translate = (y * y - 1) * 0.5;
-    } else {
-      const y = (x - 0.9) / 0.1;
-      scale = 1 + (y * y - 1) * 0.15;
-    }
-
-    this.node.style.transform = "scaleY(" + D.numberToString(scale) + ") translateY(" + D.numberToCss(translate, "em");
-  }
-};
-
-
-//-------------------------------------------------------------------------
-
-D.MusicPlayer = class {
-  constructor(volume) {
-    this.volume = volume;
-    this.key = undefined;
-    this.sound = undefined;
-    this.soundId = undefined;
-  }
-
-  start(key, processUnlock) {
-    const basename = "../output/music/sessions_" + key;
-
-    const sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
-      volume: this.volume,
-      loop: true,
-    });
-    const soundId = sound.play();
-
-    sound.on("loaderror", (notUsed, message) => {
-      logging.log("音楽読出: 失敗");
-      logging.log(message);
-    });
-
-    sound.on("playerror", (notUsed, message) => {
-      logging.log("音楽再生: 失敗");
-      logging.log(message);
-    });
-
-    if (processUnlock) {
-      sound.once("unlock", () => {
-        const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-        audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
-        audioVisualizer.canvas.style.display = "block";
-        audioVisualizer.canvas.style.position = "absolute";
-        document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
-        logging.log("オーディオロック: 解除");
-      });
-    }
-
-    this.key = key;
-    this.sound = sound;
-    this.soundId = soundId;
-    logging.log("音楽開始: " + key);
-  }
-
-  fade(key) {
-    const oldKey = this.key;
-    const oldSound = this.sound;
-    const oldSoundId = this.soundId;
-    this.start(key);
-    const newSound = this.sound;
-    const newSoundId = this.soundId;
-
-    this.sound.once("fade", soundId=> {
-      oldSound.stop();
-      logging.log("音楽終了: " + oldKey);
-    });
-
-    oldSound.fade(this.volume, 0, 5000, oldSoundId);
-    newSound.fade(0, this.volume, 5000, newSoundId);
-  }
-
-  updateVolume(volume) {
-    this.volume = volume;
-    if (this.sound) {
-      this.sound.volume(volume);
-    }
-  }
-};
-
-//-------------------------------------------------------------------------
-
 D.TextAnimation = class {
   constructor(textNode, speed) {
     this.nodes = [...textNode.querySelectorAll(":scope > div > span")];
@@ -1466,17 +1473,47 @@ const systemDefault = {
   unionSetting: "ろうそ",
 };
 
+const gameStateDefault = {
+  id: "game",
+};
+
+const readStateDefault = {
+  id: "read",
+  map: new Map(),
+};
+
+const saveNewGame = {
+  paragraphIndex: D.scenario.labels["ニューゲーム"],
+  state: {},
+};
+
+const saveSelect = {
+  paragraphIndex: D.scenario.labels["節選択"],
+  state: {},
+};
+
+const saveTutorial = {
+  paragraphIndex: D.scenario.labels["チュートリアル"],
+  state: {},
+};
+
 const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
-
 let system;
+let gameState;
+let readState;
+let state;
+
+let screenNamePrev;
+let screenName;
 let systemUi;
+
+let iconAnimation;
+let musicPlayer;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
-let musicPlayer;
-let iconAnimation;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
@@ -1493,15 +1530,12 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
-let screenNamePrev;
-let screenName;
-const newGame = {
-  paragraphIndex: 1,
-  state: {},
-};
-let state = {};
-
 //-------------------------------------------------------------------------
+
+const setScreenName = screenNameNext => {
+  screenNamePrev = screenName;
+  screenName = screenNameNext;
+};
 
 const putSystemTask = async () => {
   try {
@@ -1509,6 +1543,27 @@ const putSystemTask = async () => {
     logging.log("システム設定保存: 成功");
   } catch (e) {
     logging.log("システム設定保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
+const putGameState = async () => {
+  try {
+    await database.put("game", gameState);
+    logging.log("ゲーム状態保存: 成功");
+  } catch (e) {
+    logging.log("ゲーム状態保存: 失敗");
+    logging.log(e.message);
+  }
+};
+
+const putReadState = async () => {
+  try {
+    readState.map.set(paragraphIndex, Date.now());
+    await database.put("read", readState);
+    logging.log("既読状態保存: 成功");
+  } catch (e) {
+    logging.log("既読状態保存: 失敗");
     logging.log(e.message);
   }
 };
@@ -1548,11 +1603,47 @@ const setSave = save => {
   state = save.state;
 };
 
-const createContext = () => { system: system };
+const evaluate = fn => {
+  const result = fn(state, {
+    system: system,
+    game: gameState,
+    read: readState,
+    logging: logging,
+  });
+  putGameState();
+  return result;
+};
 
-const setScreenName = screenNameNext => {
-  screenNamePrev = screenName;
-  screenName = screenNameNext;
+//-------------------------------------------------------------------------
+
+const showTitleChoices = async () => {
+  const autosave = await database.get("save", "autosave");
+  if (autosave) {
+    document.querySelector(".demeter-title-choice3").style.display = "block";
+  } else {
+    document.querySelector(".demeter-title-choice3").style.display = "none";
+  }
+  document.querySelector(".demeter-title-choices").style.display = "block";
+}
+
+const unlockAudio = async () => {
+  musicPlayer.resetUnlock();
+
+  const screenNode = document.querySelector(".demeter-title-screen");
+  screenNode.removeEventListener("click", unlockAudio);
+
+  screenNode.classList.remove("demeter-title-unlock-audio");
+  iconAnimation.stop();
+  iconAnimation = undefined;
+  await showTitleChoices();
+
+  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
+  audioVisualizer = new D.AudioVisualizer(fontSize * 10, fontSize * 5, color);
+  audioVisualizer.canvas.style.display = "block";
+  audioVisualizer.canvas.style.position = "absolute";
+  document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+
+  logging.log("オーディオロック: 解除");
 };
 
 //-------------------------------------------------------------------------
@@ -1568,21 +1659,37 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
       case 2:
         db.createObjectStore("save", { keyPath: "id" });
         break;
+      case 3:
+        db.createObjectStore("game", { keyPath: "id" });
+        db.createObjectStore("read", { keyPath: "id" });
+        break;
     }
   }
 };
 
+const setItemDefault = (item, itemDefault) => {
+  Object.entries(itemDefault).forEach(([k, v]) => {
+    if (item[k] === undefined) {
+      item[k] = v;
+    }
+  });
+};
+
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 2, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 3, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
-    Object.entries(systemDefault).forEach(([k, v]) => {
-      if (system[k] === undefined) {
-        system[k] = v;
-      }
-    });
+    setItemDefault(system, systemDefault);
     await database.put("system", system);
+
+    gameState = await database.get("game", "game") || {};
+    setItemDefault(gameState, gameStateDefault);
+    await database.put("game", gameState);
+
+    readState = await database.get("read", "read") || {};
+    setItemDefault(readState, readStateDefault);
+    await database.put("read", readState);
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -1784,32 +1891,32 @@ const leaveSaveScreen = () => {
 const enterTitleScreen = async () => {
   setScreenName("title");
 
-  const showChoices = async () => {
-    const autosave = await database.get("save", "autosave");
-    if (autosave) {
-      document.querySelector(".demeter-title-choice3").style.display = "block";
-    } else {
-      document.querySelector(".demeter-title-choice3").style.display = "none";
-    }
-    document.querySelector(".demeter-title-choices").style.display = "block";
-  };
+  // const showChoices = async () => {
+  //   const autosave = await database.get("save", "autosave");
+  //   if (autosave) {
+  //     document.querySelector(".demeter-title-choice3").style.display = "block";
+  //   } else {
+  //     document.querySelector(".demeter-title-choice3").style.display = "none";
+  //   }
+  //   document.querySelector(".demeter-title-choices").style.display = "block";
+  // };
 
   const screenNode = document.querySelector(".demeter-title-screen");
   if (screenNode.classList.contains("demeter-title-unlock-audio")) {
-    const unlockAudio = async () => {
-      screenNode.classList.remove("demeter-title-unlock-audio");
-      screenNode.removeEventListener("click", unlockAudio);
-      if (iconAnimation) {
-        iconAnimation.stop();
-        iconAnimation = undefined;
-      }
-      await showChoices();
-    };
+    // const unlockAudio = async () => {
+    //   screenNode.classList.remove("demeter-title-unlock-audio");
+    //   screenNode.removeEventListener("click", unlockAudio);
+    //   if (iconAnimation) {
+    //     iconAnimation.stop();
+    //     iconAnimation = undefined;
+    //   }
+    //   await showChoices();
+    // };
     screenNode.addEventListener("click", unlockAudio);
     iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
     iconAnimation.start();
   } else {
-    await showChoices();
+    await showTitleChoices();
   }
   document.querySelector(".demeter-projector").append(screenNode);
 };
@@ -1854,7 +1961,7 @@ const initializeTitleScreen = () => {
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", () => {
-    setSave(newGame);
+    setSave(saveNewGame);
     leaveTitleScreen();
     enterMainScreen();
     next();
@@ -1946,12 +2053,24 @@ const initializeLoadScreen = () => {
     restart();
   });
 
-  document.querySelector(".demeter-load-tape-select").addEventListener("click", () => {
-    console.log("select");
+  document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {
+    if (await dialog("load-tape-select") === "yes") {
+      await stop();
+      setSave(saveSelect);
+      leaveLoadScreen();
+      enterMainScreen();
+      next();
+    }
   });
 
-  document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", () => {
-    console.log("tutorial");
+  document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", async () => {
+    if (await dialog("load-tape-tutorial") === "yes") {
+      await stop();
+      setSave(saveTutorial);
+      leaveLoadScreen();
+      enterMainScreen();
+      next();
+    }
   });
 
   document.querySelector(".demeter-load-tape-trailer").addEventListener("click", async () => {
@@ -1961,7 +2080,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
     const save = await database.get("save", "save1");
     if (save) {
-      if (await dialog("load-tape-save1") == "yes") {
+      if (await dialog("load-tape-save1") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();
@@ -1976,7 +2095,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", async () => {
     const save = await database.get("save", "save2");
     if (save) {
-      if (await dialog("load-tape-save2") == "yes") {
+      if (await dialog("load-tape-save2") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();
@@ -1991,7 +2110,7 @@ const initializeLoadScreen = () => {
   document.querySelector(".demeter-load-tape-save3").addEventListener("click", async () => {
     const save = await database.get("save", "save3");
     if (save) {
-      if (await dialog("load-tape-save3") == "yes") {
+      if (await dialog("load-tape-save3") === "yes") {
         await stop();
         setSave(save);
         leaveLoadScreen();
@@ -2053,8 +2172,8 @@ const initializeDialogOverlay = () => {
 
 const initializeAudio = () => {
   Howler.volume(system.masterVolume);
-  musicPlayer = new D.MusicPlayer(system.musicVolume);
-  musicPlayer.start("vi03", true);
+  musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
+  musicPlayer.start("vi03");
   logging.log("オーディオ初期化: 完了");
 };
 
@@ -2138,7 +2257,7 @@ const next = async () => {
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
-      const paragraphIndexWhen = paragraph[0].when(state, createContext());
+      const paragraphIndexWhen = evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
@@ -2149,10 +2268,11 @@ const next = async () => {
       musicPlayer.fade(paragraph[0].music);
     }
 
+    // 既読処理
+    putReadState();
+
     // 自動保存
     putAutosave();
-
-    // 既読処理
 
     // 開始画面
     if (paragraph[0].start) {
@@ -2230,7 +2350,7 @@ const next = async () => {
         return waitForStop();
       }
       if (choice.action) {
-        choice.action(state, createContext());
+        evaluate(choice.action);
       }
 
       paragraphIndexPrev = choice.label - 1;
@@ -2239,7 +2359,7 @@ const next = async () => {
     }
 
     if (paragraph[0].leave) {
-      paragraph[0].leave(state, createContext());
+      evaluate(paragraph[0].leave);
     }
 
     resetParagraph();

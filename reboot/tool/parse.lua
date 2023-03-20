@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -166,6 +166,11 @@ local function parse(scenario, include_path, filename)
       -- @label{ラベル}
       paragraph = update(paragraph, "label", trim(_1))
 
+    elseif match "^@label_root{([^}]*)}" then
+      -- @label_root{ラベル}
+      paragraph = update(paragraph, "label", trim(_1))
+      paragraph.label_root = true
+
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
       paragraph = append_jump(paragraph, { label = trim(_1) })
@@ -306,7 +311,7 @@ local function process_labels(scenario)
     end
   end
   for _, item in ipairs(labels) do
-    if not item.used then
+    if not item.used and not scenario[item.index].label_root then
       error("label '"..item.label.."' not used")
     end
   end
@@ -361,6 +366,11 @@ local function process_musics(scenario)
   for index, paragraph in pairs(starts) do
     if not paragraph.system and paragraph.music then
       visit(scenario, index, paragraph, starts, {})
+    end
+  end
+  for index, paragraph in ipairs(scenario) do
+    if not paragraph.system and not paragraph.music then
+      error("music is nil at paragraph "..index)
     end
   end
 end
