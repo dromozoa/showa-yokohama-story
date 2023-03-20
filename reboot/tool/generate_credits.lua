@@ -21,6 +21,13 @@ local source_pathname, result_pathname = ...
 
 local state = 1
 
+local max_title = 0
+local max_link = 0
+local max_album_title = 0
+local max_song_number = 0
+local max_song_artist = 0
+local max_song_title = 0
+
 local handle_html = assert(io.open(result_pathname, "w"))
 local handle = assert(io.open(source_pathname))
 for line in handle:lines() do
@@ -47,25 +54,40 @@ for line in handle:lines() do
       state = 2
     end
 
-    handle_html:write '  <div class="demeter-credits-line">\n'
+    handle_html:write '<div class="demeter-credits-line">\n'
     if item3:find "^http" then
       if item1 ~= "" then
-        handle_html:write('    <div class="demeter-credits-title">', escape_html(item1), "</div>\n")
+        handle_html:write('<div class="demeter-credits-title">', escape_html(item1), "</div>\n")
+        max_title = math.max(max_title, #item1)
       end
       assert(item2 ~= "")
-      handle_html:write('    <div class="demeter-credits-link"><a href="', escape_html(item3), '">', escape_html(item2), "</a></div>\n")
+      handle_html:write('<div class="demeter-credits-link"><a target="_blank" href="', escape_html(item3), '">', escape_html(item2), "</a></div>\n")
+      max_link = math.max(#item2)
     else
       assert(item1 == "")
       if item2 ~= "" then
-        handle_html:write('    <div class="demeter-credits-album-title">', escape_html(item2), "</div>\n")
+        handle_html:write('<div class="demeter-credits-album-title">', escape_html(item2), "</div>\n")
+        max_album_title = math.max(max_album_title, #item2)
       end
       local number, artist, title = assert(item3:match "^(%d+) (.-)%s+%-%s+(.*)$")
-      handle_html:write('    <div class="demeter-credits-song-number">', number, "</div>\n")
-      handle_html:write('    <div class="demeter-credits-song-artist">', escape_html(artist), "</div>\n")
-      handle_html:write('    <div class="demeter-credits-song-title">', escape_html(title), "</div>\n")
+      handle_html:write('<div class="demeter-credits-song-number">', number, "</div>\n")
+      handle_html:write('<div class="demeter-credits-song-artist">', escape_html(artist), "</div>\n")
+      handle_html:write('<div class="demeter-credits-song-title">', escape_html(title), "</div>\n")
+      max_song_number = math.max(max_song_number, #number)
+      max_song_artist = math.max(max_song_artist, #artist)
+      max_song_title = math.max(max_song_artist, #title)
     end
-    handle_html:write '  </div>\n'
+    handle_html:write '</div>\n'
   end
 end
 handle:close()
+
+io.stderr:write(([[
+title        %d
+link         %d
+album title  %d
+song number  %d
+song artist  %d
+song title   %d
+]]):format(max_title, max_link, max_album_title, max_song_number, max_song_artist, max_song_title))
 

@@ -160,16 +160,27 @@ end
 assert(node_max == #nodes)
 assert(edge_max == #edges)
 
+local function number_tostring(v)
+  return ("%.4f"):format(v):gsub("%.?0*$", "")
+end
+
 local function number_tostring_unpack(source)
   local result = {}
   for i, v in ipairs(source) do
-    result[i] = ("%.4f"):format(v):gsub("%.?0*$", "")
+    result[i] = number_tostring(v)
   end
   return table.unpack(result)
 end
 
 local handle = io.stdout
 handle:write(([[
+<style>
+:root {
+  --graph-width: %dpx;
+  --graph-height: %dpx;
+  --graph-ratio: %s;
+}
+</style>
 <svg viewBox="0 0 %d %d" data-width="%d" data-height="%d" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
@@ -177,7 +188,7 @@ handle:write(([[
   </marker>
 </defs>
 <g class="edges">
-]]):format(width, height, width, height))
+]]):format(width, height, number_to_string(height / width), width, height, width, height))
 
 for _, edge in ipairs(edges) do
   local buffer = {}

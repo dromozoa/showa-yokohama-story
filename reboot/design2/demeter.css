@@ -835,6 +835,7 @@ body.demeter {
 
 .demeter-credits-graph {
   position: absolute;
+  top: var(--font-size);
   left: var(--font-size);
   width: calc(var(--font-size) * 25);
 }
@@ -842,6 +843,17 @@ body.demeter {
 .demeter-credits-graph > svg {
   display: block;
   width: calc(var(--font-size) * 25);
+}
+
+.demeter-credits-paragraphs {
+  position: absolute;
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-paragraphs a {
+  color: #FFF;
 }
 
 /*************************************************************************/

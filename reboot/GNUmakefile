@@ -18,9 +18,11 @@
 lua = env "LUA_PATH=tool/?.lua;;" lua
 voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/settings/dic.json
 scenarios = $(wildcard scenario/*.txt)
+credits = scenario/credits
 targets = \
 	output/loader.html \
 	output/graph.svg \
+	output/credits.html \
 	output/voice1.txt \
 	design2/demeter-scenario.js \
 	design2/sketch1.html
@@ -51,11 +53,14 @@ output/loader.html: $(scenarios)
 output/graph.svg: $(scenarios)
 	./tool/generate_graph.sh scenario/scenario.txt $@
 
+output/credits.html: $(credits)
+	$(lua) tool/generate_credits.lua $< $@
+
 design2/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
-design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg
-	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg $@
+design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html
+	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html $@
 
 output/voice1.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
