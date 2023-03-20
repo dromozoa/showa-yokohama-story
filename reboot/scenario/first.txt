@@ -1,6 +1,6 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@label{ニューゲーム}
+@label_root{ニューゲーム}
 @music{vi03}
 @when{{
   (() => {

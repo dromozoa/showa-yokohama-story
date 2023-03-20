@@ -60,7 +60,7 @@ if(ctx.game.visitedVerse2)return 5;
 ["頭出しなんて言葉、キミはまだおぼえているだろうか。"],
 ]],
 // index:7
-[{speaker:"danu",jump:1,music:"vi03"},[
+[{speaker:"danu",finish:"title",music:"vi03"},[
 ["良き、終末を。"],
 ]],
 // index:8
@@ -1016,7 +1016,7 @@ if($.activist)return 151;
 ["——昭和を。"],
 ]],
 // index:174
-[{speaker:"narrator",finish:true,music:"diana12"},[
+[{speaker:"narrator",finish:"title",music:"diana12"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1699,7 +1699,7 @@ if($.activist)return 151;
 ["——昭和を。"],
 ]],
 // index:296
-[{speaker:"narrator",finish:true,music:"diana12"},[
+[{speaker:"narrator",finish:"title",music:"diana12"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1889,7 +1889,7 @@ if($.genesis)return 330;
 ["——戦後を。"],
 ]],
 // index:329
-[{speaker:"narrator",finish:true,music:"diana12"},[
+[{speaker:"narrator",finish:"credits",music:"diana12"},[
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
@@ -1943,7 +1943,7 @@ if($.genesis)return 330;
 ["新しい年号が制定されたかどうか、ボクは知らない。"],
 ]],
 // index:339
-[{speaker:"narrator",finish:true,music:"diana12"},[
+[{speaker:"narrator",finish:"credits",music:"diana12"},[
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],

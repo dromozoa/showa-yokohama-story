@@ -87,7 +87,7 @@ for i, paragraph in ipairs(scenario) do
     handle:write(",start:", quote_js(paragraph.start))
   end
   if paragraph.finish then
-    handle:write ",finish:true"
+    handle:write(",finish:", quote_js(paragraph.finish))
   end
   if paragraph.music then
     handle:write(",music:", quote_js(paragraph.music))

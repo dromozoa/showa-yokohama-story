@@ -1583,6 +1583,16 @@ const putAutosave = async () => {
   }
 };
 
+const deleteAutosave = async () => {
+  try {
+    await database.delete("save", "autosave");
+    logging.log("自動保存削除: 成功");
+  } catch (e) {
+    logging.log("自動保存削除: 失敗");
+    logging.log(e.message);
+  }
+};
+
 const putSave = async (key, name) => {
   try {
     await database.put("save", {
@@ -2250,6 +2260,18 @@ const next = async () => {
   }
 
   if (paragraphIndex === undefined) {
+    const paragraphSave = D.scenario.paragraphs[paragraphIndexSave - 1];
+    console.log(paragraphIndexSave, paragraphIndexPrev);
+    if (paragraphSave && paragraphSave[0].finish) {
+      // TODO titleかcreditsの判定を行う
+      paragraphIndexPrev = undefined;
+      paragraphIndexSave = undefined;
+      await deleteAutosave();
+      leaveMainScreen();
+      enterTitleScreen();
+      return;
+    }
+
     paragraphIndex = paragraphIndexSave = paragraphIndexPrev + 1;
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 

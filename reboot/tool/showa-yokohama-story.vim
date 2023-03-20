@@ -38,7 +38,7 @@ syntax match sysLabelRoot /@label_root{[^}]*}/ contains=sysLabelArg
 syntax match sysJump /@jump{[^}]*}/ contains=sysLabelArg
 syntax match sysInclude /@include{[^}]*}/
 syntax match sysStart /@start{[^}]*}/
-syntax match sysFinish /@finish/
+syntax match sysFinish /@finish{[^}]*}/
 syntax match sysSystem /@system/
 syntax match sysMusic /@music{[^}]*}/
 syntax match sysDialog /@dialog{[^}]*}/

@@ -4,5 +4,5 @@
 @music{vi03}
 #danu
 良き、終末を。
-@jump{ニューゲーム}
+@finish{title}
 

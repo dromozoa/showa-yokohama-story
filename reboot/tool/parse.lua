@@ -227,9 +227,9 @@ local function parse(scenario, include_path, filename)
       -- @start{キー}
       paragraph = update(paragraph, "start", trim(_1))
 
-    elseif match "^@finish" then
+    elseif match "^@finish{([^}]*)}" then
       -- @finish
-      paragraph = update(paragraph, "finish", true)
+      paragraph = update(paragraph, "finish", trim(_1))
 
     elseif match "^@system" then
       -- @system
