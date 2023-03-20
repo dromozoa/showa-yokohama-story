@@ -34,6 +34,7 @@
   --color-fill-active: rgba(2, 157, 147, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
+  --color-graph: rgba(2, 157, 147, 0.5);
 }
 
 @media (orientation: portrait) {
@@ -68,7 +69,7 @@
 body.demeter {
   margin: 0;
   color: #FFF;
-  background-color: #000;
+  background-color: #111;
 }
 
 /*************************************************************************/
@@ -815,6 +816,36 @@ body.demeter {
 
 /*************************************************************************/
 
+.demeter-credits-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  background-image: var(--screen-background-image);
+  background-repeat: none;
+  background-attachment: fixed;
+}
+
+.demeter-credits {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.demeter-credits-graph {
+  position: absolute;
+  left: var(--font-size);
+  width: calc(var(--font-size) * 25);
+}
+
+.demeter-credits-graph > svg {
+  display: block;
+  width: calc(var(--font-size) * 25);
+}
+
+/*************************************************************************/
+
 .demeter-dialog-overlay {
   position: absolute;
   width: var(--screen-width);
@@ -893,10 +924,6 @@ body.demeter {
   font-family: var(--font-family);
 }
 
-.demeter-graph > svg {
-  display: block;
-}
-
 /*************************************************************************/
 
 .demeter-icon {
@@ -948,6 +975,30 @@ div.demeter-text > div > span > div {
 
 div.demeter-text > div > span > div > span {
   display: inline-block;
+}
+
+/*************************************************************************/
+
+#demeter-graph-marker {
+  fill: var(--color-graph);
+  stroke: none;
+}
+
+.demeter-graph > svg g.edges {
+  fill: none;
+  stroke: var(--color-graph);
+  stroke-width: 0.5px;
+  marker-end: url(#demeter-graph-marker);
+}
+
+.demeter-graph > svg g.nodes {
+  fill: none;
+  stroke: var(--color-graph);
+  stroke-width: 0.5px;
+}
+
+.demeter-graph > svg g.nodes > .active {
+  fill: var(--color-graph);
 }
 
 /*************************************************************************/

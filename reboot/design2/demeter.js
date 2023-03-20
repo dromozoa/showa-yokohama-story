@@ -1898,6 +1898,12 @@ const leaveSaveScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-save-screen"));
 };
 
+const leaveCreditsScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
+};
+
+//-------------------------------------------------------------------------
+
 const enterTitleScreen = async () => {
   setScreenName("title");
   const screenNode = document.querySelector(".demeter-title-screen");
@@ -1938,6 +1944,29 @@ const enterLoadScreen = async () => {
 const enterSaveScreen = async () => {
   setScreenName("save");
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
+};
+
+const enterCreditsScreen = () => {
+  setScreenName("credits");
+
+  let total = 0;
+  let active = 0;
+  D.scenario.paragraphs.forEach((paragraph, i) => {
+    if (!paragraph[0].system) {
+      ++total;
+      const paragraphIndex = i + 1;
+      const nodes = [...document.querySelectorAll(".demeter-credits-graph > svg [data-pid='" + paragraphIndex + "']")];
+      if (readState.map.has(paragraphIndex)) {
+        ++active;
+        nodes.forEach(node => node.classList.add("active"));
+      } else {
+        nodes.forEach(node => node.classList.remove("active"));
+      }
+    }
+  });
+  console.log(active / total);
+
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
 };
 
 //-------------------------------------------------------------------------
@@ -2166,6 +2195,12 @@ const initializeSaveScreen = () => {
       restart();
     }
   });
+};
+
+const initializeCreditsScreen = () => {
+  const graphNode = document.querySelector(".demeter-credits-graph > svg");
+  console.log(graphNode.dataset.width);
+  console.log(graphNode.dataset.height);
 };
 
 const initializeDialogOverlay = () => {
@@ -2503,6 +2538,7 @@ const resize = () => {
   document.querySelector(".demeter-main-screen").style.transform = transform;
   document.querySelector(".demeter-load-screen").style.transform = transform;
   document.querySelector(".demeter-save-screen").style.transform = transform;
+  document.querySelector(".demeter-credits-screen").style.transform = transform;
   document.querySelector(".demeter-dialog-overlay").style.transform = transform;
   updateComponents();
 };
@@ -2527,10 +2563,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeMainScreen();
   initializeLoadScreen();
   initializeSaveScreen();
+  initializeCreditsScreen();
   initializeDialogOverlay();
   initializeAudio();
   resize();
-  await enterTitleScreen();
+  // await enterTitleScreen();
+  // debug
+  await enterCreditsScreen();
 
   while (true) {
     await D.requestAnimationFrame();

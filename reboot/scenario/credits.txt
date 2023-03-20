@@ -1,1 +1,85 @@
+# vim: set noet ts=16 sts=-1 sw=0:
+
+Producer	vaporoid
+Design	vaporoid
+Scenario	vaporoid
+Programmer	vaporoid
+UI Graphics	vaporoid
+Tools	vaporoid
+
+Libraries	howler.js
+	lil-gui
+	idb
+
+Fonts	Averia Serif Libre
+	BIZ UDGothic
+	BIZ UDPGothic
+	BIZ UDPMincho
+	Libre Barcode 128
+	Share Tech
+	Share Tech Mono
+	Source Serif Pro
+	Yuji Syuku
+	line-awesome
+
+Visuals	shutterstock
+
+Voices	VOICEPEAK
+
+Musics	Sessions Vi	03 Hanz - Hollow
+		04 Chief. - New Space
+	Sessions Diana	12 Dilip - Pulse
+		19 Toyko - Ever Fall
+		21 Laxcity - Last Time
+		23 A.L.I.S.O.N - Sentinel
+		33 Tokyo - Shadow Island
+
+SYOWA YOKOHAMA STORY
+
+
+
+
+
+vi04	credits
+diana21	trailer
+
+@music{diana12}
+@music{diana19}
+@music{diana23}
+@music{diana33}
+@music{vi03}
+
+
+音楽一覧
+
+Manager	煙人計画
+
+
+
+
+
+Director
+Producer
+Quality Assurance
+	Techinal Engineer
+	Manager
+	Game Tester
+
+Game Designer
+
+
+Design
+Programming
+Visual Art
+Audio
+Manager
+
+Visual Design Lead
+Visual Designer
+(Senior) (Localisation) QA Tecnhician
+
+Lead Programmer
+Data Manager
+Art Director
+
 
