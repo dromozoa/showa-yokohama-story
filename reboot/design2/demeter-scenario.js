@@ -185,7 +185,7 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index:27
 [{speaker:"narrator",music:"diana33"},[
-["指揮所に備えられた壊れかけの黒い鉱石ラジオが",["布哇","ハワイ"],"陥落を伝えている。"],
+["指揮所に備えられた壊れかけの黒いラジオが",["布哇","ハワイ"],"陥落を伝えている。"],
 ]],
 // index:28
 [{speaker:"alice",music:"diana33"},[
@@ -1948,62 +1948,103 @@ if($.genesis)return 330;
 ["了。"],
 ]],
 // index:340
+[{speaker:"narrator",music:"diana21"},[
+["文芸部の部室。"],
+[["卓子","テーブル"],"を囲む少女たち。"],
+["壊れかけの黒いラジオは",["雑音","ノイズ"],"を積みかさねていった。"],
+]],
+// index:341
+[{speaker:"danu",music:"diana21"},[
+["ねえ、アリス。"],
+["パパがいたってことはさ。"],
+["アリスには、ママもいたわけだよね。"],
+]],
+// index:342
+[{speaker:"alice",music:"diana21"},[
+["このセカイが道理をわきまえているなら、それが理屈だ。"],
+]],
+// index:343
+[{speaker:"demeter",jump:346,when:($,ctx)=>{
+if(ctx.game.father === 1)return 344;
+if(ctx.game.father === 3)return 345;
+},music:"diana21"},[
+["先輩のお父さんはフィリップ・マーロウを名乗っていて。"],
+["お母さんもソウルネームを持ってたんですか。"],
+]],
+// index:344
+[{speaker:"demeter",jump:346,music:"diana21"},[
+["先輩のお父さんはサム・スペードを名乗っていて。"],
+["お母さんもソウルネームを持ってたんですか。"],
+]],
+// index:345
+[{speaker:"demeter",jump:346,music:"diana21"},[
+["先輩のお父さんはマイク・ハマーを名乗っていて。"],
+["お母さんもソウルネームを持ってたんですか。"],
+]],
+// index:346
+[{speaker:"alice",finish:"title",music:"diana21"},[
+[["暴力の聖女","ゲバルト・ローザ"],"。"],
+["品性のなさにかけては、どっこいどっこいだな。"],
+["破れ鍋に綴じ蓋だったのかもしれないが。"],
+]],
+// index:347
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
 ["既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
-// index:341
+// index:348
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["再生する？"],
 ]],
-// index:342
+// index:349
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["この",["因果","テープ"],"はねじれてよじれてからまりあっている。"],
 ["再生できない。"],
 ["今のところは。"],
 ]],
-// index:343
+// index:350
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["ねえ、キミ。ボクたちの出会いを憶えてる？　ボクは運命とか信じちゃう",["性分","タチ"],"だから、これはやっぱり運命だと思う。笑ってもいいよ。"],
+["年代物のテープが修復された。"],
+["再生する？"],
 ]],
-// index:344
+// index:351
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:345
+// index:352
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:346
+// index:353
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:347
+// index:354
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:348
+// index:355
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:349
+// index:356
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:350
+// index:357
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:351
+// index:358
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
 ["からまりあった因果がほどけた。"],
@@ -2043,20 +2084,24 @@ labels:{
 "択ばない":287,
 "第三節黙示録了":297,
 "創世記":330,
+"69":340,
+"サム・スペード":344,
+"マイク・ハマー":345,
+"ゲバルト・ローザ":346,
 },
 dialogs:{
-"load-tape-select":340,
-"load-tape-tutorial":341,
-"load-tape-broken":342,
-"load-tape-preview":343,
-"load-tape-save1":344,
-"load-tape-save2":345,
-"load-tape-save3":346,
-"load-tape-empty":347,
-"save-tape-save1":348,
-"save-tape-save2":349,
-"save-tape-save3":350,
-"credits-tape-preview":351,
+"load-tape-select":347,
+"load-tape-tutorial":348,
+"load-tape-broken":349,
+"load-tape-preview":350,
+"load-tape-save1":351,
+"load-tape-save2":352,
+"load-tape-save3":353,
+"load-tape-empty":354,
+"save-tape-save1":355,
+"save-tape-save2":356,
+"save-tape-save3":357,
+"credits-tape-preview":358,
 },
 };
 

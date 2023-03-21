@@ -28,7 +28,8 @@
 
 @dialog{load-tape-preview}
 #narrator
-ねえ、キミ。ボクたちの出会いを憶えてる？　ボクは運命とか信じちゃう@r{性分}{タチ}だから、これはやっぱり運命だと思う。笑ってもいいよ。
+年代物のテープが修復された。
+再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
