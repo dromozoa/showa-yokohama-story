@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Tomoyuki Fujimori <moyu@vaporoid.com>
+# Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@vaporoid.com>
 #
 # This file is part of 昭和横濱物語.
 #
