@@ -730,7 +730,7 @@ body.demeter {
     top: calc(var(--font-size) * 9);
   }
 
-  .demeter-load-tape-trailer {
+  .demeter-load-tape-preview {
     left: 0;
     top: calc(var(--font-size) * 18);
   }
@@ -757,7 +757,7 @@ body.demeter {
     top: 0;
   }
 
-  .demeter-load-tape-trailer {
+  .demeter-load-tape-preview {
     left: calc(var(--font-size) * 27);
     top: 0;
   }

@@ -2211,7 +2211,7 @@ const initializeLoadScreen = () => {
     }
   });
 
-  document.querySelector(".demeter-load-tape-trailer").addEventListener("click", async () => {
+  document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
     await dialog("load-tape-broken");
   });
 
