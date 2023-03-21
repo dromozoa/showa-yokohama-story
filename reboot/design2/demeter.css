@@ -79,7 +79,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -148,8 +148,7 @@ body.demeter {
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 16);
-  height: calc(var(--font-size) * 2);
-  line-height: calc(var(--font-size) * 2); /* debug */
+  line-height: calc(var(--font-size) * 2);
   text-align: center;
   transform-origin: center bottom;
   pointer-events: none;
@@ -200,7 +199,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -245,7 +244,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -570,10 +569,11 @@ body.demeter {
 .demeter-main-paragraph-icon {
   display: none;
   position: absolute;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
   right: 0;
   bottom: 0;
-  height: calc(var(--font-size) * 2);
-  line-height: calc(var(--font-size) * 2); /* debug */
+  line-height: calc(var(--font-size) * 2);
   text-align: right;
   transform-origin: center bottom;
   pointer-events: none;
@@ -586,7 +586,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -821,39 +821,134 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 .demeter-credits {
   position: absolute;
   width: var(--screen-width);
-  height: var(--screen-height);
-  overflow: auto;
-  scrollbar-width: none;
+  height: calc(var(--font-size) * (25 * var(--graph-ratio) + 4));
 }
 
 .demeter-credits-graph {
   position: absolute;
-  top: var(--font-size);
-  left: var(--font-size);
   width: calc(var(--font-size) * 25);
+  height: calc(var(--font-size) * 25 * var(--graph-ratio));
+  right: var(--font-size);
+  top: calc(var(--font-size) * 2);
 }
 
 .demeter-credits-graph > svg {
+  position: absolute;
   display: block;
   width: calc(var(--font-size) * 25);
+  height: calc(var(--font-size) * 25 * var(--graph-ratio));
 }
 
 .demeter-credits-paragraphs {
   position: absolute;
+  width: calc(var(--font-size) * 23);
+  height: calc(var(--font-size) * 25 * var(--graph-ratio));
+  left: calc(var(--font-size) * 2);
+  top: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-paragraph {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  height: calc(var(--font-size) * 48);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
 }
 
-.demeter-credits-paragraphs a {
+.demeter-credits-paragraph a {
   color: #FFF;
+}
+
+.demeter-credits-text {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  text-align: justify;
+}
+
+.demeter-credits-line {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-title {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-link {
+  position: absolute;
+  width: calc(var(--font-size) * 15);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 8);
+  top: 0;
+}
+
+.demeter-credits-album-title {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+  text-align: right;
+}
+
+.demeter-credits-song-number {
+  position: absolute;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 8);
+  top: 0;
+}
+
+.demeter-credits-song-artist {
+  position: absolute;
+  width: calc(var(--font-size) * 5);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 10);
+  top: 0;
+}
+
+.demeter-credits-song-title {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 15);
+  top: 0;
+}
+
+.demeter-credits-end {
+  position: absolute;
+  width: var(--screen-width);
+  height: calc(var(--font-size) * 8);
+  left: 0;
+  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+}
+
+.demeter-credits-end-icon {
+  display: none;
+  position: absolute;
+  width: calc(var(--font-size) * 27);
+  height: calc(var(--font-size) * 2);
+  left: 0;
+  bottom: 0;
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  transform-origin: center bottom;
+  pointer-events: none;
 }
 
 /*************************************************************************/
@@ -870,12 +965,6 @@ body.demeter {
   height: calc(var(--font-size) * 12);
   left: calc((var(--screen-width) - var(--font-size) * 25) * 0.5);
   top: calc((var(--screen-height) - var(--font-size) * 12) * 0.5);
-}
-
-@media (orientation: portrait) {
-}
-
-@media (orientation: landscape) {
 }
 
 .demeter-dialog-frame {

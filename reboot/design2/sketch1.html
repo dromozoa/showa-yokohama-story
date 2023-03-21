@@ -233,7 +233,14 @@
 <div class="demeter-credits-screen">
   <div class="demeter-credits">
     <div class="demeter-graph demeter-credits-graph">
-    <svg viewBox="0 0 312 3364" data-width="312" data-height="3364" xmlns="http://www.w3.org/2000/svg">
+    <style>
+:root {
+  --graph-width: 312px;
+  --graph-height: 3364px;
+  --graph-ratio: 10.7821;
+}
+</style>
+<svg viewBox="0 0 312 3364" data-width="312" data-height="3364" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
     <polygon points="6.6795,0 24,10 24,14 6.6795,24"/>
@@ -971,19 +978,21 @@
     <div class="demeter-credits-paragraphs">
     <div class="demeter-credits-paragraph">
 <div class="demeter-credits-line">
+<div class="demeter-credits-title">Director</div>
+<div class="demeter-credits-link"><a target="_blank" href="https://twitter.com/vaporoid">vaporoid</a></div>
+</div>
+<div class="demeter-credits-line">
 <div class="demeter-credits-title">Producer</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://twitter.com/vaporoid">vaporoid</a></div>
 </div>
 <div class="demeter-credits-line">
-<div class="demeter-credits-title">Design</div>
+<div class="demeter-credits-title">Designer</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://twitter.com/vaporoid">vaporoid</a></div>
 </div>
 <div class="demeter-credits-line">
 <div class="demeter-credits-title">Scenario</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://twitter.com/vaporoid">vaporoid</a></div>
 </div>
-</div>
-<div class="demeter-credits-paragraph">
 <div class="demeter-credits-line">
 <div class="demeter-credits-title">Programmer</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://twitter.com/vaporoid">vaporoid</a></div>
@@ -999,32 +1008,8 @@
 </div>
 <div class="demeter-credits-paragraph">
 <div class="demeter-credits-line">
-<div class="demeter-credits-title">Libraries</div>
-<div class="demeter-credits-link"><a target="_blank" href="https://howlerjs.com/">howler.js</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://lil-gui.georgealways.com/">lil-gui</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://github.com/jakearchibald/idb">idb</a></div>
-</div>
-</div>
-<div class="demeter-credits-paragraph">
-<div class="demeter-credits-line">
-<div class="demeter-credits-title">Fonts</div>
+<div class="demeter-credits-title">Western Fonts</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Averia+Serif+Libre">Averia Serif Libre</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDGothic">BIZ UDGothic</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDPGothic">BIZ UDPGothic</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDPMincho">BIZ UDPMincho</a></div>
-</div>
-<div class="demeter-credits-line">
-<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Libre+Barcode+128">Libre Barcode 128</a></div>
 </div>
 <div class="demeter-credits-line">
 <div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Share+Tech">Share Tech</a></div>
@@ -1036,19 +1021,41 @@
 <div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Source+Serif+Pro">Source Serif Pro</a></div>
 </div>
 <div class="demeter-credits-line">
+<div class="demeter-credits-title">Japanese Fonts</div>
+<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDGothic">BIZ UDGothic</a></div>
+</div>
+<div class="demeter-credits-line">
+<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDPGothic">BIZ UDPGothic</a></div>
+</div>
+<div class="demeter-credits-line">
+<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/BIZ+UDPMincho">BIZ UDPMincho</a></div>
+</div>
+<div class="demeter-credits-line">
 <div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Yuji+Syuku">Yuji Syuku</a></div>
+</div>
+</div>
+<div class="demeter-credits-paragraph">
+<div class="demeter-credits-line">
+<div class="demeter-credits-title">Symbol Fonts</div>
+<div class="demeter-credits-link"><a target="_blank" href="https://fonts.google.com/specimen/Libre+Barcode+128">Libre Barcode 128</a></div>
 </div>
 <div class="demeter-credits-line">
 <div class="demeter-credits-link"><a target="_blank" href="https://icons8.com/line-awesome">Line Awesome</a></div>
 </div>
+<div class="demeter-credits-line">
+<div class="demeter-credits-title">Libraries</div>
+<div class="demeter-credits-link"><a target="_blank" href="https://howlerjs.com/">howler.js</a></div>
 </div>
-<div class="demeter-credits-paragraph">
+<div class="demeter-credits-line">
+<div class="demeter-credits-link"><a target="_blank" href="https://lil-gui.georgealways.com/">lil-gui</a></div>
+</div>
+<div class="demeter-credits-line">
+<div class="demeter-credits-link"><a target="_blank" href="https://github.com/jakearchibald/idb">idb</a></div>
+</div>
 <div class="demeter-credits-line">
 <div class="demeter-credits-title">Visuals</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://www.shutterstock.com/">shutterstock</a></div>
 </div>
-</div>
-<div class="demeter-credits-paragraph">
 <div class="demeter-credits-line">
 <div class="demeter-credits-title">Voices</div>
 <div class="demeter-credits-link"><a target="_blank" href="https://www.ah-soft.com/voice/6nare/">VOICEPEAK</a></div>
@@ -1097,8 +1104,18 @@
 <div class="demeter-credits-song-title">Shadow Island</div>
 </div>
 </div>
+<div class="demeter-credits-paragraph">
+<div class="demeter-credits-text"><a target="_blank" href="https://github.com/dromozoa/showa-yokohama-story/">SHOWA YOKOHAMA STORY</a></div>
+<div class="demeter-credits-text">Copyright © 2022,2023 vaporoid</div>
+<div class="demeter-credits-text">SHOWA YOKOHAMA STORY is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</div>
+</div>
     </div>
-    <!-- achivement: 42.69% -->
+    <div class="demeter-credits-end">
+      <div class="demeter-credits-end-paragraph">
+        <div class="demeter-credits-end-text">THANK YOU FOR PLAYING</div>
+        <div class="demeter-credits-end-text"><span class="dromozoa-credit-end-status">90%</span></div>
+      </div>
+    </div>
   </div>
 </div>
 

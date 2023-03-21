@@ -188,7 +188,7 @@ handle:write(([[
   </marker>
 </defs>
 <g class="edges">
-]]):format(width, height, number_to_string(height / width), width, height, width, height))
+]]):format(width, height, number_tostring(height / width), width, height, width, height))
 
 for _, edge in ipairs(edges) do
   local buffer = {}
