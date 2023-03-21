@@ -26,6 +26,12 @@
 今のところは。
 @dialog_choice{了解}{ok}
 
+@dialog{load-tape-preview}
+#narrator
+ねえ、キミ。ボクたちの出会いを憶えてる？　ボクは運命とか信じちゃう@r{性分}{タチ}だから、これはやっぱり運命だと思う。笑ってもいいよ。
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
 @dialog{load-tape-save1}
 #narrator
 @v{一巻}{いっかん}めのテープの@r{読出}{ロード}準備完了。
@@ -75,4 +81,14 @@
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
+
+@#==============================================================================
+
+@dialog{credits-tape-preview}
+#narrator
+いまではない、いつか。
+からまりあった因果がほどけた。
+ここではない、どこか。
+ねじれた運命がときはなたれた。
+@dialog_choice{了解}{ok}
 

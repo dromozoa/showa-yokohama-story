@@ -1966,38 +1966,49 @@ if($.genesis)return 330;
 ]],
 // index:343
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["一巻","めのテープの",["読出","ロード"],"準備完了。"],
-["再生する？"],
+["ねえ、キミ。ボクたちの出会いを憶えてる？　ボクは運命とか信じちゃう",["性分","タチ"],"だから、これはやっぱり運命だと思う。笑ってもいいよ。"],
 ]],
 // index:344
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["二巻めのテープの",["読出","ロード"],"準備完了。"],
+["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index:345
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["三巻めのテープの",["読出","ロード"],"準備完了。"],
+["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index:346
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["三巻めのテープの",["読出","ロード"],"準備完了。"],
+["再生する？"],
+]],
+// index:347
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:347
+// index:348
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:348
+// index:349
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:349
+// index:350
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
+]],
+// index:351
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
+["いまではない、いつか。"],
+["からまりあった因果がほどけた。"],
+["ここではない、どこか。"],
+["ねじれた運命がときはなたれた。"],
 ]],
 ],
 labels:{
@@ -2037,13 +2048,15 @@ dialogs:{
 "load-tape-select":340,
 "load-tape-tutorial":341,
 "load-tape-broken":342,
-"load-tape-save1":343,
-"load-tape-save2":344,
-"load-tape-save3":345,
-"load-tape-empty":346,
-"save-tape-save1":347,
-"save-tape-save2":348,
-"save-tape-save3":349,
+"load-tape-preview":343,
+"load-tape-save1":344,
+"load-tape-save2":345,
+"load-tape-save3":346,
+"load-tape-empty":347,
+"save-tape-save1":348,
+"save-tape-save2":349,
+"save-tape-save3":350,
+"credits-tape-preview":351,
 },
 };
 

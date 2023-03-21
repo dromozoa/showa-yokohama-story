@@ -2213,6 +2213,7 @@ const initializeLoadScreen = () => {
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
     await dialog("load-tape-broken");
+    // await dialog("load-tape-preview");
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
