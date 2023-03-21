@@ -7,7 +7,7 @@
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-既読の@v{節}{せつ}を択べるようだ。
+既読の@v{節}{セツ}を択べるようだ。
 選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -29,6 +29,7 @@
 @dialog{load-tape-preview}
 #narrator
 年代物のテープが修復された。
+正常に読めるかは未知数。
 再生する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}

@@ -1505,12 +1505,14 @@ const startTexts = {
   verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
   verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
   verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
+  preview: "SHOWA YOKOHAMA STORY '69",
 };
 
 const systemDefault = {
   id: "system",
   speed: 30,
   autoSpeed: 400,
+  skipUnread: false,
   masterVolume: 1,
   musicVolume: 1,
   voiceVolume: 1,
@@ -1547,10 +1549,16 @@ const saveTutorial = {
   state: {},
 };
 
+const savePreview = {
+  paragraphIndex: D.scenario.labels["69"],
+  state: {},
+};
+
 const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
 let database;
 let system;
+let playState;
 let gameState;
 let readState;
 let state;
@@ -1589,11 +1597,6 @@ D.debugState = () => {
 
 //-------------------------------------------------------------------------
 
-const setScreenName = screenNameNext => {
-  screenNamePrev = screenName;
-  screenName = screenNameNext;
-};
-
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
@@ -1602,6 +1605,9 @@ const putSystemTask = async () => {
     logging.log("システム設定保存: 失敗");
     logging.log(e.message);
   }
+};
+
+const checkPlayState = async () => {
 };
 
 const putGameState = async () => {
@@ -1668,6 +1674,11 @@ const putSave = async (key, name) => {
 const setSave = save => {
   paragraphIndexPrev = save.paragraphIndex - 1;
   state = save.state;
+};
+
+const setScreenName = screenNameNext => {
+  screenNamePrev = screenName;
+  screenName = screenNameNext;
 };
 
 const evaluate = fn => {
@@ -1890,6 +1901,7 @@ const initializeSystemUi = () => {
     }
   });
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "skipUnread").name("未読スキップ");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
     if (Howler.masterGain) {
       Howler.volume(v);
@@ -2212,9 +2224,15 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
-    await dialog("load-tape-broken");
+    // await dialog("load-tape-broken");
     // TODO 分岐を作成する
-    // await dialog("load-tape-preview");
+    if (await dialog("load-tape-preview") === "yes") {
+      await stop();
+      setSave(savePreview);
+      leaveLoadScreen();
+      enterMainScreen();
+      next();
+    }
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
