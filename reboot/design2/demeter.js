@@ -1613,13 +1613,10 @@ const cancelPlayState = async () => {
     return;
   }
   console.log("cancelPlayState", playState);
-  switch (playState) {
-    case "auto":
-      document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
-      break;
-    case "skip":
-      document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
-      break;
+  if (playState === "auto") {
+    document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
+  } else if (playState === "skip") {
+    document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
   }
   playState = undefined;
 };
@@ -2187,17 +2184,31 @@ const initializeMainScreen = () => {
   // AUTO
   menuFrameNode.querySelector(".demeter-button4").addEventListener("click", ev => {
     ev.stopPropagation();
+
+    if (playState === "auto") {
+      cancelPlayState();
+      return;
+    }
+
     cancelPlayState();
     playState = "auto";
     menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
+    next();
   });
 
   // SKIP
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", ev => {
     ev.stopPropagation();
+
+    if (playState === "skip") {
+      cancelPlayState();
+      return;
+    }
+
     cancelPlayState();
     playState = "skip";
     menuFrameNode.querySelector(".demeter-button5").classList.add("demeter-active");
+    next();
   });
 
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
@@ -2205,6 +2216,7 @@ const initializeMainScreen = () => {
     choiceNode.append(choiceFrameNode);
     choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
       ev.stopPropagation();
+      cancelPlayState();
       waitForChoice(choices[i + choices.length - 3]);
     });
   });
@@ -2440,28 +2452,35 @@ const next = async () => {
 
   // テキストアニメーション中である場合、終了させる。
   if (textAnimation) {
-    textAnimation.finish();
+    // AUTO/SKIP由来である場合、終了しない。
+    if (!playState) {
+      textAnimation.finish();
+    }
     return;
   }
 
   // テキストアニメーションは終了しているが、音声は再生中である場合、音声を終了
   // する。
   if (voiceSprite) {
-    voiceSprite.finish();
+    // AUTO/SKIP由来である場合、終了しない。
+    if (!playState) {
+      voiceSprite.finish();
+    }
     return;
   }
 
   if (paragraphIndex === undefined) {
     const paragraphSave = D.scenario.paragraphs[paragraphIndexSave - 1];
     if (paragraphSave && paragraphSave[0].finish) {
-      // TODO titleかcreditsの判定を行う
       paragraphIndexPrev = undefined;
       paragraphIndexSave = undefined;
       await deleteAutosave();
       leaveMainScreen();
-      // enterTitleScreen();
-      // debug
-      enterCreditsScreen();
+      if (paragraphSave[0].finish === "title") {
+        enterTitleScreen();
+      } else {
+        enterCreditsScreen();
+      }
       return;
     }
 
@@ -2538,6 +2557,10 @@ const next = async () => {
 
     choices = paragraph[0].choices;
     if (choices) {
+      // 選択肢が表示時にAUTO/STOPを解除する。選択肢表示中にAUTO/SAVEがクリック
+      // された場合、選択肢をクリックした時にまた解除される。
+      cancelPlayState();
+
       const choiceNodes = [
         document.querySelector(".demeter-main-choice1"),
         document.querySelector(".demeter-main-choice2"),
@@ -2581,6 +2604,13 @@ const next = async () => {
 
   if (cont) {
     requestAnimationFrame(next);
+    return;
+  } else if (playState === "auto") {
+    await D.setTimeout(system.autoSpeed);
+    if (playState === "auto") {
+      requestAnimationFrame(next);
+    }
+    return;
   }
 };
 

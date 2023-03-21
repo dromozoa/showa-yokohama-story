@@ -49,7 +49,7 @@ if(ctx.game.visitedVerse3)return 6;
 if(ctx.game.visitedVerse2)return 5;
 },music:"vi03"},[
 ["頭出しの必要はなかったね。"],
-["第一節は一本道の迷路だから、漫然と進んで次の","節","にたどりつけるはず。"],
+["第一節は","一本道","の迷路だから、漫然と進んで次の","節","にたどりつけるはず。"],
 ]],
 // index:5
 [{speaker:"narrator",choices:[
