@@ -1,6 +1,6 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@label_root{69}
+@label_root{プレビュー}
 @music{diana21}
 #narrator
 文芸部の部室。
@@ -43,7 +43,7 @@
 @start{preview}
 
 #narrator
-昭和横濱物語@v{'69}{、シックスティナイン}。
+昭和横濱物語@v{'69}{、シックスティーナイン}。
 開発未定。
 @finish{title}
 

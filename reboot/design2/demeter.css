@@ -1072,6 +1072,10 @@ body.demeter {
   }
 }
 
+.demeter-button.demeter-active {
+  fill: var(--color-fill-active);
+}
+
 /*************************************************************************/
 
 div.demeter-text {
@@ -1116,7 +1120,7 @@ div.demeter-text > div > span > div > span {
   stroke-width: 0.5px;
 }
 
-.demeter-graph > svg g.nodes > .active {
+.demeter-graph > svg g.nodes > .demeter-active {
   fill: var(--color-graph);
 }
 

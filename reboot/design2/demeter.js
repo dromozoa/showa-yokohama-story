@@ -1550,7 +1550,7 @@ const saveTutorial = {
 };
 
 const savePreview = {
-  paragraphIndex: D.scenario.labels["69"],
+  paragraphIndex: D.scenario.labels["プレビュー"],
   state: {},
 };
 
@@ -1607,7 +1607,21 @@ const putSystemTask = async () => {
   }
 };
 
-const checkPlayState = async () => {
+// AUTO/SKIPはユーザ操作によりキャンセルされる
+const cancelPlayState = async () => {
+  if (playState === undefined) {
+    return;
+  }
+  console.log("cancelPlayState", playState);
+  switch (playState) {
+    case "auto":
+      document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
+      break;
+    case "skip":
+      document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
+      break;
+  }
+  playState = undefined;
 };
 
 const putGameState = async () => {
@@ -2030,9 +2044,9 @@ const enterCreditsScreen = async () => {
       const nodes = [...document.querySelectorAll(".demeter-credits-graph > svg [data-pid='" + paragraphIndex + "']")];
       if (readState.map.has(paragraphIndex)) {
         ++active;
-        nodes.forEach(node => node.classList.add("active"));
+        nodes.forEach(node => node.classList.add("demeter-active"));
       } else {
-        nodes.forEach(node => node.classList.remove("active"));
+        nodes.forEach(node => node.classList.remove("demeter-active"));
       }
     }
   });
@@ -2128,17 +2142,20 @@ const initializeMainScreen = () => {
 
   document.querySelector(".demeter-main-screen").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
     next();
   });
 
   document.querySelector(".demeter-main-system-ui").addEventListener("click", ev => {
     // システムUIの表示中はバブリングを伝播させない。
     ev.stopPropagation();
+    cancelPlayState();
   });
 
   // SYSTEM
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
     if (systemUi._hidden) {
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
       systemUiNode.style.display = "block";
@@ -2152,6 +2169,7 @@ const initializeMainScreen = () => {
   // LOAD
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
     pause();
     leaveMainScreen();
     enterLoadScreen();
@@ -2160,6 +2178,7 @@ const initializeMainScreen = () => {
   // SAVE
   menuFrameNode.querySelector(".demeter-button3").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
     pause();
     leaveMainScreen();
     enterSaveScreen();
@@ -2168,11 +2187,17 @@ const initializeMainScreen = () => {
   // AUTO
   menuFrameNode.querySelector(".demeter-button4").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
+    playState = "auto";
+    menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
   });
 
   // SKIP
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", ev => {
     ev.stopPropagation();
+    cancelPlayState();
+    playState = "skip";
+    menuFrameNode.querySelector(".demeter-button5").classList.add("demeter-active");
   });
 
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
@@ -2682,6 +2707,7 @@ addEventListener("resize", resize);
 addEventListener("keydown", ev => {
   if (ev.code === "Enter") {
     if (screenName === "main") {
+      cancelPlayState();
       next();
     }
   }
