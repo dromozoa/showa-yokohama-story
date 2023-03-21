@@ -839,6 +839,7 @@ body.demeter {
   height: calc(var(--font-size) * 25 * var(--graph-ratio));
   right: var(--font-size);
   top: calc(var(--font-size) * 2);
+  opacity: 0;
 }
 
 .demeter-credits-graph > svg {
@@ -863,6 +864,7 @@ body.demeter {
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
+  opacity: 0;
 }
 
 .demeter-credits-paragraph a {
@@ -912,7 +914,7 @@ body.demeter {
 
 .demeter-credits-song-artist {
   position: absolute;
-  width: calc(var(--font-size) * 5);
+  width: calc(var(--font-size) * 6);
   height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 10);
   top: 0;
@@ -920,33 +922,41 @@ body.demeter {
 
 .demeter-credits-song-title {
   position: absolute;
-  width: calc(var(--font-size) * 8);
+  width: calc(var(--font-size) * 7);
   height: calc(var(--font-size) * 2);
-  left: calc(var(--font-size) * 15);
+  left: calc(var(--font-size) * 16);
   top: 0;
 }
 
 .demeter-credits-end {
   position: absolute;
   width: var(--screen-width);
-  height: calc(var(--font-size) * 8);
+  height: var(--screen-height);
   left: 0;
-  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  bottom: 0;
+  opacity: 0;
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-credits-end-paragraph {
+  position: absolute;
+  width: var(--screen-width);
+  height: calc(var(--font-size) * 4);
+  left: 0;
+  top: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
 }
 
 .demeter-credits-end-icon {
   display: none;
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--screen-width);
   height: calc(var(--font-size) * 2);
   left: 0;
-  bottom: 0;
-  line-height: calc(var(--font-size) * 2);
-  text-align: center;
+  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
   transform-origin: center bottom;
   pointer-events: none;
 }
@@ -1010,6 +1020,14 @@ body.demeter {
   position: absolute;
   left: calc(var(--font-size) * 6.5);
   top: calc(var(--font-size) * 9);
+}
+
+/*************************************************************************/
+
+.demeter-empty-overlay {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
 }
 
 /*************************************************************************/

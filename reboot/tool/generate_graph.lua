@@ -181,14 +181,14 @@ handle:write(([[
   --graph-ratio: %s;
 }
 </style>
-<svg viewBox="0 0 %d %d" data-width="%d" data-height="%d" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 %d %d" data-width="%d" data-height="%d" data-ratio="%s" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
     <polygon points="6.6795,0 24,10 24,14 6.6795,24"/>
   </marker>
 </defs>
 <g class="edges">
-]]):format(width, height, number_tostring(height / width), width, height, width, height))
+]]):format(width, height, number_tostring(height / width), width, height, width, height, number_tostring(height / width)))
 
 for _, edge in ipairs(edges) do
   local buffer = {}

@@ -1430,6 +1430,61 @@ D.VoiceSprite = class {
 
 //-------------------------------------------------------------------------
 
+D.OpacityAnimation = class {
+  constructor(nodes, duration) {
+    this.nodes = nodes;
+    this.duration = duration;
+  }
+
+  async start() {
+    let timestampPrev;
+    let duration = 0;
+    while (duration < this.duration) {
+      const timestamp = await D.requestAnimationFrame();
+      if (timestampPrev !== undefined) {
+        duration += timestamp - timestampPrev;
+      }
+      timestampPrev = timestamp;
+
+      const x = Math.min(duration / this.duration, 1);
+      const y = x * (2 - x)
+
+      this.nodes.forEach(node => node.style.opacity = D.numberToString(y));
+    }
+    this.nodes.forEach(node => node.style.opacity = "1");
+  }
+};
+
+D.ScrollAnimation = class {
+  constructor(containerNode, begin, end, duration) {
+    this.containerNode = containerNode;
+    this.begin = begin;
+    this.end = end;
+    this.duration = duration;
+  }
+
+  async start() {
+    let timestampPrev;
+    let duration = 0;
+    while (duration < this.duration) {
+      const timestamp = await D.requestAnimationFrame();
+      if (timestampPrev !== undefined) {
+        duration += timestamp - timestampPrev;
+      }
+      timestampPrev = timestamp;
+
+      const x = Math.min(duration / this.duration, 1);
+      const y = (Math.cos((x - 1) * Math.PI) + 1) * 0.5;
+      const z = this.begin + (this.end - this.begin) * y;
+
+      this.containerNode.scrollTo(0, z);
+    }
+    this.containerNode.scrollTo(0, this.end);
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 const consoleFont = "'Share Tech', sans-serif";
@@ -1500,6 +1555,8 @@ let gameState;
 let readState;
 let state;
 
+let screenWidth;
+let screenHeight;
 let screenNamePrev;
 let screenName;
 let systemUi;
@@ -1643,8 +1700,10 @@ const unlockAudio = async () => {
   screenNode.removeEventListener("click", unlockAudio);
 
   screenNode.classList.remove("demeter-title-unlock-audio");
-  iconAnimation.stop();
-  iconAnimation = undefined;
+  if (iconAnimation) {
+    iconAnimation.stop();
+    iconAnimation = undefined;
+  }
   await showTitleChoices();
 
   const color = D.toCssColor(...system.componentColor, system.componentOpacity);
@@ -1659,8 +1718,6 @@ const unlockAudio = async () => {
 //-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
-  console.log("upgradeDatabase", oldVersion, newVersion);
-
   for (let version = oldVersion + 1; version <= newVersion; ++version) {
     switch (version) {
       case 1:
@@ -1900,6 +1957,7 @@ const leaveSaveScreen = () => {
 
 const leaveCreditsScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
+  musicPlayer.fade("vi03");
 };
 
 //-------------------------------------------------------------------------
@@ -1946,8 +2004,10 @@ const enterSaveScreen = async () => {
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
-const enterCreditsScreen = () => {
+const enterCreditsScreen = async () => {
   setScreenName("credits");
+
+  musicPlayer.fade("vi05");
 
   let total = 0;
   let active = 0;
@@ -1964,9 +2024,54 @@ const enterCreditsScreen = () => {
       }
     }
   });
-  console.log(active / total);
+  document.querySelector(".demeter-credits-end-status").textContent = (active / total * 100).toFixed(2).replace(/\.?0*$/, "") + "%";
+
+  const T1 = 2000;
+  const T2 = 2000;
+  const T3 = 2000;
+  const screenNode = document.querySelector(".demeter-credits-screen");
+  const graphNode = document.querySelector(".demeter-credits-graph");
+  const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
+  const endNode = document.querySelector(".demeter-credits-end");
+  const graphRatio = document.querySelector(".demeter-credits-graph svg").dataset.ratio;
+
+  [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
 
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
+  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-empty-overlay"));
+
+  screenNode.scrollTo(0, 0);
+  for (let i = 0; i < paragraphNodes.length; ++i) {
+    const paragraphNode = paragraphNodes[i];
+    const nodes = [paragraphNode];
+    if (i === 0) {
+      nodes.push(graphNode);
+    }
+    const opacityAnimation = new D.OpacityAnimation(nodes, T1);
+    await opacityAnimation.start();
+
+    await D.setTimeout(T2);
+
+    const begin = fontSize * 48 * i;
+    let end;
+    if (i < paragraphNodes.length - 1) {
+      end = begin + fontSize * 48;
+    } else {
+      end = fontSize * (25 * graphRatio + 4) - screenHeight;
+    }
+    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    await scrollAnimation.start();
+  }
+
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
+
+  // TODO previewのアンロック
+
+  const opacityAnimation = new D.OpacityAnimation([endNode], T1);
+  await opacityAnimation.start();
+
+  iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
+  iconAnimation.start();
 };
 
 //-------------------------------------------------------------------------
@@ -2198,9 +2303,14 @@ const initializeSaveScreen = () => {
 };
 
 const initializeCreditsScreen = () => {
-  const graphNode = document.querySelector(".demeter-credits-graph > svg");
-  console.log(graphNode.dataset.width);
-  console.log(graphNode.dataset.height);
+  document.querySelector(".demeter-credits-end").addEventListener("click", () => {
+    if (iconAnimation) {
+      iconAnimation.stop();
+      iconAnimation = undefined;
+    }
+    leaveCreditsScreen();
+    enterTitleScreen();
+  });
 };
 
 const initializeDialogOverlay = () => {
@@ -2209,6 +2319,8 @@ const initializeDialogOverlay = () => {
   dialogFrameNode.querySelector(".demeter-button1").addEventListener("click", () => waitForDialog(1));
   dialogFrameNode.querySelector(".demeter-button2").addEventListener("click", () => waitForDialog(2));
 };
+
+const initializeEmptyOverlay = () => {};
 
 //-------------------------------------------------------------------------
 
@@ -2296,14 +2408,15 @@ const next = async () => {
 
   if (paragraphIndex === undefined) {
     const paragraphSave = D.scenario.paragraphs[paragraphIndexSave - 1];
-    console.log(paragraphIndexSave, paragraphIndexPrev);
     if (paragraphSave && paragraphSave[0].finish) {
       // TODO titleかcreditsの判定を行う
       paragraphIndexPrev = undefined;
       paragraphIndexSave = undefined;
       await deleteAutosave();
       leaveMainScreen();
-      enterTitleScreen();
+      // enterTitleScreen();
+      // debug
+      enterCreditsScreen();
       return;
     }
 
@@ -2518,8 +2631,6 @@ const resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
-  let screenWidth;
-  let screenHeight;
   if (W <= H) {
     screenWidth = fontSize * 27;
     screenHeight = fontSize * 48;
@@ -2540,6 +2651,7 @@ const resize = () => {
   document.querySelector(".demeter-save-screen").style.transform = transform;
   document.querySelector(".demeter-credits-screen").style.transform = transform;
   document.querySelector(".demeter-dialog-overlay").style.transform = transform;
+  document.querySelector(".demeter-empty-overlay").style.transform = transform;
   updateComponents();
 };
 
@@ -2565,11 +2677,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeSaveScreen();
   initializeCreditsScreen();
   initializeDialogOverlay();
+  initializeEmptyOverlay();
   initializeAudio();
   resize();
-  // await enterTitleScreen();
-  // debug
-  await enterCreditsScreen();
+  await enterTitleScreen();
 
   while (true) {
     await D.requestAnimationFrame();
