@@ -1991,7 +1991,6 @@ const leaveSaveScreen = () => {
 
 const leaveCreditsScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
-  musicPlayer.fade("vi03");
 };
 
 //-------------------------------------------------------------------------
@@ -2004,6 +2003,7 @@ const enterTitleScreen = async () => {
     iconAnimation = new D.IconAnimation(document.querySelector(".demeter-title-icon"));
     iconAnimation.start();
   } else {
+    musicPlayer.fade("vi03");
     await showTitleChoices();
   }
   document.querySelector(".demeter-projector").append(screenNode);
@@ -2040,7 +2040,6 @@ const enterSaveScreen = async () => {
 
 const enterCreditsScreen = async () => {
   setScreenName("credits");
-
   musicPlayer.fade("vi05");
 
   let total = 0;
@@ -2582,7 +2581,6 @@ const next = async () => {
   ++paragraphLineNumber;
   if (paragraphLineNumber > textAnimations.length) {
     paragraphIndexPrev = paragraphIndex;
-
     if (paragraph[0].jump !== undefined) {
       paragraphIndexPrev = paragraph[0].jump - 1;
     }
@@ -2631,7 +2629,22 @@ const next = async () => {
       evaluate(paragraph[0].leave);
     }
 
+    if (playState) {
+      // この段落にfinishを指定されていたら、AUTO/SKIPを解除する。
+      if (paragraph[0].finish) {
+        cancelPlayState();
+      }
+      // 次の段落にstartが指定されていたら、AUTO/SKIPを解除する。startとwhenは同
+      // 時に指定できないので評価しなくてよい。
+      const paragraphIndexNext = paragraphIndexPrev + 1;
+      const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
+      if (paragraphNext[0].start) {
+        cancelPlayState();
+      }
+    }
+
     resetParagraph();
+
   }
 
   if (cont) {

@@ -302,6 +302,9 @@ local function process_labels(scenario)
       append(labels, item)
       labels[label] = item
     end
+    if paragraph.start and paragraph.when_jumps then
+      error("@start and @when are incompatible at paragraph "..index)
+    end
   end
   for index, paragraph in ipairs(scenario) do
     if paragraph.jumps then
