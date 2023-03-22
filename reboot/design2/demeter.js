@@ -2135,18 +2135,8 @@ const enterCreditsScreen = async () => {
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-empty-overlay"));
 
-/*
-
-  --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
-  --credits-height-paragraphs: calc(var(--font-size) * 48 * var(--credits-count));
-  --credits-height: calc(max(
-    var(--credits-height-graph) + var(--font-size) * 4,
-    var(--credits-height-paragraphs) + var(--screen-height) + var(--font-size) * 2));
-
-
-*/
-
-  const height = Math.max(fontSize * (25 * graphRatio + 4), fontSize * (48 * paragraphNodes.length + 2) + screenHeight);
+  const paragraphHeight = fontSize * 27;
+  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight) + fontSize * 2;
 
   screenNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
@@ -2160,13 +2150,12 @@ const enterCreditsScreen = async () => {
 
     await D.setTimeout(T2);
 
-    const begin = fontSize * 48 * i;
+    const begin = paragraphHeight * i;
     let end;
 
     if (i < paragraphNodes.length - 1) {
-      end = begin + fontSize * 48;
+      end = begin + paragraphHeight;
     } else {
-      // end = fontSize * (25 * graphRatio + 4) - screenHeight;
       end = height - screenHeight;
     }
     const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);

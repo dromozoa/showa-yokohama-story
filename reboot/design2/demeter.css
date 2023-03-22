@@ -818,7 +818,7 @@ body.demeter {
 
 :root {
   --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
-  --credits-height-paragraph: calc(var(--font-size) * 48);
+  --credits-height-paragraph: calc(var(--font-size) * 27);
   --credits-height-paragraphs: calc(var(--credits-height-paragraph) * var(--credits-count));
   --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height)) + var(--font-size) * 2);
 }
