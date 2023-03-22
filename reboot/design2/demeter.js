@@ -1316,6 +1316,10 @@ D.TextAnimation = class {
     let timestampPrev;
     let duration = 0;
     L: while (!this.finished) {
+      if (playState === "skip") {
+        break;
+      }
+
       const timestamp = await D.requestAnimationFrame();
       if (timestampPrev !== undefined && !this.paused) {
         duration += timestamp - timestampPrev;
@@ -1342,9 +1346,7 @@ D.TextAnimation = class {
         }
       }
     }
-    if (this.finished) {
-      this.nodes.forEach(node => node.style.opacity = "1");
-    }
+    this.nodes.forEach(node => node.style.opacity = "1");
   }
 
   pause() {
@@ -1426,6 +1428,22 @@ D.VoiceSprite = class {
       this.sound.stop(this.soundId);
     }
   }
+};
+
+D.NullVoiceSprite = class {
+  constructor() {
+    this.paused = false;
+    this.finished = false;
+  }
+
+  async start() {
+    return "end";
+  }
+
+  updateVolume() {}
+  pause() {}
+  restart() {}
+  finish() {}
 };
 
 //-------------------------------------------------------------------------
@@ -1607,18 +1625,11 @@ const putSystemTask = async () => {
   }
 };
 
-// AUTO/SKIPはユーザ操作によりキャンセルされる
+// ユーザ操作が行われたらAUTO/SKIPを解除する。
 const cancelPlayState = async () => {
-  if (playState === undefined) {
-    return;
-  }
-  console.log("cancelPlayState", playState);
-  if (playState === "auto") {
-    document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
-  } else if (playState === "skip") {
-    document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
-  }
   playState = undefined;
+  document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
+  document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
 };
 
 const putGameState = async () => {
@@ -2407,8 +2418,8 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   await voiceSprite.start();
-  // テキストアニメーションが終了していて、音声を明示的に終了した場合、処理を継
-  // 続する。
+  // テキストアニメーションが終了していて、音声を明示的に終了した場合、処理を
+  // 継続する。
   const cont = textAnimation === undefined && voiceSprite.finished;
   voiceSprite = undefined;
   return cont;
@@ -2450,20 +2461,30 @@ const next = async () => {
     return;
   }
 
-  // テキストアニメーション中である場合、終了させる。
+  // テキストアニメーション中ならば、テキストアニメーションを終了する。
   if (textAnimation) {
-    // AUTO/SKIP由来である場合、終了しない。
-    if (!playState) {
+    if (playState === "auto") {
+      // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
+      // 実行に任される。
+      return;
+    } else if (playState === "skip") {
+      // SKIP由来である場合、音声を終了する。SKIP処理の本体は先行する実行に任さ
+      // れる。
+      if (voiceSprite) {
+        voiceSprite.finish();
+      }
+      return;
+    } else {
       textAnimation.finish();
+      return;
     }
-    return;
   }
 
-  // テキストアニメーションは終了しているが、音声は再生中である場合、音声を終了
-  // する。
+  // テキストアニメーションは終了しているが、音声は再生中ならば、音声を終了する。
   if (voiceSprite) {
-    // AUTO/SKIP由来である場合、終了しない。
-    if (!playState) {
+    // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
+    // 実行に任される。
+    if (playState !== "auto") {
       voiceSprite.finish();
     }
     return;
@@ -2493,6 +2514,10 @@ const next = async () => {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
       }
+    }
+
+    if (playState === "skip" && !system.skipUnread && !readState.map.has(paragraphIndex)) {
+      cancelPlayState();
     }
 
     if (musicPlayer.key !== paragraph[0].music) {
@@ -2531,15 +2556,22 @@ const next = async () => {
     document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
     document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
 
-    const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
-    voiceSound = new Howl({
-      src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
-      sprite: D.voiceSprites[paragraphIndex - 1],
-    });
+    // SKIP中は音声を再生しない。
+    if (playState !== "skip") {
+      const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+      voiceSound = new Howl({
+        src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+        sprite: D.voiceSprites[paragraphIndex - 1],
+      });
+    }
   }
 
   textAnimation = textAnimations[paragraphLineNumber - 1];
-  voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
+  if (voiceSound && playState !== "skip") {
+    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
+  } else {
+    voiceSprite = new D.NullVoiceSprite();
+  }
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
   if (waitForStop) {
@@ -2610,6 +2642,9 @@ const next = async () => {
     if (playState === "auto") {
       requestAnimationFrame(next);
     }
+    return;
+  } else if (playState === "skip") {
+    requestAnimationFrame(next);
     return;
   }
 };
