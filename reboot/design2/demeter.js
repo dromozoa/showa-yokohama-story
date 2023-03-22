@@ -2818,7 +2818,7 @@ const dialog = async key => {
 
 //-------------------------------------------------------------------------
 
-const resize = () => {
+D.resize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
@@ -2846,20 +2846,16 @@ const resize = () => {
   updateComponents();
 };
 
-//-------------------------------------------------------------------------
-
-addEventListener("resize", resize);
-
-addEventListener("keydown", ev => {
+D.keydown = ev => {
   if (ev.code === "Enter") {
     if (screenName === "main") {
       cancelPlayState();
       next();
     }
   }
-});
+};
 
-document.addEventListener("DOMContentLoaded", async () => {
+D.domContentLoaded = async () => {
   initializeInternal();
   await initializeDatabase();
   initializeTitleScreen();
@@ -2871,7 +2867,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  resize();
+  D.resize();
   await enterTitleScreen();
 
   while (true) {
@@ -2892,7 +2888,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       iconAnimation.update();
     }
   }
-}, { once: true });
+};
 
 //-------------------------------------------------------------------------
 
