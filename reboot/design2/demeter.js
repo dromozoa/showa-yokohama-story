@@ -1800,6 +1800,30 @@ const initializeDatabase = async () => {
 
 //-------------------------------------------------------------------------
 
+const updateSystemSpeed = () => {
+  if (textAnimations) {
+    textAnimations.forEach(textAnimation => textAnimation.updateSpeed(system.speed));
+  }
+};
+
+const updateSystemMasterVolume = () => {
+  if (Howler.masterGain) {
+    Howler.volume(system.masterVolume);
+  }
+};
+
+const updateSystemMusicVolume = () => {
+  if (musicPlayer) {
+    musicPlayer.updateVolume(system.musicVolume);
+  }
+};
+
+const updateSystemVoiceVolume = () => {
+  if (voiceSprite) {
+    voiceSprite.updateVolume(system.voiceVolume);
+  }
+};
+
 const updateComponentColor = () => {
   document.documentElement.style.setProperty("--component-color", D.toCssColor(...system.componentColor));
   const color = D.toCssColor(...system.componentColor, system.componentOpacity);
@@ -1893,7 +1917,7 @@ const initializeComponents = () => {
 
 //-------------------------------------------------------------------------
 
-// gui.addFolderはtouchStylesを継承しないので、で作成する。
+// gui.addFolderはtouchStylesを継承しないので自前で構築する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
     parent: gui,
@@ -1917,28 +1941,12 @@ const initializeSystemUi = () => {
   });
   systemUi.onChange(() => taskSet.add(putSystemTask));
 
-  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(v => {
-    if (textAnimations) {
-      textAnimations.forEach(textAnimation => textAnimation.updateSpeed(v));
-    }
-  });
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
-  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(v => {
-    if (Howler.masterGain) {
-      Howler.volume(v);
-    }
-  });
-  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(v => {
-    if (musicPlayer) {
-      musicPlayer.updateVolume(v);
-    }
-  });
-  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(v => {
-    if (voiceSprite) {
-      voiceSprite.updateVolume(v);
-    }
-  });
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateSystemMasterVolume);
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -1948,6 +1956,42 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
   componentFolder.add(system, "silhouette").name("表示: シルエット").onChange(updateComponents);
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
+
+  const commands = {};
+
+  commands.resetSystem = async () => {
+    pause();
+    systemUi.openAnimated(false);
+    if (await dialog("system-reset-system") === "yes") {
+      Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
+      await database.put("system", system);
+
+      [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
+
+      updateSystemSpeed();
+      updateSystemMasterVolume();
+      updateSystemMusicVolume();
+      updateSystemVoiceVolume();
+      updateComponentColor();
+      updateComponentOpacity();
+      updateComponents();
+    }
+    restart();
+  };
+
+  commands.resetSave = async () => {
+    pause();
+    systemUi.openAnimated(false);
+    if (await dialog("system-reset-save") === "yes") {
+      // reset
+      // save
+    }
+    restart();
+  };
+
+  const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
+  commandsFolder.add(commands, "resetSystem").name("設定初期化");
+  commandsFolder.add(commands, "resetSave").name("セーブデータ初期化");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。

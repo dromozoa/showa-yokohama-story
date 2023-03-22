@@ -2011,63 +2011,74 @@ if(ctx.game.father === 3)return 346;
 ]],
 // index:349
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["システム設定とコンポーネント設定を",["初期値","デフォルト"],"に戻す。"],
+["本当に設定を戻していい？"],
+]],
+// index:350
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["セーブデータを削除する。"],
+["実績データや既読データはそのまま。"],
+["本当にセーブデータを消していい？"],
+]],
+// index:351
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
 ["既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
-// index:350
+// index:352
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["再生する？"],
 ]],
-// index:351
+// index:353
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["この",["因果","テープ"],"はねじれてよじれてからまりあっている。"],
 ["再生できない。"],
 ["今のところは。"],
 ]],
-// index:352
+// index:354
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生する？"],
 ]],
-// index:353
+// index:355
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:354
+// index:356
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:355
+// index:357
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:356
+// index:358
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:357
+// index:359
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:358
+// index:360
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:359
+// index:361
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:360
+// index:362
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
 ["からまりあった因果がほどけた。"],
@@ -2115,18 +2126,20 @@ labels:{
 "ゲバルト・ローザ":347,
 },
 dialogs:{
-"load-tape-select":349,
-"load-tape-tutorial":350,
-"load-tape-broken":351,
-"load-tape-preview":352,
-"load-tape-save1":353,
-"load-tape-save2":354,
-"load-tape-save3":355,
-"load-tape-empty":356,
-"save-tape-save1":357,
-"save-tape-save2":358,
-"save-tape-save3":359,
-"credits-tape-preview":360,
+"system-reset-system":349,
+"system-reset-save":350,
+"load-tape-select":351,
+"load-tape-tutorial":352,
+"load-tape-broken":353,
+"load-tape-preview":354,
+"load-tape-save1":355,
+"load-tape-save2":356,
+"load-tape-save3":357,
+"load-tape-empty":358,
+"save-tape-save1":359,
+"save-tape-save2":360,
+"save-tape-save3":361,
+"credits-tape-preview":362,
 },
 };
 
