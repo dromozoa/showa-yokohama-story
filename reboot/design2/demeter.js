@@ -1693,6 +1693,16 @@ const putSave = async (key, name) => {
   }
 };
 
+const deleteSave = async (key, name) => {
+  try {
+    await database.delete("save", key);
+    logging.log(name + "削除: 成功");
+  } catch (e) {
+    logging.log(name + "削除: 失敗");
+    logging.log(e.message);
+  }
+};
+
 const setSave = save => {
   paragraphIndexPrev = save.paragraphIndex - 1;
   state = save.state;
@@ -1964,7 +1974,7 @@ const initializeSystemUi = () => {
     systemUi.openAnimated(false);
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
-      await database.put("system", system);
+      putSystemTask();
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
@@ -1983,15 +1993,23 @@ const initializeSystemUi = () => {
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-reset-save") === "yes") {
-      // reset
-      // save
+      await stop();
+      gameState = {};
+      setItemDefault(gameState, gameStateDefault);
+      await putGameState();
+      await deleteAutosave();
+      await deleteSave("save1", "#1");
+      await deleteSave("save2", "#2");
+      await deleteSave("save3", "#3");
+      leaveMainScreen();
+      enterTitleScreen();
     }
     restart();
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
   commandsFolder.add(commands, "resetSystem").name("設定初期化");
-  commandsFolder.add(commands, "resetSave").name("セーブデータ初期化");
+  commandsFolder.add(commands, "resetSave").name("セーブデータ全削除");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2290,8 +2308,8 @@ const initializeLoadScreen = () => {
     } else {
       leaveLoadScreen();
       enterMainScreen();
+      restart();
     }
-    restart();
   });
 
   document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {

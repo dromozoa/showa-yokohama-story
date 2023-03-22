@@ -2016,8 +2016,8 @@ if(ctx.game.father === 3)return 346;
 ]],
 // index:350
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["セーブデータを削除する。"],
-["実績データや既読データはそのまま。"],
+["セーブデータを全部削除してタイトルに戻る。"],
+["実績データや既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
 // index:351

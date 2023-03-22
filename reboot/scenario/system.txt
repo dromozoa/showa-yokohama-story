@@ -8,8 +8,8 @@
 @dialog_choice{いいえ}{no}
 
 @dialog{system-reset-save}
-セーブデータを削除する。
-実績データや既読データはそのまま変わらない。
+セーブデータを全部削除してタイトルに戻る。
+実績データや既読データは、そのまま。
 本当にセーブデータを消していい？
 #narrator
 @dialog_choice{はい}{yes}
