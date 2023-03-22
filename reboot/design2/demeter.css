@@ -41,7 +41,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --screen-background-image: url(../output/bg-portrait.png);
+    --screen-background-image: url(bg-portrait.png);
   }
 }
 
@@ -49,7 +49,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --screen-background-image: url(../output/bg-landscape.png);
+    --screen-background-image: url(bg-landscape.png);
   }
 }
 
