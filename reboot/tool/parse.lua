@@ -74,7 +74,6 @@ local function append_jump(paragraph, jump)
 end
 
 local function append_paragraph(scenario, paragraph)
-  paragraph.system = scenario.system
   scenario[#scenario + 1] = paragraph
   return scenario
 end
@@ -231,11 +230,6 @@ local function parse(scenario, include_path, filename)
       -- @finish
       paragraph = update(paragraph, "finish", trim(_1))
 
-    elseif match "^@system" then
-      -- @system
-      -- 以降の段落をシステム用とする
-      scenario = update(scenario, "system", true)
-
     elseif match "^@music{([^}]*)}" then
       -- @music{キー}
       -- 段落に音楽を割り当てる
@@ -243,7 +237,9 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
+      -- システム用とする。
       paragraph = update(paragraph, "dialog", { dialog = trim(_1) })
+      paragraph = update(paragraph, "system", true)
 
     elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
       local dialog = assert(paragraph.dialog)

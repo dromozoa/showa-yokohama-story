@@ -1,9 +1,5 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@system
-
-@#==============================================================================
-
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
