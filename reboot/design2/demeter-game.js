@@ -18,25 +18,18 @@
 (() => {
 "use strict";
 
-const updateScene1 = () => {
-  document.querySelector(".scene1 .output-client-width").textContent = document.documentElement.clientWidth;
-  document.querySelector(".scene1 .output-client-height").textContent = document.documentElement.clientHeight;
-  document.querySelector(".scene1 .output-inner-width").textContent = window.innerWidth;
-  document.querySelector(".scene1 .output-inner-height").textContent = window.innerHeight;
-};
+const D = globalThis.demeter;
+if (D.includeGameGuard) {
+  return;
+}
+D.includeGameGuard = true;
 
-document.addEventListener("DOMContentLoaded", () => {
-  updateScene1();
-  window.scroll(0, 320);
+//-------------------------------------------------------------------------
 
-}, { once: true });
+addEventListener("resize", D.resize);
+addEventListener("keydown", D.keydown);
+document.addEventListener("DOMContentLoaded", D.domContentLoaded, { once: true });
 
-window.addEventListener("resize", () => {
-  updateScene1();
-});
-
-window.addEventListener("orientationchange", () => {
-  updateScene1();
-});
+//-------------------------------------------------------------------------
 
 })();

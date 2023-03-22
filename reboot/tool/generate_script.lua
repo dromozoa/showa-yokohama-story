@@ -1,4 +1,4 @@
--- Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -77,6 +77,9 @@ for i, paragraph in ipairs(scenario) do
     end
     handle:write "}"
   end
+  if paragraph.enter then
+    handle:write(",enter:($,ctx)=>{", paragraph.enter, ";}")
+  end
   if paragraph.leave then
     handle:write(",leave:($,ctx)=>{", paragraph.leave, ";}")
   end
@@ -84,7 +87,10 @@ for i, paragraph in ipairs(scenario) do
     handle:write(",start:", quote_js(paragraph.start))
   end
   if paragraph.finish then
-    handle:write ",finish:true"
+    handle:write(",finish:", quote_js(paragraph.finish))
+  end
+  if paragraph.system then
+    handle:write ",system:true"
   end
   if paragraph.music then
     handle:write(",music:", quote_js(paragraph.music))

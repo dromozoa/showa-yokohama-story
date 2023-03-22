@@ -1,13 +1,26 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@system
+@dialog{system-reset-system}
+システム設定とコンポーネント設定を@r{初期値}{デフォルト}に戻す。
+本当に設定を戻していい？
+#narrator
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{system-reset-save}
+セーブデータを全部削除してタイトルに戻る。
+実績データや既読データは、そのまま。
+本当にセーブデータを消していい？
+#narrator
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
 
 @#==============================================================================
 
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-既読の@v{節}{せつ}を択べるようだ。
+既読の@v{節}{セツ}を択べるようだ。
 選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -25,6 +38,14 @@
 再生できない。
 今のところは。
 @dialog_choice{了解}{ok}
+
+@dialog{load-tape-preview}
+#narrator
+年代物のテープが修復された。
+正常に読めるかは未知数。
+再生する？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
 
 @dialog{load-tape-save1}
 #narrator
@@ -75,4 +96,14 @@
 保存する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
+
+@#==============================================================================
+
+@dialog{credits-tape-preview}
+#narrator
+いまではない、いつか。
+からまりあった因果がほどけた。
+ここではない、どこか。
+ねじれた運命がときはなたれた。
+@dialog_choice{了解}{ok}
 

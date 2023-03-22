@@ -26,20 +26,18 @@
   <!-- https://github.com/goldfire/howler.js#quick-start -->
   <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 
-  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
-  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
-
-  <!-- https://github.com/tweenjs/tween.js/#installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
-
   <!-- https://github.com/jakearchibald/idb/#installation -->
   <script src="https://cdn.jsdelivr.net/npm/idb@7.1.1/build/umd.js" integrity="sha256-ekPnVXAfX/KotKCG3rac/xzpxda6Nl7jK2CU6/I+2tE=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
 
   <script defer src="demeter-jlreq.js"></script>
   <script defer src="demeter-scanlines.js"></script>
   <script defer src="demeter-scenario.js"></script>
   <script defer src="demeter-voice-sprites.js"></script>
   <script defer src="demeter.js"></script>
+  <script defer src="demeter-game.js"></script>
 </head>
 
 <body class="demeter">
@@ -126,6 +124,7 @@
 <img class="demeter-start-image demeter-start-image-verse1" src="verse1.png">
 <img class="demeter-start-image demeter-start-image-verse2" src="verse2.png">
 <img class="demeter-start-image demeter-start-image-verse3" src="verse3.png">
+<img class="demeter-start-image demeter-start-image-preview" src="preview.png">
 
 <div class="demeter-main-screen">
   <div class="demeter-main-logging"></div>
@@ -189,9 +188,9 @@
       <img src="tape/tutorial.png">
       <div class="demeter-data-tape-label">TUTORIAL</div>
     </div>
-    <div class="demeter-data-tape demeter-load-tape-trailer">
-      <img src="tape/trailer.png">
-      <div class="demeter-data-tape-label"><span class="demeter-load-tape-trailer-text">broken : 1969/01/19 17:46</span></div>
+    <div class="demeter-data-tape demeter-load-tape-preview">
+      <img src="tape/preview.png">
+      <div class="demeter-data-tape-label"><span class="demeter-load-tape-preview-text">broken : 1969/01/19 17:46</span></div>
     </div>
     <div class="demeter-data-tape demeter-load-tape-save1">
       <img src="tape/save1.png">
@@ -233,6 +232,24 @@
   </div>
 </div>
 
+<div class="demeter-credits-screen">
+  <div class="demeter-credits">
+    <div class="demeter-graph demeter-credits-graph">
+    $graph
+    </div>
+    <div class="demeter-credits-paragraphs">
+    $credits
+    </div>
+    <div class="demeter-credits-end">
+      <div class="demeter-credits-end-paragraph">
+        <div class="demeter-credits-end-text">THANK YOU FOR PLAYING</div>
+        <div class="demeter-credits-end-text"><span class="demeter-credits-end-status"></span></div>
+      </div>
+      <div class="demeter-credits-end-icon"><span class="demeter-icon"></span></div>
+    </div>
+  </div>
+</div>
+
 <div class="demeter-dialog-overlay">
   <div class="demeter-dialog">
     <div class="demeter-dialog-frame"></div>
@@ -242,13 +259,12 @@
   </div>
 </div>
 
+<div class="demeter-empty-overlay"></div>
+
 <div class="demeter-loader">
 $loader
 </div>
 
-<div class="demeter-graph">
-$graph
-</div>
 </div>
 
 </body>

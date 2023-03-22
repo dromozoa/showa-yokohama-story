@@ -1,4 +1,4 @@
--- Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -74,7 +74,6 @@ local function append_jump(paragraph, jump)
 end
 
 local function append_paragraph(scenario, paragraph)
-  paragraph.system = scenario.system
   scenario[#scenario + 1] = paragraph
   return scenario
 end
@@ -215,6 +214,10 @@ local function parse(scenario, include_path, filename)
       -- @when{{式}}{ラベル}
       paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
 
+    elseif match "^@enter{{(.-)}}" then
+      -- @enter{{文}}
+      paragraph = update(paragraph, "enter", trim(_1))
+
     elseif match "^@leave{{(.-)}}" then
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))
@@ -223,14 +226,9 @@ local function parse(scenario, include_path, filename)
       -- @start{キー}
       paragraph = update(paragraph, "start", trim(_1))
 
-    elseif match "^@finish" then
+    elseif match "^@finish{([^}]*)}" then
       -- @finish
-      paragraph = update(paragraph, "finish", true)
-
-    elseif match "^@system" then
-      -- @system
-      -- 以降の段落をシステム用とする
-      scenario = update(scenario, "system", true)
+      paragraph = update(paragraph, "finish", trim(_1))
 
     elseif match "^@music{([^}]*)}" then
       -- @music{キー}
@@ -239,7 +237,9 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
+      -- システム用とする。
       paragraph = update(paragraph, "dialog", { dialog = trim(_1) })
+      paragraph = update(paragraph, "system", true)
 
     elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
       local dialog = assert(paragraph.dialog)
@@ -297,6 +297,9 @@ local function process_labels(scenario)
       local item = { label = label, index = index }
       append(labels, item)
       labels[label] = item
+    end
+    if paragraph.start and paragraph.when_jumps then
+      error("@start and @when are incompatible at paragraph "..index)
     end
   end
   for index, paragraph in ipairs(scenario) do

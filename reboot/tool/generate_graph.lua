@@ -1,4 +1,4 @@
--- Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -160,24 +160,35 @@ end
 assert(node_max == #nodes)
 assert(edge_max == #edges)
 
+local function number_tostring(v)
+  return ("%.4f"):format(v):gsub("%.?0*$", "")
+end
+
 local function number_tostring_unpack(source)
   local result = {}
   for i, v in ipairs(source) do
-    result[i] = ("%.4f"):format(v):gsub("%.?0*$", "")
+    result[i] = number_tostring(v)
   end
   return table.unpack(result)
 end
 
 local handle = io.stdout
 handle:write(([[
-<svg viewBox="0 0 %d %d" style="width: %dpx; height: %dpx" xmlns="http://www.w3.org/2000/svg">
+<style>
+:root {
+  --graph-width: %dpx;
+  --graph-height: %dpx;
+  --graph-ratio: %s;
+}
+</style>
+<svg viewBox="0 0 %d %d" data-width="%d" data-height="%d" data-ratio="%s" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
     <polygon points="6.6795,0 24,10 24,14 6.6795,24"/>
   </marker>
 </defs>
 <g class="edges">
-]]):format(width, height, width, height))
+]]):format(width, height, number_tostring(height / width), width, height, width, height, number_tostring(height / width)))
 
 for _, edge in ipairs(edges) do
   local buffer = {}

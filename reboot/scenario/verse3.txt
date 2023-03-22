@@ -6,6 +6,9 @@
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 @start{verse3}
+@enter{{
+  ctx.game.visitedVerse3 = true;
+}}
 
 #narrator
 @r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の@r{三人組}{トリオ}。
@@ -566,7 +569,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{黙示録}{リベレーション}。
 了。
-@finish
+@finish{title}
 
 @label{第三節黙示録了}
 #danu
@@ -729,7 +732,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。スティーブンによる福音書。最終節。
 了。
-@finish
+@finish{credits}
 
 @label{創世記}
 @music{diana12}
@@ -776,4 +779,4 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{創世記}{ジェネシス}。
 了。
-@finish
+@finish{credits}

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+# Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 #
 # This file is part of 昭和横濱物語.
 #
@@ -18,9 +18,11 @@
 lua = env "LUA_PATH=tool/?.lua;;" lua
 voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/settings/dic.json
 scenarios = $(wildcard scenario/*.txt)
+credits = scenario/credits
 targets = \
 	output/loader.html \
 	output/graph.svg \
+	output/credits.html \
 	output/voice1.txt \
 	design2/demeter-scenario.js \
 	design2/sketch1.html
@@ -33,6 +35,9 @@ all:: $(voicepeak_dic) $(targets)
 
 clean::
 	rm -f $(targets)
+
+clean_voice::
+	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
 
 convert_voice::
 	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice2 "*-voice*.wav"
@@ -48,11 +53,14 @@ output/loader.html: $(scenarios)
 output/graph.svg: $(scenarios)
 	./tool/generate_graph.sh scenario/scenario.txt $@
 
+output/credits.html: $(credits)
+	$(lua) tool/generate_credits.lua $< $@
+
 design2/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
-design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg
-	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg $@
+design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html
+	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html $@
 
 output/voice1.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@

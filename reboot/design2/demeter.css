@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2023 Tomoyuki Fujimori <moyu@dromozoa.com>
+ * Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
  *
  * This file is part of 昭和横濱物語.
  *
@@ -34,6 +34,7 @@
   --color-fill-active: rgba(2, 157, 147, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
+  --color-graph: rgba(2, 157, 147, 0.5);
 }
 
 @media (orientation: portrait) {
@@ -68,7 +69,7 @@
 body.demeter {
   margin: 0;
   color: #FFF;
-  background-color: #000;
+  background-color: #111;
 }
 
 /*************************************************************************/
@@ -78,7 +79,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -147,8 +148,7 @@ body.demeter {
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 16);
-  height: calc(var(--font-size) * 2);
-  line-height: calc(var(--font-size) * 2); /* debug */
+  line-height: calc(var(--font-size) * 2);
   text-align: center;
   transform-origin: center bottom;
   pointer-events: none;
@@ -199,7 +199,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -244,7 +244,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -569,10 +569,11 @@ body.demeter {
 .demeter-main-paragraph-icon {
   display: none;
   position: absolute;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
   right: 0;
   bottom: 0;
-  height: calc(var(--font-size) * 2);
-  line-height: calc(var(--font-size) * 2); /* debug */
+  line-height: calc(var(--font-size) * 2);
   text-align: right;
   transform-origin: center bottom;
   pointer-events: none;
@@ -585,7 +586,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
@@ -729,7 +730,7 @@ body.demeter {
     top: calc(var(--font-size) * 9);
   }
 
-  .demeter-load-tape-trailer {
+  .demeter-load-tape-preview {
     left: 0;
     top: calc(var(--font-size) * 18);
   }
@@ -756,7 +757,7 @@ body.demeter {
     top: 0;
   }
 
-  .demeter-load-tape-trailer {
+  .demeter-load-tape-preview {
     left: calc(var(--font-size) * 27);
     top: 0;
   }
@@ -815,6 +816,160 @@ body.demeter {
 
 /*************************************************************************/
 
+:root {
+  --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
+  --credits-height-paragraph: calc(var(--font-size) * 27);
+  --credits-height-paragraphs: calc(var(--credits-height-paragraph) * var(--credits-count));
+  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height)) + var(--font-size) * 2);
+}
+
+.demeter-credits-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  background-image: var(--screen-background-image);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.demeter-credits {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--credits-height);
+}
+
+.demeter-credits-graph {
+  position: absolute;
+  width: calc(var(--font-size) * 25);
+  height: var(--credits-height-graph);
+  right: var(--font-size);
+  top: calc(var(--font-size) * 2);
+  opacity: 0;
+}
+
+.demeter-credits-graph > svg {
+  position: absolute;
+  display: block;
+  width: calc(var(--font-size) * 25);
+  height: var(--credits-height-graph);
+}
+
+.demeter-credits-paragraphs {
+  position: absolute;
+  width: calc(var(--font-size) * 23);
+  height: var(--credits-height-paragraphs);
+  left: calc(var(--font-size) * 2);
+  top: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-paragraph {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  height: var(--credits-height-paragraph);
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  opacity: 0;
+}
+
+.demeter-credits-paragraph a {
+  color: #FFF;
+}
+
+.demeter-credits-text {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  text-align: justify;
+}
+
+.demeter-credits-line {
+  position: relative;
+  width: calc(var(--font-size) * 23);
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-title {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-link {
+  position: absolute;
+  width: calc(var(--font-size) * 15);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 8);
+  top: 0;
+}
+
+.demeter-credits-album-title {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+  text-align: right;
+}
+
+.demeter-credits-song-number {
+  position: absolute;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 8);
+  top: 0;
+}
+
+.demeter-credits-song-artist {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 10);
+  top: 0;
+}
+
+.demeter-credits-song-title {
+  position: absolute;
+  width: calc(var(--font-size) * 7);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 16);
+  top: 0;
+}
+
+.demeter-credits-end {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+  font-family: var(--font-family-console);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-credits-end-paragraph {
+  position: absolute;
+  width: var(--screen-width);
+  height: calc(var(--font-size) * 4);
+  left: 0;
+  top: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+}
+
+.demeter-credits-end-icon {
+  display: none;
+  position: absolute;
+  width: var(--screen-width);
+  height: calc(var(--font-size) * 2);
+  left: 0;
+  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  transform-origin: center bottom;
+  pointer-events: none;
+}
+
+/*************************************************************************/
+
 .demeter-dialog-overlay {
   position: absolute;
   width: var(--screen-width);
@@ -827,12 +982,6 @@ body.demeter {
   height: calc(var(--font-size) * 12);
   left: calc((var(--screen-width) - var(--font-size) * 25) * 0.5);
   top: calc((var(--screen-height) - var(--font-size) * 12) * 0.5);
-}
-
-@media (orientation: portrait) {
-}
-
-@media (orientation: landscape) {
 }
 
 .demeter-dialog-frame {
@@ -882,6 +1031,14 @@ body.demeter {
 
 /*************************************************************************/
 
+.demeter-empty-overlay {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+/*************************************************************************/
+
 /* 1989-01-06 21:33Z */
 .demeter-offscreen {
   position: absolute;
@@ -891,10 +1048,6 @@ body.demeter {
 
 .demeter-loader {
   font-family: var(--font-family);
-}
-
-.demeter-graph > svg {
-  display: block;
 }
 
 /*************************************************************************/
@@ -926,6 +1079,10 @@ body.demeter {
   }
 }
 
+.demeter-button.demeter-active {
+  fill: var(--color-fill-active);
+}
+
 /*************************************************************************/
 
 div.demeter-text {
@@ -948,6 +1105,30 @@ div.demeter-text > div > span > div {
 
 div.demeter-text > div > span > div > span {
   display: inline-block;
+}
+
+/*************************************************************************/
+
+#demeter-graph-marker {
+  fill: var(--color-graph);
+  stroke: none;
+}
+
+.demeter-graph > svg g.edges {
+  fill: none;
+  stroke: var(--color-graph);
+  stroke-width: 0.5px;
+  marker-end: url(#demeter-graph-marker);
+}
+
+.demeter-graph > svg g.nodes {
+  fill: none;
+  stroke: var(--color-graph);
+  stroke-width: 0.5px;
+}
+
+.demeter-graph > svg g.nodes > .demeter-active {
+  fill: var(--color-graph);
 }
 
 /*************************************************************************/
