@@ -79,8 +79,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-title-unlock-audio {
@@ -199,8 +197,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-start {
@@ -244,8 +240,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-main-logging {
@@ -586,8 +580,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-data-back {
@@ -828,8 +820,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   overflow: auto;
   scrollbar-width: none;
 }

@@ -144,4 +144,5 @@
 - [ ] エラー通報
 - [ ] バージョン更新の仕組み
 - [ ] rosaのシルエットを用意
-
+- [ ] D.preferences = { musicDir: "...", voiceDir: "..." }
+- [ ] D.ConsoleLogging

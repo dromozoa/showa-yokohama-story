@@ -19,4 +19,107 @@
 
 /*************************************************************************/
 
+:root {
+  --font-family-debug: 'Showa Yokohama Story', 'BIZ UDPMincho', 'Source Serif Pro', serif;
+}
+
+/*************************************************************************/
+
+.demeter-debug-screen {
+  position: absolute;
+  width: calc(var(--font-size) * 48);
+  height: calc(var(--font-size) * 27);
+  left: calc(50vw - var(--font-size) * 24);
+  top: calc(50vh - var(--font-size) * 13.5);
+  background-image: url(bg-landscape.png);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.demeter-debug-paragraph {
+  position: relative;
+  left: var(--font-size);
+  top: 0;
+  width: calc(var(--font-size) * 46);
+  height: calc(var(--font-size) * 10);
+  font-family: var(--font-family-debug);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-debug-paragraph-speaker {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: calc(var(--font-size) * 2);
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-debug-paragraph-text {
+  position: absolute;
+  left: calc(var(--font-size) * 6);
+  top: 0;
+  width: calc(var(--font-size) * 25);
+  height: calc(var(--font-size) * 10);
+  pointer-events: none;
+}
+
+/*************************************************************************/
+
+.demeter-debug-dialog {
+  position: relative;
+  width: calc(var(--font-size) * 31);
+  height: calc(var(--font-size) * 14);
+  font-family: var(--font-family-debug);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-debug-dialog-speaker {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: calc(var(--font-size) * 2);
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-debug-dialog-frame {
+  position: absolute;
+  left: calc(var(--font-size) * 6);
+  top: 0;
+}
+
+.demeter-debug-dialog-frame svg {
+  display: block;
+  fill: var(--color-fill);
+  stroke: var(--color-stroke);
+}
+
+.demeter-debug-dialog-text {
+  position: absolute;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 8);
+  left: calc(var(--font-size) * 8);
+  top: var(--font-size);
+  pointer-events: none;
+}
+
+.demeter-debug-dialog-item {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+  height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-debug-dialog-item1 {
+  position: absolute;
+  left: calc(var(--font-size) * 21.5);
+  top: calc(var(--font-size) * 9);
+}
+
+.demeter-debug-dialog-item2 {
+  position: absolute;
+  left: calc(var(--font-size) * 12.5);
+  top: calc(var(--font-size) * 9);
+}
+
 /*************************************************************************/

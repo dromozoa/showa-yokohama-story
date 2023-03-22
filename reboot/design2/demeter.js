@@ -64,7 +64,7 @@ D.getSerialNumber = () => {
 let internalRoot;
 let internalCanvas;
 
-const initializeInternal = () => {
+D.initializeInternal = () => {
   const offscreenNode = document.querySelector(".demeter-offscreen");
   const internalRootNode = offscreenNode.appendChild(document.createElement("div"));
   internalRoot = internalRootNode.attachShadow({ mode: "closed" });
@@ -2856,7 +2856,7 @@ D.keydown = ev => {
 };
 
 D.domContentLoaded = async () => {
-  initializeInternal();
+  D.initializeInternal();
   await initializeDatabase();
   initializeTitleScreen();
   initializeStartScreen();
