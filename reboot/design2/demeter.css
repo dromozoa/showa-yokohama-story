@@ -35,12 +35,6 @@
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
   --color-graph: rgba(2, 157, 147, 0.5);
-
-  --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
-  --credits-height-paragraphs: calc(var(--font-size) * 48 * var(--credits-count));
-  --credits-height: calc(max(
-    var(--credits-height-graph) + var(--font-size) * 4,
-    var(--credits-height-paragraphs) + var(--screen-height) + var(--font-size) * 2));
 }
 
 @media (orientation: portrait) {
@@ -823,6 +817,10 @@ body.demeter {
 /*************************************************************************/
 
 :root {
+  --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
+  --credits-height-paragraph: calc(var(--font-size) * 48);
+  --credits-height-paragraphs: calc(var(--credits-height-paragraph) * var(--credits-count));
+  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height)) + var(--font-size) * 2);
 }
 
 .demeter-credits-screen {
@@ -839,10 +837,6 @@ body.demeter {
 .demeter-credits {
   position: absolute;
   width: var(--screen-width);
-  /*
-  height: calc(var(--font-size) * (25 * var(--graph-ratio) + 4));
-  height: calc(var(--credits-height-graph) + var(--font-size) * 4);
-  */
   height: var(--credits-height);
 }
 
@@ -873,7 +867,7 @@ body.demeter {
 .demeter-credits-paragraph {
   position: relative;
   width: calc(var(--font-size) * 23);
-  height: calc(var(--font-size) * 48);
+  height: var(--credits-height-paragraph);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
