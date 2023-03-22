@@ -28,6 +28,8 @@ local max_song_number = 0
 local max_song_artist = 0
 local max_song_title = 0
 
+local count = 0
+
 local handle_html = assert(io.open(result_pathname, "w"))
 local handle = assert(io.open(source_pathname))
 for line in handle:lines() do
@@ -50,6 +52,7 @@ for line in handle:lines() do
 
     if state == 1 then
       handle_html:write '<div class="demeter-credits-paragraph">\n'
+      count = count + 1
       state = 2
     end
 
@@ -86,14 +89,22 @@ for line in handle:lines() do
     end
   end
 end
+handle_html:write(([[
+<style>
+:root {
+  --credits-count: %d;
+}
+</style>
+]]):format(count))
 handle:close()
+handle_html:close()
 
-io.stderr:write(([[
-title        %d
-link         %d
-album title  %d
-song number  %d
-song artist  %d
-song title   %d
-]]):format(max_title, max_link, max_album_title, max_song_number, max_song_artist, max_song_title))
+-- io.stderr:write(([[
+-- title        %d
+-- link         %d
+-- album title  %d
+-- song number  %d
+-- song artist  %d
+-- song title   %d
+-- ]]):format(max_title, max_link, max_album_title, max_song_number, max_song_artist, max_song_title))
 

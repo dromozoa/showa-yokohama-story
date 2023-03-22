@@ -35,6 +35,12 @@
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
   --color-graph: rgba(2, 157, 147, 0.5);
+
+  --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
+  --credits-height-paragraphs: calc(var(--font-size) * 48 * var(--credits-count));
+  --credits-height: calc(max(
+    var(--credits-height-graph) + var(--font-size) * 4,
+    var(--credits-height-paragraphs) + var(--screen-height) + var(--font-size) * 2));
 }
 
 @media (orientation: portrait) {
@@ -816,6 +822,9 @@ body.demeter {
 
 /*************************************************************************/
 
+:root {
+}
+
 .demeter-credits-screen {
   position: absolute;
   width: var(--screen-width);
@@ -830,13 +839,17 @@ body.demeter {
 .demeter-credits {
   position: absolute;
   width: var(--screen-width);
+  /*
   height: calc(var(--font-size) * (25 * var(--graph-ratio) + 4));
+  height: calc(var(--credits-height-graph) + var(--font-size) * 4);
+  */
+  height: var(--credits-height);
 }
 
 .demeter-credits-graph {
   position: absolute;
   width: calc(var(--font-size) * 25);
-  height: calc(var(--font-size) * 25 * var(--graph-ratio));
+  height: var(--credits-height-graph);
   right: var(--font-size);
   top: calc(var(--font-size) * 2);
   opacity: 0;
@@ -846,13 +859,13 @@ body.demeter {
   position: absolute;
   display: block;
   width: calc(var(--font-size) * 25);
-  height: calc(var(--font-size) * 25 * var(--graph-ratio));
+  height: var(--credits-height-graph);
 }
 
 .demeter-credits-paragraphs {
   position: absolute;
   width: calc(var(--font-size) * 23);
-  height: calc(var(--font-size) * 25 * var(--graph-ratio));
+  height: var(--credits-height-paragraphs);
   left: calc(var(--font-size) * 2);
   top: calc(var(--font-size) * 2);
 }
