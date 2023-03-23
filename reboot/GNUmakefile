@@ -41,7 +41,7 @@ endif
 all:: $(voicepeak_dic) $(targets)
 
 clean::
-	rm -f $(targets)
+	rm -f $(targets) output/*.vpp
 
 check:: all
 	./test.sh lua

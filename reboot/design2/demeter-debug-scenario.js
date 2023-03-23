@@ -56,7 +56,7 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["第一節"],label:0},
 {choice:["第二節"],label:0},
 ]},[
-["第二節には",["黙示録","アングッド"],"エンドがあるので、気をつけて。"],
+["第二節には",["バッド","アングッド"],"エンドがあるので、気をつけて。"],
 ["それを択んだら、少しだけ間をおいて終わりがきます。"],
 ]],
 // index:6
@@ -125,7 +125,7 @@ if(ctx.game.father === 3)return 13;
 // index:17
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["セーブデータを全部削除してタイトルに戻る。"],
-["実績データや既読データは、そのまま。"],
+["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
 // index:18
@@ -141,15 +141,15 @@ if(ctx.game.father === 3)return 13;
 ]],
 // index:20
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
-["この",["因果","テープ"],"はねじれてよじれてからまりあっている。"],
-["再生できない。"],
+["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
+["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
 // index:21
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
-["再生する？"],
+["再生してみる？"],
 ]],
 // index:22
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
@@ -189,9 +189,9 @@ if(ctx.game.father === 3)return 13;
 // index:29
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
-["からまりあった因果がほどけた。"],
+["絡まりあった因果がほどけた。"],
 ["ここではない、どこか。"],
-["ねじれた運命がときはなたれた。"],
+["捻れた運命がときはなたれた。"],
 ]],
 ],
 labels:{

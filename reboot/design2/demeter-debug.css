@@ -36,6 +36,8 @@
   scrollbar-width: none;
 }
 
+/*************************************************************************/
+
 .demeter-debug-paragraph {
   position: relative;
   left: var(--font-size);
@@ -66,8 +68,10 @@
 
 .demeter-debug-dialog {
   position: relative;
-  width: calc(var(--font-size) * 31);
+  width: calc(var(--font-size) * 46);
   height: calc(var(--font-size) * 14);
+  left: var(--font-size);
+  top: 0;
   font-family: var(--font-family-debug);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
