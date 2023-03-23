@@ -1,14 +1,14 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
 @dialog{system-reset-system}
-システム設定とコンポーネント設定を@r{初期値}{デフォルト}に戻す。
+システム設定とコンポーネント設定を、工場出荷状態に戻す。
 本当に設定を戻していい？
 #narrator
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{system-reset-save}
-セーブデータを全部削除してタイトルに戻る。
+セーブデータを全部削除して、タイトルに戻る。
 実績データと既読データは、そのまま。
 本当にセーブデータを消していい？
 #narrator
@@ -20,7 +20,7 @@
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-既読の@v{節}{セツ}を択べるようだ。
+このテープでは既読の@v{節}{セツ}を択べるようだ。
 選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -28,7 +28,7 @@
 @dialog{load-tape-tutorial}
 #narrator
 このテープにはチュートリアルが記録されている。
-再生する？
+チュートリアルを開始する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 

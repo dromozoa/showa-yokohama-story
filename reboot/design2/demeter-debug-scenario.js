@@ -119,25 +119,25 @@ if(ctx.game.father === 3)return 13;
 ]],
 // index:16
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["システム設定とコンポーネント設定を",["初期値","デフォルト"],"に戻す。"],
+["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
 // index:17
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["セーブデータを全部削除してタイトルに戻る。"],
+["セーブデータを全部削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
 // index:18
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
-["既読の","節","を択べるようだ。"],
+["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
 // index:19
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
-["再生する？"],
+["チュートリアルを開始する？"],
 ]],
 // index:20
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
