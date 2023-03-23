@@ -64,7 +64,7 @@ for line in handle:lines() do
           max_title = math.max(max_title, #item1)
         end
         assert(item2 ~= "")
-        handle_html:write('<div class="demeter-credits-link"><a target="_blank" href="', escape_html(item3), '">', escape_html(item2), "</a></div>\n")
+        handle_html:write('<div class="demeter-credits-link"><a target="_blank" rel="noopener noreferrer" href="', escape_html(item3), '">', escape_html(item2), "</a></div>\n")
         max_link = math.max(#item2)
       else
         assert(item1 == "")
@@ -83,7 +83,7 @@ for line in handle:lines() do
       handle_html:write '</div>\n'
     elseif item2 then
       assert(item2:find "^http")
-      handle_html:write('<div class="demeter-credits-text"><a target="_blank" href="', escape_html(item2), '">', escape_html(item1), "</a></div>\n")
+      handle_html:write('<div class="demeter-credits-text"><a target="_blank" rel="noopener noreferrer" href="', escape_html(item2), '">', escape_html(item1), "</a></div>\n")
     else
       handle_html:write('<div class="demeter-credits-text">', escape_html(item1), "</div>\n")
     end

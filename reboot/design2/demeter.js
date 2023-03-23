@@ -1582,6 +1582,11 @@ const savePreview = {
 
 const logging = new D.Logging(100);
 const taskSet = new D.TaskSet();
+const sender = {
+  twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
+  marshmallow: () => open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer"),
+};
+
 let database;
 let system;
 let playState;
@@ -1727,6 +1732,7 @@ const evaluate = fn => {
     game: gameState,
     read: readState,
     logging: logging,
+    sender: sender,
   });
   putGameState();
   return result;
