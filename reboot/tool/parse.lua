@@ -331,7 +331,9 @@ local function process_labels(scenario)
   end
   for _, item in ipairs(labels) do
     if not item.used and not scenario[item.index].label_root then
-      error("label '"..item.label.."' not used")
+      if not scenario.debug then
+        error("label '"..item.label.."' not used")
+      end
     end
   end
   scenario.labels = labels
