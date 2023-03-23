@@ -91,8 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     scroll: () => {
       const paragraphNodeSearch = document.querySelector("[data-pid='" + paragraphIndexSearch + "']");
       if (paragraphNodeSearch) {
-        paragraphNodeSearch.scrollIntoView();
-        messageNode.scrollIntoView({ behavior: "smooth" });
+        paragraphNodeSearch.scrollIntoView({ behavior: "smooth" });
       }
     },
   };
