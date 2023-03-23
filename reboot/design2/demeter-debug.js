@@ -58,7 +58,7 @@ const playVoice = (paragraphIndex) => {
     if (sound) {
       sound.stop();
     }
-    const basename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+    const basename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
     sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
     });

@@ -1005,7 +1005,7 @@ D.MusicPlayer = class {
   }
 
   start(key) {
-    const basename = "../output/music/sessions_" + key;
+    const basename = D.preferences.musicDir + "/sessions_" + key;
 
     const sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
@@ -1499,6 +1499,13 @@ D.ScrollAnimation = class {
     }
     this.containerNode.scrollTo(0, this.end);
   }
+};
+
+//-------------------------------------------------------------------------
+
+D.preferences = {
+  musicDir: "../output/music",
+  voiceDir: "../output/voice",
 };
 
 //-------------------------------------------------------------------------
@@ -2625,7 +2632,7 @@ const next = async () => {
 
     // SKIP中は音声を再生しない。
     if (playState !== "skip") {
-      const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
       voiceSound = new Howl({
         src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
         sprite: D.voiceSprites[paragraphIndex - 1],
@@ -2791,7 +2798,7 @@ const dialog = async key => {
   }
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
-  const voiceBasename = "../output/voice/" + D.padStart(paragraphIndex, 4);
+  const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
   const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
