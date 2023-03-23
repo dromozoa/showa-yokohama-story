@@ -2696,19 +2696,26 @@ const next = async () => {
       });
 
       document.querySelector(".demeter-main-choices").style.display = "block";
-      const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
-      waitForChoice = undefined;
+      while (true) {
+        const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+        waitForChoice = undefined;
+
+        if (waitForStop) {
+          resetParagraph();
+          return waitForStop();
+        }
+        if (choice.action) {
+          evaluate(choice.action);
+        }
+
+        // ジャンプ先が現在の段落である場合、待ちつづける。
+        if (paragraphIndex !== choice.label) {
+          paragraphIndexPrev = choice.label - 1;
+          break;
+        }
+      }
       document.querySelector(".demeter-main-choices").style.display = "none";
 
-      if (waitForStop) {
-        resetParagraph();
-        return waitForStop();
-      }
-      if (choice.action) {
-        evaluate(choice.action);
-      }
-
-      paragraphIndexPrev = choice.label - 1;
       choices = undefined;
       cont = true;
     }
