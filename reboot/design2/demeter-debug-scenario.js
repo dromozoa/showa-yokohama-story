@@ -20,26 +20,29 @@ if((() => {
 if(10 <= ctx.hour && ctx.hour < 18)return 3;
 },music:"vi03"},[
 ["こんばんは、かな。"],
-["キミが",["亞文化初年兵","サブカル・ヌーブ"],"だったら、チュートリアルを推奨。"],
-[["物語文法","ノベルゲーム"],"にくわしい",["古強者","ヴェテラン"],"なら、おかえりなさい。"],
+["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
+[["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
+["昭和横濱物語。"],
 ]],
 // index:2
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:0},
 ]},[
-["おはよう、かな。"],
-["キミが",["亞文化初年兵","サブカル・ヌーブ"],"だったら、チュートリアルを推奨。"],
-[["物語文法","ノベルゲーム"],"にくわしい",["古強者","ヴェテラン"],"なら、おかえりなさい。"],
+["おはよう。"],
+["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
+[["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
+["昭和横濱物語。"],
 ]],
 // index:3
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:0},
 ]},[
-["こんにちは、かな。"],
-["キミが",["亞文化初年兵","サブカル・ヌーブ"],"だったら、チュートリアルを推奨。"],
-[["物語文法","ノベルゲーム"],"にくわしい",["古強者","ヴェテラン"],"なら、おかえりなさい。"],
+["こんにちは、だね。"],
+["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
+[["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
+["昭和横濱物語。"],
 ]],
 // index:4
 [{speaker:"narrator",choices:[
@@ -48,16 +51,17 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 if(ctx.game.visitedVerse3)return 6;
 if(ctx.game.visitedVerse2)return 5;
 },music:"vi03"},[
-["頭出しの必要はなかったね。"],
-["第一節は","一本道","の迷路だから、漫然と進んで次の","節","にたどりつけるはず。"],
+["第一節は、","一本道","の迷路。"],
+["第二節と第三節は、まだ開放されていない。"],
 ]],
 // index:5
 [{speaker:"narrator",choices:[
 {choice:["第一節"],label:0},
 {choice:["第二節"],label:0},
 ]},[
-["第二節には",["バッド","アングッド"],"エンドがあるので、気をつけて。"],
+["第二節には、",["バッド","アングッド"],"エンドがあるので、気をつけて。"],
 ["それを択んだら、少しだけ間をおいて終わりがきます。"],
+["第三節は、まだ開放されていない。"],
 ]],
 // index:6
 [{speaker:"narrator",choices:[
@@ -65,7 +69,8 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["第二節"],label:0},
 {choice:["第三節"],label:0},
 ]},[
-[["順番","シーケンシャル"],"にしか読むことができない","類","の、これは",["媒体","メディア"],"だから。"],
+[["順番","シーケンシャル"],"にしか読むことができない","類","の、これは",["媒体","メディア"],"。"],
+["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ]],
 // index:7
 [{speaker:"danu",finish:"title",music:"vi03"},[
@@ -117,82 +122,6 @@ if(ctx.game.father === 3)return 13;
 ["昭和横濱物語","'69","。"],
 ["開発未定。"],
 ]],
-// index:16
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
-["本当に設定を戻していい？"],
-]],
-// index:17
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["セーブデータを全部削除して、タイトルに戻る。"],
-["実績データと既読データは、そのまま。"],
-["本当にセーブデータを消していい？"],
-]],
-// index:18
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["頭出し用の信号が記録されている。"],
-["このテープでは既読の","節","を択べるようだ。"],
-["選択する？"],
-]],
-// index:19
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["このテープにはチュートリアルが記録されている。"],
-["チュートリアルを開始する？"],
-]],
-// index:20
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
-["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
-["この",["運命","テープ"],"は、再生できない。"],
-["今のところは。"],
-]],
-// index:21
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["年代物のテープが修復された。"],
-["正常に読めるかは未知数。"],
-["再生してみる？"],
-]],
-// index:22
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["一巻","めのテープの",["読出","ロード"],"準備完了。"],
-["再生する？"],
-]],
-// index:23
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["二巻めのテープの",["読出","ロード"],"準備完了。"],
-["再生する？"],
-]],
-// index:24
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["三巻めのテープの",["読出","ロード"],"準備完了。"],
-["再生する？"],
-]],
-// index:25
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
-["このテープはからっぽだ。"],
-["なにも記録されていない。"],
-]],
-// index:26
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
-["保存する？"],
-]],
-// index:27
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
-["保存する？"],
-]],
-// index:28
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
-["保存する？"],
-]],
-// index:29
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
-["いまではない、いつか。"],
-["絡まりあった因果がほどけた。"],
-["ここではない、どこか。"],
-["捻れた運命がときはなたれた。"],
-]],
 ],
 labels:{
 "ニューゲーム":1,
@@ -208,20 +137,6 @@ labels:{
 "ゲバルト・ローザ":14,
 },
 dialogs:{
-"system-reset-system":16,
-"system-reset-save":17,
-"load-tape-select":18,
-"load-tape-tutorial":19,
-"load-tape-broken":20,
-"load-tape-preview":21,
-"load-tape-save1":22,
-"load-tape-save2":23,
-"load-tape-save3":24,
-"load-tape-empty":25,
-"save-tape-save1":26,
-"save-tape-save2":27,
-"save-tape-save3":28,
-"credits-tape-preview":29,
 },
 };
 
