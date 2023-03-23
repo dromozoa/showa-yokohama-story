@@ -60,7 +60,6 @@
   top: 0;
   width: calc(var(--font-size) * 25);
   height: calc(var(--font-size) * 10);
-  pointer-events: none;
 }
 
 /*************************************************************************/
@@ -99,7 +98,6 @@
   height: calc(var(--font-size) * 8);
   left: calc(var(--font-size) * 8);
   top: var(--font-size);
-  pointer-events: none;
 }
 
 .demeter-debug-dialog-item {

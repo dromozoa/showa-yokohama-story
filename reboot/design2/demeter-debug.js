@@ -53,7 +53,7 @@ const speakerNames = {
 
 let sound;
 
-const playVoice = (paragraphIndex) => {
+const playVoice = paragraphIndex => {
   return () => {
     if (sound) {
       sound.stop();
@@ -66,17 +66,35 @@ const playVoice = (paragraphIndex) => {
   };
 };
 
-//-------------------------------------------------------------------------
+const saveParagraph = paragraphIndex => {
+  return () => {
+    history.replaceState(null, "", "#" + paragraphIndex);
+  };
+};
 
-addEventListener("keydown", ev => {
-});
+//-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
   D.initializeInternal();
 
+  const musicPlayer = new D.MusicPlayer(1, () => {});
+  musicPlayer.start("vi03");
+
+  const paragraphIndexSearch = document.location.hash.replace(/^#/, "");
+
   const debug = {
     music: "Title",
     status: "",
+    stop: () => {
+      musicPlayer.sound.stop();
+    },
+    scroll: () => {
+      const paragraphNodeSearch = document.querySelector("[data-pid='" + paragraphIndexSearch + "']");
+      if (paragraphNodeSearch) {
+        paragraphNodeSearch.scrollIntoView();
+        messageNode.scrollIntoView({ behavior: "smooth" });
+      }
+    },
   };
 
   const debugUi = new lil.GUI({
@@ -86,23 +104,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   debugUi.add(debug, "music", musics).name("Music").onChange(v => {
     musicPlayer.fade(v);
   });
-
   const statusController = debugUi.add(debug, "status").name("Status");
   statusController.disable();
+  debugUi.add(debug, "stop").name("Stop");
+  debugUi.add(debug, "scroll").name("Scroll");
 
   const updateStatus = status => {
     debug.status = status;
     statusController.updateDisplay();
   };
 
-  const musicPlayer = new D.MusicPlayer(1, () => {});
-  musicPlayer.start("vi03");
-
   updateStatus("レイアウト中");
   for (let paragraphIndex = 1; paragraphIndex <= D.scenario.paragraphs.length; ++paragraphIndex) {
     await D.requestAnimationFrame();
     updateStatus("レイアウト中: " + paragraphIndex + " / " + D.scenario.paragraphs.length);
-
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const dialog = paragraph[0].dialog;
     if (dialog) {
@@ -120,6 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
         textNode.append(D.layoutText(D.composeText(text, fontSize * 21), fontSize, fontSize * 2));
       });
+      textNode.addEventListener("click", saveParagraph(paragraphIndex));
 
       const itemNodes = [];
       for (let index = 1; index <= dialog.length; ++index) {
@@ -131,6 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const dialogNode = document.createElement("div");
       dialogNode.classList.add("demeter-debug-dialog");
+      dialogNode.dataset.pid = paragraphIndex
       dialogNode.append(speakerNode, dialogFrameNode, textNode, ...itemNodes);
       document.querySelector(".demeter-debug").append(dialogNode);
     } else {
@@ -144,9 +161,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
         textNode.append(D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
       });
+      textNode.addEventListener("click", saveParagraph(paragraphIndex));
 
       const paragraphNode = document.createElement("div");
       paragraphNode.classList.add("demeter-debug-paragraph");
+      paragraphNode.dataset.pid = paragraphIndex;
       paragraphNode.append(speakerNode, textNode);
       document.querySelector(".demeter-debug").append(paragraphNode);
     }
