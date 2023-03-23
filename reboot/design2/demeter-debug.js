@@ -75,6 +75,7 @@ const saveParagraph = paragraphIndex => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
+  D.preferences.voiceDir = "../output/debug";
   D.initializeInternal();
 
   const musicPlayer = new D.MusicPlayer(1, () => {});
@@ -139,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const itemNodes = [];
       for (let index = 1; index <= dialog.length; ++index) {
         const itemNode = document.createElement("div");
-        itemNode.classList.add("demeter-debug-dialog-item", "demeter-debug-dialog-item" + index);
+        itemNode.classList.add("demeter-debug-dialog-item", "demeter-debug-dialog-item" + (dialog.length - index + 1));
         itemNode.textContent = dialog[index - 1].choice;
         itemNodes.push(itemNode);
       }
