@@ -91,6 +91,7 @@ output/voice-out.vpp: output/voice.vpp $(scenarios)
 
 output/debug-out.vpp: output/debug.vpp $(scenarios)
 	$(lua) tool/generate_voice.lua scenario/debug.txt output/debug.vpp $@
+	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
 
 check:: all
 	./test.sh lua
