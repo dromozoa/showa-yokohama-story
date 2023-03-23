@@ -21,7 +21,7 @@ paragraphs:[
 {choice:["択ばない"],label:5},
 ]},[
 ["ボクたちは、択ばれなかった選択肢の側に立つ紐帯だ。"],
-["たとえば、——昭和が暴走した。このままでは、終わらない昭和に人類は轢き殺される。選択肢がある。少女を犠牲に捧げれば人類は救われる。そんな、",["トロッコ","トロリー"],"問題。"],
+["たとえば、——昭和が暴走した。このままでは、終わらない昭和に人類は轢き殺される。選択肢がある。少女を犠牲に捧げれば、人類は救われる。"],
 ]],
 // index:3
 [{speaker:"narrator",jump:6},[
@@ -51,7 +51,7 @@ paragraphs:[
 ]],
 // index:7
 [{speaker:"narrator"},[
-["キミがどこまで読んだかは、暗黙に記憶されている。"],
+["キミがどこまで読んだか、システムは暗黙に記憶する。"],
 ["爪が折れた","三本","のテープと、爪が折れていない","三本","のテープが用意されている。"],
 ["キミは、明示的に、",["読出","LOAD"],"したり、",["書出","SAVE"],"したりできる。"],
 ]],
@@ -62,14 +62,14 @@ paragraphs:[
 // index:9
 [{speaker:"narrator"},[
 [["高速","SKIP"],"再生も似たようなものだけど、",["音声","ボイス"],"を再生しない。"],
-["毎フレーム","一行","、すばやくテクストをつらつら書きつらねる。"],
+["フレーム毎に","一行","、素早くテクストをつらつら書きつらねる。"],
 ["システム設定でチェックを入れるまで、未読の段落はスキップされない。"],
 ]],
 // index:10
 [{speaker:"narrator",choices:[
-{choice:["ツイッターで"],action:($,ctx)=>{ctx.sender.twitter();},barcode:"Twitter",label:10},
-{choice:["マシュマロで"],action:($,ctx)=>{ctx.sender.marshmallow();},barcode:"Marshmallow",label:10},
-{choice:["ない"],barcode:"THE WRONG GOODBYE",label:11},
+{choice:["ツイッターで質問する"],action:($,ctx)=>{ctx.sender.twitter();},barcode:"Twitter",label:10},
+{choice:["マシュマロで質問する"],action:($,ctx)=>{ctx.sender.marshmallow();},barcode:"Marshmallow",label:10},
+{choice:["質問はない"],barcode:"THE WRONG GOODBYE",label:11},
 ]},[
 ["こんなところ。"],
 ["なにか質問ある？"],
