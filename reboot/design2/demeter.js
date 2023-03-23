@@ -1535,6 +1535,7 @@ const startTexts = {
 
 const systemDefault = {
   id: "system",
+  scaleLimit: true,
   speed: 30,
   autoSpeed: 400,
   skipUnread: false,
@@ -1817,6 +1818,10 @@ const initializeDatabase = async () => {
 
 //-------------------------------------------------------------------------
 
+const updateScaleLimit = () => {
+  D.resize();
+};
+
 const updateSystemSpeed = () => {
   if (textAnimations) {
     textAnimations.forEach(textAnimation => textAnimation.updateSpeed(system.speed));
@@ -1958,6 +1963,7 @@ const initializeSystemUi = () => {
   });
   systemUi.onChange(() => taskSet.add(putSystemTask));
 
+  systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
@@ -1985,6 +1991,7 @@ const initializeSystemUi = () => {
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
+      updateScaleLimit();
       updateSystemSpeed();
       updateSystemMasterVolume();
       updateSystemMusicVolume();
@@ -2015,7 +2022,7 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
-  commandsFolder.add(commands, "resetSystem").name("設定初期化");
+  commandsFolder.add(commands, "resetSystem").name("システム設定初期化");
   commandsFolder.add(commands, "resetSave").name("セーブデータ全削除");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
@@ -2837,10 +2844,11 @@ D.resize = () => {
     screenHeight = fontSize * 27;
   }
 
+  const scale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
   const transform = "translate(" +
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
-    D.numberToString(Math.min(1, W / screenWidth, H / screenHeight)) + ")";
+    D.numberToString(scale) + ")";
 
   document.querySelector(".demeter-title-screen").style.transform = transform;
   document.querySelector(".demeter-start-screen").style.transform = transform;
