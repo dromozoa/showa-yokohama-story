@@ -245,6 +245,9 @@ local function parse(scenario, include_path, filename)
       local dialog = assert(paragraph.dialog)
       dialog.choices = append(dialog.choices, { choice = trim(_1), result = trim(_2) })
 
+    elseif match "^@debug" then
+      update(scenario, "debug", true)
+
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
       if text then
@@ -272,6 +275,14 @@ local function parse(scenario, include_path, filename)
   end
 
   return scenario
+end
+
+local function check_error(scenario, message)
+  if scenario.debug then
+    io.stderr:write("[warn] ", message, "\n")
+  else
+    error(message)
+  end
 end
 
 local function process_speakers(scenario)
@@ -307,7 +318,12 @@ local function process_labels(scenario)
       for _, jump in ipairs(paragraph.jumps) do
         local label = jump.label
         if not labels[label] then
-          error("label '"..label.."' not found")
+          if not scenario.debug then
+            error("label '"..label.."' not found")
+          else
+            -- ダミーの飛び先を作成する
+            labels[label] = { label = label, index = 0 }
+          end
         end
         labels[label].used = true
       end
@@ -402,7 +418,9 @@ return function (scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
   process_speakers(scenario)
   process_labels(scenario)
-  process_musics(scenario)
+  if not scenario.debug then
+    process_musics(scenario)
+  end
   process_dialogs(scenario)
   return scenario
 end
