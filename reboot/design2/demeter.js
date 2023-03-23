@@ -2195,6 +2195,25 @@ const enterCreditsScreen = async () => {
 
 //-------------------------------------------------------------------------
 
+const backLoadScreen = () => {
+  if (screenNamePrev === "title") {
+    leaveLoadScreen();
+    enterTitleScreen();
+  } else {
+    leaveLoadScreen();
+    enterMainScreen();
+    restart();
+  }
+};
+
+const backSaveScreen = () => {
+  leaveSaveScreen();
+  enterMainScreen();
+  restart();
+};
+
+//-------------------------------------------------------------------------
+
 const initializeTitleScreen = () => {
   const choiceButtonNodes = [...document.querySelectorAll(".demeter-title-choice")].map(choiceNode => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 11, fontSize * 4, fontSize);
@@ -2325,16 +2344,7 @@ const initializeLoadScreen = () => {
   const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
   document.querySelector(".demeter-load-title-frame").append(titleFrameNode);
 
-  backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
-    if (screenNamePrev === "title") {
-      leaveLoadScreen();
-      enterTitleScreen();
-    } else {
-      leaveLoadScreen();
-      enterMainScreen();
-      restart();
-    }
-  });
+  backFrameNode.querySelector(".demeter-button").addEventListener("click", backLoadScreen);
 
   document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {
     if (await dialog("load-tape-select") === "yes") {
@@ -2421,11 +2431,7 @@ const initializeSaveScreen = () => {
   const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
   document.querySelector(".demeter-save-title-frame").append(titleFrameNode);
 
-  backFrameNode.querySelector(".demeter-button").addEventListener("click", () => {
-    leaveSaveScreen();
-    enterMainScreen();
-    restart();
-  });
+  backFrameNode.querySelector(".demeter-button").addEventListener("click", backSaveScreen);
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
     if (await dialog("save-tape-save1") === "yes") {
@@ -2522,7 +2528,7 @@ const runStartScreen = async () => {
   enterStartScreen();
 
   await textAnimation.start();
-  await D.setTimeout(1500);
+  await D.setTimeout(2000);
 
   leaveStartScreen();
   enterMainScreen();
@@ -2875,10 +2881,21 @@ D.resize = () => {
 };
 
 D.keydown = ev => {
-  if (ev.code === "Enter") {
-    if (screenName === "main") {
+  if (screenName === "main") {
+    if (ev.code === "Enter") {
       cancelPlayState();
       next();
+    } else if (ev.code === "Escape") {
+      cancelPlayState();
+      systemUi.openAnimated(false);
+    }
+  } else if (screenName === "load") {
+    if (ev.code === "Escape" && !waitForDialog) {
+      backLoadScreen();
+    }
+  } else if (screenName === "save") {
+    if (ev.code === "Escape" && !waitForDialog) {
+      backSaveScreen();
     }
   }
 };
