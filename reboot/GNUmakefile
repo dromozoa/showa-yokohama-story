@@ -40,17 +40,23 @@ endif
 
 all:: $(voicepeak_dic) $(targets)
 
-convert_voice::
-	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
-	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+clean::
+	rm -f $(targets)
 
-convert_debug:
-	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
+check:: all
+	./test.sh lua
 
 #--------------------------------------------------------------------------
 
-clean::
-	rm -f $(targets)
+convert_voice::
+	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
+	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+	rm -f output/voice-out/*-voice-out.wav
+
+convert_debug:
+	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
+	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
+	rm -f output/voice-out/*-debug-out.wav
 
 clean_voice::
 	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
@@ -87,11 +93,7 @@ output/debug.txt: $(scenarios)
 
 output/voice-out.vpp: output/voice.vpp $(scenarios)
 	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice.vpp $@
-	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
 
 output/debug-out.vpp: output/debug.vpp $(scenarios)
 	$(lua) tool/generate_voice.lua scenario/debug.txt output/debug.vpp $@
-	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
 
-check:: all
-	./test.sh lua
