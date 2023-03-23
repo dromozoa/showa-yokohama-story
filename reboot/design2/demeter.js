@@ -1524,6 +1524,7 @@ const speakerNames = {
   engineer: "課長",
   activist: "店主",
   steven:   "STEVEN",
+  rosa:     "ローザ",
 };
 
 const startTexts = {

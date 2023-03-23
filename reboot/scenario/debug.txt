@@ -2,6 +2,5 @@
 
 @debug
 
-@include{tutorial.txt}
 @include{preview.txt}
 

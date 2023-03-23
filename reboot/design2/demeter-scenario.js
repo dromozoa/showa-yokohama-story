@@ -2037,8 +2037,8 @@ if($.genesis)return 341;
 // index:351
 [{speaker:"narrator",music:"diana21"},[
 ["文芸部の部室。"],
+["壊れかけの黒いラジオから、頭脳警察が流れている。"],
 [["卓子","テーブル"],"を囲む少女たち。"],
-["壊れかけの黒いラジオが",["雑音","ノイズ"],"を積みかさねていく。"],
 ]],
 // index:352
 [{speaker:"danu",music:"diana21"},[
@@ -2048,108 +2048,125 @@ if($.genesis)return 341;
 ]],
 // index:353
 [{speaker:"alice",music:"diana21"},[
-["このセカイが道理をわきまえているなら、それが理屈だ。"],
+["このセカイが道理をわきまえているならば。"],
+["そんなことは、期待するべくもないが。"],
 ]],
 // index:354
 [{speaker:"demeter",jump:357,when:($,ctx)=>{
 if(ctx.game.father === 1)return 355;
 if(ctx.game.father === 3)return 356;
 },music:"diana21"},[
-["先輩のお父さんは、フィリップ・マーロウを名乗っていて。"],
-["お母さんも、ソウルネームを持ってたんですか。"],
+["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
+["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
 ]],
 // index:355
 [{speaker:"demeter",jump:357,music:"diana21"},[
-["先輩のお父さんは、サム・スペードを名乗っていて。"],
-["お母さんも、ソウルネームを持ってたんですか。"],
+["先輩のお父さんって、サム・スペードを名乗ってたんでしたっけ。"],
+["お母さんも、趣味の悪い",["偽名","ソウルネーム"],"を持ってたんですか","。"],
 ]],
 // index:356
 [{speaker:"demeter",jump:357,music:"diana21"},[
-["先輩のお父さんは、マイク・ハマーを名乗っていて。"],
-["お母さんも、ソウルネームを持ってたんですか。"],
+["先輩のお父さんって、マイク・ハマーを名乗ってたんでしたっけ。いや、あれれ。","濱","マイクのほうだったかな。"],
+["お母さんも、野暮ったい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
 ]],
 // index:357
-[{speaker:"alice",start:"preview",music:"diana21"},[
-["まあ、な。"],
-["——",["暴力の聖女","ゲバルト・ローザ"],"。"],
-["やれやれ、品性のなさにかけてはどっこいどっこいだな。"],
-["破れ鍋に綴じ蓋だったのかもしれないが。"],
+[{speaker:"alice",music:"diana21"},[
+["言ってくれるじゃないか。"],
+["やれやれ。ソウルネーム——",["暴力の聖女","ゲバルト・ローザ"],"。"],
+["品性のなさにかけては、父も母もどっこいどっこいだな。"],
+["破れ鍋に綴じ","蓋","だったのかもしれないが。"],
 ]],
 // index:358
-[{speaker:"narrator",finish:"title",music:"diana21"},[
+[{speaker:"demeter",music:"diana21"},[
+["屍都の女王もたいがい。"],
+]],
+// index:359
+[{speaker:"alice",music:"diana21"},[
+["ボ、ボ、ボクは、自ら名乗ってるわけじゃないからセーフ。"],
+]],
+// index:360
+[{speaker:"danu",music:"diana21"},[
+["アタシってば、自称なんだけど。"],
+]],
+// index:361
+[{speaker:"demeter",music:"diana21"},[
+["姐さんはいいんです。"],
+]],
+// index:362
+[{speaker:"narrator",start:"preview",finish:"title",music:"diana21"},[
 ["昭和横濱物語","'69","。"],
 ["開発未定。"],
 ]],
-// index:359
+// index:363
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
-// index:360
+// index:364
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["セーブデータを全部削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
-// index:361
+// index:365
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
-// index:362
+// index:366
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["チュートリアルを開始する？"],
 ]],
-// index:363
+// index:367
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
-// index:364
+// index:368
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
-// index:365
+// index:369
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:366
+// index:370
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:367
+// index:371
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:368
+// index:372
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:369
+// index:373
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:370
+// index:374
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:371
+// index:375
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:372
+// index:376
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
@@ -2203,20 +2220,20 @@ labels:{
 "ゲバルト・ローザ":357,
 },
 dialogs:{
-"system-reset-system":359,
-"system-reset-save":360,
-"load-tape-select":361,
-"load-tape-tutorial":362,
-"load-tape-broken":363,
-"load-tape-preview":364,
-"load-tape-save1":365,
-"load-tape-save2":366,
-"load-tape-save3":367,
-"load-tape-empty":368,
-"save-tape-save1":369,
-"save-tape-save2":370,
-"save-tape-save3":371,
-"credits-tape-preview":372,
+"system-reset-system":363,
+"system-reset-save":364,
+"load-tape-select":365,
+"load-tape-tutorial":366,
+"load-tape-broken":367,
+"load-tape-preview":368,
+"load-tape-save1":369,
+"load-tape-save2":370,
+"load-tape-save3":371,
+"load-tape-empty":372,
+"save-tape-save1":373,
+"save-tape-save2":374,
+"save-tape-save3":375,
+"credits-tape-preview":376,
 },
 };
 

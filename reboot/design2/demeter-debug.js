@@ -35,6 +35,7 @@ const musics = {
   "#2": "diana19",
   "#3": "diana23",
   "ED": "diana12",
+  "Preview": "diana21",
 };
 
 const speakerNames = {
@@ -47,6 +48,7 @@ const speakerNames = {
   engineer: "課長",
   activist: "店主",
   steven:   "STEVEN",
+  rosa:     "ローザ",
 };
 
 //-------------------------------------------------------------------------
