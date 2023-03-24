@@ -2151,9 +2151,13 @@ const enterCreditsScreen = async () => {
   const endNode = document.querySelector(".demeter-credits-end");
   const graphRatio = document.querySelector(".demeter-credits-graph svg").dataset.ratio;
 
-  [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
+  // debug
+  // [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
+  [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "1");
 
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
+  // debug
+  return;
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
@@ -2914,7 +2918,9 @@ D.domContentLoaded = async () => {
   initializeEmptyOverlay();
   initializeAudio();
   D.resize();
-  await enterTitleScreen();
+  // await enterTitleScreen();
+  // debug
+  await enterCreditsScreen();
 
   while (true) {
     await D.requestAnimationFrame();
