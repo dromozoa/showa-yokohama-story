@@ -1,0 +1,6 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@debug
+
+@include{preview.txt}
+

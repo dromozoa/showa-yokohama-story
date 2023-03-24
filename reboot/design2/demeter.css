@@ -41,7 +41,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --screen-background-image: url(../output/bg-portrait.png);
+    --screen-background-image: url(bg-portrait.png);
   }
 }
 
@@ -49,7 +49,7 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --screen-background-image: url(../output/bg-landscape.png);
+    --screen-background-image: url(bg-landscape.png);
   }
 }
 
@@ -79,8 +79,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-title-unlock-audio {
@@ -169,13 +167,22 @@ body.demeter {
   height: calc(var(--font-size) * 4);
 }
 
+.demeter-title-choice.demeter-center {
+  left: calc(var(--font-size) * 6);
+}
+
 .demeter-title-choice2 {
   left: calc(var(--font-size) * 12);
   top: 0;
 }
 
 .demeter-title-choice3 {
-  left: calc(var(--font-size) * 6);
+  left: 0;
+  top: calc(var(--font-size) * 4);
+}
+
+.demeter-title-choice4 {
+  left: calc(var(--font-size) * 12);
   top: calc(var(--font-size) * 4);
 }
 
@@ -199,8 +206,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-start {
@@ -244,8 +249,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-main-logging {
@@ -424,7 +427,7 @@ body.demeter {
 @media (orientation: portrait) {
   .demeter-main-system-ui {
     width: calc(var(--font-size) * 18 / 1.5);
-    height: calc(var(--font-size) * 28 / 1.5);
+    height: calc(var(--font-size) * 30 / 1.5);
   }
 }
 
@@ -586,8 +589,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 .demeter-data-back {
@@ -828,8 +829,6 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   overflow: auto;
   scrollbar-width: none;
 }
@@ -881,56 +880,55 @@ body.demeter {
 .demeter-credits-text {
   position: relative;
   width: calc(var(--font-size) * 23);
+}
+
+.demeter-credits-text0 {
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-text1 {
   text-align: justify;
 }
 
-.demeter-credits-line {
+.demeter-credits-text2 > .demeter-credits-item1 {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+}
+
+.demeter-credits-text2 > .demeter-credits-item2 {
   position: relative;
-  width: calc(var(--font-size) * 23);
-  height: calc(var(--font-size) * 2);
-}
-
-.demeter-credits-title {
-  position: absolute;
-  width: calc(var(--font-size) * 7);
-  height: calc(var(--font-size) * 2);
-}
-
-.demeter-credits-link {
-  position: absolute;
   width: calc(var(--font-size) * 15);
-  height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 8);
   top: 0;
 }
 
-.demeter-credits-album-title {
+.demeter-credits-text4 {
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-text4 > .demeter-credits-item1 {
   position: absolute;
   width: calc(var(--font-size) * 7);
-  height: calc(var(--font-size) * 2);
   text-align: right;
 }
 
-.demeter-credits-song-number {
+.demeter-credits-text4 > .demeter-credits-item2 {
   position: absolute;
   width: calc(var(--font-size) * 2);
-  height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 8);
   top: 0;
 }
 
-.demeter-credits-song-artist {
+.demeter-credits-text4 > .demeter-credits-item3 {
   position: absolute;
   width: calc(var(--font-size) * 6);
-  height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 10);
   top: 0;
 }
 
-.demeter-credits-song-title {
+.demeter-credits-text4 > .demeter-credits-item4 {
   position: absolute;
   width: calc(var(--font-size) * 7);
-  height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 16);
   top: 0;
 }

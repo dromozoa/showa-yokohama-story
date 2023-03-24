@@ -6,12 +6,10 @@
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 @start{verse3}
-@enter{{
-  ctx.game.visitedVerse3 = true;
-}}
+@enter{{ctx.game.visitedVerse3 = true}}
 
 #narrator
-@r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の@r{三人組}{トリオ}。
+@r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の三人@v{組}{ぐみ}。
 腕に装着した@v{オノ＝センダイ}{オノセンダイ}のデッキをにらみ、分隊長が報告する。
 
 #demeter
@@ -569,7 +567,8 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{黙示録}{リベレーション}。
 了。
-@finish{title}
+@leave{{ctx.game.visitedRevelation3 = true}}
+@finish{credits}
 
 @label{第三節黙示録了}
 #danu
@@ -732,6 +731,10 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。スティーブンによる福音書。最終節。
 了。
+@leave{{
+  ctx.game.visitedGospel = true;
+  ctx.game.unlockPreview = true;
+}}
 @finish{credits}
 
 @label{創世記}
@@ -762,7 +765,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 宗教者が困りそう。
 
 #priest
-困りはしないさ。
+困りはしないぞ。
 メシア教はそんなに甘い宗教ではない。
 他の宗教のことは知らんが、な。
 
@@ -779,4 +782,5 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{創世記}{ジェネシス}。
 了。
+@leave{{ctx.game.visitedGenesis = true}}
 @finish{credits}

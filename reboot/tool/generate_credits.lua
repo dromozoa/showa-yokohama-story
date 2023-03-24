@@ -15,23 +15,13 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-local escape_html = require "escape_html"
-
 local source_pathname, result_pathname = ...
-
-local state = 1
-
-local max_title = 0
-local max_link = 0
-local max_album_title = 0
-local max_song_number = 0
-local max_song_artist = 0
-local max_song_title = 0
-
-local count = 0
-
 local handle_html = assert(io.open(result_pathname, "w"))
 local handle = assert(io.open(source_pathname))
+
+local state = 1
+local count = 0
+local prev = ""
 for line in handle:lines() do
   if line:find "^#" then
     -- 行コメント
@@ -41,14 +31,15 @@ for line in handle:lines() do
       handle_html:write "</div>\n"
       state = 1
     end
+  elseif line == [[\\]] then
+    -- 空行
+    handle_html:write '<div class="demeter-credits-text demeter-credits-text0"></div>\n'
+  elseif line:find [[\$]] then
+    -- 継続行
+    prev = prev .. line:gsub([[\$]], "")
   else
-    local items = {}
-    for item in (line.."\t"):gmatch "(.-)\t" do
-      items[#items + 1] = item
-    end
-    local item1 = items[1]
-    local item2 = items[2]
-    local item3 = items[3]
+    local line = prev .. line
+    prev = ""
 
     if state == 1 then
       handle_html:write '<div class="demeter-credits-paragraph">\n'
@@ -56,37 +47,19 @@ for line in handle:lines() do
       state = 2
     end
 
-    if item3 then
-      handle_html:write '<div class="demeter-credits-line">\n'
-      if item3:find "^http" then
-        if item1 ~= "" then
-          handle_html:write('<div class="demeter-credits-title">', escape_html(item1), "</div>\n")
-          max_title = math.max(max_title, #item1)
-        end
-        assert(item2 ~= "")
-        handle_html:write('<div class="demeter-credits-link"><a target="_blank" href="', escape_html(item3), '">', escape_html(item2), "</a></div>\n")
-        max_link = math.max(#item2)
-      else
-        assert(item1 == "")
-        if item2 ~= "" then
-          handle_html:write('<div class="demeter-credits-album-title">', escape_html(item2), "</div>\n")
-          max_album_title = math.max(max_album_title, #item2)
-        end
-        local number, artist, title = assert(item3:match "^(%d+) (.-)%s+%-%s+(.*)$")
-        handle_html:write('<div class="demeter-credits-song-number">', number, "</div>\n")
-        handle_html:write('<div class="demeter-credits-song-artist">', escape_html(artist), "</div>\n")
-        handle_html:write('<div class="demeter-credits-song-title">', escape_html(title), "</div>\n")
-        max_song_number = math.max(max_song_number, #number)
-        max_song_artist = math.max(max_song_artist, #artist)
-        max_song_title = math.max(max_song_artist, #title)
-      end
-      handle_html:write '</div>\n'
-    elseif item2 then
-      assert(item2:find "^http")
-      handle_html:write('<div class="demeter-credits-text"><a target="_blank" href="', escape_html(item2), '">', escape_html(item1), "</a></div>\n")
-    else
-      handle_html:write('<div class="demeter-credits-text">', escape_html(item1), "</div>\n")
+    -- Markdown風リンク: [text](href)
+    line = line:gsub("%[(.-)%]%((.-)%)", '<a target="_blank" rel="noopener noreferrer" href="%2">%1</a>')
+
+    local items = {}
+    for item in (line.."\t"):gmatch "(.-)\t" do
+      items[#items + 1] = item
     end
+
+    handle_html:write('<div class="demeter-credits-text demeter-credits-text', #items, '">\n')
+    for i, item in ipairs(items) do
+      handle_html:write('<div class="demeter-credits-item demeter-credits-item', i, '">', item, "</div>\n");
+    end
+    handle_html:write "</div>\n"
   end
 end
 handle_html:write(([[
@@ -98,13 +71,3 @@ handle_html:write(([[
 ]]):format(count))
 handle:close()
 handle_html:close()
-
--- io.stderr:write(([[
--- title        %d
--- link         %d
--- album title  %d
--- song number  %d
--- song artist  %d
--- song title   %d
--- ]]):format(max_title, max_link, max_album_title, max_song_number, max_song_artist, max_song_title))
-

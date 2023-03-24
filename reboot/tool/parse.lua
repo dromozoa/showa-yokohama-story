@@ -86,6 +86,7 @@ local function parse(scenario, include_path, filename)
   local source = handle:read "a" .. "\n\n"
   handle:close()
 
+  local line = 1
   local position = 1
   local _1
   local _2
@@ -94,6 +95,7 @@ local function parse(scenario, include_path, filename)
   local function match(pattern)
     local i, j, a, b, c = source:find(pattern, position)
     if i then
+      line = line + select(2, source:sub(position, j):gsub("\n", {}))
       position = j + 1
       _1 = a
       _2 = b
@@ -143,7 +145,7 @@ local function parse(scenario, include_path, filename)
         text = append(text, _1)
 
       else
-        error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+        error(filename..":"..line..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
       end
     end
 
@@ -172,7 +174,11 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
-      paragraph = append_jump(paragraph, { label = trim(_1) })
+      paragraph = append_jump(paragraph, {
+        label = trim(_1);
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@choice{" then
       -- @choice{選択肢}
@@ -204,7 +210,14 @@ local function parse(scenario, include_path, filename)
         end
         label = trim(table.concat(buffer))
       end
-      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label, barcode = barcode })
+      paragraph = append_jump(paragraph, {
+        choice = choice;
+        action = action;
+        label = label;
+        barcode = barcode;
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -212,15 +225,28 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@when{{(.-)}}{([^}]*)}" then
       -- @when{{式}}{ラベル}
-      paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
+      paragraph = append_jump(paragraph, {
+        when = trim(_1);
+        label = trim(_2);
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@enter{{(.-)}}" then
       -- @enter{{文}}
       paragraph = update(paragraph, "enter", trim(_1))
+      paragraph = update(paragraph, "enter_info", {
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@leave{{(.-)}}" then
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))
+      paragraph = update(paragraph, "leave_info", {
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@start{([^}]*)}" then
       -- @start{キー}
@@ -244,6 +270,9 @@ local function parse(scenario, include_path, filename)
     elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
       local dialog = assert(paragraph.dialog)
       dialog.choices = append(dialog.choices, { choice = trim(_1), result = trim(_2) })
+
+    elseif match "^@debug" then
+      update(scenario, "debug", true)
 
     elseif match "^\r\n?[\t\v\f ]*\r\n?%s*" or match "^\n\r?[\t\v\f ]*\n\r?%s*" then
       -- 空行で段落を分ける。
@@ -272,6 +301,14 @@ local function parse(scenario, include_path, filename)
   end
 
   return scenario
+end
+
+local function check_error(scenario, message)
+  if scenario.debug then
+    io.stderr:write("[warn] ", message, "\n")
+  else
+    error(message)
+  end
 end
 
 local function process_speakers(scenario)
@@ -307,7 +344,12 @@ local function process_labels(scenario)
       for _, jump in ipairs(paragraph.jumps) do
         local label = jump.label
         if not labels[label] then
-          error("label '"..label.."' not found")
+          if not scenario.debug then
+            error("label '"..label.."' not found")
+          else
+            -- ダミーの飛び先を作成する
+            labels[label] = { label = label, index = 0 }
+          end
         end
         labels[label].used = true
       end
@@ -315,7 +357,9 @@ local function process_labels(scenario)
   end
   for _, item in ipairs(labels) do
     if not item.used and not scenario[item.index].label_root then
-      error("label '"..item.label.."' not used")
+      if not scenario.debug then
+        error("label '"..item.label.."' not used")
+      end
     end
   end
   scenario.labels = labels
@@ -402,7 +446,9 @@ return function (scenario_pathname)
   local scenario = parse({}, scenario_dirname, scenario_filename)
   process_speakers(scenario)
   process_labels(scenario)
-  process_musics(scenario)
+  if not scenario.debug then
+    process_musics(scenario)
+  end
   process_dialogs(scenario)
   return scenario
 end

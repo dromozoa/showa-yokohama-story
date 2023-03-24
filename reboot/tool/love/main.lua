@@ -646,6 +646,23 @@ end
 
 local commands = {}
 
+function commands.luminance(source_pathname)
+  local source_image_data = new_image_data(source_pathname)
+
+  local n = 0
+  local v = 0
+
+  for y = 0, source_image_data:getHeight() - 1 do
+    for x = 0, source_image_data:getWidth() - 1 do
+      n = n + 1
+      v = v + grayscale(source_image_data:getPixel(x, y))
+    end
+  end
+
+  print("sum", v)
+  print("avg", v / n)
+end
+
 function commands.binarize(expression, source_pathname, result_pathname)
   local source_image_data = new_image_data(source_pathname)
   local result_image_data = binarize(source_image_data, parse_expression(expression))

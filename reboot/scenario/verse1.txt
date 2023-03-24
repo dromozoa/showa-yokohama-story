@@ -71,13 +71,13 @@
 そうか。そういうことか。
 その銃をキミに渡した莫迦の名前をキミは憶えているか。
 @choice{サム・スペード}{{
-  ctx.game.father = 1;
+  ctx.game.father = "サム・スペード";
 }}{銃の持ち主}{Sam Spade}
 @choice{フィリップ・マーロウ}{{
-  ctx.game.father = 2;
+  ctx.game.father = "フィリップ・マーロウ";
 }}{銃の持ち主}{Philip Marlowe}
 @choice{マイク・ハマー}{{
-  ctx.game.father = 3;
+  ctx.game.father = "マイク・ハマー";
 }}{銃の持ち主}{Mike Hammer}
 
 @label{銃の持ち主}

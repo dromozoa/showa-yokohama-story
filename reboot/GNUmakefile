@@ -23,25 +23,46 @@ targets = \
 	output/loader.html \
 	output/graph.svg \
 	output/credits.html \
-	output/voice1.txt \
+	output/voice.txt \
+	output/debug.txt \
 	design2/demeter-scenario.js \
-	design2/sketch1.html
+	design2/demeter-debug-scenario.js \
+	design2/sketch1.html \
+	scenario/scenario.js
 
-ifneq ($(wildcard output/voice1.vpp),)
-targets += output/voice2.vpp
+ifneq ($(wildcard output/voice.vpp),)
+targets += output/voice-out.vpp
 endif
+ifneq ($(wildcard output/debug.vpp),)
+targets += output/debug-out.vpp
+endif
+
+#--------------------------------------------------------------------------
 
 all:: $(voicepeak_dic) $(targets)
 
 clean::
-	rm -f $(targets)
+	rm -f $(targets) output/*.vpp
+
+check:: all
+	./test.sh lua
+
+#--------------------------------------------------------------------------
+
+convert_voice::
+	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
+	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+	rm -f output/voice-out/*-voice-out.wav
+
+convert_debug:
+	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
+	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
+	rm -f output/voice-out/*-debug-out.wav
 
 clean_voice::
 	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
 
-convert_voice::
-	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice2 "*-voice*.wav"
-	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+#--------------------------------------------------------------------------
 
 $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
@@ -59,14 +80,24 @@ output/credits.html: $(credits)
 design2/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
+design2/demeter-debug-scenario.js: $(scenarios)
+	$(lua) tool/generate_script.lua scenario/debug.txt $@
+
 design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html
 	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html $@
 
-output/voice1.txt: $(scenarios)
+scenario/scenario.js: $(scenarios)
+	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
+
+output/voice.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
 
-output/voice2.vpp: output/voice1.vpp $(scenarios)
-	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice1.vpp $@
+output/debug.txt: $(scenarios)
+	$(lua) tool/generate_voice_txt.lua scenario/debug.txt $@
 
-check:: all
-	./test.sh lua
+output/voice-out.vpp: output/voice.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice.vpp $@
+
+output/debug-out.vpp: output/debug.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/debug.txt output/debug.vpp $@
+

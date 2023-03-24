@@ -1,15 +1,15 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
 @dialog{system-reset-system}
-システム設定とコンポーネント設定を@r{初期値}{デフォルト}に戻す。
+システム設定とコンポーネント設定を、工場出荷状態に戻す。
 本当に設定を戻していい？
 #narrator
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{system-reset-save}
-セーブデータを全部削除してタイトルに戻る。
-実績データや既読データは、そのまま。
+セーブデータを全部削除して、タイトルに戻る。
+実績データと既読データは、そのまま。
 本当にセーブデータを消していい？
 #narrator
 @dialog_choice{はい}{yes}
@@ -20,7 +20,7 @@
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-既読の@v{節}{セツ}を択べるようだ。
+このテープでは既読の@v{節}{セツ}を択べるようだ。
 選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -28,14 +28,14 @@
 @dialog{load-tape-tutorial}
 #narrator
 このテープにはチュートリアルが記録されている。
-再生する？
+チュートリアルを開始する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{load-tape-broken}
 #narrator
-この@r{因果}{テープ}はねじれてよじれてからまりあっている。
-再生できない。
+この@r{因果}{テープ}は、捻れて捩れて絡まりあっている。
+この@r{運命}{テープ}は、再生できない。
 今のところは。
 @dialog_choice{了解}{ok}
 
@@ -43,7 +43,7 @@
 #narrator
 年代物のテープが修復された。
 正常に読めるかは未知数。
-再生する？
+再生してみる？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
@@ -102,8 +102,8 @@
 @dialog{credits-tape-preview}
 #narrator
 いまではない、いつか。
-からまりあった因果がほどけた。
+絡まりあった因果がほどけた。
 ここではない、どこか。
-ねじれた運命がときはなたれた。
+捻れた運命がときはなたれた。
 @dialog_choice{了解}{ok}
 
