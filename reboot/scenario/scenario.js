@@ -25,17 +25,17 @@ const paragraph16_choice2_action = ($,ctx) => {
 ctx.sender.marshmallow();
 };
 
-// verse1.txt:76
+// verse1.txt:78
 const paragraph30_choice1_action = ($,ctx) => {
 ctx.game.father = "サム・スペード";;
 };
 
-// verse1.txt:79
+// verse1.txt:81
 const paragraph30_choice2_action = ($,ctx) => {
 ctx.game.father = "フィリップ・マーロウ";;
 };
 
-// verse1.txt:82
+// verse1.txt:84
 const paragraph30_choice3_action = ($,ctx) => {
 ctx.game.father = "マイク・ハマー";;
 };
@@ -58,41 +58,41 @@ if ($.priest && $.engineer && $.activist) { return "特殊攻撃作戦"; }
 };
 
 const paragraph68_when = ($,ctx) => {
-// verse2.txt:34
+// verse2.txt:35
 if ($.priest) { return "聖職者済"; }
 };
 
-// verse2.txt:39
+// verse2.txt:41
 const paragraph68_leave = ($,ctx) => {
 $.priest = true;
 };
 
 const paragraph92_when = ($,ctx) => {
-// verse2.txt:152
+// verse2.txt:154
 if ($.engineer) { return "工学者済"; }
 };
 
-// verse2.txt:158
+// verse2.txt:161
 const paragraph92_leave = ($,ctx) => {
 $.engineer = true;
 };
 
 const paragraph123_when = ($,ctx) => {
-// verse2.txt:295
+// verse2.txt:299
 if ($.activist) { return "活動家済"; }
 };
 
-// verse2.txt:300
+// verse2.txt:305
 const paragraph123_leave = ($,ctx) => {
 $.activist = true;
 };
 
 const paragraph124_when = ($,ctx) => {
-// verse2.txt:302
+// verse2.txt:307
 if (ctx.system.unionSetting === "ろうくみ") { return "ろうくみ"; }
 };
 
-// verse2.txt:594
+// verse2.txt:603
 const paragraph185_leave = ($,ctx) => {
 ctx.game.visitedRevelation2 = true;
 };
@@ -102,33 +102,33 @@ const paragraph187_enter = ($,ctx) => {
 ctx.game.visitedVerse3 = true;
 };
 
-// verse3.txt:501
+// verse3.txt:506
 const paragraph295_choice1_action = ($,ctx) => {
 $.genesis = false;;
 };
 
-// verse3.txt:504
+// verse3.txt:509
 const paragraph295_choice2_action = ($,ctx) => {
 $.genesis = true;;
 };
 
-// verse3.txt:571
+// verse3.txt:576
 const paragraph307_leave = ($,ctx) => {
 ctx.game.visitedRevelation3 = true;
 };
 
 const paragraph323_when = ($,ctx) => {
-// verse3.txt:645
+// verse3.txt:650
 if ($.genesis) { return "創世記"; }
 };
 
-// verse3.txt:738
+// verse3.txt:746
 const paragraph340_leave = ($,ctx) => {
 ctx.game.visitedGospel = true;
   ctx.game.unlockPreview = true;;
 };
 
-// verse3.txt:786
+// verse3.txt:795
 const paragraph350_leave = ($,ctx) => {
 ctx.game.visitedGenesis = true;
 };
@@ -140,7 +140,7 @@ if (ctx.game.father === "サム・スペード") { return "サム・スペード
 if (ctx.game.father === "マイク・ハマー") { return "マイク・ハマー"; }
 };
 
-// preview.txt:107
+// preview.txt:108
 const paragraph371_leave = ($,ctx) => {
 ctx.game.visitedSixtyNine = true;
 };

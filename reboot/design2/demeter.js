@@ -906,6 +906,13 @@ D.Logging = class {
     this.limit = limit;
   }
 
+  scroll() {
+    const loggingNode = document.querySelector(".demeter-main-logging");
+    if (loggingNode) {
+      loggingNode.lastElementChild.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
+    }
+  }
+
   logImpl(...messages) {
     const loggingNode = document.querySelector(".demeter-main-logging");
     if (loggingNode) {
@@ -918,8 +925,9 @@ D.Logging = class {
       while (loggingNode.children.length > this.limit) {
         loggingNode.firstElementChild.remove();
       }
-      loggingNode.lastElementChild.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
+      this.scroll();
     }
+    console.log(messages);
   }
 
   log(message) {
@@ -2122,6 +2130,7 @@ const enterStartScreen = () => {
 const enterMainScreen = () => {
   setScreenName("main");
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
+  logging.scroll();
 };
 
 const enterDataScreen = async screenNode => {
