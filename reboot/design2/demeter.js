@@ -1622,11 +1622,6 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 
-// !!!debug!!!
-D.debugState = () => {
-  return [ system, gameState, readState, state ];
-}
-
 //-------------------------------------------------------------------------
 
 const putSystemTask = async () => {
@@ -1742,12 +1737,33 @@ const evaluate = fn => {
 //-------------------------------------------------------------------------
 
 const showTitleChoices = async () => {
+  const choice3Node = document.querySelector(".demeter-title-choice3");
+  const choice4Node = document.querySelector(".demeter-title-choice4");
+  let n = 0;
+
   const autosave = await database.get("save", "autosave");
   if (autosave) {
-    document.querySelector(".demeter-title-choice3").style.display = "block";
+    choice3Node.style.display = "block";
+    ++n;
   } else {
-    document.querySelector(".demeter-title-choice3").style.display = "none";
+    choice3Node.style.display = "none";
   }
+
+  if (gameState.visitedCredits) {
+    choice4Node.style.display = "block";
+    ++n;
+  } else {
+    choice4Node.style.display = "none";
+  }
+
+  if (n === 1) {
+    choice3Node.classList.add("demeter-center");
+    choice4Node.classList.add("demeter-center");
+  } else {
+    choice3Node.classList.remove("demeter-center");
+    choice4Node.classList.remove("demeter-center");
+  }
+
   document.querySelector(".demeter-title-choices").style.display = "block";
 }
 
@@ -2185,11 +2201,15 @@ const enterCreditsScreen = async () => {
 
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 
-  // TODO previewのアンロック
+  if (gameState.unlockPreview && !gameState.unlockedPreview) {
+    await dialog("credits-tape-preview");
+    gameState.unlockedPreview = true;
+  }
 
   const opacityAnimation = new D.OpacityAnimation([endNode], T1);
   await opacityAnimation.start();
 
+  gameState.visitedCredits = true;
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
 };
@@ -2368,14 +2388,16 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
-    // await dialog("load-tape-broken");
-    // TODO 分岐を作成する
-    if (await dialog("load-tape-preview") === "yes") {
-      await stop();
-      setSave(savePreview);
-      leaveLoadScreen();
-      enterMainScreen();
-      next();
+    if (gameState.unlockedPreview) {
+      if (await dialog("load-tape-preview") === "yes") {
+        await stop();
+        setSave(savePreview);
+        leaveLoadScreen();
+        enterMainScreen();
+        next();
+      }
+    } else {
+      await dialog("load-tape-broken");
     }
   });
 
@@ -2590,9 +2612,7 @@ const next = async () => {
       await deleteAutosave();
       leaveMainScreen();
       if (paragraphSave[0].finish === "title") {
-        // debug
-        enterCreditsScreen();
-        // enterTitleScreen();
+        enterTitleScreen();
       } else {
         enterCreditsScreen();
       }

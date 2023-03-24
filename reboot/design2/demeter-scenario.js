@@ -218,9 +218,9 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index:30
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:($,ctx)=>{ctx.game.father = 1;;},barcode:"Sam Spade",label:31},
-{choice:["フィリップ・マーロウ"],action:($,ctx)=>{ctx.game.father = 2;;},barcode:"Philip Marlowe",label:31},
-{choice:["マイク・ハマー"],action:($,ctx)=>{ctx.game.father = 3;;},barcode:"Mike Hammer",label:31},
+{choice:["サム・スペード"],action:($,ctx)=>{ctx.game.father = "サム・スペード";;},barcode:"Sam Spade",label:31},
+{choice:["フィリップ・マーロウ"],action:($,ctx)=>{ctx.game.father = "フィリップ・マーロウ";;},barcode:"Philip Marlowe",label:31},
+{choice:["マイク・ハマー"],action:($,ctx)=>{ctx.game.father = "マイク・ハマー";;},barcode:"Mike Hammer",label:31},
 ],music:"diana33"},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
@@ -432,7 +432,7 @@ if(ctx.game.visitedVerse2)return 5;
 ["了。（つづく）"],
 ]],
 // index:65
-[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse2 = true;;},leave:($,ctx)=>{delete $.priest;
+[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse2 = true;},leave:($,ctx)=>{delete $.priest;
   delete $.engineer;
   delete $.activist;;},start:"verse2",music:"diana19"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
@@ -1103,7 +1103,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["——昭和を。"],
 ]],
 // index:185
-[{speaker:"narrator",finish:"title",music:"diana12"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation2 = true;},finish:"title",music:"diana12"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1115,7 +1115,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["了。（つづく）"],
 ]],
 // index:187
-[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse3 = true;;},start:"verse3",music:"diana23"},[
+[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse3 = true;},start:"verse3",music:"diana23"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1786,7 +1786,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["——昭和を。"],
 ]],
 // index:307
-[{speaker:"narrator",finish:"title",music:"diana12"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation3 = true;},finish:"credits",music:"diana12"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1976,7 +1976,8 @@ if($.genesis)return 341;
 ["——戦後を。"],
 ]],
 // index:340
-[{speaker:"narrator",finish:"credits",music:"diana12"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedGospel = true;
+  ctx.game.unlockPreview = true;;},finish:"credits",music:"diana12"},[
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
@@ -2030,7 +2031,7 @@ if($.genesis)return 341;
 ["新しい年号が制定されたかどうか、ボクは知らない。"],
 ]],
 // index:350
-[{speaker:"narrator",finish:"credits",music:"diana12"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedGenesis = true;},finish:"credits",music:"diana12"},[
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],
@@ -2053,8 +2054,8 @@ if($.genesis)return 341;
 ]],
 // index:354
 [{speaker:"demeter",jump:357,when:($,ctx)=>{
-if(ctx.game.father === 1)return 355;
-if(ctx.game.father === 3)return 356;
+if(ctx.game.father === "サム・スペード")return 355;
+if(ctx.game.father === "マイク・ハマー")return 356;
 },music:"diana21"},[
 ["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
 ["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
@@ -2146,7 +2147,7 @@ if(ctx.game.father === 3)return 356;
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
 // index:371
-[{speaker:"narrator",finish:"title",music:"diana21"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21"},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 ["昭和横濱物語","'69","。"],
 ["制作未定。"],

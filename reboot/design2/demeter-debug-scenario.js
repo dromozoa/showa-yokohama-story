@@ -27,8 +27,8 @@ paragraphs:[
 ]],
 // index:4
 [{speaker:"demeter",jump:7,when:($,ctx)=>{
-if(ctx.game.father === 1)return 5;
-if(ctx.game.father === 3)return 6;
+if(ctx.game.father === "サム・スペード")return 5;
+if(ctx.game.father === "マイク・ハマー")return 6;
 }},[
 ["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
 ["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
@@ -120,7 +120,7 @@ if(ctx.game.father === 3)return 6;
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
 // index:21
-[{speaker:"narrator",finish:"title"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title"},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 ["昭和横濱物語","'69","。"],
 ["制作未定。"],
