@@ -1635,7 +1635,7 @@ const putSystemTask = async () => {
 };
 
 // ユーザ操作が行われたらAUTO/SKIPを解除する。
-const cancelPlayState = async () => {
+const cancelPlayState = () => {
   playState = undefined;
   document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
@@ -1722,7 +1722,7 @@ const setScreenName = screenNameNext => {
   screenName = screenNameNext;
 };
 
-const evaluate = fn => {
+const evaluate = async fn => {
   const result = fn(state, {
     system: system,
     game: gameState,
@@ -1730,7 +1730,7 @@ const evaluate = fn => {
     logging: logging,
     sender: sender,
   });
-  putGameState();
+  await putGameState();
   return result;
 };
 
@@ -2039,7 +2039,7 @@ const initializeSystemUi = () => {
       await deleteSave("save2", "#2");
       await deleteSave("save3", "#3");
       leaveMainScreen();
-      enterTitleScreen();
+      await enterTitleScreen();
     }
     restart();
   };
@@ -2223,10 +2223,10 @@ const enterCreditsScreen = async () => {
 
 //-------------------------------------------------------------------------
 
-const backLoadScreen = () => {
+const backLoadScreen = async () => {
   if (screenNamePrev === "title") {
     leaveLoadScreen();
-    enterTitleScreen();
+    await enterTitleScreen();
   } else {
     leaveLoadScreen();
     enterMainScreen();
@@ -2258,9 +2258,9 @@ const initializeTitleScreen = () => {
   });
 
   // LOAD GAME
-  choiceButtonNodes[1].addEventListener("click", () => {
+  choiceButtonNodes[1].addEventListener("click", async () => {
     leaveTitleScreen();
-    enterLoadScreen();
+    await enterLoadScreen();
   });
 
   // CONTINUE
@@ -2274,7 +2274,7 @@ const initializeTitleScreen = () => {
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async () => {
     leaveTitleScreen();
-    enterCreditsScreen();
+    await enterCreditsScreen();
   });
 };
 
@@ -2313,21 +2313,21 @@ const initializeMainScreen = () => {
   });
 
   // LOAD
-  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", async ev => {
     ev.stopPropagation();
     cancelPlayState();
     pause();
     leaveMainScreen();
-    enterLoadScreen();
+    await enterLoadScreen();
   });
 
   // SAVE
-  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", async ev => {
     ev.stopPropagation();
     cancelPlayState();
     pause();
     leaveMainScreen();
-    enterSaveScreen();
+    await enterSaveScreen();
   });
 
   // AUTO
@@ -2471,7 +2471,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
     if (await dialog("save-tape-save1") === "yes") {
-      putSave("save1", "#1");
+      await putSave("save1", "#1");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2480,7 +2480,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
     if (await dialog("save-tape-save2") === "yes") {
-      putSave("save2", "#2");
+      await putSave("save2", "#2");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2489,7 +2489,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
     if (await dialog("save-tape-save3") === "yes") {
-      putSave("save3", "#3");
+      await putSave("save3", "#3");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2498,13 +2498,13 @@ const initializeSaveScreen = () => {
 };
 
 const initializeCreditsScreen = () => {
-  document.querySelector(".demeter-credits-end").addEventListener("click", () => {
+  document.querySelector(".demeter-credits-end").addEventListener("click", async () => {
     if (iconAnimation) {
       iconAnimation.stop();
       iconAnimation = undefined;
     }
     leaveCreditsScreen();
-    enterTitleScreen();
+    await enterTitleScreen();
   });
 };
 
@@ -2625,9 +2625,9 @@ const next = async () => {
       await deleteAutosave();
       leaveMainScreen();
       if (paragraphSave[0].finish === "title") {
-        enterTitleScreen();
+        await enterTitleScreen();
       } else {
-        enterCreditsScreen();
+        await enterCreditsScreen();
       }
       return;
     }
@@ -2636,7 +2636,7 @@ const next = async () => {
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
-      const paragraphIndexWhen = evaluate(paragraph[0].when);
+      const paragraphIndexWhen = await evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
@@ -2651,13 +2651,8 @@ const next = async () => {
       musicPlayer.fade(paragraph[0].music);
     }
 
-    // 既読処理
-    putReadState();
+    await Promise.all([ putReadState(), putAutosave() ]);
 
-    // 自動保存
-    putAutosave();
-
-    // 開始画面
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;
       await runStartScreen();
@@ -2665,7 +2660,7 @@ const next = async () => {
     }
 
     if (paragraph[0].enter) {
-      evaluate(paragraph[0].enter);
+      await evaluate(paragraph[0].enter);
     }
 
     paragraphLineNumber = 1;
@@ -2745,7 +2740,7 @@ const next = async () => {
           return waitForStop();
         }
         if (choice.action) {
-          evaluate(choice.action);
+          await evaluate(choice.action);
         }
 
         // ジャンプ先が現在の段落である場合、待ちつづける。
@@ -2761,7 +2756,7 @@ const next = async () => {
     }
 
     if (paragraph[0].leave) {
-      evaluate(paragraph[0].leave);
+      await evaluate(paragraph[0].leave);
     }
 
     if (playState) {
@@ -2914,7 +2909,7 @@ D.resize = () => {
   updateComponents();
 };
 
-D.keydown = ev => {
+D.keydown = async ev => {
   if (screenName === "main") {
     if (ev.code === "Enter") {
       cancelPlayState();
@@ -2925,7 +2920,7 @@ D.keydown = ev => {
     }
   } else if (screenName === "load") {
     if (ev.code === "Escape" && !waitForDialog) {
-      backLoadScreen();
+      await backLoadScreen();
     }
   } else if (screenName === "save") {
     if (ev.code === "Escape" && !waitForDialog) {
