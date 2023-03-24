@@ -2129,6 +2129,11 @@ const enterDataScreen = async screenNode => {
 
 const enterLoadScreen = async () => {
   setScreenName("load");
+  if (gameState.unlockedPreview) {
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "Showa Yokohama Story '69";
+  } else {
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "Broken : 1969/01/19 17:46";
+  }
   await enterDataScreen(document.querySelector(".demeter-load-screen"));
 };
 
@@ -2204,12 +2209,14 @@ const enterCreditsScreen = async () => {
   if (gameState.unlockPreview && !gameState.unlockedPreview) {
     await dialog("credits-tape-preview");
     gameState.unlockedPreview = true;
+    await putGameState();
   }
 
   const opacityAnimation = new D.OpacityAnimation([endNode], T1);
   await opacityAnimation.start();
 
   gameState.visitedCredits = true;
+  await putGameState();
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
 };
@@ -2262,6 +2269,12 @@ const initializeTitleScreen = () => {
     leaveTitleScreen();
     enterMainScreen();
     next();
+  });
+
+  // CREDITS
+  choiceButtonNodes[3].addEventListener("click", async () => {
+    leaveTitleScreen();
+    enterCreditsScreen();
   });
 };
 
