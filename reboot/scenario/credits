@@ -1,4 +1,5 @@
 # vim: set noet ts=24 tw=0 sts=-1 sw=0:
+# SILライセンスの表記
 
 Director	vaporoid	https://twitter.com/vaporoid
 Producer	vaporoid	https://twitter.com/vaporoid
@@ -34,7 +35,7 @@ Musics	Sessions	https://sessions.riotgames.com/
 		23 A.L.I.S.O.N - Sentinel
 		33 Tokyo - Shadow Island
 
-SHOWA YOKOHAMA STORY	https://github.com/dromozoa/showa-yokohama-story/
+[SHOWA YOKOHAMA STORY](https://github.com/dromozoa/showa-yokohama-story/)
 Copyright © 2022,2023 vaporoid
 SHOWA YOKOHAMA STORY is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

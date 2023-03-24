@@ -41,6 +41,9 @@ for line in handle:lines() do
       handle_html:write "</div>\n"
       state = 1
     end
+  elseif line == ";" then
+    -- 空行
+    handle_html:write '<div class="demeter-credits-line"></div>\n'
   else
     local items = {}
     for item in (line.."\t"):gmatch "(.-)\t" do
@@ -81,11 +84,11 @@ for line in handle:lines() do
         max_song_title = math.max(max_song_artist, #title)
       end
       handle_html:write '</div>\n'
-    elseif item2 then
-      assert(item2:find "^http")
-      handle_html:write('<div class="demeter-credits-text"><a target="_blank" rel="noopener noreferrer" href="', escape_html(item2), '">', escape_html(item1), "</a></div>\n")
     else
-      handle_html:write('<div class="demeter-credits-text">', escape_html(item1), "</div>\n")
+      -- textはescape_htmlしない。
+      -- Markdown風リンクをサポートする
+      local text = item1:gsub("%[(.-)%]%((.-)%)", '<a target="_blank" rel="noopener noreferrer" href="%2">%1</a>')
+      handle_html:write('<div class="demeter-credits-text">', text, "</div>\n")
     end
   end
 end
