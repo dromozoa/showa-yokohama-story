@@ -901,11 +901,48 @@ D.createTitleFrame = (width, height, titleWidth, titleHeight) => {
 
 //-------------------------------------------------------------------------
 
-D.Logging = class {
-  constructor(limit) {
-    this.limit = limit;
-  }
+const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+const consoleFont = "'Share Tech', sans-serif";
 
+const musicNames = {
+  vi03: "Hollow",
+  vi05: "Geode",
+  diana12: "Pulse",
+  diana19: "Ever Fall",
+  diana21: "Last Time",
+  diana23: "Sentinel",
+  diana33: "Shadow Island",
+};
+
+const speakerNames = {
+  narrator: "",
+  alice:    "アリス",
+  danu:     "ダヌー",
+  demeter:  "デメテル",
+  yukio:    "ユキヲ",
+  priest:   "神父",
+  engineer: "課長",
+  activist: "店主",
+  steven:   "STEVEN",
+  rosa:     "ローザ",
+};
+
+const startTexts = {
+  verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
+  verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
+  verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
+  preview: "SHOWA YOKOHAMA STORY '69",
+};
+
+D.preferences = {
+  musicDir: "../output/music",
+  voiceDir: "../output/voice",
+};
+
+//-------------------------------------------------------------------------
+
+D.Logging = class {
   update() {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
       behavior: "smooth",
@@ -922,7 +959,7 @@ D.Logging = class {
       return messageNode;
     });
     loggingNode.append(...messageNodes);
-    while (loggingNode.children.length > this.limit) {
+    while (loggingNode.children.length > 100) {
       loggingNode.firstElementChild.remove();
     }
     this.update();
@@ -1521,47 +1558,6 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
-D.preferences = {
-  musicDir: "../output/music",
-  voiceDir: "../output/voice",
-};
-
-//-------------------------------------------------------------------------
-
-const fontSize = 24;
-const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const consoleFont = "'Share Tech', sans-serif";
-
-const musicNames = {
-  vi03: "Hollow",
-  vi05: "Geode",
-  diana12: "Pulse",
-  diana19: "Ever Fall",
-  diana21: "Last Time",
-  diana23: "Sentinel",
-  diana33: "Shadow Island",
-};
-
-const speakerNames = {
-  narrator: "",
-  alice:    "アリス",
-  danu:     "ダヌー",
-  demeter:  "デメテル",
-  yukio:    "ユキヲ",
-  priest:   "神父",
-  engineer: "課長",
-  activist: "店主",
-  steven:   "STEVEN",
-  rosa:     "ローザ",
-};
-
-const startTexts = {
-  verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
-  verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
-  verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
-  preview: "SHOWA YOKOHAMA STORY '69",
-};
-
 const systemDefault = {
   id: "system",
   scaleLimit: true,
@@ -1609,7 +1605,7 @@ const savePreview = {
   state: {},
 };
 
-const logging = new D.Logging(100);
+const logging = new D.Logging();
 const taskSet = new D.TaskSet();
 const sender = {
   twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
