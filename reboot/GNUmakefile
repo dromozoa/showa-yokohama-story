@@ -27,7 +27,8 @@ targets = \
 	output/debug.txt \
 	design2/demeter-scenario.js \
 	design2/demeter-debug-scenario.js \
-	design2/sketch1.html
+	design2/sketch1.html \
+	scenario/scenario.js
 
 ifneq ($(wildcard output/voice.vpp),)
 targets += output/voice-out.vpp
@@ -84,6 +85,9 @@ design2/demeter-debug-scenario.js: $(scenarios)
 
 design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html
 	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html $@
+
+scenario/scenario.js: $(scenarios)
+	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
 
 output/voice.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
