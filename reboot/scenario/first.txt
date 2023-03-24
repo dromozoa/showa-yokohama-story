@@ -2,6 +2,7 @@
 
 @label_root{ニューゲーム}
 @music{vi03}
+@place{ここではないどこか}
 @when{{
   (() => {
     ctx.hour = new Date().getHours();
@@ -39,6 +40,7 @@
 
 @label_root{節選択}
 @music{vi03}
+@place{ここではないどこか}
 @when{{ctx.game.visitedVerse3}}{節選択3}
 @when{{ctx.game.visitedVerse2}}{節選択2}
 #narrator

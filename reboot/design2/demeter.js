@@ -1618,6 +1618,7 @@ let musicPlayer;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
+let place;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
@@ -1640,7 +1641,7 @@ let waitForCredits;
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    logging.log("システム設定保存: 成功");
+    // logging.log("システム設定保存: 成功");
   } catch (e) {
     logging.error("システム設定保存: 失敗", e);
   }
@@ -1656,7 +1657,7 @@ const cancelPlayState = () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    logging.log("ゲーム状態保存: 成功");
+    // logging.log("ゲーム状態保存: 成功");
   } catch (e) {
     logging.error("ゲーム状態保存: 失敗", e);
   }
@@ -1666,7 +1667,7 @@ const putReadState = async () => {
   try {
     readState.map.set(paragraphIndex, Date.now());
     await database.put("read", readState);
-    logging.log("既読状態保存: 成功");
+    // logging.log("既読状態保存: 成功");
   } catch (e) {
     logging.error("既読状態保存: 失敗", e);
   }
@@ -1680,7 +1681,7 @@ const putAutosave = async () => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.log("自動保存: 成功");
+    // logging.log("自動保存: 成功");
   } catch (e) {
     logging.error("自動保存: 失敗", e);
   }
@@ -1689,7 +1690,7 @@ const putAutosave = async () => {
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    logging.log("自動保存データ削除: 成功");
+    // logging.log("自動保存データ削除: 成功");
   } catch (e) {
     logging.error("自動保存データ削除: 失敗", e);
   }
@@ -1703,7 +1704,7 @@ const putSave = async (key, name) => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.log(name + "保存: 成功");
+    // logging.log(name + "保存: 成功");
   } catch (e) {
     logging.error(name + "保存: 失敗", e);
   }
@@ -1712,7 +1713,7 @@ const putSave = async (key, name) => {
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
-    logging.log(name + "削除: 成功");
+    // logging.log(name + "削除: 成功");
   } catch (e) {
     logging.error(name + "削除: 失敗", e);
   }
@@ -2661,6 +2662,10 @@ const next = async () => {
 
     if (musicPlayer.key !== paragraph[0].music) {
       musicPlayer.fade(paragraph[0].music);
+    }
+    if (place !== paragraph[0].place) {
+      place = paragraph[0].place;
+      logging.log("現在地: " + place);
     }
 
     await Promise.all([ putReadState(), putAutosave() ]);

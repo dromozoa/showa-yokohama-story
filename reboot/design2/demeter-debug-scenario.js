@@ -9,7 +9,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index:1
-[{speaker:"narrator",music:"diana21"},[
+[{speaker:"narrator",music:"diana21",place:"横濱"},[
 ["文芸部の部室。"],
 ["壊れかけの黒いラジオから、頭脳警察が流れている。"],
 ["都市地図が広げられた",["卓子","テーブル"],"を囲む少女たち。"],
