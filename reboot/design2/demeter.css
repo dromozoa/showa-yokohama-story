@@ -924,42 +924,6 @@ body.demeter {
   top: 0;
 }
 
-
-
-/*
-
-.demeter-credits-album-title {
-  position: absolute;
-  width: calc(var(--font-size) * 7);
-  height: calc(var(--font-size) * 2);
-  text-align: right;
-}
-
-.demeter-credits-song-number {
-  position: absolute;
-  width: calc(var(--font-size) * 2);
-  height: calc(var(--font-size) * 2);
-  left: calc(var(--font-size) * 8);
-  top: 0;
-}
-
-.demeter-credits-song-artist {
-  position: absolute;
-  width: calc(var(--font-size) * 6);
-  height: calc(var(--font-size) * 2);
-  left: calc(var(--font-size) * 10);
-  top: 0;
-}
-
-.demeter-credits-song-title {
-  position: absolute;
-  width: calc(var(--font-size) * 7);
-  height: calc(var(--font-size) * 2);
-  left: calc(var(--font-size) * 16);
-  top: 0;
-}
-*/
-
 .demeter-credits-end {
   position: absolute;
   width: var(--screen-width);
