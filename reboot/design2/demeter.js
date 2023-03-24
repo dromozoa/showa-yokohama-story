@@ -906,7 +906,7 @@ D.Logging = class {
     this.limit = limit;
   }
 
-  log(message) {
+  log(message, exception) {
     const loggingNode = document.querySelector(".demeter-main-logging");
     const messageNode = document.createElement("div");
     messageNode.textContent = message;
@@ -1621,6 +1621,7 @@ let waitForChoice;
 let waitForStart;
 let waitForStop;
 let waitForDialog;
+let waitForCredits;
 
 //-------------------------------------------------------------------------
 
@@ -1730,7 +1731,7 @@ const evaluate = async fn => {
     logging: logging,
     sender: sender,
   });
-  await putGameState();
+  await Promise.all([ putGameState(), putAutosave() ]);
   return result;
 };
 
@@ -2204,6 +2205,7 @@ const enterCreditsScreen = async () => {
     await scrollAnimation.start();
   }
 
+  waitForCredits = true;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 
   if (gameState.unlockPreview && !gameState.unlockedPreview) {
@@ -2212,11 +2214,12 @@ const enterCreditsScreen = async () => {
     await putGameState();
   }
 
+  gameState.visitedCredits = true;
+  await putGameState();
+
   const opacityAnimation = new D.OpacityAnimation([endNode], T1);
   await opacityAnimation.start();
 
-  gameState.visitedCredits = true;
-  await putGameState();
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
 };
@@ -2238,6 +2241,18 @@ const backSaveScreen = () => {
   leaveSaveScreen();
   enterMainScreen();
   restart();
+};
+
+const backCreditsScreen = async () => {
+  if (waitForCredits) {
+    waitForCredits = undefined;
+    if (iconAnimation) {
+      iconAnimation.stop();
+      iconAnimation = undefined;
+    }
+    leaveCreditsScreen();
+    await enterTitleScreen();
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -2498,14 +2513,7 @@ const initializeSaveScreen = () => {
 };
 
 const initializeCreditsScreen = () => {
-  document.querySelector(".demeter-credits-end").addEventListener("click", async () => {
-    if (iconAnimation) {
-      iconAnimation.stop();
-      iconAnimation = undefined;
-    }
-    leaveCreditsScreen();
-    await enterTitleScreen();
-  });
+  document.querySelector(".demeter-credits-end").addEventListener("click", backCreditsScreen);
 };
 
 const initializeDialogOverlay = () => {
@@ -2925,6 +2933,10 @@ D.keydown = async ev => {
   } else if (screenName === "save") {
     if (ev.code === "Escape" && !waitForDialog) {
       backSaveScreen();
+    }
+  } else if (screenName === "credits") {
+    if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
+      backCreditsScreen();
     }
   }
 };
