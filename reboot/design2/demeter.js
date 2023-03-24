@@ -906,28 +906,26 @@ D.Logging = class {
     this.limit = limit;
   }
 
-  scroll() {
-    const loggingNode = document.querySelector(".demeter-main-logging");
-    if (loggingNode) {
-      loggingNode.lastElementChild.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
-    }
+  update() {
+    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "start",
+    });
   }
 
   logImpl(...messages) {
     const loggingNode = document.querySelector(".demeter-main-logging");
-    if (loggingNode) {
-      const messageNodes = messages.map(message => {
-        const messageNode = document.createElement("div");
-        messageNode.textContent = message;
-        return messageNode;
-      });
-      loggingNode.append(...messageNodes);
-      while (loggingNode.children.length > this.limit) {
-        loggingNode.firstElementChild.remove();
-      }
-      this.scroll();
+    const messageNodes = messages.map(message => {
+      const messageNode = document.createElement("div");
+      messageNode.textContent = message;
+      return messageNode;
+    });
+    loggingNode.append(...messageNodes);
+    while (loggingNode.children.length > this.limit) {
+      loggingNode.firstElementChild.remove();
     }
-    console.log(messages);
+    this.update();
   }
 
   log(message) {
@@ -1055,7 +1053,7 @@ D.MusicPlayer = class {
     this.key = key;
     this.sound = sound;
     this.soundId = soundId;
-    logging.log("音楽開始: " + key);
+    logging.log("音楽開始: " + musicNames[key]);
   }
 
   fade(key) {
@@ -1068,7 +1066,7 @@ D.MusicPlayer = class {
 
     this.sound.once("fade", soundId=> {
       oldSound.stop();
-      logging.log("音楽終了: " + oldKey);
+      logging.log("音楽終了: " + musicNames[oldKey]);
     });
 
     oldSound.fade(this.volume, 0, 5000, oldSoundId);
@@ -1533,6 +1531,16 @@ D.preferences = {
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
 const consoleFont = "'Share Tech', sans-serif";
+
+const musicNames = {
+  vi03: "Hollow",
+  vi05: "Geode",
+  diana12: "Pulse",
+  diana19: "Ever Fall",
+  diana21: "Last Time",
+  diana23: "Sentinel",
+  diana33: "Shadow Island",
+};
 
 const speakerNames = {
   narrator: "",
@@ -2130,7 +2138,8 @@ const enterStartScreen = () => {
 const enterMainScreen = () => {
   setScreenName("main");
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
-  logging.scroll();
+  // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
+  logging.update();
 };
 
 const enterDataScreen = async screenNode => {
