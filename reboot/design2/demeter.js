@@ -901,20 +901,77 @@ D.createTitleFrame = (width, height, titleWidth, titleHeight) => {
 
 //-------------------------------------------------------------------------
 
+const fontSize = 24;
+const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
+const consoleFont = "'Share Tech', sans-serif";
+
+const musicNames = {
+  vi03: "Hollow",
+  vi05: "Geode",
+  diana12: "Pulse",
+  diana19: "Ever Fall",
+  diana21: "Last Time",
+  diana23: "Sentinel",
+  diana33: "Shadow Island",
+};
+
+const speakerNames = {
+  narrator: "",
+  alice:    "アリス",
+  danu:     "ダヌー",
+  demeter:  "デメテル",
+  yukio:    "ユキヲ",
+  priest:   "神父",
+  engineer: "課長",
+  activist: "店主",
+  steven:   "STEVEN",
+  rosa:     "ローザ",
+};
+
+const startTexts = {
+  verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
+  verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
+  verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
+  preview: "SHOWA YOKOHAMA STORY '69",
+};
+
+D.preferences = {
+  musicDir: "../output/music",
+  voiceDir: "../output/voice",
+};
+
+//-------------------------------------------------------------------------
+
 D.Logging = class {
-  constructor(limit) {
-    this.limit = limit;
+  update() {
+    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "start",
+    });
+  }
+
+  logImpl(...messages) {
+    const loggingNode = document.querySelector(".demeter-main-logging");
+    const messageNodes = messages.map(message => {
+      const messageNode = document.createElement("div");
+      messageNode.textContent = message;
+      return messageNode;
+    });
+    loggingNode.append(...messageNodes);
+    while (loggingNode.children.length > 100) {
+      loggingNode.firstElementChild.remove();
+    }
+    this.update();
   }
 
   log(message) {
-    const loggingNode = document.querySelector(".demeter-main-logging");
-    const messageNode = document.createElement("div");
-    messageNode.textContent = message;
-    loggingNode.append(messageNode);
-    while (loggingNode.children.length > this.limit) {
-      loggingNode.firstElementChild.remove();
-    }
-    messageNode.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
+    this.logImpl(message);
+  }
+
+  error(message, exception) {
+    this.logImpl(message, exception.message);
+    // TODO 送信
   }
 };
 
@@ -1015,13 +1072,11 @@ D.MusicPlayer = class {
     const soundId = sound.play();
 
     sound.on("loaderror", (notUsed, message) => {
-      logging.log("音楽読出: 失敗");
-      logging.log(message);
+      logging.error("音楽読出: 失敗", new Error(message));
     });
 
     sound.on("playerror", (notUsed, message) => {
-      logging.log("音楽再生: 失敗");
-      logging.log(message);
+      logging.error("音楽再生: 失敗", new Error(message));
     });
 
     if (this.unlock) {
@@ -1035,7 +1090,7 @@ D.MusicPlayer = class {
     this.key = key;
     this.sound = sound;
     this.soundId = soundId;
-    logging.log("音楽開始: " + key);
+    logging.log("音楽開始: " + musicNames[key]);
   }
 
   fade(key) {
@@ -1048,7 +1103,7 @@ D.MusicPlayer = class {
 
     this.sound.once("fade", soundId=> {
       oldSound.stop();
-      logging.log("音楽終了: " + oldKey);
+      logging.log("音楽終了: " + musicNames[oldKey]);
     });
 
     oldSound.fade(this.volume, 0, 5000, oldSoundId);
@@ -1503,37 +1558,6 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
-D.preferences = {
-  musicDir: "../output/music",
-  voiceDir: "../output/voice",
-};
-
-//-------------------------------------------------------------------------
-
-const fontSize = 24;
-const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const consoleFont = "'Share Tech', sans-serif";
-
-const speakerNames = {
-  narrator: "",
-  alice:    "アリス",
-  danu:     "ダヌー",
-  demeter:  "デメテル",
-  yukio:    "ユキヲ",
-  priest:   "神父",
-  engineer: "課長",
-  activist: "店主",
-  steven:   "STEVEN",
-  rosa:     "ローザ",
-};
-
-const startTexts = {
-  verse1: "EVANGELIUM SECUNDUM STEPHANUS verse I",
-  verse2: "EVANGELIUM SECUNDUM STEPHANUS verse II",
-  verse3: "EVANGELIUM SECUNDUM STEPHANUS verse III",
-  preview: "SHOWA YOKOHAMA STORY '69",
-};
-
 const systemDefault = {
   id: "system",
   scaleLimit: true,
@@ -1581,7 +1605,7 @@ const savePreview = {
   state: {},
 };
 
-const logging = new D.Logging(100);
+const logging = new D.Logging();
 const taskSet = new D.TaskSet();
 const sender = {
   twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
@@ -1606,6 +1630,7 @@ let musicPlayer;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
+let place;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
@@ -1621,21 +1646,21 @@ let waitForChoice;
 let waitForStart;
 let waitForStop;
 let waitForDialog;
+let waitForCredits;
 
 //-------------------------------------------------------------------------
 
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    logging.log("システム設定保存: 成功");
+    // logging.log("システム設定保存: 成功");
   } catch (e) {
-    logging.log("システム設定保存: 失敗");
-    logging.log(e.message);
+    logging.error("システム設定保存: 失敗", e);
   }
 };
 
 // ユーザ操作が行われたらAUTO/SKIPを解除する。
-const cancelPlayState = async () => {
+const cancelPlayState = () => {
   playState = undefined;
   document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
@@ -1644,10 +1669,9 @@ const cancelPlayState = async () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    logging.log("ゲーム状態保存: 成功");
+    // logging.log("ゲーム状態保存: 成功");
   } catch (e) {
-    logging.log("ゲーム状態保存: 失敗");
-    logging.log(e.message);
+    logging.error("ゲーム状態保存: 失敗", e);
   }
 };
 
@@ -1655,10 +1679,9 @@ const putReadState = async () => {
   try {
     readState.map.set(paragraphIndex, Date.now());
     await database.put("read", readState);
-    logging.log("既読状態保存: 成功");
+    // logging.log("既読状態保存: 成功");
   } catch (e) {
-    logging.log("既読状態保存: 失敗");
-    logging.log(e.message);
+    logging.error("既読状態保存: 失敗", e);
   }
 };
 
@@ -1670,20 +1693,18 @@ const putAutosave = async () => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.log("自動保存: 成功");
+    // logging.log("自動保存: 成功");
   } catch (e) {
-    logging.log("自動保存: 失敗");
-    logging.log(e.message);
+    logging.error("自動保存: 失敗", e);
   }
 };
 
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    logging.log("自動保存削除: 成功");
+    // logging.log("自動保存データ削除: 成功");
   } catch (e) {
-    logging.log("自動保存削除: 失敗");
-    logging.log(e.message);
+    logging.error("自動保存データ削除: 失敗", e);
   }
 };
 
@@ -1695,20 +1716,18 @@ const putSave = async (key, name) => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.log(name + "保存: 成功");
+    // logging.log(name + "保存: 成功");
   } catch (e) {
-    logging.log(name + "保存: 失敗");
-    logging.log(e.message);
+    logging.error(name + "保存: 失敗", e);
   }
 };
 
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
-    logging.log(name + "削除: 成功");
+    // logging.log(name + "削除: 成功");
   } catch (e) {
-    logging.log(name + "削除: 失敗");
-    logging.log(e.message);
+    logging.error(name + "削除: 失敗", e);
   }
 };
 
@@ -1722,7 +1741,7 @@ const setScreenName = screenNameNext => {
   screenName = screenNameNext;
 };
 
-const evaluate = fn => {
+const evaluate = async fn => {
   const result = fn(state, {
     system: system,
     game: gameState,
@@ -1730,7 +1749,7 @@ const evaluate = fn => {
     logging: logging,
     sender: sender,
   });
-  putGameState();
+  await Promise.all([ putGameState(), putAutosave() ]);
   return result;
 };
 
@@ -1834,15 +1853,14 @@ const initializeDatabase = async () => {
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
-    logging.log("ローカルデータベース接続: 失敗");
-    logging.log(e.message);
+    logging.error("ローカルデータベース接続: 失敗", e);
   }
 };
 
 //-------------------------------------------------------------------------
 
 const updateScaleLimit = () => {
-  D.resize();
+  D.onResize();
 };
 
 const updateSystemSpeed = () => {
@@ -2039,7 +2057,7 @@ const initializeSystemUi = () => {
       await deleteSave("save2", "#2");
       await deleteSave("save3", "#3");
       leaveMainScreen();
-      enterTitleScreen();
+      await enterTitleScreen();
     }
     restart();
   };
@@ -2116,6 +2134,8 @@ const enterStartScreen = () => {
 const enterMainScreen = () => {
   setScreenName("main");
   document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
+  // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
+  logging.update();
 };
 
 const enterDataScreen = async screenNode => {
@@ -2204,6 +2224,7 @@ const enterCreditsScreen = async () => {
     await scrollAnimation.start();
   }
 
+  waitForCredits = true;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 
   if (gameState.unlockPreview && !gameState.unlockedPreview) {
@@ -2212,21 +2233,22 @@ const enterCreditsScreen = async () => {
     await putGameState();
   }
 
+  gameState.visitedCredits = true;
+  await putGameState();
+
   const opacityAnimation = new D.OpacityAnimation([endNode], T1);
   await opacityAnimation.start();
 
-  gameState.visitedCredits = true;
-  await putGameState();
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
 };
 
 //-------------------------------------------------------------------------
 
-const backLoadScreen = () => {
+const backLoadScreen = async () => {
   if (screenNamePrev === "title") {
     leaveLoadScreen();
-    enterTitleScreen();
+    await enterTitleScreen();
   } else {
     leaveLoadScreen();
     enterMainScreen();
@@ -2238,6 +2260,18 @@ const backSaveScreen = () => {
   leaveSaveScreen();
   enterMainScreen();
   restart();
+};
+
+const backCreditsScreen = async () => {
+  if (waitForCredits) {
+    waitForCredits = undefined;
+    if (iconAnimation) {
+      iconAnimation.stop();
+      iconAnimation = undefined;
+    }
+    leaveCreditsScreen();
+    await enterTitleScreen();
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -2258,9 +2292,9 @@ const initializeTitleScreen = () => {
   });
 
   // LOAD GAME
-  choiceButtonNodes[1].addEventListener("click", () => {
+  choiceButtonNodes[1].addEventListener("click", async () => {
     leaveTitleScreen();
-    enterLoadScreen();
+    await enterLoadScreen();
   });
 
   // CONTINUE
@@ -2274,7 +2308,7 @@ const initializeTitleScreen = () => {
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async () => {
     leaveTitleScreen();
-    enterCreditsScreen();
+    await enterCreditsScreen();
   });
 };
 
@@ -2313,21 +2347,21 @@ const initializeMainScreen = () => {
   });
 
   // LOAD
-  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button2").addEventListener("click", async ev => {
     ev.stopPropagation();
     cancelPlayState();
     pause();
     leaveMainScreen();
-    enterLoadScreen();
+    await enterLoadScreen();
   });
 
   // SAVE
-  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button3").addEventListener("click", async ev => {
     ev.stopPropagation();
     cancelPlayState();
     pause();
     leaveMainScreen();
-    enterSaveScreen();
+    await enterSaveScreen();
   });
 
   // AUTO
@@ -2471,7 +2505,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
     if (await dialog("save-tape-save1") === "yes") {
-      putSave("save1", "#1");
+      await putSave("save1", "#1");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2480,7 +2514,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
     if (await dialog("save-tape-save2") === "yes") {
-      putSave("save2", "#2");
+      await putSave("save2", "#2");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2489,7 +2523,7 @@ const initializeSaveScreen = () => {
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
     if (await dialog("save-tape-save3") === "yes") {
-      putSave("save3", "#3");
+      await putSave("save3", "#3");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2498,14 +2532,7 @@ const initializeSaveScreen = () => {
 };
 
 const initializeCreditsScreen = () => {
-  document.querySelector(".demeter-credits-end").addEventListener("click", () => {
-    if (iconAnimation) {
-      iconAnimation.stop();
-      iconAnimation = undefined;
-    }
-    leaveCreditsScreen();
-    enterTitleScreen();
-  });
+  document.querySelector(".demeter-credits-end").addEventListener("click", backCreditsScreen);
 };
 
 const initializeDialogOverlay = () => {
@@ -2625,9 +2652,9 @@ const next = async () => {
       await deleteAutosave();
       leaveMainScreen();
       if (paragraphSave[0].finish === "title") {
-        enterTitleScreen();
+        await enterTitleScreen();
       } else {
-        enterCreditsScreen();
+        await enterCreditsScreen();
       }
       return;
     }
@@ -2636,7 +2663,7 @@ const next = async () => {
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
-      const paragraphIndexWhen = evaluate(paragraph[0].when);
+      const paragraphIndexWhen = await evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
         paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
@@ -2650,14 +2677,13 @@ const next = async () => {
     if (musicPlayer.key !== paragraph[0].music) {
       musicPlayer.fade(paragraph[0].music);
     }
+    if (place !== paragraph[0].place) {
+      place = paragraph[0].place;
+      logging.log("現在地: " + place);
+    }
 
-    // 既読処理
-    putReadState();
+    await Promise.all([ putReadState(), putAutosave() ]);
 
-    // 自動保存
-    putAutosave();
-
-    // 開始画面
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;
       await runStartScreen();
@@ -2665,7 +2691,7 @@ const next = async () => {
     }
 
     if (paragraph[0].enter) {
-      evaluate(paragraph[0].enter);
+      await evaluate(paragraph[0].enter);
     }
 
     paragraphLineNumber = 1;
@@ -2745,7 +2771,7 @@ const next = async () => {
           return waitForStop();
         }
         if (choice.action) {
-          evaluate(choice.action);
+          await evaluate(choice.action);
         }
 
         // ジャンプ先が現在の段落である場合、待ちつづける。
@@ -2761,7 +2787,7 @@ const next = async () => {
     }
 
     if (paragraph[0].leave) {
-      evaluate(paragraph[0].leave);
+      await evaluate(paragraph[0].leave);
     }
 
     if (playState) {
@@ -2885,7 +2911,7 @@ const dialog = async key => {
 
 //-------------------------------------------------------------------------
 
-D.resize = () => {
+D.onResize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
@@ -2914,7 +2940,7 @@ D.resize = () => {
   updateComponents();
 };
 
-D.keydown = ev => {
+D.onKeydown = async ev => {
   if (screenName === "main") {
     if (ev.code === "Enter") {
       cancelPlayState();
@@ -2925,16 +2951,24 @@ D.keydown = ev => {
     }
   } else if (screenName === "load") {
     if (ev.code === "Escape" && !waitForDialog) {
-      backLoadScreen();
+      await backLoadScreen();
     }
   } else if (screenName === "save") {
     if (ev.code === "Escape" && !waitForDialog) {
       backSaveScreen();
     }
+  } else if (screenName === "credits") {
+    if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
+      backCreditsScreen();
+    }
   }
 };
 
-D.domContentLoaded = async () => {
+D.onError = ev => {
+  logging.error("エラー捕捉", ev);
+};
+
+D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
   initializeTitleScreen();
@@ -2946,7 +2980,7 @@ D.domContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  D.resize();
+  D.onResize();
   await enterTitleScreen();
 
   while (true) {

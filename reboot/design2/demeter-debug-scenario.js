@@ -9,7 +9,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index:1
-[{speaker:"narrator",music:"diana21"},[
+[{speaker:"narrator",music:"diana21",place:"文芸部部室"},[
 ["文芸部の部室。"],
 ["壊れかけの黒いラジオから、頭脳警察が流れている。"],
 ["都市地図が広げられた",["卓子","テーブル"],"を囲む少女たち。"],
@@ -96,7 +96,7 @@ if(ctx.game.father === "マイク・ハマー")return 6;
 ["ラジオがささやく",["雑音","ノイズ"],"のなか、遠く、その声は聴こえた。"],
 ]],
 // index:17
-[{speaker:"rosa",start:"preview"},[
+[{speaker:"rosa",start:"preview",place:"いまではない、いつか"},[
 ["こちらは、自由ラジオ横濱",["前線","フロント"],"。"],
 ["ライシャワーが死んだセカイ線、バリケードの裡から、あの山岳",["根拠地","ベース"],"で産まれてしまった子供たちへ。"],
 ["聴こえてるかな。"],

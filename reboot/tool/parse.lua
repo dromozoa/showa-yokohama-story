@@ -261,6 +261,12 @@ local function parse(scenario, include_path, filename)
       -- 段落に音楽を割り当てる
       paragraph = update(paragraph, "music", trim(_1))
 
+    elseif match "^@place{([^}]*)}" then
+      -- @place{場所}
+      -- 段落に場所を割り当てる
+      paragraph = update(paragraph, "place", trim(_1))
+
+
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
       -- システム用とする。
@@ -369,7 +375,7 @@ local function jump_index(scenario, jump)
   return scenario.labels[jump.label].index
 end
 
-local function visit(scenario, i, u, starts, color)
+local function visit(scenario, command, i, u, starts, color)
   color[i] = 1
 
   local indices = {}
@@ -392,32 +398,32 @@ local function visit(scenario, i, u, starts, color)
     if not starts[j] and not color[j] then
       local v = assert(scenario[j])
       assert(not v.system)
-      if v.music then
-        error("conflicts between "..u.music.." and "..v.music.." at paragraph "..j)
+      if v[command] then
+        error(command.." conflicts between "..u[command].." and "..v[command].." at paragraph "..j)
       end
-      v.music = u.music
-      visit(scenario, j, v, starts, color)
+      v[command] = u[command]
+      visit(scenario, command, j, v, starts, color)
     end
   end
 
   color[i] = 2
 end
 
-local function process_musics(scenario)
+local function search(scenario, command)
   local starts = {}
   for index, paragraph in ipairs(scenario) do
-    if not paragraph.system and paragraph.music then
+    if not paragraph.system and paragraph[command] then
       starts[index] = paragraph
     end
   end
   for index, paragraph in pairs(starts) do
-    if not paragraph.system and paragraph.music then
-      visit(scenario, index, paragraph, starts, {})
+    if not paragraph.system and paragraph[command] then
+      visit(scenario, command, index, paragraph, starts, {})
     end
   end
   for index, paragraph in ipairs(scenario) do
-    if not paragraph.system and not paragraph.music then
-      error("music is nil at paragraph "..index)
+    if not paragraph.system and not paragraph[command] then
+      error(command.." is nil at paragraph "..index)
     end
   end
 end
@@ -447,7 +453,8 @@ return function (scenario_pathname)
   process_speakers(scenario)
   process_labels(scenario)
   if not scenario.debug then
-    process_musics(scenario)
+    search(scenario, "music")
+    search(scenario, "place")
   end
   process_dialogs(scenario)
   return scenario
