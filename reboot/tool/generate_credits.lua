@@ -33,7 +33,7 @@ for line in handle:lines() do
     end
   elseif line == [[\\]] then
     -- 空行
-    handle_html:write '<div class="demeter-credits-line"></div>\n'
+    handle_html:write '<div class="demeter-credits-text demeter-credits-text0"></div>\n'
   elseif line:find [[\$]] then
     -- 継続行
     prev = prev .. line:gsub([[\$]], "")

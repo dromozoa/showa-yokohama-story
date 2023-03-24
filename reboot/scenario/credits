@@ -1,5 +1,6 @@
 # vim: set noet ts=24 tw=0 sts=-1 sw=0:
 # SILライセンスの表記
+# 12ギョウまで
 
 Director	[vaporoid](https://twitter.com/vaporoid)
 Producer	[vaporoid](https://twitter.com/vaporoid)
@@ -9,23 +10,36 @@ Programmer	[vaporoid](https://twitter.com/vaporoid)
 UI Graphics	[vaporoid](https://twitter.com/vaporoid)
 Tools	[vaporoid](https://twitter.com/vaporoid)
 
-Western Fonts	[Averia Serif Libre](https://fonts.google.com/specimen/Averia+Serif+Libre)
-	[Share Tech](https://fonts.google.com/specimen/Share+Tech)
-	[Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono)
-	[Source Serif Pro](https://fonts.google.com/specimen/Source+Serif+Pro)
-Japanese Fonts	[BIZ UDGothic](https://fonts.google.com/specimen/BIZ+UDGothic)
-	[BIZ UDPGothic](https://fonts.google.com/specimen/BIZ+UDPGothic)
-	[BIZ UDPMincho](https://fonts.google.com/specimen/BIZ+UDPMincho)
-	[Yuji Syuku](https://fonts.google.com/specimen/Yuji+Syuku)
+Western Fonts\
+ licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
+[Averia Serif Libre](https://fonts.google.com/specimen/Averia+Serif+Libre)\
+	Copyright &copy; 2011 Dan Sayers
+[Libre Barcode 128](https://fonts.google.com/specimen/Libre+Barcode+128)\
+	Copyright &copy; 2017-2020<br>The Libre Barcode Project Authors
+[Share Tech](https://fonts.google.com/specimen/Share+Tech)\
+	Copyright &copy; 2012<br>The Share Tech Project Authors
+[Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono)\
+	Copyright &copy; 2012<br>The Share Tech Project Authors
+[Source Serif Pro](https://fonts.google.com/specimen/Source+Serif+Pro)\
+	Copyright &copy; 2014-2016<br>Adobe Systems Incorporated
 
-Symbol Fonts	[Libre Barcode 128](https://fonts.google.com/specimen/Libre+Barcode+128)
-	[Line Awesome](https://icons8.com/line-awesome)
-Libraries	[howler.js](https://howlerjs.com/)
-	[lil-gui](https://lil-gui.georgealways.com/)
-	[idb](https://github.com/jakearchibald/idb)
+Japanese Fonts\
+ licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
+[BIZ UDGothic](https://fonts.google.com/specimen/BIZ+UDGothic)\
+	Copyright &copy; 2022<br>The BIZ UDGothic Project Authors
+[BIZ UDPGothic](https://fonts.google.com/specimen/BIZ+UDPGothic)\
+	Copyright &copy; 2022<br>The BIZ UDGothic Project Authors
+[BIZ UDPMincho](https://fonts.google.com/specimen/BIZ+UDPMincho)\
+	Copyright &copy; 2022<br>The BIZ UDMincho Project Authors
+[Yuji Syuku](https://fonts.google.com/specimen/Yuji+Syuku)\
+	Copyright &copy; 2021<br>The Yuji Project Authors
+\\
+[Line Awesome](https://icons8.com/line-awesome)\
+ licensed under MIT or [Good Boy Licensed](https://icons8.com/good-boy-license)
+
+Libraries	[howler.js](https://howlerjs.com/), [lil-gui](https://lil-gui.georgealways.com/), [idb](https://github.com/jakearchibald/idb)
 Visuals	[shutterstock](https://www.shutterstock.com/)
 Voices	[VOICEPEAK](https://www.ah-soft.com/voice/6nare/)
-
 Musics	[Sessions](https://sessions.riotgames.com/)
 Sessions: Vi	03	Hanz	Hollow
 	05	Gemp &amp; Sinnr	Geode

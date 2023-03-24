@@ -873,21 +873,21 @@ body.demeter {
   width: calc(var(--font-size) * 23);
 }
 
+.demeter-credits-text0 {
+  height: calc(var(--font-size) * 2);
+}
+
 .demeter-credits-text1 {
   text-align: justify;
 }
 
-.demeter-credits-text2 {
-  height: calc(var(--font-size) * 2);
-}
-
 .demeter-credits-text2 > .demeter-credits-item1 {
   position: absolute;
-  width: calc(var(--font-size) * 7);
+  width: calc(var(--font-size) * 8);
 }
 
 .demeter-credits-text2 > .demeter-credits-item2 {
-  position: absolute;
+  position: relative;
   width: calc(var(--font-size) * 15);
   left: calc(var(--font-size) * 8);
   top: 0;
