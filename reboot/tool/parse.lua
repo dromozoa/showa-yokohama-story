@@ -86,6 +86,7 @@ local function parse(scenario, include_path, filename)
   local source = handle:read "a" .. "\n\n"
   handle:close()
 
+  local line = 1
   local position = 1
   local _1
   local _2
@@ -94,6 +95,7 @@ local function parse(scenario, include_path, filename)
   local function match(pattern)
     local i, j, a, b, c = source:find(pattern, position)
     if i then
+      line = line + select(2, source:sub(position, j):gsub("\n", {}))
       position = j + 1
       _1 = a
       _2 = b
@@ -143,7 +145,7 @@ local function parse(scenario, include_path, filename)
         text = append(text, _1)
 
       else
-        error(filename..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
+        error(filename..":"..line..":"..position..": parse error near '"..select(3, source:find("^([^\r\n]*)", position)).."'")
       end
     end
 
@@ -172,7 +174,11 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@jump{([^}]*)}" then
       -- @jump{ラベル}
-      paragraph = append_jump(paragraph, { label = trim(_1) })
+      paragraph = append_jump(paragraph, {
+        label = trim(_1);
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@choice{" then
       -- @choice{選択肢}
@@ -204,7 +210,14 @@ local function parse(scenario, include_path, filename)
         end
         label = trim(table.concat(buffer))
       end
-      paragraph = append_jump(paragraph, { choice = choice, action = action, label = label, barcode = barcode })
+      paragraph = append_jump(paragraph, {
+        choice = choice;
+        action = action;
+        label = label;
+        barcode = barcode;
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@include{([^}]*)}" then
       -- @include{ファイルパス}
@@ -212,15 +225,28 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@when{{(.-)}}{([^}]*)}" then
       -- @when{{式}}{ラベル}
-      paragraph = append_jump(paragraph, { when = trim(_1), label = trim(_2) })
+      paragraph = append_jump(paragraph, {
+        when = trim(_1);
+        label = trim(_2);
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@enter{{(.-)}}" then
       -- @enter{{文}}
       paragraph = update(paragraph, "enter", trim(_1))
+      paragraph = update(paragraph, "enter_info", {
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@leave{{(.-)}}" then
       -- @leave{{文}}
       paragraph = update(paragraph, "leave", trim(_1))
+      paragraph = update(paragraph, "leave_info", {
+        file = filename;
+        line = line;
+      })
 
     elseif match "^@start{([^}]*)}" then
       -- @start{キー}
