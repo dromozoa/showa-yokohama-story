@@ -26,9 +26,10 @@ D.includeGameGuard = true;
 
 //-------------------------------------------------------------------------
 
-addEventListener("resize", D.resize);
-addEventListener("keydown", D.keydown);
-document.addEventListener("DOMContentLoaded", D.domContentLoaded, { once: true });
+addEventListener("resize", D.onResize);
+addEventListener("keydown", D.onKeydown);
+addEventListener("error", D.onError);
+document.addEventListener("DOMContentLoaded", D.onDOMContentLoaded, { once: true });
 
 //-------------------------------------------------------------------------
 

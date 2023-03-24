@@ -906,15 +906,29 @@ D.Logging = class {
     this.limit = limit;
   }
 
-  log(message, exception) {
+  logImpl(...messages) {
     const loggingNode = document.querySelector(".demeter-main-logging");
-    const messageNode = document.createElement("div");
-    messageNode.textContent = message;
-    loggingNode.append(messageNode);
-    while (loggingNode.children.length > this.limit) {
-      loggingNode.firstElementChild.remove();
+    if (loggingNode) {
+      const messageNodes = messages.map(message => {
+        const messageNode = document.createElement("div");
+        messageNode.textContent = message;
+        return messageNode;
+      });
+      loggingNode.append(...messageNodes);
+      while (loggingNode.children.length > this.limit) {
+        loggingNode.firstElementChild.remove();
+      }
+      loggingNode.lastElementChild.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
     }
-    messageNode.scrollIntoView({ behavior: "smooth", block: "end", inline: "start" });
+  }
+
+  log(message) {
+    this.logImpl(message);
+  }
+
+  error(message, exception) {
+    this.logImpl(message, exception.message);
+    // TODO 送信
   }
 };
 
@@ -1015,13 +1029,11 @@ D.MusicPlayer = class {
     const soundId = sound.play();
 
     sound.on("loaderror", (notUsed, message) => {
-      logging.log("音楽読出: 失敗");
-      logging.log(message);
+      logging.error("音楽読出: 失敗", new Error(message));
     });
 
     sound.on("playerror", (notUsed, message) => {
-      logging.log("音楽再生: 失敗");
-      logging.log(message);
+      logging.error("音楽再生: 失敗", new Error(message));
     });
 
     if (this.unlock) {
@@ -1630,8 +1642,7 @@ const putSystemTask = async () => {
     await database.put("system", system);
     logging.log("システム設定保存: 成功");
   } catch (e) {
-    logging.log("システム設定保存: 失敗");
-    logging.log(e.message);
+    logging.error("システム設定保存: 失敗", e);
   }
 };
 
@@ -1647,8 +1658,7 @@ const putGameState = async () => {
     await database.put("game", gameState);
     logging.log("ゲーム状態保存: 成功");
   } catch (e) {
-    logging.log("ゲーム状態保存: 失敗");
-    logging.log(e.message);
+    logging.error("ゲーム状態保存: 失敗", e);
   }
 };
 
@@ -1658,8 +1668,7 @@ const putReadState = async () => {
     await database.put("read", readState);
     logging.log("既読状態保存: 成功");
   } catch (e) {
-    logging.log("既読状態保存: 失敗");
-    logging.log(e.message);
+    logging.error("既読状態保存: 失敗", e);
   }
 };
 
@@ -1673,18 +1682,16 @@ const putAutosave = async () => {
     });
     logging.log("自動保存: 成功");
   } catch (e) {
-    logging.log("自動保存: 失敗");
-    logging.log(e.message);
+    logging.error("自動保存: 失敗", e);
   }
 };
 
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    logging.log("自動保存削除: 成功");
+    logging.log("自動保存データ削除: 成功");
   } catch (e) {
-    logging.log("自動保存削除: 失敗");
-    logging.log(e.message);
+    logging.error("自動保存データ削除: 失敗", e);
   }
 };
 
@@ -1698,8 +1705,7 @@ const putSave = async (key, name) => {
     });
     logging.log(name + "保存: 成功");
   } catch (e) {
-    logging.log(name + "保存: 失敗");
-    logging.log(e.message);
+    logging.error(name + "保存: 失敗", e);
   }
 };
 
@@ -1708,8 +1714,7 @@ const deleteSave = async (key, name) => {
     await database.delete("save", key);
     logging.log(name + "削除: 成功");
   } catch (e) {
-    logging.log(name + "削除: 失敗");
-    logging.log(e.message);
+    logging.error(name + "削除: 失敗", e);
   }
 };
 
@@ -1835,15 +1840,14 @@ const initializeDatabase = async () => {
 
     logging.log("ローカルデータベース接続: 成功");
   } catch (e) {
-    logging.log("ローカルデータベース接続: 失敗");
-    logging.log(e.message);
+    logging.error("ローカルデータベース接続: 失敗", e);
   }
 };
 
 //-------------------------------------------------------------------------
 
 const updateScaleLimit = () => {
-  D.resize();
+  D.onResize();
 };
 
 const updateSystemSpeed = () => {
@@ -2888,7 +2892,7 @@ const dialog = async key => {
 
 //-------------------------------------------------------------------------
 
-D.resize = () => {
+D.onResize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
@@ -2917,7 +2921,7 @@ D.resize = () => {
   updateComponents();
 };
 
-D.keydown = async ev => {
+D.onKeydown = async ev => {
   if (screenName === "main") {
     if (ev.code === "Enter") {
       cancelPlayState();
@@ -2941,7 +2945,11 @@ D.keydown = async ev => {
   }
 };
 
-D.domContentLoaded = async () => {
+D.onError = ev => {
+  logging.error("エラー捕捉", ev);
+};
+
+D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
   initializeTitleScreen();
@@ -2953,7 +2961,7 @@ D.domContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  D.resize();
+  D.onResize();
   await enterTitleScreen();
 
   while (true) {
