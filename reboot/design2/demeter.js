@@ -2193,9 +2193,9 @@ const enterDataScreen = async screenNode => {
 const enterLoadScreen = async () => {
   setScreenName("load");
   if (gameState.unlockedPreview) {
-    document.querySelector(".demeter-load-tape-preview-text").textContent = "Showa Yokohama Story '69";
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
-    document.querySelector(".demeter-load-tape-preview-text").textContent = "Broken : 1969/01/19 17:46";
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
   await enterDataScreen(document.querySelector(".demeter-load-screen"));
 };

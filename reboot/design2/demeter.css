@@ -720,19 +720,19 @@ body.demeter {
   width: calc(var(--font-size) * 8);
   color: #000;
   font-family: var(--font-family-console);
-  font-size: calc(var(--font-size) * 0.75);
-  line-height: calc(var(--font-size) * 0.75);
+  font-size: calc(var(--font-size) * 0.7);
+  line-height: calc(var(--font-size) * 0.7);
   pointer-events: none;
 }
 
 .demeter-data-tape-label {
   left: calc(var(--font-size) * 1.5);
-  top: 24px;
+  top: 25px;
 }
 
 .demeter-data-tape-label-select {
   left: calc(var(--font-size) * 1.5);
-  top: 26px;
+  top: 27px;
 }
 
 /*************************************************************************/
