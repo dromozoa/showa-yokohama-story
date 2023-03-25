@@ -137,11 +137,13 @@ const paragraph354_when = ($,ctx) => {
 // preview.txt:21
 if (ctx.game.father === "サム・スペード") { return "サム・スペード"; }
 // preview.txt:22
+if (ctx.game.father === "フィリップ・マーロウ") { return "フィリップ・マーロウ"; }
+// preview.txt:23
 if (ctx.game.father === "マイク・ハマー") { return "マイク・ハマー"; }
 };
 
-// preview.txt:109
-const paragraph371_leave = ($,ctx) => {
+// preview.txt:121
+const paragraph373_leave = ($,ctx) => {
 ctx.game.visitedSixtyNine = true;
 };
 

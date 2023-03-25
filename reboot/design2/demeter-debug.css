@@ -25,13 +25,22 @@
 
 /*************************************************************************/
 
-.demeter-debug-screen {
+.demeter-debug-background {
   position: absolute;
   width: calc(var(--font-size) * 48);
   height: calc(var(--font-size) * 27);
   left: calc(50vw - var(--font-size) * 24);
   top: calc(50vh - var(--font-size) * 13.5);
   background-image: url(bg-landscape.png);
+  filter: brightness(0.2) saturate(0);
+}
+
+.demeter-debug-screen {
+  position: absolute;
+  width: calc(var(--font-size) * 48);
+  height: calc(var(--font-size) * 27);
+  left: calc(50vw - var(--font-size) * 24);
+  top: calc(50vh - var(--font-size) * 13.5);
   overflow: auto;
   scrollbar-width: none;
 }

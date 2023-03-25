@@ -2054,175 +2054,186 @@ if($.genesis)return 341;
 ["そんなことは、期待するべくもないが。"],
 ]],
 // index:354
-[{speaker:"demeter",jump:357,when:($,ctx)=>{
-if(ctx.game.father === "サム・スペード")return 355;
-if(ctx.game.father === "マイク・ハマー")return 356;
+[{speaker:"danu",when:($,ctx)=>{
+if(ctx.game.father === "サム・スペード")return 357;
+if(ctx.game.father === "フィリップ・マーロウ")return 356;
+if(ctx.game.father === "マイク・ハマー")return 358;
 },music:"diana21",place:"文芸部部室",background:"モノクローム"},[
-["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
-["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
+["ジョン・ドゥ","と","ジェーン・ドゥ","から産まれてしまった、名づけられなかった子供たちがアタシたちだとしたら。"],
 ]],
 // index:355
-[{speaker:"demeter",jump:357,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
-["先輩のお父さんって、サム・スペードを名乗ってたんでしたっけ。"],
-["お母さんも、趣味の悪い",["偽名","ソウルネーム"],"を持ってたんですか","。"],
+[{speaker:"alice",jump:364,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
+["天照","機関を出奔した人造魔人。"],
+["量産型天皇霊を","降ろした","十三人の聖女の最後のひとり。"],
+[["暴力の聖女","ゲバルト・ローザ"],"と",["字名","あざな"],"された女。"],
+["かつてボクの母だった人間だ。"],
 ]],
 // index:356
-[{speaker:"demeter",jump:357,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
-["先輩のお父さんって、マイク・ハマーを名乗ってたんでしたっけ。いや、あれれ。","濱","マイクのほうだったかな。"],
-["お母さんも、野暮ったい",["偽名","ソウルネーム"],"を持ってたんですか","。"],
+[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
+["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
+["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか。"],
 ]],
 // index:357
+[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
+["先輩のお父さんって、サム・スペードを名乗ってたんでしたっけ。"],
+["お母さんも、趣味の悪い",["偽名","ソウルネーム"],"を持ってたんですか。"],
+]],
+// index:358
+[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
+["先輩のお父さんって、マイク・ハマーを名乗ってたんでしたっけ。いや、あれれ。","濱","マイクのほうだったかな。"],
+["お母さんも、野暮ったい",["偽名","ソウルネーム"],"を持ってたんですか。"],
+]],
+// index:359
 [{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["いってくれるじゃないか。"],
 ["やれやれ。ソウルネーム——",["暴力の聖女","ゲバルト・ローザ"],"。"],
 ["品性のなさにかけては、父も母もどっこいどっこいだな。"],
 ["破れ鍋に綴じ","蓋","だったのかもしれないが。"],
 ]],
-// index:358
+// index:360
 [{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
-["屍都の女王もたいがい。"],
+["屍都の女王も、たいがい。"],
 ]],
-// index:359
+// index:361
 [{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["ボ、ボ、ボクは、自ら名乗ってるわけじゃないからセーフ。"],
 ]],
-// index:360
+// index:362
 [{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["アタシってば、自称なんだけど。"],
 ]],
-// index:361
+// index:363
 [{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["姐さんはいいんです。"],
 ]],
-// index:362
+// index:364
 [{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["そんなことより、",["仕事","ビズ"],"の話だ。"],
 ]],
-// index:363
+// index:365
 [{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["ねぇ、あのコ、泣いてた。助けてって。"],
 ["友達の友達の友達なんだけど。"],
 ["両親が偽メシア教カルトらしくてさ。"],
 ]],
-// index:364
+// index:366
 [{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["最近、",["アシッド","LSD"],"ばらまいてる、あ",["奴","いつ"],"ら","。"],
 ["各方面から絶賛睨まれ発生中。"],
 ["武装はせいぜい",["黒星","ヘイシン"],"くらい。"],
 ]],
-// index:365
+// index:367
 [{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["そのコを","助","ける。"],
 ["しかるのち、撃滅する。"],
 ["いつもどおり、最大の火力をもって。"],
 ["いつもどおりの単純な",["仕事","ラン"],"だ。"],
 ]],
-// index:366
+// index:368
 [{speaker:"narrator",music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["少女たちが去った部室。"],
 ["窓からさしこむ、あえやかな月の光。"],
 ["ラジオがささやく",["雑音","ノイズ"],"のなか、遠く、その声は聴こえた。"],
 ]],
-// index:367
+// index:369
 [{speaker:"rosa",start:"preview",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
 ["こちらは、自由ラジオ横濱",["前線","フロント"],"。"],
 ["ライシャワーが死んだセカイ線、バリケードの裡から、あの山岳",["根拠地","ベース"],"で産まれてしまった子供たちへ。"],
 ["聴こえてるかな。"],
 ]],
-// index:368
+// index:370
 [{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
 ["城市","が",["叢林","ジャングル"],"を","包圍","する時。"],
 ["城市","もまた",["叢林","ジャングル"],"に","包圍","されてる。"],
 ["聴こえてるんでしょ。"],
 ]],
-// index:369
+// index:371
 [{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
 ["子供たち。聴こえているならば。"],
 ["母が見つけられなかった、この国の戦後にさよならを告げる方法を見つけておくれ。"],
 [["さよなら","アスタ・ルエゴ"],"、",["ヤルタ","Y"],"・",["ポツダム","P"],["体制","レジーム"],"。"],
 ]],
-// index:370
+// index:372
 [{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
 ["それは、父殺しの物語。"],
 ["それは、母殺しの物語。"],
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
-// index:371
+// index:373
 [{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
-["昭和横濱物語","'69","。"],
-["制作未定。"],
+[["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],
-// index:372
+// index:374
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
-// index:373
+// index:375
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["セーブデータを全部削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
-// index:374
+// index:376
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
-// index:375
+// index:377
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["チュートリアルを開始する？"],
 ]],
-// index:376
+// index:378
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
-// index:377
+// index:379
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
-// index:378
+// index:380
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:379
+// index:381
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:380
+// index:382
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:381
+// index:383
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:382
+// index:384
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:383
+// index:385
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:384
+// index:386
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:385
+// index:387
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
@@ -2271,25 +2282,27 @@ labels:{
 "第三節黙示録了":308,
 "創世記":341,
 "プレビュー":351,
-"サム・スペード":355,
-"マイク・ハマー":356,
-"ゲバルト・ローザ":357,
+"フィリップ・マーロウ":356,
+"サム・スペード":357,
+"マイク・ハマー":358,
+"ゲバルト・ローザ":359,
+"ゲバルト・ローザ終":364,
 },
 dialogs:{
-"system-reset-system":372,
-"system-reset-save":373,
-"load-tape-select":374,
-"load-tape-tutorial":375,
-"load-tape-broken":376,
-"load-tape-preview":377,
-"load-tape-save1":378,
-"load-tape-save2":379,
-"load-tape-save3":380,
-"load-tape-empty":381,
-"save-tape-save1":382,
-"save-tape-save2":383,
-"save-tape-save3":384,
-"credits-tape-preview":385,
+"system-reset-system":374,
+"system-reset-save":375,
+"load-tape-select":376,
+"load-tape-tutorial":377,
+"load-tape-broken":378,
+"load-tape-preview":379,
+"load-tape-save1":380,
+"load-tape-save2":381,
+"load-tape-save3":382,
+"load-tape-empty":383,
+"save-tape-save1":384,
+"save-tape-save2":385,
+"save-tape-save3":386,
+"credits-tape-preview":387,
 },
 };
 
