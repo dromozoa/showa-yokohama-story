@@ -2149,7 +2149,7 @@ const leaveSaveScreen = () => {
 };
 
 const leaveCreditsScreen = () => {
-  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-credits-screen"));
 };
 
 //-------------------------------------------------------------------------
@@ -2267,9 +2267,6 @@ const enterCreditsScreen = async () => {
     await scrollAnimation.start();
   }
 
-  waitForCredits = true;
-  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
-
   if (gameState.unlockPreview && !gameState.unlockedPreview) {
     await dialog("credits-tape-preview");
     gameState.unlockedPreview = true;
@@ -2284,6 +2281,9 @@ const enterCreditsScreen = async () => {
 
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
+
+  waitForCredits = true;
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 };
 
 //-------------------------------------------------------------------------
