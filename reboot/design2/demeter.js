@@ -1558,6 +1558,47 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
+D.SaturateFilterAnimation = class {
+  constructor(node) {
+    this.node = node;
+    this.key = "モノクローム";
+    this.value = 0;
+  }
+
+  fade(key, duration) {
+    this.key = key;
+    this.duration = duration;
+
+    this.startTime = performance.now();
+    this.begin = this.value;
+    if (key === "モノクローム") {
+      this.end = 0;
+    } else {
+      this.end = 1;
+    }
+  }
+
+  update() {
+    if (!this.startTime) {
+      return;
+    }
+
+    const now = performance.now();
+    const x = Math.min((now - this.startTime) / this.duration, 1);
+    const y = x * (2 - x)
+    const z = this.begin + (this.end - this.begin) * y;
+
+    this.node.style.filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+
+    this.value = z;
+    if (x === 1) {
+      this.startTime = undefined;
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const systemDefault = {
   id: "system",
   scaleLimit: true,
@@ -1625,6 +1666,7 @@ let screenNamePrev;
 let screenName;
 let systemUi;
 
+let backgroundAnimation;
 let iconAnimation;
 let musicPlayer;
 let audioVisualizer;
@@ -2276,6 +2318,12 @@ const backCreditsScreen = async () => {
 
 //-------------------------------------------------------------------------
 
+const initializeBackground = () => {
+  backgroundAnimation = new D.SaturateFilterAnimation(document.querySelector(".demeter-screen-background"));
+  // debug
+  D.backgroundAnimation = backgroundAnimation;
+}
+
 const initializeTitleScreen = () => {
   const choiceButtonNodes = [...document.querySelectorAll(".demeter-title-choice")].map(choiceNode => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 11, fontSize * 4, fontSize);
@@ -2681,6 +2729,9 @@ const next = async () => {
       place = paragraph[0].place;
       logging.log("現在地: " + place);
     }
+    if (backgroundAnimation.key !== paragraph[0].background) {
+      backgroundAnimation.fade(paragraph[0].background, 2000);
+    }
 
     await Promise.all([ putReadState(), putAutosave() ]);
 
@@ -2965,6 +3016,7 @@ D.onError = ev => {
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
+  initializeBackground();
   initializeTitleScreen();
   initializeStartScreen();
   initializeMainScreen();
@@ -2980,6 +3032,12 @@ D.onDOMContentLoaded = async () => {
   while (true) {
     await D.requestAnimationFrame();
     await taskSet.update();
+    if (backgroundAnimation) {
+      backgroundAnimation.update();
+    }
+    if (iconAnimation) {
+      iconAnimation.update();
+    }
     if (audioVisualizer) {
       audioVisualizer.update();
       audioVisualizer.draw();
@@ -2990,9 +3048,6 @@ D.onDOMContentLoaded = async () => {
     }
     if (silhouette) {
       silhouette.draw();
-    }
-    if (iconAnimation) {
-      iconAnimation.update();
     }
   }
 };

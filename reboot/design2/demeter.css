@@ -79,7 +79,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
-  filter: brightness(20%) saturate(0%);
+  filter: brightness(0.2) saturate(0);
 }
 
 .demeter-screen {

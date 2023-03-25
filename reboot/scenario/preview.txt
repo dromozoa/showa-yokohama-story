@@ -3,6 +3,7 @@
 @label_root{プレビュー}
 @music{diana21}
 @place{文芸部部室}
+@background{モノクローム}
 #narrator
 文芸部の部室。
 壊れかけの黒いラジオから、頭脳警察が流れている。
