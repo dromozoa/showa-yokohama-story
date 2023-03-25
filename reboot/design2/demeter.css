@@ -75,6 +75,7 @@ body.demeter {
 /*************************************************************************/
 
 .demeter-screen-background {
+  display: none;
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);

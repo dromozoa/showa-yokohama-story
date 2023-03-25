@@ -2320,9 +2320,9 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  backgroundAnimation = new D.SaturateFilterAnimation(document.querySelector(".demeter-screen-background"));
-  // debug
-  D.backgroundAnimation = backgroundAnimation;
+  const node = document.querySelector(".demeter-screen-background");
+  backgroundAnimation = new D.SaturateFilterAnimation(node);
+  node.style.display = "block";
 }
 
 const initializeTitleScreen = () => {
@@ -3017,7 +3017,6 @@ D.onError = ev => {
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
-  initializeBackground();
   initializeTitleScreen();
   initializeStartScreen();
   initializeMainScreen();
@@ -3028,6 +3027,7 @@ D.onDOMContentLoaded = async () => {
   initializeEmptyOverlay();
   initializeAudio();
   D.onResize();
+  initializeBackground();
   await enterTitleScreen();
 
   while (true) {
