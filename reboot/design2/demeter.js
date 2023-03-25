@@ -2832,7 +2832,6 @@ const next = async () => {
         }
 
         // ジャンプ先が現在の段落である場合、待ちつづける。
-        // TODO ロード画面を挟んだときにダメ
         if (paragraphIndex !== choice.label) {
           paragraphIndexPrev = choice.label - 1;
           break;

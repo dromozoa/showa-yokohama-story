@@ -1063,23 +1063,23 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 [["煙草","ヤニ"],"はまずかったがな。"],
 ]],
 // index:178
-[{speaker:"narrator",music:"diana12",place:"苫小牧",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"北海道",background:"モノクローム"},[
 ["除隊したキミは、引揚船で北海道に渡る。"],
 ]],
 // index:179
-[{speaker:"narrator",music:"diana12",place:"苫小牧",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"北海道",background:"モノクローム"},[
 ["仮称リヴァイアサンが襲来した。"],
 ["日米",["連合艦隊","グランドフリート"],"は、最後の",["戦艦","バトルシップ"],"とひきかえに、仮称リヴァイアサンを東京湾最終防衛線に拘束した。"],
 ["統合航空軍は、空中巡洋艦から核爆雷を投下した。"],
 ]],
 // index:180
-[{speaker:"narrator",music:"diana12",place:"苫小牧",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"北海道",background:"モノクローム"},[
 [["深き者","ディープ・ワンズ"],"過激派の報復攻撃により、札幌、旭川、函館が蒸発した。"],
 ["石柱都市が浮上した。"],
 ["人類は残された",["大陸間弾道弾","ICBM"],"を全力で投射した。"],
 ]],
 // index:181
-[{speaker:"narrator",music:"diana12",place:"苫小牧",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"北海道",background:"モノクローム"},[
 ["妖精種はたもとを分かった。人類種とも。","魚人","種とも。"],
 ["二十六年が経った。"],
 ["世界人口は十億人を下回った。"],
