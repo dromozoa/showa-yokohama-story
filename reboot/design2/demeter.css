@@ -41,10 +41,10 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --screen-background-image: url(bg-portrait.png);
     /* debug
-    --screen-background-image: url(../output/bg-portrait.png);
+    --screen-background-image: url(bg-portrait.png);
     */
+    --screen-background-image: url(../output/bg-portrait.png);
   }
 }
 
@@ -52,10 +52,10 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --screen-background-image: url(bg-landscape.png);
     /* debug
-    --screen-background-image: url(../output/bg-landscape.png);
+    --screen-background-image: url(bg-landscape.png);
     */
+    --screen-background-image: url(../output/bg-landscape.png);
   }
 }
 
@@ -85,6 +85,7 @@ body.demeter {
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
+  filter: brightness(20%) saturate(0%);
 }
 
 .demeter-screen {
