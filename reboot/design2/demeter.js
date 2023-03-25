@@ -2163,6 +2163,7 @@ const enterTitleScreen = async () => {
     iconAnimation.start();
   } else {
     musicPlayer.fade("vi03");
+    backgroundAnimation.fade("モノクローム", 2000);
     await showTitleChoices();
   }
   document.querySelector(".demeter-screen").append(screenNode);
