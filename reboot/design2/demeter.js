@@ -1504,8 +1504,10 @@ D.NullVoiceSprite = class {
 //-------------------------------------------------------------------------
 
 D.OpacityAnimation = class {
-  constructor(nodes, duration) {
+  constructor(nodes, begin, end, duration) {
     this.nodes = nodes;
+    this.begin = begin;
+    this.end = end;
     this.duration = duration;
   }
 
@@ -1521,10 +1523,11 @@ D.OpacityAnimation = class {
 
       const x = Math.min(duration / this.duration, 1);
       const y = x * (2 - x)
-
-      this.nodes.forEach(node => node.style.opacity = D.numberToString(y));
+      const z = this.begin + (this.end - this.begin) * y;
+      const opacity = D.numberToString(z);
+      this.nodes.forEach(node => node.style.opacity = opacity);
     }
-    this.nodes.forEach(node => node.style.opacity = "1");
+    this.nodes.forEach(node => node.style.opacity = this.end);
   }
 };
 
@@ -1559,8 +1562,8 @@ D.ScrollAnimation = class {
 //-------------------------------------------------------------------------
 
 D.SaturateFilterAnimation = class {
-  constructor(node) {
-    this.node = node;
+  constructor(nodes) {
+    this.nodes = nodes;
     this.key = "モノクローム";
     this.value = 0;
   }
@@ -1587,8 +1590,8 @@ D.SaturateFilterAnimation = class {
     const x = Math.min((now - this.startTime) / this.duration, 1);
     const y = x * (2 - x)
     const z = this.begin + (this.end - this.begin) * y;
-
-    this.node.style.filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+    const filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+    this.nodes.forEach(node => node.style.filter = filter);
 
     this.value = z;
     if (x === 1) {
@@ -2250,7 +2253,7 @@ const enterCreditsScreen = async () => {
     if (i === 0) {
       nodes.push(graphNode);
     }
-    const opacityAnimation = new D.OpacityAnimation(nodes, T1);
+    const opacityAnimation = new D.OpacityAnimation(nodes, 0, 1, T1);
     await opacityAnimation.start();
 
     await D.setTimeout(T2);
@@ -2276,7 +2279,7 @@ const enterCreditsScreen = async () => {
   gameState.visitedCredits = true;
   await putGameState();
 
-  const opacityAnimation = new D.OpacityAnimation([endNode], T1);
+  const opacityAnimation = new D.OpacityAnimation([endNode], 0, 1, T1);
   await opacityAnimation.start();
 
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
@@ -2320,8 +2323,8 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  const backgroundNode = document.querySelector(".demeter-screen-background");
-  backgroundAnimation = new D.SaturateFilterAnimation(backgroundNode);
+  const backgroundNode = document.querySelector(".demeter-background");
+  backgroundAnimation = new D.SaturateFilterAnimation([ backgroundNode, document.querySelector(".demeter-background-kcode") ]);
   backgroundNode.style.opacity = 1;
 }
 
@@ -2820,6 +2823,8 @@ const next = async () => {
 
         if (waitForStop) {
           resetParagraph();
+          document.querySelector(".demeter-main-choices").style.display = "none";
+          choices = undefined;
           return waitForStop();
         }
         if (choice.action) {
@@ -2827,14 +2832,15 @@ const next = async () => {
         }
 
         // ジャンプ先が現在の段落である場合、待ちつづける。
+        // TODO ロード画面を挟んだときにダメ
         if (paragraphIndex !== choice.label) {
           paragraphIndexPrev = choice.label - 1;
           break;
         }
       }
       document.querySelector(".demeter-main-choices").style.display = "none";
-
       choices = undefined;
+
       cont = true;
     }
 
@@ -2963,6 +2969,73 @@ const dialog = async key => {
 
 //-------------------------------------------------------------------------
 
+const kCodeSet = [
+  [ "ArrowUp",    "KeyK" ],
+  [ "ArrowUp",    "KeyK" ],
+  [ "ArrowDown",  "KeyJ" ],
+  [ "ArrowDown",  "KeyJ" ],
+  [ "ArrowLeft",  "KeyH" ],
+  [ "ArrowRight", "KeyL" ],
+  [ "ArrowLeft",  "KeyH" ],
+  [ "ArrowRight", "KeyL" ],
+  [ "Enter",      "KeyB" ],
+  [ "Escape",     "KeyA" ],
+];
+const kCodeBuffer = [];
+let kCodeStatus = false;
+let kCodePrompt = true;
+
+const updateKCode = () => {
+  [...document.querySelectorAll(".demeter-title-kcode-item")].forEach((node, i) => {
+    if (kCodeBuffer[i] !== undefined) {
+      node.classList.add("demeter-active");
+    } else {
+      node.classList.remove("demeter-active");
+    }
+  });
+};
+
+const toggleKCode = async () => {
+  const node1 = document.querySelector(".demeter-background-kcode");
+  const node2 = document.querySelector(".demeter-background");
+  kCodeStatus = !kCodeStatus;
+  if (kCodeStatus) {
+    node1.style.opacity = "1";
+    const opacityAnimation = new D.OpacityAnimation([node2], 1, 0, 2000);
+    await opacityAnimation.start();
+  } else {
+    const opacityAnimation = new D.OpacityAnimation([node2], 0, 1, 2000);
+    await opacityAnimation.start();
+    node1.style.opacity = "0";
+  }
+};
+
+const resetKCode = async () => {
+  await D.setTimeout(500);
+  kCodeBuffer.splice(0);
+  updateKCode();
+};
+
+const checkKCode = async code => {
+  if (!kCodePrompt) {
+    return;
+  }
+  kCodeBuffer.push(code);
+  if (kCodeBuffer.every((code, i) => kCodeSet[i].includes(code))) {
+    if (kCodeBuffer.length === kCodeSet.length) {
+      updateKCode();
+      kCodePrompt = false;
+      await Promise.all([ toggleKCode(), resetKCode() ]);
+      kCodePrompt = true;
+    }
+  } else {
+    kCodeBuffer.splice(0);
+  }
+  updateKCode();
+};
+
+//-------------------------------------------------------------------------
+
 D.onResize = () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -2980,14 +3053,17 @@ D.onResize = () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
-  document.querySelector(".demeter-screen-background").style.transform = transform;
+  document.querySelector(".demeter-background-kcode").style.transform = transform;
+  document.querySelector(".demeter-background").style.transform = transform;
   document.querySelector(".demeter-screen").style.transform = transform;
 
   updateComponents();
 };
 
 D.onKeydown = async ev => {
-  if (screenName === "main") {
+  if (screenName === "title") {
+    await checkKCode(ev.code);
+  } else if (screenName === "main") {
     if (ev.code === "Enter") {
       cancelPlayState();
       next();

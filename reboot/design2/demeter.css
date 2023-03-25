@@ -41,7 +41,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --screen-background-image: url(bg-portrait.png);
+    --background-image: url(bg-portrait.png);
+    --background-image-kcode: url(bg-portrait-kcode.png);
   }
 }
 
@@ -49,7 +50,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --screen-background-image: url(bg-landscape.png);
+    --background-image: url(bg-landscape.png);
+    --background-image-kcode: url(bg-landscape-kcode.png);
   }
 }
 
@@ -74,11 +76,20 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-screen-background {
+.demeter-background-kcode {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
+  background-image: var(--background-image-kcode);
+  opacity: 0;
+  filter: brightness(0.2) saturate(0);
+}
+
+.demeter-background {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  background-image: var(--background-image);
   opacity: 0;
   filter: brightness(0.2) saturate(0);
 }
@@ -213,6 +224,20 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: center;
   pointer-events: none;
+}
+
+.demeter-title-kcode {
+  font-size: calc(var(--font-size) * 0.75);
+  line-height: calc(var(--font-size) * 0.75);
+}
+
+.demeter-title-kcode-item {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.demeter-title-kcode-item.demeter-active {
+  opacity: 1;
 }
 
 /*************************************************************************/
