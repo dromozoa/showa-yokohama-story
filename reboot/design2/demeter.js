@@ -2123,17 +2123,17 @@ const enterTitleScreen = async () => {
     musicPlayer.fade("vi03");
     await showTitleChoices();
   }
-  document.querySelector(".demeter-projector").append(screenNode);
+  document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterStartScreen = () => {
   setScreenName("start");
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-start-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
   setScreenName("main");
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
   logging.update();
 };
@@ -2144,7 +2144,7 @@ const enterDataScreen = async screenNode => {
     const save = await database.get("save", key);
     screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = save ? " : " + save.saved : "";
   }
-  document.querySelector(".demeter-projector").append(screenNode);
+  document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterLoadScreen = async () => {
@@ -2194,8 +2194,8 @@ const enterCreditsScreen = async () => {
 
   [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
 
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-empty-overlay"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-credits-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
   const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight) + fontSize * 2;
@@ -2888,7 +2888,7 @@ const dialog = async key => {
   const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-dialog-overlay"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
 
   const runDialog = new Promise(resolve => waitForDialog = choice => {
     if (voiceSprite) {
@@ -2928,15 +2928,9 @@ D.onResize = () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
+  document.querySelector(".demeter-screen-background").style.transform = transform;
+  document.querySelector(".demeter-screen").style.transform = transform;
 
-  document.querySelector(".demeter-title-screen").style.transform = transform;
-  document.querySelector(".demeter-start-screen").style.transform = transform;
-  document.querySelector(".demeter-main-screen").style.transform = transform;
-  document.querySelector(".demeter-load-screen").style.transform = transform;
-  document.querySelector(".demeter-save-screen").style.transform = transform;
-  document.querySelector(".demeter-credits-screen").style.transform = transform;
-  document.querySelector(".demeter-dialog-overlay").style.transform = transform;
-  document.querySelector(".demeter-empty-overlay").style.transform = transform;
   updateComponents();
 };
 

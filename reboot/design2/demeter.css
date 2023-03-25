@@ -42,6 +42,9 @@
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
     --screen-background-image: url(bg-portrait.png);
+    /* debug
+    --screen-background-image: url(../output/bg-portrait.png);
+    */
   }
 }
 
@@ -50,6 +53,9 @@
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
     --screen-background-image: url(bg-landscape.png);
+    /* debug
+    --screen-background-image: url(../output/bg-landscape.png);
+    */
   }
 }
 
@@ -74,11 +80,25 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-title-screen {
+.demeter-screen-background {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
+}
+
+.demeter-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+/*************************************************************************/
+
+.demeter-title-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
 }
 
 .demeter-title-unlock-audio {
@@ -205,7 +225,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-start {
@@ -248,7 +267,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-main-logging {
@@ -588,7 +606,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-data-back {
@@ -828,7 +845,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
   overflow: auto;
   scrollbar-width: none;
 }
