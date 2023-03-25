@@ -2320,9 +2320,9 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  const node = document.querySelector(".demeter-screen-background");
-  backgroundAnimation = new D.SaturateFilterAnimation(node);
-  node.style.display = "block";
+  const backgroundNode = document.querySelector(".demeter-screen-background");
+  backgroundAnimation = new D.SaturateFilterAnimation(backgroundNode);
+  backgroundNode.style.opacity = 1;
 }
 
 const initializeTitleScreen = () => {

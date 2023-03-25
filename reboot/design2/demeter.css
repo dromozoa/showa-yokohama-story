@@ -75,11 +75,11 @@ body.demeter {
 /*************************************************************************/
 
 .demeter-screen-background {
-  display: none;
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
+  opacity: 0;
   filter: brightness(0.2) saturate(0);
 }
 
