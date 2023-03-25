@@ -258,14 +258,18 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@music{([^}]*)}" then
       -- @music{キー}
-      -- 段落に音楽を割り当てる
+      -- 段落に音楽を割り当てる。
       paragraph = update(paragraph, "music", trim(_1))
 
     elseif match "^@place{([^}]*)}" then
       -- @place{場所}
-      -- 段落に場所を割り当てる
+      -- 段落に場所を割り当てる。
       paragraph = update(paragraph, "place", trim(_1))
 
+    elseif match "^@background{([^}]*)}" then
+      -- @background{背景}
+      -- 背景を切り替えを割り当てる。
+      paragraph = update(paragraph, "background", trim(_1))
 
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
@@ -375,6 +379,20 @@ local function jump_index(scenario, jump)
   return scenario.labels[jump.label].index
 end
 
+local function summarize(paragraph)
+  local buffer = {}
+  for _, text in ipairs(paragraph) do
+    for _, v in ipairs(text) do
+      if type(v) == "string" then
+        buffer[#buffer + 1] = v
+      else
+        buffer[#buffer + 1] = v[1]
+      end
+    end
+  end
+  return table.concat(buffer)
+end
+
 local function visit(scenario, command, i, u, starts, color)
   color[i] = 1
 
@@ -398,8 +416,8 @@ local function visit(scenario, command, i, u, starts, color)
     if not starts[j] and not color[j] then
       local v = assert(scenario[j])
       assert(not v.system)
-      if v[command] then
-        error(command.." conflicts between "..u[command].." and "..v[command].." at paragraph "..j)
+      if v[command] and u[command] ~= v[command] then
+        error(command.." conflicts between "..u[command].." and "..v[command].." at paragraph "..j..": "..summarize(v))
       end
       v[command] = u[command]
       visit(scenario, command, j, v, starts, color)
@@ -423,7 +441,7 @@ local function search(scenario, command)
   end
   for index, paragraph in ipairs(scenario) do
     if not paragraph.system and not paragraph[command] then
-      error(command.." is nil at paragraph "..index)
+      error(command.." is nil at paragraph "..index..": "..summarize(paragraph))
     end
   end
 end
@@ -455,6 +473,7 @@ return function (scenario_pathname)
   if not scenario.debug then
     search(scenario, "music")
     search(scenario, "place")
+    search(scenario, "background")
   end
   process_dialogs(scenario)
   return scenario

@@ -98,6 +98,9 @@ for i, paragraph in ipairs(scenario) do
   if paragraph.place then
     handle:write(",place:", quote_js(paragraph.place))
   end
+  if paragraph.background then
+    handle:write(",background:", quote_js(paragraph.background))
+  end
   if paragraph.dialog then
     handle:write ",dialog:["
     for _, choice in ipairs(paragraph.dialog.choices) do

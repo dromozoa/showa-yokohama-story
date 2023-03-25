@@ -74,11 +74,26 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-title-screen {
+.demeter-screen-background {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
   background-image: var(--screen-background-image);
+  filter: brightness(0.2) saturate(0);
+}
+
+.demeter-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+/*************************************************************************/
+
+.demeter-title-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
 }
 
 .demeter-title-unlock-audio {
@@ -205,7 +220,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-start {
@@ -248,7 +262,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-main-logging {
@@ -588,7 +601,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
 }
 
 .demeter-data-back {
@@ -708,19 +720,19 @@ body.demeter {
   width: calc(var(--font-size) * 8);
   color: #000;
   font-family: var(--font-family-console);
-  font-size: calc(var(--font-size) * 0.75);
-  line-height: calc(var(--font-size) * 0.75);
+  font-size: calc(var(--font-size) * 0.7);
+  line-height: calc(var(--font-size) * 0.7);
   pointer-events: none;
 }
 
 .demeter-data-tape-label {
   left: calc(var(--font-size) * 1.5);
-  top: 24px;
+  top: 25px;
 }
 
 .demeter-data-tape-label-select {
   left: calc(var(--font-size) * 1.5);
-  top: 26px;
+  top: 27px;
 }
 
 /*************************************************************************/
@@ -828,7 +840,6 @@ body.demeter {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
   overflow: auto;
   scrollbar-width: none;
 }

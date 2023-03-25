@@ -1558,6 +1558,47 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
+D.SaturateFilterAnimation = class {
+  constructor(node) {
+    this.node = node;
+    this.key = "モノクローム";
+    this.value = 0;
+  }
+
+  fade(key, duration) {
+    this.key = key;
+    this.duration = duration;
+
+    this.startTime = performance.now();
+    this.begin = this.value;
+    if (key === "モノクローム") {
+      this.end = 0;
+    } else {
+      this.end = 1;
+    }
+  }
+
+  update() {
+    if (!this.startTime) {
+      return;
+    }
+
+    const now = performance.now();
+    const x = Math.min((now - this.startTime) / this.duration, 1);
+    const y = x * (2 - x)
+    const z = this.begin + (this.end - this.begin) * y;
+
+    this.node.style.filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+
+    this.value = z;
+    if (x === 1) {
+      this.startTime = undefined;
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const systemDefault = {
   id: "system",
   scaleLimit: true,
@@ -1625,6 +1666,7 @@ let screenNamePrev;
 let screenName;
 let systemUi;
 
+let backgroundAnimation;
 let iconAnimation;
 let musicPlayer;
 let audioVisualizer;
@@ -2107,7 +2149,7 @@ const leaveSaveScreen = () => {
 };
 
 const leaveCreditsScreen = () => {
-  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-credits-screen"));
 };
 
 //-------------------------------------------------------------------------
@@ -2121,19 +2163,20 @@ const enterTitleScreen = async () => {
     iconAnimation.start();
   } else {
     musicPlayer.fade("vi03");
+    backgroundAnimation.fade("モノクローム", 2000);
     await showTitleChoices();
   }
-  document.querySelector(".demeter-projector").append(screenNode);
+  document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterStartScreen = () => {
   setScreenName("start");
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-start-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
   setScreenName("main");
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-main-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
   logging.update();
 };
@@ -2144,15 +2187,15 @@ const enterDataScreen = async screenNode => {
     const save = await database.get("save", key);
     screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = save ? " : " + save.saved : "";
   }
-  document.querySelector(".demeter-projector").append(screenNode);
+  document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterLoadScreen = async () => {
   setScreenName("load");
   if (gameState.unlockedPreview) {
-    document.querySelector(".demeter-load-tape-preview-text").textContent = "Showa Yokohama Story '69";
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
-    document.querySelector(".demeter-load-tape-preview-text").textContent = "Broken : 1969/01/19 17:46";
+    document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
   await enterDataScreen(document.querySelector(".demeter-load-screen"));
 };
@@ -2194,8 +2237,8 @@ const enterCreditsScreen = async () => {
 
   [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
 
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-credits-screen"));
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-empty-overlay"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-credits-screen"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
   const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight) + fontSize * 2;
@@ -2224,9 +2267,6 @@ const enterCreditsScreen = async () => {
     await scrollAnimation.start();
   }
 
-  waitForCredits = true;
-  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
-
   if (gameState.unlockPreview && !gameState.unlockedPreview) {
     await dialog("credits-tape-preview");
     gameState.unlockedPreview = true;
@@ -2241,6 +2281,9 @@ const enterCreditsScreen = async () => {
 
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
   iconAnimation.start();
+
+  waitForCredits = true;
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 };
 
 //-------------------------------------------------------------------------
@@ -2275,6 +2318,12 @@ const backCreditsScreen = async () => {
 };
 
 //-------------------------------------------------------------------------
+
+const initializeBackground = () => {
+  backgroundAnimation = new D.SaturateFilterAnimation(document.querySelector(".demeter-screen-background"));
+  // debug
+  D.backgroundAnimation = backgroundAnimation;
+}
 
 const initializeTitleScreen = () => {
   const choiceButtonNodes = [...document.querySelectorAll(".demeter-title-choice")].map(choiceNode => {
@@ -2681,6 +2730,9 @@ const next = async () => {
       place = paragraph[0].place;
       logging.log("現在地: " + place);
     }
+    if (backgroundAnimation.key !== paragraph[0].background) {
+      backgroundAnimation.fade(paragraph[0].background, 2000);
+    }
 
     await Promise.all([ putReadState(), putAutosave() ]);
 
@@ -2888,7 +2940,7 @@ const dialog = async key => {
   const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
-  document.querySelector(".demeter-projector").append(document.querySelector(".demeter-dialog-overlay"));
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
 
   const runDialog = new Promise(resolve => waitForDialog = choice => {
     if (voiceSprite) {
@@ -2928,15 +2980,9 @@ D.onResize = () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
+  document.querySelector(".demeter-screen-background").style.transform = transform;
+  document.querySelector(".demeter-screen").style.transform = transform;
 
-  document.querySelector(".demeter-title-screen").style.transform = transform;
-  document.querySelector(".demeter-start-screen").style.transform = transform;
-  document.querySelector(".demeter-main-screen").style.transform = transform;
-  document.querySelector(".demeter-load-screen").style.transform = transform;
-  document.querySelector(".demeter-save-screen").style.transform = transform;
-  document.querySelector(".demeter-credits-screen").style.transform = transform;
-  document.querySelector(".demeter-dialog-overlay").style.transform = transform;
-  document.querySelector(".demeter-empty-overlay").style.transform = transform;
   updateComponents();
 };
 
@@ -2971,6 +3017,7 @@ D.onError = ev => {
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
+  initializeBackground();
   initializeTitleScreen();
   initializeStartScreen();
   initializeMainScreen();
@@ -2986,6 +3033,12 @@ D.onDOMContentLoaded = async () => {
   while (true) {
     await D.requestAnimationFrame();
     await taskSet.update();
+    if (backgroundAnimation) {
+      backgroundAnimation.update();
+    }
+    if (iconAnimation) {
+      iconAnimation.update();
+    }
     if (audioVisualizer) {
       audioVisualizer.update();
       audioVisualizer.draw();
@@ -2996,9 +3049,6 @@ D.onDOMContentLoaded = async () => {
     }
     if (silhouette) {
       silhouette.draw();
-    }
-    if (iconAnimation) {
-      iconAnimation.update();
     }
   }
 };

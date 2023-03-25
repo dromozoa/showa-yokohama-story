@@ -41,6 +41,7 @@ syntax match sysStart /@start{[^}]*}/
 syntax match sysFinish /@finish{[^}]*}/
 syntax match sysMusic /@music{[^}]*}/
 syntax match sysPlace /@place{[^}]*}/
+syntax match sysBackground /@background{[^}]*}/
 syntax match sysDialog /@dialog{[^}]*}/
 syntax match sysDialogChoice /@dialog_choice{[^}]*}{[^}]*}/
 syntax match sysDebug /@debug/
@@ -74,6 +75,7 @@ highlight default link sysStart Statement
 highlight default link sysFinish Statement
 highlight default link sysMusic Statement
 highlight default link sysPlace Statement
+highlight default link sysBackground Statement
 highlight default link sysDialog Statement
 highlight default link sysDialogChoice Conditional
 highlight default link sysDebug Statement

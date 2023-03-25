@@ -1,17 +1,17 @@
 const paragraph1_when = ($,ctx) => {
-// first.txt:11
+// first.txt:12
 if ((() => {
     ctx.hour = new Date().getHours();
     return 4 <= ctx.hour && ctx.hour < 10;
   })()) { return "おはよう"; }
-// first.txt:14
+// first.txt:15
 if (10 <= ctx.hour && ctx.hour < 18) { return "こんにちは"; }
 };
 
 const paragraph4_when = ($,ctx) => {
-// first.txt:44
+// first.txt:46
 if (ctx.game.visitedVerse3) { return "節選択3"; }
-// first.txt:45
+// first.txt:47
 if (ctx.game.visitedVerse2) { return "節選択2"; }
 };
 
@@ -122,26 +122,28 @@ const paragraph323_when = ($,ctx) => {
 if ($.genesis) { return "創世記"; }
 };
 
-// verse3.txt:746
+// verse3.txt:747
 const paragraph340_leave = ($,ctx) => {
 ctx.game.visitedGospel = true;
   ctx.game.unlockPreview = true;;
 };
 
-// verse3.txt:795
+// verse3.txt:797
 const paragraph350_leave = ($,ctx) => {
 ctx.game.visitedGenesis = true;
 };
 
 const paragraph354_when = ($,ctx) => {
-// preview.txt:20
-if (ctx.game.father === "サム・スペード") { return "サム・スペード"; }
 // preview.txt:21
+if (ctx.game.father === "サム・スペード") { return "サム・スペード"; }
+// preview.txt:22
+if (ctx.game.father === "フィリップ・マーロウ") { return "フィリップ・マーロウ"; }
+// preview.txt:23
 if (ctx.game.father === "マイク・ハマー") { return "マイク・ハマー"; }
 };
 
-// preview.txt:108
-const paragraph371_leave = ($,ctx) => {
+// preview.txt:121
+const paragraph373_leave = ($,ctx) => {
 ctx.game.visitedSixtyNine = true;
 };
 
