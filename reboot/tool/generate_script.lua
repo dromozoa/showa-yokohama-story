@@ -49,9 +49,9 @@ if (D.scenario) {
 D.scenario = {
 ]]
 
+local total = 0
 handle:write "paragraphs:[\n"
 for i, paragraph in ipairs(scenario) do
-  handle:write("// index:", i, "\n") -- debug
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
@@ -91,6 +91,8 @@ for i, paragraph in ipairs(scenario) do
   end
   if paragraph.system then
     handle:write ",system:true"
+  else
+    total = total + 1
   end
   if paragraph.music then
     handle:write(",music:", quote_js(paragraph.music))
@@ -117,6 +119,7 @@ for i, paragraph in ipairs(scenario) do
   handle:write "]],\n"
 end
 handle:write "],\n"
+handle:write("total:", total, ",\n")
 
 handle:write "labels:{\n"
 for _, label in ipairs(scenario.labels) do

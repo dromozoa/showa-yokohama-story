@@ -2289,22 +2289,18 @@ const enterCreditsScreen = async () => {
   setScreenName("credits");
   musicPlayer.fade("vi05");
 
-  let total = 0;
-  let active = 0;
   D.scenario.paragraphs.forEach((paragraph, i) => {
     if (!paragraph[0].system) {
-      ++total;
       const paragraphIndex = i + 1;
       const nodes = [...document.querySelectorAll(".demeter-credits-graph > svg [data-pid='" + paragraphIndex + "']")];
       if (readState.map.has(paragraphIndex)) {
-        ++active;
         nodes.forEach(node => node.classList.add("demeter-active"));
       } else {
         nodes.forEach(node => node.classList.remove("demeter-active"));
       }
     }
   });
-  document.querySelector(".demeter-credits-end-status").textContent = (active / total * 100).toFixed(2).replace(/\.?0*$/, "") + "%";
+  document.querySelector(".demeter-credits-end-status").textContent = (readState.map.size / D.scenario.total * 100).toFixed(2).replace(/\.?0*$/, "") + "%";
 
   const T1 = 2000;
   const T2 = 2000;
