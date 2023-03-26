@@ -2300,7 +2300,10 @@ const enterCreditsScreen = async () => {
       }
     }
   });
-  document.querySelector(".demeter-credits-end-status").textContent = (readState.map.size / D.scenario.total * 100).toFixed(2).replace(/\.?0*$/, "") + "%";
+
+  const scenarioStatus = readState.map.size / D.scenario.total * 100;
+  document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
+  document.querySelector(".demeter-credits-end-trophies-status").textContent = "0 / 0";
 
   const T1 = 2000;
   const T2 = 2000;

@@ -987,9 +987,9 @@ body.demeter {
 .demeter-credits-end-paragraph {
   position: absolute;
   width: var(--screen-width);
-  height: calc(var(--font-size) * 4);
+  height: calc(var(--font-size) * 6);
   left: 0;
-  top: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 10) * 0.5);
 }
 
 .demeter-credits-end-icon {
@@ -998,7 +998,7 @@ body.demeter {
   width: var(--screen-width);
   height: calc(var(--font-size) * 2);
   left: 0;
-  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  bottom: calc((var(--screen-height) - var(--font-size) * 10) * 0.5);
   transform-origin: center bottom;
   pointer-events: none;
 }
