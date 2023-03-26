@@ -2384,7 +2384,7 @@ const backSaveScreen = () => {
 };
 
 const backCreditsScreen = async () => {
-  soundEffectCancel();
+  // 効果音はなしとする。
   if (waitForCredits) {
     waitForCredits = undefined;
     if (iconAnimation) {
