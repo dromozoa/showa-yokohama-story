@@ -974,33 +974,9 @@ D.Logging = class {
     this.logImpl(message, exception.message);
     // TODO 送信
   }
-};
 
-//-------------------------------------------------------------------------
-
-D.TaskSet = class {
-  constructor() {
-    this.prevTime = undefined;
-    this.set = new Set();
-  }
-
-  async update() {
-    const now = performance.now();
-    if (this.prevTime === undefined) {
-      this.prevTime = now;
-      return;
-    }
-    const duration = now - this.prevTime;
-    if (duration < 1000) {
-      return;
-    }
-    await Promise.all([...this.set].map(task => task()));
-    this.set.clear();
-    this.prevTime = performance.now();
-  }
-
-  add(task) {
-    this.set.add(task);
+  verbose(message) {
+    this.logImpl(message);
   }
 };
 
@@ -1693,7 +1669,6 @@ const savePreview = {
 };
 
 const logging = new D.Logging();
-const taskSet = new D.TaskSet();
 const sender = {
   twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
   marshmallow: () => open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer"),
@@ -1743,7 +1718,7 @@ let waitForCredits;
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    // logging.log("システム設定保存: 成功");
+    logging.verbose("システム設定保存: 成功");
   } catch (e) {
     logging.error("システム設定保存: 失敗", e);
   }
@@ -1759,7 +1734,7 @@ const cancelPlayState = () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    // logging.log("ゲーム状態保存: 成功");
+    logging.verbose("ゲーム状態保存: 成功");
   } catch (e) {
     logging.error("ゲーム状態保存: 失敗", e);
   }
@@ -1769,7 +1744,7 @@ const putReadState = async () => {
   try {
     readState.map.set(paragraphIndex, Date.now());
     await database.put("read", readState);
-    // logging.log("既読状態保存: 成功");
+    logging.verbose("既読状態保存: 成功");
   } catch (e) {
     logging.error("既読状態保存: 失敗", e);
   }
@@ -1783,7 +1758,7 @@ const putAutosave = async () => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    // logging.log("自動保存: 成功");
+    logging.verbose("自動保存: 成功");
   } catch (e) {
     logging.error("自動保存: 失敗", e);
   }
@@ -1792,7 +1767,7 @@ const putAutosave = async () => {
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    // logging.log("自動保存データ削除: 成功");
+    logging.verbose("自動保存データ削除: 成功");
   } catch (e) {
     logging.error("自動保存データ削除: 失敗", e);
   }
@@ -1806,7 +1781,7 @@ const putSave = async (key, name) => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    // logging.log(name + "保存: 成功");
+    logging.verbose(name + "保存: 成功");
   } catch (e) {
     logging.error(name + "保存: 失敗", e);
   }
@@ -1815,7 +1790,7 @@ const putSave = async (key, name) => {
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
-    // logging.log(name + "削除: 成功");
+    logging.verbose(name + "削除: 成功");
   } catch (e) {
     logging.error(name + "削除: 失敗", e);
   }
@@ -1843,6 +1818,8 @@ const evaluate = async fn => {
     sender: sender,
   });
   await Promise.all([ putGameState(), putAutosave() ]);
+  // await putGameState();
+  // await putAutosave();
   return result;
 };
 
@@ -2103,7 +2080,7 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
-  systemUi.onChange(() => taskSet.add(putSystemTask));
+  systemUi.onFinishChange(putSystemTask);
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
@@ -2143,7 +2120,7 @@ const initializeSystemUi = () => {
     systemUi.openAnimated(false);
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
-      putSystemTask();
+      await putSystemTask();
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
@@ -3229,7 +3206,6 @@ D.onDOMContentLoaded = async () => {
 
   while (true) {
     await D.requestAnimationFrame();
-    await taskSet.update();
     if (backgroundAnimation) {
       backgroundAnimation.update();
     }
