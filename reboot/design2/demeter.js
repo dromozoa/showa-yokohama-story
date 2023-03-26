@@ -938,6 +938,7 @@ const startTexts = {
 D.preferences = {
   musicDir: "../output/music",
   voiceDir: "../output/voice",
+  effectDir: "../output/effect",
 };
 
 //-------------------------------------------------------------------------
@@ -1602,6 +1603,47 @@ D.SaturateFilterAnimation = class {
 
 //-------------------------------------------------------------------------
 
+D.SoundEffect = class {
+  constructor(volume) {
+    const basename = D.preferences.effectDir + "/effect";
+    this.volume = volume;
+    this.sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: this.volume,
+      sprite: D.effectSprite,
+    });
+  }
+
+  start(sprite) {
+    this.sound.play(sprite);
+  }
+
+  updateVolume(volume) {
+    this.volume = volume;
+    this.sound.volume(volume);
+  }
+};
+
+const soundEffectSelect = () => {
+  if (soundEffect) {
+    soundEffect.start("select");
+  }
+};
+
+const soundEffectCancel = () => {
+  if (soundEffect) {
+    soundEffect.start("cancel");
+  }
+};
+
+const soundEffectBeep = () => {
+  if (soundEffect) {
+    soundEffect.start("beep");
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const systemDefault = {
   id: "system",
   scaleLimit: true,
@@ -1611,6 +1653,7 @@ const systemDefault = {
   masterVolume: 1,
   musicVolume: 1,
   voiceVolume: 1,
+  effectVolume: 1,
   componentColor: [1, 1, 1],
   componentOpacity: 0.25,
   logging: true,
@@ -1672,6 +1715,7 @@ let systemUi;
 let backgroundAnimation;
 let iconAnimation;
 let musicPlayer;
+let soundEffect;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
@@ -1838,6 +1882,8 @@ const showTitleChoices = async () => {
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
 
+  soundEffect = new D.SoundEffect(system.effectVolume);
+
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
 
@@ -1933,6 +1979,12 @@ const updateSystemMusicVolume = () => {
 const updateSystemVoiceVolume = () => {
   if (voiceSprite) {
     voiceSprite.updateVolume(system.voiceVolume);
+  }
+};
+
+const updateSystemEffectVolume = () => {
+  if (soundEffect) {
+    soundEffect.updateVolume(system.effectVolume);
   }
 };
 
@@ -2060,6 +2112,7 @@ const initializeSystemUi = () => {
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateSystemMasterVolume);
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
+  systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateSystemEffectVolume);
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -2073,6 +2126,7 @@ const initializeSystemUi = () => {
   const commands = {};
 
   commands.backToTitle = async () => {
+    soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-back-to-title") === "yes") {
@@ -2084,6 +2138,7 @@ const initializeSystemUi = () => {
   };
 
   commands.resetSystem = async () => {
+    soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-reset-system") === "yes") {
@@ -2097,6 +2152,7 @@ const initializeSystemUi = () => {
       updateSystemMasterVolume();
       updateSystemMusicVolume();
       updateSystemVoiceVolume();
+      updateSystemEffectVolume();
       updateComponentColor();
       updateComponentOpacity();
       updateComponents();
@@ -2105,6 +2161,7 @@ const initializeSystemUi = () => {
   };
 
   commands.resetSave = async () => {
+    soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-reset-save") === "yes") {
@@ -2308,6 +2365,7 @@ const enterCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
+  soundEffectCancel();
   if (screenNamePrev === "title") {
     leaveLoadScreen();
     await enterTitleScreen();
@@ -2319,12 +2377,14 @@ const backLoadScreen = async () => {
 };
 
 const backSaveScreen = () => {
+  soundEffectCancel();
   leaveSaveScreen();
   enterMainScreen();
   restart();
 };
 
 const backCreditsScreen = async () => {
+  soundEffectCancel();
   if (waitForCredits) {
     waitForCredits = undefined;
     if (iconAnimation) {
@@ -2353,6 +2413,7 @@ const initializeTitleScreen = () => {
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", () => {
+    soundEffectSelect();
     setSave(saveNewGame);
     leaveTitleScreen();
     enterMainScreen();
@@ -2361,12 +2422,14 @@ const initializeTitleScreen = () => {
 
   // LOAD GAME
   choiceButtonNodes[1].addEventListener("click", async () => {
+    soundEffectSelect();
     leaveTitleScreen();
     await enterLoadScreen();
   });
 
   // CONTINUE
   choiceButtonNodes[2].addEventListener("click", async () => {
+    soundEffectSelect();
     setSave(await database.get("save", "autosave"));
     leaveTitleScreen();
     enterMainScreen();
@@ -2375,6 +2438,7 @@ const initializeTitleScreen = () => {
 
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async () => {
+    soundEffectSelect();
     leaveTitleScreen();
     await enterCreditsScreen();
   });
@@ -2406,16 +2470,19 @@ const initializeMainScreen = () => {
 
     // 選択肢表示中は受けつけない。
     if (waitForChoice) {
+      soundEffectBeep();
       return;
     }
 
     cancelPlayState();
     if (systemUi._hidden) {
+      soundEffectSelect();
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
       systemUiNode.style.display = "block";
       systemUi.show();
       systemUi.openAnimated();
     } else {
+      soundEffectCancel();
       systemUi.openAnimated(false);
     }
   });
@@ -2423,6 +2490,7 @@ const initializeMainScreen = () => {
   // LOAD
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", async ev => {
     ev.stopPropagation();
+    soundEffectSelect();
     cancelPlayState();
     pause();
     leaveMainScreen();
@@ -2432,6 +2500,7 @@ const initializeMainScreen = () => {
   // SAVE
   menuFrameNode.querySelector(".demeter-button3").addEventListener("click", async ev => {
     ev.stopPropagation();
+    soundEffectSelect();
     cancelPlayState();
     pause();
     leaveMainScreen();
@@ -2443,15 +2512,18 @@ const initializeMainScreen = () => {
     ev.stopPropagation();
 
     if (playState === "auto") {
+      soundEffectCancel();
       cancelPlayState();
       return;
     }
 
     // 選択肢表示中は受けつけない。
     if (waitForChoice) {
+      soundEffectBeep();
       return;
     }
 
+    soundEffectSelect();
     cancelPlayState();
     playState = "auto";
     menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
@@ -2463,15 +2535,18 @@ const initializeMainScreen = () => {
     ev.stopPropagation();
 
     if (playState === "skip") {
+      soundEffectCancel();
       cancelPlayState();
       return;
     }
 
     // 選択肢表示中は受けつけない。
     if (waitForChoice) {
+      soundEffectBeep();
       return;
     }
 
+    soundEffectSelect();
     cancelPlayState();
     playState = "skip";
     menuFrameNode.querySelector(".demeter-button5").classList.add("demeter-active");
@@ -2483,6 +2558,7 @@ const initializeMainScreen = () => {
     choiceNode.append(choiceFrameNode);
     choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
       ev.stopPropagation();
+      soundEffectSelect();
       cancelPlayState();
       waitForChoice(choices[i + choices.length - 3]);
     });
@@ -2499,6 +2575,7 @@ const initializeLoadScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", backLoadScreen);
 
   document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("load-tape-select") === "yes") {
       await stop();
       setSave(saveSelect);
@@ -2509,6 +2586,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("load-tape-tutorial") === "yes") {
       await stop();
       setSave(saveTutorial);
@@ -2519,6 +2597,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
+    soundEffectSelect();
     if (gameState.unlockedPreview) {
       if (await dialog("load-tape-preview") === "yes") {
         await stop();
@@ -2533,6 +2612,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save1");
     if (save) {
       if (await dialog("load-tape-save1") === "yes") {
@@ -2548,6 +2628,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save2");
     if (save) {
       if (await dialog("load-tape-save2") === "yes") {
@@ -2563,6 +2644,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save3").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save3");
     if (save) {
       if (await dialog("load-tape-save3") === "yes") {
@@ -2588,6 +2670,7 @@ const initializeSaveScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", backSaveScreen);
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save1") === "yes") {
       await putSave("save1", "#1");
       leaveSaveScreen();
@@ -2597,6 +2680,7 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save2") === "yes") {
       await putSave("save2", "#2");
       leaveSaveScreen();
@@ -2606,6 +2690,7 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save3") === "yes") {
       await putSave("save3", "#3");
       leaveSaveScreen();
@@ -2971,7 +3056,9 @@ const dialog = async key => {
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
   const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
+  const voiceSound = new Howl({
+    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+  });
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
@@ -2992,7 +3079,13 @@ const dialog = async key => {
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
-  return dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  const result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  if (result === "no") {
+    soundEffectCancel();
+  } else {
+    soundEffectSelect();
+  }
+  return result;
 };
 
 //-------------------------------------------------------------------------

@@ -279,7 +279,9 @@ local function parse(scenario, include_path, filename)
 
     elseif match "^@dialog_choice{([^}]*)}{([^}]*)}" then
       local dialog = assert(paragraph.dialog)
-      dialog.choices = append(dialog.choices, { choice = trim(_1), result = trim(_2) })
+      local result = trim(_2)
+      assert(result == "yes" or result == "no" or result == "ok")
+      dialog.choices = append(dialog.choices, { choice = trim(_1), result = result })
 
     elseif match "^@debug" then
       update(scenario, "debug", true)

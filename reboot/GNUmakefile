@@ -62,6 +62,10 @@ convert_debug:
 clean_voice::
 	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
 
+convert_effect:
+	./tool/convert_effect.sh output/effect output/effect-out/30 "*.wav"
+	cp -f output/effect/demeter-effect-sprite.js design2/demeter-effect-sprite.js
+
 #--------------------------------------------------------------------------
 
 $(voicepeak_dic): scenario/dic.json
