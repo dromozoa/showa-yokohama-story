@@ -1725,7 +1725,11 @@ const putSystemTask = async () => {
 };
 
 // ユーザ操作が行われたらAUTO/SKIPを解除する。
-const cancelPlayState = () => {
+const cancelPlayState = async () => {
+  // SKIPが解除されたら自動保存する。
+  if (playState === "skip") {
+    await Promise.all([ putReadState(), putAutosave() ]);
+  }
   playState = undefined;
   document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
@@ -1818,8 +1822,6 @@ const evaluate = async fn => {
     sender: sender,
   });
   await Promise.all([ putGameState(), putAutosave() ]);
-  // await putGameState();
-  // await putAutosave();
   return result;
 };
 
@@ -2429,20 +2431,20 @@ const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
-  document.querySelector(".demeter-main-screen").addEventListener("click", ev => {
+  document.querySelector(".demeter-main-screen").addEventListener("click", async ev => {
     ev.stopPropagation();
-    cancelPlayState();
+    await cancelPlayState();
     next();
   });
 
-  document.querySelector(".demeter-main-system-ui").addEventListener("click", ev => {
-    // システムUIの表示中はバブリングを伝播させない。
+  document.querySelector(".demeter-main-system-ui").addEventListener("click", async ev => {
+    // システムUIの表示中はバブリングを停止する。
     ev.stopPropagation();
-    cancelPlayState();
+    await cancelPlayState();
   });
 
   // SYSTEM
-  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async ev => {
     ev.stopPropagation();
 
     // 選択肢表示中は受けつけない。
@@ -2451,7 +2453,7 @@ const initializeMainScreen = () => {
       return;
     }
 
-    cancelPlayState();
+    await cancelPlayState();
     if (systemUi._hidden) {
       soundEffectSelect();
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
@@ -2468,7 +2470,7 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", async ev => {
     ev.stopPropagation();
     soundEffectSelect();
-    cancelPlayState();
+    await cancelPlayState();
     pause();
     leaveMainScreen();
     await enterLoadScreen();
@@ -2478,19 +2480,19 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button3").addEventListener("click", async ev => {
     ev.stopPropagation();
     soundEffectSelect();
-    cancelPlayState();
+    await cancelPlayState();
     pause();
     leaveMainScreen();
     await enterSaveScreen();
   });
 
   // AUTO
-  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", async ev => {
     ev.stopPropagation();
 
     if (playState === "auto") {
       soundEffectCancel();
-      cancelPlayState();
+      await cancelPlayState();
       return;
     }
 
@@ -2501,19 +2503,19 @@ const initializeMainScreen = () => {
     }
 
     soundEffectSelect();
-    cancelPlayState();
+    await cancelPlayState();
     playState = "auto";
     menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
     next();
   });
 
   // SKIP
-  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", async ev => {
     ev.stopPropagation();
 
     if (playState === "skip") {
       soundEffectCancel();
-      cancelPlayState();
+      await cancelPlayState();
       return;
     }
 
@@ -2524,7 +2526,7 @@ const initializeMainScreen = () => {
     }
 
     soundEffectSelect();
-    cancelPlayState();
+    await cancelPlayState();
     playState = "skip";
     menuFrameNode.querySelector(".demeter-button5").classList.add("demeter-active");
     next();
@@ -2533,10 +2535,10 @@ const initializeMainScreen = () => {
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
     choiceNode.append(choiceFrameNode);
-    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
+    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", async ev => {
       ev.stopPropagation();
       soundEffectSelect();
-      cancelPlayState();
+      await cancelPlayState();
       waitForChoice(choices[i + choices.length - 3]);
     });
   });
@@ -2817,7 +2819,7 @@ const next = async () => {
     }
 
     if (playState === "skip" && !system.skipUnread && !readState.map.has(paragraphIndex)) {
-      cancelPlayState();
+      await cancelPlayState();
     }
 
     if (musicPlayer.key !== paragraph[0].music) {
@@ -2831,7 +2833,10 @@ const next = async () => {
       backgroundAnimation.fade(paragraph[0].background, 2000);
     }
 
-    await Promise.all([ putReadState(), putAutosave() ]);
+    // SKIP中は自動保存しない。
+    if (playState !== "skip") {
+      await Promise.all([ putReadState(), putAutosave() ]);
+    }
 
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;
@@ -2889,8 +2894,8 @@ const next = async () => {
 
     choices = paragraph[0].choices;
     if (choices) {
-      // 選択肢が表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
-      cancelPlayState();
+      // 選択肢の表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
+      await cancelPlayState();
 
       const choiceNodes = [
         document.querySelector(".demeter-main-choice1"),
@@ -2940,16 +2945,16 @@ const next = async () => {
     }
 
     if (playState) {
-      // この段落にfinishを指定されていたら、AUTO/SKIPを解除する。
+      // この段落にfinishが指定されていたら、AUTO/SKIPを解除する。
       if (paragraph[0].finish) {
-        cancelPlayState();
+        await cancelPlayState();
       }
       // 次の段落にstartが指定されていたら、AUTO/SKIPを解除する。startとwhenは同
       // 時に指定できないので評価しなくてよい。
       const paragraphIndexNext = paragraphIndexPrev + 1;
       const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
       if (paragraphNext[0].start) {
-        cancelPlayState();
+        await cancelPlayState();
       }
     }
 
@@ -3163,10 +3168,10 @@ D.onKeydown = async ev => {
     await checkKCode(ev.code);
   } else if (screenName === "main") {
     if (ev.code === "Enter") {
-      cancelPlayState();
+      await cancelPlayState();
       next();
     } else if (ev.code === "Escape") {
-      cancelPlayState();
+      await cancelPlayState();
       systemUi.openAnimated(false);
     }
   } else if (screenName === "load") {
