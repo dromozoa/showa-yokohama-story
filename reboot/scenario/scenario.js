@@ -15,12 +15,12 @@ if (ctx.game.visitedVerse3) { return "節選択3"; }
 if (ctx.game.visitedVerse2) { return "節選択2"; }
 };
 
-// tutorial.txt:63
+// tutorial.txt:65
 const paragraph16_choice1_action = ($,ctx) => {
 ctx.sender.twitter();
 };
 
-// tutorial.txt:64
+// tutorial.txt:66
 const paragraph16_choice2_action = ($,ctx) => {
 ctx.sender.marshmallow();
 };

@@ -1679,6 +1679,7 @@ let place;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
+let paragraphIndexLast;
 let paragraphIndex;
 let paragraph;
 let paragraphLineNumber;
@@ -1778,6 +1779,9 @@ const deleteSave = async (key, name) => {
 
 const setSave = save => {
   paragraphIndexPrev = save.paragraphIndex - 1;
+  paragraphIndexSave = save.paragraphIndex;
+  paragraphIndexLast = undefined;
+  paragraphIndex = undefined;
   state = save.state;
 };
 
@@ -2068,6 +2072,17 @@ const initializeSystemUi = () => {
 
   const commands = {};
 
+  commands.backToTitle = async () => {
+    pause();
+    systemUi.openAnimated(false);
+    if (await dialog("system-back-to-title") === "yes") {
+      await stop();
+      leaveMainScreen();
+      await enterTitleScreen();
+    }
+    restart();
+  };
+
   commands.resetSystem = async () => {
     pause();
     systemUi.openAnimated(false);
@@ -2108,8 +2123,9 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
-  commandsFolder.add(commands, "resetSystem").name("システム設定初期化");
-  commandsFolder.add(commands, "resetSave").name("セーブデータ全削除");
+  commandsFolder.add(commands, "backToTitle").name("タイトル画面に戻る");
+  commandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
+  commandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2387,6 +2403,12 @@ const initializeMainScreen = () => {
   // SYSTEM
   menuFrameNode.querySelector(".demeter-button1").addEventListener("click", ev => {
     ev.stopPropagation();
+
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
+      return;
+    }
+
     cancelPlayState();
     if (systemUi._hidden) {
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
@@ -2425,6 +2447,11 @@ const initializeMainScreen = () => {
       return;
     }
 
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
+      return;
+    }
+
     cancelPlayState();
     playState = "auto";
     menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
@@ -2437,6 +2464,11 @@ const initializeMainScreen = () => {
 
     if (playState === "skip") {
       cancelPlayState();
+      return;
+    }
+
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
       return;
     }
 
@@ -2697,13 +2729,13 @@ const next = async () => {
   }
 
   if (paragraphIndex === undefined) {
-    const paragraphSave = D.scenario.paragraphs[paragraphIndexSave - 1];
-    if (paragraphSave && paragraphSave[0].finish) {
-      paragraphIndexPrev = undefined;
-      paragraphIndexSave = undefined;
+    const paragraphLast = D.scenario.paragraphs[paragraphIndexLast - 1];
+    if (paragraphLast && paragraphLast[0].finish) {
+      paragraphIndexLast = undefined;
+      resetParagraph();
       await deleteAutosave();
       leaveMainScreen();
-      if (paragraphSave[0].finish === "title") {
+      if (paragraphLast[0].finish === "title") {
         await enterTitleScreen();
       } else {
         await enterCreditsScreen();
@@ -2711,13 +2743,13 @@ const next = async () => {
       return;
     }
 
-    paragraphIndex = paragraphIndexSave = paragraphIndexPrev + 1;
+    paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexPrev + 1;
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
       const paragraphIndexWhen = await evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
-        paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
+        paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
       }
     }
@@ -2783,7 +2815,6 @@ const next = async () => {
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
   if (waitForStop) {
-    resetParagraph();
     return waitForStop();
   }
 
@@ -2796,8 +2827,7 @@ const next = async () => {
 
     choices = paragraph[0].choices;
     if (choices) {
-      // 選択肢が表示時にAUTO/STOPを解除する。選択肢表示中にAUTO/SAVEがクリック
-      // された場合、選択肢をクリックした時にまた解除される。
+      // 選択肢が表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
       cancelPlayState();
 
       const choiceNodes = [
@@ -2816,13 +2846,13 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
 
+      systemUi.openAnimated(false);
       document.querySelector(".demeter-main-choices").style.display = "block";
       while (true) {
         const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
         waitForChoice = undefined;
 
         if (waitForStop) {
-          resetParagraph();
           document.querySelector(".demeter-main-choices").style.display = "none";
           choices = undefined;
           return waitForStop();
@@ -2862,7 +2892,6 @@ const next = async () => {
     }
 
     resetParagraph();
-
   }
 
   if (cont) {
@@ -2900,7 +2929,7 @@ const restart = () => {
 
 const stop = async () => {
   if (textAnimation || voiceSprite || waitForChoice) {
-    const run = new Promise(resolve => waitForStop = () => resolve());
+    const stop = new Promise(resolve => waitForStop = () => resolve());
     if (textAnimation) {
       textAnimation.finish();
     }
@@ -2910,11 +2939,11 @@ const stop = async () => {
     if (waitForChoice) {
       waitForChoice(undefined);
     }
-    await run;
+    await stop;
     waitForStop = undefined;
-  } else {
-    resetParagraph();
   }
+  paragraphIndexLast = undefined;
+  resetParagraph();
 };
 
 //-------------------------------------------------------------------------

@@ -80,12 +80,14 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index:8
 [{speaker:"narrator",choices:[
-{choice:["人類を滅ぼす"],label:9},
-{choice:["少女を犠牲にする"],label:10},
+{choice:["人類の滅亡を見守る"],label:9},
+{choice:["少女を犠牲に捧げる"],label:10},
 {choice:["択ばない"],label:11},
 ],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
 ["ボクたちは、択ばれなかった選択肢の側に立つ紐帯だ。"],
-["たとえば、——昭和が暴走した。このままでは、終わらない昭和に人類は轢き殺される。選択肢がある。少女を犠牲に捧げれば、人類は救われる。"],
+["たとえば——昭和が暴走した。"],
+["終わらない昭和に、このままでは人類は轢き殺される。"],
+["選択肢がある。少女を犠牲に、人類を救う。"],
 ]],
 // index:9
 [{speaker:"narrator",jump:12,music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
@@ -2166,74 +2168,78 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ]],
 // index:374
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
-["本当に設定を戻していい？"],
+["タイトルに戻る？"],
 ]],
 // index:375
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
-["セーブデータを全部削除して、タイトルに戻る。"],
+["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
+["本当に設定を戻していい？"],
+]],
+// index:376
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["全セーブデータを削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
-// index:376
+// index:377
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
-// index:377
+// index:378
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["このテープにはチュートリアルが記録されている。"],
-["チュートリアルを開始する？"],
+["チュートリアルをはじめる？"],
 ]],
-// index:378
+// index:379
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
-// index:379
+// index:380
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
-// index:380
+// index:381
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:381
+// index:382
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:382
+// index:383
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index:383
+// index:384
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index:384
+// index:385
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:385
+// index:386
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:386
+// index:387
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index:387
+// index:388
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
@@ -2289,20 +2295,21 @@ labels:{
 "ゲバルト・ローザ終":364,
 },
 dialogs:{
-"system-reset-system":374,
-"system-reset-save":375,
-"load-tape-select":376,
-"load-tape-tutorial":377,
-"load-tape-broken":378,
-"load-tape-preview":379,
-"load-tape-save1":380,
-"load-tape-save2":381,
-"load-tape-save3":382,
-"load-tape-empty":383,
-"save-tape-save1":384,
-"save-tape-save2":385,
-"save-tape-save3":386,
-"credits-tape-preview":387,
+"system-back-to-title":374,
+"system-reset-system":375,
+"system-reset-save":376,
+"load-tape-select":377,
+"load-tape-tutorial":378,
+"load-tape-broken":379,
+"load-tape-preview":380,
+"load-tape-save1":381,
+"load-tape-save2":382,
+"load-tape-save3":383,
+"load-tape-empty":384,
+"save-tape-save1":385,
+"save-tape-save2":386,
+"save-tape-save3":387,
+"credits-tape-preview":388,
 },
 };
 
