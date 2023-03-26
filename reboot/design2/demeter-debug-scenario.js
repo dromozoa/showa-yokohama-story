@@ -9,7 +9,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index:1
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか"},[
 ["二人称の文体で書かれた、これは無口な一人称の物語。"],
 ["画面の右下で弾む円匙と斧槍のアイコンは、キミに入力をうながしている。"],
 ["クリックでもタッチでもエンターでも。お好みで。"],

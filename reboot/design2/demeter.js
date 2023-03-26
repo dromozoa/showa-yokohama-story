@@ -944,6 +944,10 @@ D.preferences = {
 //-------------------------------------------------------------------------
 
 D.Logging = class {
+  constructor() {
+    this.level = 6;
+  }
+
   update() {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
       behavior: "smooth",
@@ -966,17 +970,38 @@ D.Logging = class {
     this.update();
   }
 
-  log(message) {
-    this.logImpl(message);
+  setLevel(level) {
+    this.level = level;
   }
 
   error(message, exception) {
-    this.logImpl(message, exception.message);
-    // TODO 送信
+    if (this.level >= 3) {
+      this.logImpl(message, exception.message);
+    }
   }
 
-  verbose(message) {
-    this.logImpl(message);
+  warn(message) {
+    if (this.level >= 4) {
+      this.logImpl(message);
+    }
+  }
+
+  notice(message) {
+    if (this.level >= 5) {
+      this.logImpl(message);
+    }
+  }
+
+  info(message) {
+    if (this.level >= 6) {
+      this.logImpl(message);
+    }
+  }
+
+  debug(message) {
+    if (this.level >= 7) {
+      this.logImpl(message);
+    }
   }
 };
 
@@ -1067,7 +1092,7 @@ D.MusicPlayer = class {
     this.key = key;
     this.sound = sound;
     this.soundId = soundId;
-    logging.log("音楽開始: " + musicNames[key]);
+    logging.info("音楽開始: " + musicNames[key]);
   }
 
   fade(key) {
@@ -1080,7 +1105,7 @@ D.MusicPlayer = class {
 
     this.sound.once("fade", soundId=> {
       oldSound.stop();
-      logging.log("音楽終了: " + musicNames[oldKey]);
+      logging.debug("音楽終了: " + musicNames[oldKey]);
     });
 
     oldSound.fade(this.volume, 0, 5000, oldSoundId);
@@ -1718,7 +1743,7 @@ let waitForCredits;
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    logging.verbose("システム設定保存: 成功");
+    logging.debug("システム設定保存: 成功");
   } catch (e) {
     logging.error("システム設定保存: 失敗", e);
   }
@@ -1738,7 +1763,7 @@ const cancelPlayState = async () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    logging.verbose("ゲーム状態保存: 成功");
+    logging.debug("ゲーム状態保存: 成功");
   } catch (e) {
     logging.error("ゲーム状態保存: 失敗", e);
   }
@@ -1746,9 +1771,8 @@ const putGameState = async () => {
 
 const putReadState = async () => {
   try {
-    readState.map.set(paragraphIndex, Date.now());
     await database.put("read", readState);
-    logging.verbose("既読状態保存: 成功");
+    logging.debug("既読状態保存: 成功");
   } catch (e) {
     logging.error("既読状態保存: 失敗", e);
   }
@@ -1762,7 +1786,7 @@ const putAutosave = async () => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.verbose("自動保存: 成功");
+    logging.debug("自動保存: 成功");
   } catch (e) {
     logging.error("自動保存: 失敗", e);
   }
@@ -1771,7 +1795,7 @@ const putAutosave = async () => {
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    logging.verbose("自動保存データ削除: 成功");
+    logging.debug("自動保存データ削除: 成功");
   } catch (e) {
     logging.error("自動保存データ削除: 失敗", e);
   }
@@ -1785,7 +1809,7 @@ const putSave = async (key, name) => {
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.verbose(name + "保存: 成功");
+    logging.debug(name + "保存: 成功");
   } catch (e) {
     logging.error(name + "保存: 失敗", e);
   }
@@ -1794,7 +1818,7 @@ const putSave = async (key, name) => {
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
-    logging.verbose(name + "削除: 成功");
+    logging.debug(name + "削除: 成功");
   } catch (e) {
     logging.error(name + "削除: 失敗", e);
   }
@@ -1879,7 +1903,7 @@ const unlockAudio = async () => {
   audioVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
 
-  logging.log("オーディオロック: 解除");
+  logging.info("オーディオロック: 解除");
 };
 
 //-------------------------------------------------------------------------
@@ -1925,7 +1949,7 @@ const initializeDatabase = async () => {
     setItemDefault(readState, readStateDefault);
     await database.put("read", readState);
 
-    logging.log("ローカルデータベース接続: 成功");
+    logging.info("ローカルデータベース接続: 成功");
   } catch (e) {
     logging.error("ローカルデータベース接続: 失敗", e);
   }
@@ -2055,7 +2079,7 @@ const initializeComponents = () => {
   updateComponentOpacity();
   updateComponents();
 
-  logging.log("コンポーネント初期化: 完了");
+  logging.info("コンポーネント初期化: 完了");
 };
 
 //-------------------------------------------------------------------------
@@ -2172,7 +2196,7 @@ const initializeSystemUi = () => {
       systemUiNode.style.display = "none";
       if (!initialized) {
         initialized = true;
-        logging.log("システム設定初期化: 完了");
+        logging.info("システム設定初期化: 完了");
       }
     }
   });
@@ -2218,6 +2242,7 @@ const enterTitleScreen = async () => {
     iconAnimation.start();
   } else {
     musicPlayer.fade("vi03");
+    place = undefined;
     backgroundAnimation.fade("モノクローム", 2000);
     await showTitleChoices();
   }
@@ -2698,7 +2723,7 @@ const initializeAudio = () => {
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
   musicPlayer.start("vi03");
-  logging.log("オーディオ初期化: 完了");
+  logging.info("オーディオ初期化: 完了");
 };
 
 //-------------------------------------------------------------------------
@@ -2827,12 +2852,13 @@ const next = async () => {
     }
     if (place !== paragraph[0].place) {
       place = paragraph[0].place;
-      logging.log("現在地: " + place);
+      logging.notice("現在地: " + place);
     }
     if (backgroundAnimation.key !== paragraph[0].background) {
       backgroundAnimation.fade(paragraph[0].background, 2000);
     }
 
+    readState.map.set(paragraphIndex, Date.now());
     // SKIP中は自動保存しない。
     if (playState !== "skip") {
       await Promise.all([ putReadState(), putAutosave() ]);
@@ -3190,7 +3216,7 @@ D.onKeydown = async ev => {
 };
 
 D.onError = ev => {
-  logging.error("エラー捕捉", ev);
+  logging.error("ゲームシステム: エラー捕捉", ev);
 };
 
 D.onDOMContentLoaded = async () => {

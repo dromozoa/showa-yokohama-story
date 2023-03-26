@@ -18,7 +18,7 @@ if((() => {
     return 4 <= ctx.hour && ctx.hour < 10;
   })())return 2;
 if(10 <= ctx.hour && ctx.hour < 18)return 3;
-},music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんばんは、かな。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -28,7 +28,7 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:18},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["おはよう。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -38,7 +38,7 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:18},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんにちは、だね。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -50,7 +50,7 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ],when:($,ctx)=>{
 if(ctx.game.visitedVerse3)return 6;
 if(ctx.game.visitedVerse2)return 5;
-},music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["第一節は、","一本道","の迷路。"],
 ["第二節と第三節は、まだ開放されていない。"],
 ]],
@@ -58,7 +58,7 @@ if(ctx.game.visitedVerse2)return 5;
 [{speaker:"narrator",choices:[
 {choice:["第一節"],label:18},
 {choice:["第二節"],label:65},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["第二節には、",["バッド","アングッド"],"エンドがあるので、気をつけて。"],
 ["それを択んだら、少しだけ間をおいて終わりがきます。"],
 ["第三節は、まだ開放されていない。"],
@@ -68,12 +68,12 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["第一節"],label:18},
 {choice:["第二節"],label:65},
 {choice:["第三節"],label:187},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 [["順番","シーケンシャル"],"にしか読むことができない","類","の、これは",["媒体","メディア"],"。"],
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ]],
 // index:7
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["二人称の文体で書かれた、これは無口な一人称の物語。"],
 ["画面の右下で弾む円匙と斧槍のアイコンは、キミに入力をうながしている。"],
 ["クリックでもタッチでもエンターでも。お好みで。"],
@@ -83,50 +83,50 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["人類の滅亡を見守る"],label:9},
 {choice:["少女を犠牲に捧げる"],label:10},
 {choice:["択ばない"],label:11},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["ボクたちは、択ばれなかった選択肢の側に立つ紐帯だ。"],
 ["たとえば——昭和が暴走した。"],
 ["終わらない昭和に、このままでは人類は轢き殺される。"],
 ["選択肢がある。少女を犠牲に、人類を救う。"],
 ]],
 // index:9
-[{speaker:"narrator",jump:12,music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",jump:12,music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["胸糞の悪い問題を出して、ごめん。"],
 ["さて、キミの選択によって、人類は滅亡した。"],
 ["気にすることはない。"],
 ["人類なんて",["初手","はな"],"から滅んでるんだから。"],
 ]],
 // index:10
-[{speaker:"narrator",jump:12,music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",jump:12,music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["胸糞の悪い問題を出して、ごめん。"],
 ["さて、キミの選択によって、少女は斃れた。"],
 ["気に病む必要はない。"],
 ["キミは人類を救った。きっと。たぶん。だけど。"],
 ]],
 // index:11
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["キミは択ばないという選択肢を択んだ。"],
 ["択んだのか、択ばなかったのか、どちらだろう。"],
 ["どちらでもあり、どちらでもない。"],
 ["しかし、少女が行ったところまでは見えなかった。"],
 ]],
 // index:12
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["画面上部の",["システム","SYSTEM"],"ボタンを押すと、",["設定","コントロール"],"パネルが表示される。もういちど押したら、消える。"],
 ["パネルの下のほうが隠れていたら、スクロール。"],
 ]],
 // index:13
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["キミがどこまで読んだか、システムは暗黙に記憶する。"],
 ["爪が折れた","三本","のテープと、爪が折れていない","三本","のテープが用意されている。"],
 ["キミは、明示的に、",["読出","LOAD"],"したり、",["書出","SAVE"],"したりできる。"],
 ]],
 // index:14
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 [["自動","AUTO"],"再生すると、選択肢が示されるまで、あるいは、キミがなんらか入力するまで、テクストと",["音声","ボイス"],"が順番に再生されていく。"],
 ]],
 // index:15
-[{speaker:"narrator",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 [["高速","SKIP"],"再生も似たようなものだけど、",["音声","ボイス"],"を再生しない。"],
 ["フレーム毎に","一行","、素早くテクストをつらつら書きつらねる。"],
 ["システム設定でチェックを入れるまで、未読の段落はスキップされない。"],
@@ -136,12 +136,12 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["ツイッターで質問する"],action:($,ctx)=>{ctx.sender.twitter();},barcode:"Twitter",label:16},
 {choice:["マシュマロで質問する"],action:($,ctx)=>{ctx.sender.marshmallow();},barcode:"Marshmallow",label:16},
 {choice:["質問はない"],barcode:"THE WRONG GOODBYE",label:17},
-],music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんなところ。"],
 ["なにか質問ある？"],
 ]],
 // index:17
-[{speaker:"narrator",finish:"title",music:"vi03",place:"ここではない、どこか",background:"モノクローム"},[
+[{speaker:"narrator",finish:"title",music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["それじゃあ、良き、終末を。"],
 ]],
 // index:18
@@ -764,7 +764,7 @@ if($.engineer)return 122;
 // index:123
 [{speaker:"narrator",when:($,ctx)=>{
 if($.activist)return 162;
-},leave:($,ctx)=>{$.activist = true;},music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+},leave:($,ctx)=>{$.activist = true;},music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["本牧異人町。"],
 ["蒲鉾兵舎にかかげられたネオンに、灯はともっていない。"],
 ["リックス・カフェ・アメリカン。"],
@@ -772,212 +772,212 @@ if($.activist)return 162;
 // index:124
 [{speaker:"narrator",jump:126,when:($,ctx)=>{
 if(ctx.system.unionSetting === "ろうくみ")return 125;
-},music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+},music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["入口のかたわらにベニヤ看板。"],
 ["角ばった字で、魚人港湾労組。"],
 ["ポリ塩化ビニル暖簾を、キミはくぐった。"],
 ]],
 // index:125
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["入口のかたわらにベニヤ看板。"],
 ["角ばった字で、魚人港湾","労組","。"],
 ["ポリ塩化ビニル暖簾を、キミはくぐった。"],
 ]],
 // index:126
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["おまえさん、",["探偵","ピンカートン"],"の弟子か。"],
 ["ピケやぶりなら帰ってくれ。"],
 ]],
 // index:127
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["どっちかっていうと、ボス交。"],
 ]],
 // index:128
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["なんか註文しろや。"],
 ["こっちゃ、","パートタイムで闘争してんだ。"],
 ]],
 // index:129
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["あれを弾いて、サム。"],
 ["アズ・タイム・ゴーズ・バイ。"],
 ]],
 // index:130
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["そういう意味じゃねえ。"],
 ["だいたい、ピアノがねえよ。"],
 ["コーラでいいな。"],
 ]],
 // index:131
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["風呂敷包みを",["卓子","テーブル"],"に置き、キミはぬるいコーラをあおった。"],
 ["店主に手紙をすべらせる。"],
 ]],
 // index:132
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["その銃な、海兵隊からカードでまきあげたんだとさ。"],
 ["あ",["奴","いつ"],"は、そう吹いてた。"],
 ["刻印されてるだろ。"],
 ["他者のための",["人","メン"],"であれ。"],
 ]],
 // index:133
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["変わることができない、あいかわらず",["男根主義","マチズモ"],"の",["幇","パルタイ"],"だ。"],
 ]],
 // index:134
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["万国の労働者、",["団結せよ","ユナイト"],"。"],
 ["魚人とともに。"],
 ]],
 // index:135
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 [["しらける","ホワイトキック"],"。"],
 ["いつも、こんなに客いないの。"],
 ]],
 // index:136
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["営業時間外だからな。"],
 ["正味のところ、ダゴン秘密教団の集会のせいさ。"],
 ["神、海に知ろしめす、ってな。"],
 ["本題に","はいれ","よ、魔人小隊。"],
 ]],
 // index:137
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["今日ご紹介するのは、こちらのマイクロフィルムなんです。あのミスカトニック大学で、アル・アジフを高解像度スキャン。不完全な写本をつかったせいで、浮上したルルイエがすぐ沈んじゃって困っているアナタ。"],
 ]],
 // index:138
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["このマイクロフィルムなら、そんなことはございません。今なら、初心者でも簡単、あなたにも星辰の正しい位置がわかる、ルルイエ",["異本","テクスト"],"がついてきます。さらに読取機もつけて、お値段はおどろきの——"],
 ]],
 // index:139
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["キミは風呂敷の結びをほどいた。"],
 ]],
 // index:140
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["アタシたちの分析では、ダゴン秘密教団を放置すると、",["深き者","ディープ・ワンズ"],"は人類に敵対することになる。"],
 ["合衆国からかっぱらった原潜、まだ動くんでしょ。"],
 ]],
 // index:141
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["ノーコメント。"],
 ["ナンセーンス。"],
 ]],
 // index:142
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["このまま、過激派が多数をおさえちゃったら、魚人社会は仮称リヴァイアサンを神と崇める狂信者集団になる。"],
 ["仮称リヴァイアサンを撃滅しても、北海道に",["潜水艦発射弾道弾","SLBM"],"が撃ちこまれる。"],
 ]],
 // index:143
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["したっけ、人類は、",["太平洋到達不能極","ポイント・ネモ"],"を",["大陸間弾道弾","ICBM"],"で叩くことを躊躇しない。"],
 ["世界は核の炎に包まれる。"],
 ["アンタたち、それって受けいれられるの。"],
 ]],
 // index:144
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["受けいれないさ。"],
 ["しかし、それと、そのマイクロフィルムがどう関係する。"],
 ]],
 // index:145
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["ダゴン秘密教団の教義は、新興カルト一般のそれ。"],
 ["いろんな神話や伝説をパッチワークしたでっちあげ。"],
 ]],
 // index:146
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["そういうのって、脆弱性を持つんだよね。"],
 ["いかんともしがたく。"],
 ["器質的なもんだったらおもしろいよね。"],
 ["人類や人類っぽいものに共通する。"],
 ]],
 // index:147
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["特殊検索群プレゼンツ。"],
 ["絶対安全ネクロノミコン。"],
 [["深き者","ディープ・ワンズ"],"の信仰を操作するべく開発された、できたてほやほや物語論兵器。"],
 ]],
 // index:148
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["店主は",["叶和圓","イェヘユアン"],"に火を点けた。"],
 ]],
 // index:149
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["大衆のメタンアンフェタミンってか。"],
 ["アヘンじゃなくて。"],
 ["喫うか。菊の紋がはいったやつもあるぜ。"],
 ]],
 // index:150
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["土産にちょうだい。"],
 ["うちには喫うやつもいるから。"],
 ]],
 // index:151
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["仮称リヴァイアサンを拝むのは、自由かもしんないけど。"],
 ["どうせ、小魚みたいに、頭からぽりぽり食べられちゃうよ。"],
 ["信教の自由は、そこまでは含まないっしょ。"],
 ]],
 // index:152
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["それが総意で、それが本望だったとしても、死んじゃったら、アタシたちは哀しいよ。"],
 ["やっぱり、生きていてほしいと思うんだよ。"],
 ["そのための、いってみりゃ、脱洗脳みたいなもん。"],
 ]],
 // index:153
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["まあ、いい。"],
 ["表向きの理由は了解した。"],
 ]],
 // index:154
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["ぜんぶはなしたし。"],
 ["裏の理由なんてないよ。"],
 ["少尉の拳銃にかけて。"],
 ]],
 // index:155
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["いうまでもない。"],
 ["裏はある。"],
 ["特殊検索群が本当におそれたのは、全面核戦争ではない。"],
 ]],
 // index:156
-[{speaker:"narrator",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["仮称リヴァイアサンから、仮称がとれてしまうこと。"],
 ["遡及的に、",["深き者","ディープ・ワンズ"],"の神になりはててしまうこと。"],
 ["それを危惧して先制攻撃をしかけている。"],
 ]],
 // index:157
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["そんで、どうなの。"],
 ["できるよね。"],
 [["深き者","ディープ・ワンズ"],"穏健派の首魁。"],
 ["最初の魚人のひとり。"],
 ]],
 // index:158
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["できるさ。"],
 ["やらいでか。"],
 ]],
 // index:159
-[{speaker:"danu",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["ありがと。"],
 ["ところで、",["煙草","ヤニ"],["喫","く"],"う魚人ってはじめて見たよ。"],
 ["肺、どうなってんの。"],
 ]],
 // index:160
-[{speaker:"activist",music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"activist",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 [["学生","ガキ"],"のころからの習い性だからさ。"],
 ["あ",["奴","いつ"],"とつるんでさ。"],
 ]],
 // index:161
-[{speaker:"narrator",jump:67,music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"narrator",jump:67,music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["フィルタつき",["叶和圓","イェヘユアン"],"のカートンをキミは受けとる。"],
 ["ダヌーは古い歌をハミングした。"],
 ["ただよう臭いが煙草のせいなのかどうか、キミにはわからなかった。"],
 ]],
 // index:162
-[{speaker:"danu",jump:67,music:"diana19",place:"魚人港湾労組",background:"モノクローム"},[
+[{speaker:"danu",jump:67,music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["手紙は届けられてしまったよ、すでに。"],
 ]],
 // index:163
@@ -1329,384 +1329,384 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["我々が最後の軍隊だから。"],
 ]],
 // index:223
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["大隊は進発した。"],
 ["二列縦隊で進む。"],
 ["中段に武装ピックアップと自走式電源車を置く。"],
 ["弾薬を満載したトレーラーを牽引する。"],
 ]],
 // index:224
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 [["破局","カタストロフ"],"以降、人類が到達した対",["屍者","ゾンビ"],"戦術。"],
 [["屍者","ゾンビ"],"の武器はかみつきと爪。"],
 [["屍者","ゾンビ"],"は、うなり声をあげて歩みよる。"],
 [["屍者","ゾンビ"],"は、塹壕にこもらない。"],
 ]],
 // index:225
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["屋外では、横陣または方陣を組む。"],
 ["阻止線を越えた",["屍者","ゾンビ"],"の眉間を狙撃する。"],
 ["焼夷弾で脳を灼く。"],
 ["それが、もっとも経済的で効率的な手段だから。"],
 ]],
 // index:226
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["戦術を内面化した者たちだけが生きのこった。"],
 ["弾薬が続くかぎり、",["屍者","ゾンビ"],"を打倒する。"],
 ["積みあがった屍体それ自体で阻塞する。"],
 ]],
 // index:227
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["屋内では、長柄の武器で近接戦闘を実施する。"],
 [["第一回収大隊","スカベンジャーズ"],"は、円匙や斧槍を得意とする。"],
 [["十字軍","クルセイダーズ"],"は、銃剣を使う。"],
 ["アリスの得物は",["大剣","クレイモア"],"だ。"],
 ]],
 // index:228
-[{speaker:"demeter",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["進路上に",["屍者","ゾンビ"],"、中隊規模。一個小隊欠かな。"],
 ]],
 // index:229
-[{speaker:"priest",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["隊形を変換するか。"],
 ]],
 // index:230
-[{speaker:"alice",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["無停止進撃と命じたぞ、神父。"],
 ["ボクが排除する。"],
 ]],
 // index:231
-[{speaker:"danu",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["大隊総員に達する。"],
 ["莫迦が単騎で突撃する。"],
 ["なんか、いいかんじにおなしゃす。"],
 ]],
 // index:232
-[{speaker:"demeter",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["射界がとれる人は一発だけ撃って","くださーい","。"],
 ["莫迦にあてないようにまあまあ注意して。"],
 ]],
 // index:233
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["白い肌、深紅の瞳、背より巨きな",["大剣","クレイモア"],"。"],
 ["少女は荷台から飛びおりる。"],
 ["疾る。"],
 ["カラシニコフの発砲音が追いぬく。"],
 ]],
 // index:234
-[{speaker:"alice",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 [["死んでくれる？","Die For Me!"]],
 ]],
 // index:235
-[{speaker:"narrator",music:"diana23",place:"湾岸線",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"屍都高速湾岸線下",background:"モノクローム"},[
 ["くるくるまわり、アリスは首を刈る。"],
 ["α分遣隊の",["妖精種","エルブズ"],"が",["長弓","ロングボウ"],"で曲射する。"],
 ["すべての",["屍者","ゾンビ"],"が倒れ伏す。"],
 ]],
 // index:236
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["大隊は進軍した。"],
 ["運河を渡った。"],
 ["一般設計学研究所に到着した。"],
 ["計算機棟内を掃討する。"],
 ]],
 // index:237
-[{speaker:"priest",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["西側に",["殺し間","キルゾーン"],"を形成する。"],
 ["海側はどうにもならん。"],
 ]],
 // index:238
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["時間差がある。"],
 ["各個撃破する。"],
 ]],
 // index:239
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["H","+","四まで主攻正面は陸側。"],
 [["屍者","ゾンビ"],"数百万が誘引されると予測。"],
 ["H","+","六、仮称リヴァイアサン東京湾に侵入。"],
 ["H","+","八、巨大群体上陸。"],
 ]],
 // index:240
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["最初の四時間で射耗していい。"],
 ]],
 // index:241
-[{speaker:"priest",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["メサイア会、舐めてんじゃねえぞ。小娘。"],
 ]],
 // index:242
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["屍体の山が二階の高さに達すれば、",["屍者","ゾンビ"],"は乗りこえられなくなる。"],
 ["かつて人間だった","身体","を積んで壁となす。"],
 ["その狂気に疑問を持つ者はここにない。"],
 ]],
 // index:243
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ぎりぎりまで電源車のまわりで持久。"],
 ["そのあとは籠城だな。"],
 ["弾","が続くかぎり、屋上から狙撃して遅滞する。"],
 ]],
 // index:244
-[{speaker:"engineer",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"engineer",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ケーブルは二階まで引けばいいんだね。"],
 ["ラックひとつ動かすだけなら、八時間は持つ。"],
 ]],
 // index:245
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["α分遣隊、捜索にかかれ。"],
 ]],
 // index:246
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["石英",["硝子","ガラス"],"は粉々。"],
 ["磁気テープを発見。"],
 [["自動図書館","ライブラリ"],"は故障。"],
 ]],
 // index:247
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["読めるの。"],
 ]],
 // index:248
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["可能。"],
 ]],
 // index:249
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["制御卓","コンソール"],"はどう。"],
 ]],
 // index:250
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["起動を確認。"],
 ["生体認証装置も正常。"],
 ]],
 // index:251
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["はじめるか。"],
 ["統合航空軍に打電。"],
 ]],
 // index:252
-[{speaker:"priest",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ワタシは屋上で指揮をとる。"],
 ["そのまえに。"],
 ["あ",["奴","いつ"],"に銃を託されたキミ。"],
 ["キミはなんだ。人間か。魔人か。"],
 ]],
 // index:253
-[{speaker:"priest",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["応えは要らない。"],
 ["人間性。"],
 ["それが鍵だ。"],
 ]],
 // index:254
-[{speaker:"engineer",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"engineer",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ジブン","も電源車にいくよ。"],
 ["いまさらだけど。"],
 ["道理にあわないと思わないかい。"],
 ]],
 // index:255
-[{speaker:"engineer",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"engineer",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["情報方舟計画。"],
 ["たかが、情報を記録するだけじゃないか。"],
 ["どうして数値風洞を必要とした。"],
 ["流体力学のためのスパコンで、なにを演算した。"],
 ]],
 // index:256
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ふたりは歩みさる。"],
 ]],
 // index:257
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["はじめよう。"],
 ]],
 // index:258
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["予言機械","オラクルマシン"],"、",["起動","ブート"],"。"],
 ["仮説を",["待機","ポーリング"],"。"],
 ]],
 // index:259
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["テープ",["読出","ロード"],"開始。"],
 ["残り時間三分。"],
 ]],
 // index:260
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["読むという行為。"],
 ["しかし、",["誰","たれ"],"が読む。"],
 ]],
 // index:261
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["テープ",["読出","ロード"],"完了。"],
 ["えっと、これはテクストじゃなくて。"],
 ["えっと、これは",["起動連環","ブートストラップ"],"。"],
 ]],
 // index:262
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["どういうこと。"],
 ]],
 // index:263
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["起動連環","ブートストラップ"],"第一",["段階","ステージ"],"開始。"],
 [["認証の催促","プロンプト"],"。"],
 ]],
 // index:264
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["少尉、待たせたな。"],
 ["キミの血をもらう。"],
 ]],
 // index:265
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["生体認証装置に、キミは血をたらす。"],
 ]],
 // index:266
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["認可","AUTHZ"],"。"],
 ]],
 // index:267
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["認証","AUTHN"],"じゃないってこと。"],
 ["いかようにも読まれてしまう",["非","アンチ"],"テクスト。"],
 ["そういうこと。"],
 ]],
 // index:268
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["不明。"],
 ["単に復号鍵として利用された可能性。"],
 ]],
 // index:269
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["遠く、キミは",["審判の喇叭","アポカリプティックサウンド"],"を聴く。"],
 ["カラシニコフのかわいた銃声が響く。"],
 [["制御卓","コンソール"],"のブラウン","管","に文字が表示される。"],
 [["スティーブンによる福音書","EVANGELIUM SECUNDUM STEPHANUS"],"。"],
 ]],
 // index:270
-[{speaker:"steven",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"steven",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["これは手紙。"],
 ["これは郵便。"],
 ["これは",["物語","ナラティブ"],"。"],
 ]],
 // index:271
-[{speaker:"steven",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"steven",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["私はオマエをみとめ、哀れに思って走りより、その首を","抱","いて接吻しよう。"],
 ["人類の魔人。"],
 ["旧人と新人の——"],
 ]],
 // index:272
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["禁則事項です♪"],
 [["起動連環","ブートストラップ"],"第二",["段階","ステージ"],"開始。"],
 ]],
 // index:273
-[{speaker:"steven",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"steven",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["エデンの園",["配置","コンフィギュレーション"],"は喪われた。"],
 ["グライダー",["銃","ガン"],"で撃たれ、",["長命者","メトセラ"],"は九百六十九歳で死んだ。"],
 ]],
 // index:274
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["予言機械","オラクルマシン"],"、仮説を",["受入","アクセプト"],"。"],
 ["だけど、これはなんの機械なのさ。そもそも。"],
 ]],
 // index:275
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["任意の",["問いかけ","クエリ"],"に、",["定数時間","リアルタイム"],"で一貫した回答を返す機械。"],
 ["昭和三十年代、中央計算技術研究所で開発。"],
 ]],
 // index:276
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["なるほど。わからん。"],
 ]],
 // index:277
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["起動連環","ブートストラップ"],"第三",["段階","ステージ"],"開始。"],
 ]],
 // index:278
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["予言機械","オラクルマシン"],"、仮説流入量が増大。"],
 ["第","一","次予言値の生成が",["取消","キャンセル"],"。"],
 ["データ同化開始。"],
 ]],
 // index:279
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["起動連環","ブートストラップ"],"完了。"],
 ]],
 // index:280
-[{speaker:"steven",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"steven",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["これは",["模擬機械","シミュレータ"],"。"],
 ["これは",["模倣機械","エミュレータ"],"。"],
 ["これは",["状態機械","オートマトン"],"。"],
 ["それは",["仮想機械","ヴァーチャルマシン"],"。"],
 ]],
 // index:281
-[{speaker:"steven",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"steven",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["人間が読め。"],
 ["人間が択べ。"],
 ["配置を択べ。"],
 ["エデンの園。グライダー",["銃","ガン"],"。",["長命者","メトセラ"],"。"],
 ]],
 // index:282
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["そうか。そういうことか。"],
 ["たったひとりをのぞいて、すべての魔人は物語に典拠する。"],
 ["老化しない種属が、物語から引用された。"],
 ]],
 // index:283
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["森妖精","エルフ"],"。"],
 [["闇妖精","ダークエルフ"],"。"],
 [["深き者","ディープ・ワン"],"。"],
 ["——",["屍者","ゾンビ"],"。"],
 ]],
 // index:284
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["なにものかが、",["長命者","メトセラ"],"配置を読んだ。"],
 ]],
 // index:285
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["世界が書きかわった。"],
 ["遡及的に。"],
 ["だけど、どうやって。"],
 ]],
 // index:286
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["仮説。",["多元宇宙","マルチヴァース"],"。"],
 ["たとえば、",["模擬","シミュレーション"],"宇宙。"],
 ["たとえば、この世界は上位世界の計算結果。"],
 ]],
 // index:287
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["よくあるはなしだよね。"],
 ]],
 // index:288
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ほんらい、",["下位","ゲスト"],"世界から",["上位","ホスト"],"世界は不可視。"],
 ["スティーブンが発見を主張したのは、",["上位","ホスト"],"世界の",["計算機","コンピュータ"],"で直接実行される",["繊細","センシティブ"],"命令",["集合","セット"],"。"],
 [["上位","ホスト"],"世界の脆弱性をつく演算。"],
 ]],
 // index:289
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["その",["類推","アナロジー"],"だと、完全な特権は取得していないのか。"],
 ]],
 // index:290
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["脳に寄生しないと、すぐに崩壊しちゃう",["凝り性","アーティースト"],"な数学的構造とか。"],
 ]],
 // index:291
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["飛鳥に積んだ物語論散布爆雷で、計算を広域展開可能か。"],
 ]],
 // index:292
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["おそらく、可能。"],
 ["贖宥状ファームウェアの削除、",["読取専用","ROM"],"構造物の",["瞬間","スナップショット"],"投入が必要。"],
 ["仮称リヴァイアサン襲来までにギリ完了。"],
 ]],
 // index:293
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["グライダー",["銃","ガン"],"が",["長命者","メトセラ"],"を撃つ。"],
 ["じゃあ、エデンの園は。"],
 ]],
 // index:294
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ここではない、どこか。とか。"],
 ["ここからはたどりつけない。"],
 ["いまではない、いつか。とか。"],
@@ -1717,159 +1717,159 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 {choice:["エデンの園"],action:($,ctx)=>{$.genesis = false;;},barcode:"Garden of Eden",label:296},
 {choice:["グライダー",["銃","ガン"]],action:($,ctx)=>{$.genesis = true;;},barcode:"Glider Gun",label:297},
 {choice:["択ばない"],label:298},
-],music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+],music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["人間が読め。"],
 ["人間が択べ。"],
 ["配置を択べ。"],
 ]],
 // index:296
-[{speaker:"demeter",jump:308,music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",jump:308,music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["エデンの","園","配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
 // index:297
-[{speaker:"demeter",jump:308,music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",jump:308,music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["グライダー",["銃","ガン"],"配置が活性化。"],
 [["読取専用","ROM"],"構造物を展開。"],
 ]],
 // index:298
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["それが人類の選択だというのならば。"],
 ["その銃を、かまえろ。"],
 ]],
 // index:299
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["新人","ホモ・サピエンス・サピエンス"],"に犯された",["旧人","ホモ・ネアンデルターレンシス"],"の胎から生まれた人類の魔人。"],
 ["ガヴァメントを、かまえろ。"],
 ]],
 // index:300
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["少女の","右掌","に",["解放者","リベレータ"],"。"],
 ["四十五口径。"],
 ]],
 // index:301
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["キミはガヴァメントを抜く。"],
 ["四十五口径、",["銀の弾丸","シルバー・ヴァレット"],"。"],
 ["かまえる。"],
 ["撃つ。"],
 ]],
 // index:302
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["少尉。"],
 ["アンタ。"],
 ["一体いつから——"],
 ["屍都の女王が",["吸血鬼","ヴァンパイア"],"だと錯覚していた？"],
 ]],
 // index:303
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ボクはボクの父だった人間を、あざむいた。"],
 ["人類の魔人がいるなら。"],
 [["屍者","ゾンビ"],"の魔人もいるだろう。"],
 ["ああ、この","瞳","はカラコンだ。"],
 ]],
 // index:304
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["キミの弾丸は、ボクの心臓をえぐった。"],
 ["ボクの弾丸が、キミの心臓をえぐった。"],
 ["キミは見るだろうか。"],
 ["キミは聞くだろうか。"],
 ]],
 // index:305
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["予言機械","オラクルマシン"],"から、したたりおちる言葉。"],
 ["無限にたどりつけず、収束していく予言値。"],
 ["語られずに終わった、あの日の横濱の",["物語","ストーリー"],"。"],
 ]],
 // index:306
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ボクは人類に敵対する。"],
 ["ボクが終わらせる。"],
 ["人類を。世界を。"],
 ["——昭和を。"],
 ]],
 // index:307
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation3 = true;},finish:"credits",music:"diana12",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation3 = true;},finish:"credits",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
 // index:308
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["仮称リヴァイアサン、浦賀水道、機雷","原","を突破。"],
 ["対艦誘導弾も効かないとか、なんだかな。"],
 ]],
 // index:309
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["ポストモダン","ポモ"],"に、現代兵器は効かない。"],
 ["だから、ボクたちがここにいる。"],
 ]],
 // index:310
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["空中巡洋艦と",["連結","リンク"],"成立。"],
 [["読取専用","ROM"],"構造物を転送中。"],
 ]],
 // index:311
-[{speaker:"priest",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["陸側はおさえた。"],
 ["二十万からの",["屍者","ゾンビ"],"を始末した。"],
 ["負傷者はいない。"],
 ["そちらは、どうだ。"],
 ]],
 // index:312
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["目算はたった。"],
 ["この国に","三発","めは落ちるまい。"],
 ]],
 // index:313
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["一般回線に入電。"],
 [["深き者","ディープ・ワンズ"],"穏健派の首魁。"],
 ]],
 // index:314
-[{speaker:"activist",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"activist",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["良い報せと悪い報せがある。"],
 ["良い報せだ。魚人の多数派工作は成功した。"],
 ["悪い報せだ。","跳ねっかえり","が、",["携帯地対空誘導弾","スティンガー"],"を",["窃","パク"],"って潜伏した。"],
 ]],
 // index:315
-[{speaker:"demeter",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["読取専用","ROM"],"構造物転送完了。"],
 ["構造物の",["瞬間","スナップショット"],"を投入。"],
 ["物語論爆雷戦準備よろし。"],
 ]],
 // index:316
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["即時投射。"],
 ]],
 // index:317
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["ボコっちゃえ。"],
 ]],
 // index:318
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["物語論散布爆雷が投射された。"],
 ["仮称リヴァイアサンを中心に",["微細素子","マイクロチップ"],"の雨が降る。"],
 ["スケール",["不変","インバリアント"],"な物語が、",["状態機械","オートマトン"],"を起動する。"],
 ["おりたたまれ、つみかさねられた自己相似図形。"],
 ]],
 // index:319
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["無理数次元の再帰構造に包囲され、仮称リヴァイアサンが吠える。"],
 ["それは審判の喇叭。"],
 ["それは",["鎮魂歌","レクイエム"],"。"],
 ]],
 // index:320
-[{speaker:"danu",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"danu",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["糞","デリモ"],"。"],
 ["第二海堡から地対空誘導弾発射。"],
 ]],
 // index:321
-[{speaker:"alice",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 [["糞。","ミィエルダ"]],
 ["飛鳥を海岸線から逃せ。"],
 ]],
 // index:322
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所",background:"モノクローム"},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["退避は間に合わない。"],
 ["火箭が",["内燃機関","ディーゼルエンジン"],"をつらぬく。"],
 ["飛鳥が爆発する。"],
@@ -1877,51 +1877,51 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index:323
 [{speaker:"alice",when:($,ctx)=>{
 if($.genesis)return 341;
-},music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+},music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["世界は書きかわるのか。"],
 ["あるいは、すでに書きかわったのか。"],
 ]],
 // index:324
-[{speaker:"demeter",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["えっと、書きかわりつつある、たぶん。"],
 ["ダヌー姐さんは、ちょっとだけまちがってた。"],
 ["構造が寄生するのは、生物の脳だけじゃない。"],
 ["たがいに依存して、三位一体計算が成立した。"],
 ]],
 // index:325
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["だいじょうぶかな。"],
 ["円環構造になっちゃわないかな。"],
 ["否定神学とか。"],
 ["無限後退とか。"],
 ]],
 // index:326
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["それならば。"],
 ["それがそれならば。"],
 ["キミが撃て。その銃で。"],
 ["この世界の天井を","撃","ちやぶれ。"],
 ]],
 // index:327
-[{speaker:"narrator",music:"diana12",place:"いまではない、いつか",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ"},[
 [["予言機械","オラクルマシン"],"から、したたりおちる言葉。"],
 ["無限のそのさき、予言値は拡散していく。"],
 [["永遠","えいえん"],"のそのさき、ボクたちは出逢いなおす。"],
 ]],
 // index:328
-[{speaker:"narrator",music:"diana12",place:"いまではない、いつか",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ"},[
 ["これは手紙。"],
 ["これは郵便。"],
 ["これは",["物語","ナラティブ"],"。"],
 ]],
 // index:329
-[{speaker:"narrator",music:"diana12",place:"いまではない、いつか",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ"},[
 ["一九八九","年一月七日午前六時三十三分。"],
 [["破局","カタストロフ"],"は、発生しなかった。"],
 ["昭和が、終わった。"],
 ]],
 // index:330
-[{speaker:"narrator",music:"diana12",place:"いまではない、いつか",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ"},[
 ["一九八九","年。"],
 ["二月、手塚治虫が死んだ。"],
 ["六月、美空ひばりが死んだ。"],
@@ -1985,38 +1985,38 @@ if($.genesis)return 341;
 ["了。"],
 ]],
 // index:341
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["仮称リヴァイアサンは、沈黙した。"],
 ["関東に集結した巨大群体は、動きを止めた。"],
 ]],
 // index:342
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["ところでさ。"],
 ["グライダー",["銃","ガン"],"が",["長命者","メトセラ"],"を撃つんなら。"],
 ["アタシたちは、どうなるのかな。"],
 ]],
 // index:343
-[{speaker:"demeter",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["生体認証装置に、人類の魔人は、血をささげた。"],
 ]],
 // index:344
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 [["無原罪","シンレス"],"の人類の血。"],
 [["配置","コンフィギュレーション"],"に埋めこまれた、それは感染するのかな。"],
 ]],
 // index:345
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["それは感染する。"],
 ["人類は変容した。"],
 ["人類は、緩やかに、人類に変容した。"],
 ["人類は、遡及的に、人類に変容した。"],
 ]],
 // index:346
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["宗教者が困りそう。"],
 ]],
 // index:347
-[{speaker:"priest",music:"diana12",place:"一般設計学研究所",background:"色づいたセカイ"},[
+[{speaker:"priest",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["困りはしないぞ。"],
 ["メシア教はそんなに甘い宗教ではない。"],
 ["他の宗教のことは知らんが、な。"],
@@ -2138,31 +2138,31 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ["ラジオがささやく",["雑音","ノイズ"],"のなか、遠く、その声は聴こえた。"],
 ]],
 // index:369
-[{speaker:"rosa",start:"preview",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
+[{speaker:"rosa",start:"preview",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["こちらは、自由ラジオ横濱",["前線","フロント"],"。"],
 ["ライシャワーが死んだセカイ線、バリケードの裡から、あの山岳",["根拠地","ベース"],"で産まれてしまった子供たちへ。"],
 ["聴こえてるかな。"],
 ]],
 // index:370
-[{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["城市","が",["叢林","ジャングル"],"を","包圍","する時。"],
 ["城市","もまた",["叢林","ジャングル"],"に","包圍","されてる。"],
 ["聴こえてるんでしょ。"],
 ]],
 // index:371
-[{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["子供たち。聴こえているならば。"],
 ["母が見つけられなかった、この国の戦後にさよならを告げる方法を見つけておくれ。"],
 [["さよなら","アスタ・ルエゴ"],"、",["ヤルタ","Y"],"・",["ポツダム","P"],["体制","レジーム"],"。"],
 ]],
 // index:372
-[{speaker:"rosa",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["それは、父殺しの物語。"],
 ["それは、母殺しの物語。"],
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
 // index:373
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"いまではない、いつか",background:"モノクローム"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 [["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],
