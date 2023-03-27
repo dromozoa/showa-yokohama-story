@@ -8,13 +8,14 @@
   - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
 - [ ] 圧縮のテスト
 - [ ] キャッシュのテスト
+- [ ] /.という文字列をserialで置き換える
 
 ```
 /index.html
 /sys
   /game.html
   /index.html
-  /system{serial}/...
+  /system/{serial}/...
   /voice/{serial}/
   /music/{serial}/
 ```
