@@ -978,13 +978,14 @@ D.Logging = class {
     if (this.level >= 3) {
       this.logImpl(message, exception.message);
     }
-    console.log(message, exception);
+    console.error(message, exception);
   }
 
   warn(message) {
     if (this.level >= 4) {
       this.logImpl(message);
     }
+    console.warn(message, exception);
   }
 
   notice(message) {
@@ -1854,6 +1855,9 @@ const setSave = save => {
   paragraphIndexLast = undefined;
   paragraphIndex = undefined;
   state = save.state;
+
+  // メイン画面に戻る前に段落表示をクリアする。
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren();
 };
 
 const setScreenName = screenNameNext => {
@@ -2378,9 +2382,10 @@ const enterCreditsScreen = async () => {
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
-  const T1 = 2000;
-  const T2 = 2000;
-  const T3 = 2000;
+  // TODO なおす
+  const T1 = 20;
+  const T2 = 20;
+  const T3 = 20;
   const screenNode = document.querySelector(".demeter-credits-screen");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];

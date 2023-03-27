@@ -11,6 +11,7 @@
 - [ ] /./という文字列をserialで置き換える
   - demeter.jsはかえなくていいかな。
 - [ ] バージョンチェック
+- [ ] GitHub Pagesをリダイレクトする
 
 ```
 /index.html
