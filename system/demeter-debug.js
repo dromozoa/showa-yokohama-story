@@ -77,6 +77,7 @@ const saveParagraph = paragraphIndex => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
+  D.preferences.musicDir = "../build/music";
   D.preferences.voiceDir = "../build/debug";
   D.initializeInternal();
 
@@ -115,6 +116,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     debug.status = status;
     statusController.updateDisplay();
   };
+
+  // フォントロードをちょっと待つ
+  await D.setTimeout(500);
 
   updateStatus("レイアウト中");
   for (let paragraphIndex = 1; paragraphIndex <= D.scenario.paragraphs.length; ++paragraphIndex) {
