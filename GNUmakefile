@@ -52,21 +52,26 @@ check:: all
 #--------------------------------------------------------------------------
 
 convert_voice::
+	mkdir -p build/voice
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
 	cp -f build/voice/demeter-voice-sprites.js design/demeter-voice-sprites.js
 	rm -f build/voice-out/*-voice-out.wav
 
 convert_debug:
+	mkdir -p build/debug
 	./tool/convert_voice.sh scenario/debug.txt build/debug build/voice-out "*-debug-out.wav"
 	cp -f build/debug/demeter-voice-sprites.js design/demeter-debug-voice-sprites.js
 	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
-	rm -f build/voice2/*.wav build/voice/*.webm build/voice/*.mp3
+	rm -fr build/voice2/*.wav build/voice build/debug
 
 convert_effect:
 	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
 	cp -f build/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
+
+clean_effect:
+	rm -f -r build/effect
 
 #--------------------------------------------------------------------------
 
