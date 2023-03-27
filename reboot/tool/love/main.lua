@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -18,6 +18,7 @@
 package.path = "../?.lua;"..package.path
 local ffi = require "ffi"
 local basename = require "basename"
+local quote_js = require "quote_js"
 local write_json = require "write_json"
 local table_unpack = table.unpack or unpack
 
@@ -263,6 +264,49 @@ local function write_line_data(line_data, result_pathname)
   end
 
   handle:write "</svg>\n"
+  handle:close()
+end
+
+local function write_line_data_js(line_data, result_pathname)
+  local handle = assert(io.open(result_pathname, "wb"))
+
+  local name = assert(result_pathname:match "([^/.]+)%.[^.]+$")
+
+  handle:write [[
+(() => {
+"use strict";
+
+const D = globalThis.demeter ||= {};
+if (D.scanlines) {
+  return;
+}
+
+D.scanlines = {
+]]
+
+  -- line_dataのサイズは1px余裕がある
+  local w = line_data.width - 1
+  local h = line_data.height - 1
+
+  handle:write(quote_js(name), ":{width:", w, ",height:", h, ",data:[\n")
+
+  for _, line in ipairs(line_data) do
+    local y1 = line.y1
+    local y2 = line.y2
+    for _, segment in ipairs(line) do
+      local x1 = segment.x1
+      local x2 = segment.x2
+      handle:write("[", x1, ",", y1, ",", x2 - x1, "],\n")
+    end
+  end
+
+  handle:write [[
+]},
+};
+
+})();
+]]
+
   handle:close()
 end
 
@@ -602,6 +646,23 @@ end
 
 local commands = {}
 
+function commands.luminance(source_pathname)
+  local source_image_data = new_image_data(source_pathname)
+
+  local n = 0
+  local v = 0
+
+  for y = 0, source_image_data:getHeight() - 1 do
+    for x = 0, source_image_data:getWidth() - 1 do
+      n = n + 1
+      v = v + grayscale(source_image_data:getPixel(x, y))
+    end
+  end
+
+  print("sum", v)
+  print("avg", v / n)
+end
+
 function commands.binarize(expression, source_pathname, result_pathname)
   local source_image_data = new_image_data(source_pathname)
   local result_image_data = binarize(source_image_data, parse_expression(expression))
@@ -611,7 +672,14 @@ end
 function commands.scanline(expression, source_pathname, result_pathname)
   local image_data = new_image_data(source_pathname)
   local line_data = scanline(image_data, parse_expression(expression))
-  write_line_data(line_data, result_pathname)
+
+  local format = assert(result_pathname:match "[^.]+$"):lower()
+  assert(format == "svg" or format == "js")
+  if format == "svg" then
+    write_line_data(line_data, result_pathname)
+  else
+    write_line_data_js(line_data, result_pathname)
+  end
 end
 
 function commands.blend(expression, alpha, source_pathname1, source_pathname2, result_pathname)
@@ -635,6 +703,31 @@ function commands.mapping(expression, source_pathname1, source_pathname2, result
   else
     write_mapping_data_gltf(mapping_data, result_pathname)
   end
+end
+
+function commands.extend(W, H, X, Y, source_pathname, result_pathname)
+  local W = tonumber(W)
+  local H = tonumber(H)
+  local X = tonumber(X)
+  local Y = tonumber(Y)
+
+  local source_image_data = new_image_data(source_pathname)
+  local result_image_data = love.image.newImageData(W, H)
+
+  for y = 0, source_image_data:getHeight() - 1 do
+    local ry = y + Y
+    if ry < H then
+      for x = 0, source_image_data:getWidth() - 1 do
+        if grayscale(source_image_data:getPixel(x, y)) > 0.5 then
+          local rx = x + X
+          if rx < W then
+            result_image_data:setPixel(rx, ry, 1, 1, 1, 1)
+          end
+        end
+      end
+    end
+  end
+  write_image_data(result_image_data, result_pathname)
 end
 
 --------------------------------------------------------------------------------

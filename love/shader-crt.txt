@@ -12,7 +12,7 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
   position.y = (position.y - 0.5) * scaler + 0.5;
   vec4 c = Texel(texture, position);
 
-  vec2 p = texture_coords * vec2(1280, 720);
+  vec2 p = texture_coords * vec2(720, 480);
   float mx = mod(p.x, 3);
   float my = mod(p.y, 4);
   vec2 q = floor(p / vec2(3, 4)) + vec2(seed, seed);

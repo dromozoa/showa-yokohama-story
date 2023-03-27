@@ -1,11 +1,16 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
+@label{第三節}
+@music{diana23}
+@place{本牧異人町}
 #narrator
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
+@start{verse3}
+@enter{{ctx.game.visitedVerse3 = true}}
 
 #narrator
-@r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の@r{三人組}{トリオ}。
+@r{情報分隊}{メイジャイ}。情報処理に特化した@r{妖精種}{エルブズ}の三人@v{組}{ぐみ}。
 腕に装着した@v{オノ＝センダイ}{オノセンダイ}のデッキをにらみ、分隊長が報告する。
 
 #demeter
@@ -137,6 +142,7 @@
 #narrator
 最後の晩餐は、そうして終わった。
 
+@place{本牧大聖堂}
 #narrator
 ある夜。
 無名戦士の墓。
@@ -158,6 +164,7 @@
 オレは往くぜ。
 @v{明日}{あした}の輸送船でな。
 
+@place{本牧異人町}
 #narrator
 @r{屍者}{ゾンビ}を嗅ぐ犬は、おなじ重さの@v{金}{きん}よりも価値がある。
 いまや、@v{金}{きん}に価値などないけれど。
@@ -176,6 +183,7 @@
 我々は軍隊ではないから。
 我々が最後の軍隊だから。
 
+@place{屍都高速湾岸線下}
 #narrator
 大隊は進発した。
 二列縦隊で進む。
@@ -238,6 +246,7 @@
 α分遣隊の@r{妖精種}{エルブズ}が@r{長弓}{ロングボウ}で曲射する。
 すべての@r{屍者}{ゾンビ}が倒れ伏す。
 
+@place{一般設計学研究所跡}
 #narrator
 大隊は進軍した。
 運河を渡った。
@@ -484,7 +493,8 @@ H@v{+}{プラス}八、巨大群体上陸。
 
 #demeter
 ここではない、どこか。とか。
-ここからはたどりつけない、いつか。とか。
+ここからはたどりつけない。
+いまではない、いつか。とか。
 そんな歴史。とか。
 
 #steven
@@ -503,15 +513,16 @@ H@v{+}{プラス}八、巨大群体上陸。
 #demeter
 エデンの@v{園}{その}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@jump{三節黙示録了}
+@jump{第三節黙示録了}
 
 @label{グライダー銃}
 #demeter
 グライダー@r{銃}{ガン}配置が活性化。
 @r{読取専用}{ROM}{ロム}構造物を展開。
-@jump{三節黙示録了}
+@jump{第三節黙示録了}
 
 @label{択ばない}
+@music{diana12}
 #alice
 それが人類の選択だというのならば。
 その銃を、かまえろ。
@@ -562,9 +573,15 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{黙示録}{リベレーション}。
 了。
-@finish
+@enter{{
+  ctx.game.visitedRevelation3 = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
+}}
+@finish{credits}
 
-@label{三節黙示録了}
+@label{第三節黙示録了}
 #danu
 仮称リヴァイアサン、浦賀水道、機雷@v{原}{げん}を突破。
 対艦誘導弾も効かないとか、なんだかな。
@@ -635,6 +652,8 @@ H@v{+}{プラス}八、巨大群体上陸。
 @# かたりえないもの
 @# ものがたりのかたりて
 
+@music{diana12}
+@background{色づいたセカイ}
 @when{{$.genesis}}{創世記}
 #alice
 世界は書きかわるのか。
@@ -658,6 +677,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 キミが撃て。その銃で。
 この世界の天井を@v{撃}{ぶ}ちやぶれ。
 
+@place{いまではないいつか}
 #narrator
 @r{予言機械}{オラクルマシン}から、したたりおちる言葉。
 無限のそのさき、予言値は拡散していく。
@@ -679,6 +699,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 六月、美空ひばりが死んだ。
 十一月、@r{槌}{ハンマー}がベルリンの壁をたたきこわした。
 
+@place{文芸部部室}
 #narrator
 元町の坂のうえ、メサイア会の高校は共学になった。
 文芸部の部室。
@@ -698,6 +719,7 @@ H@v{+}{プラス}八、巨大群体上陸。
 これ中華街の肉まんね。
 食べながら話そ。
 
+@place{本牧地区}
 #narrator
 米軍@r{住宅}{ハウス}の@r{金網}{フェンス}を眺めながら、ボクたちは肉まんを食べる。
 
@@ -724,9 +746,18 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。スティーブンによる福音書。最終節。
 了。
-@finish
+@enter{{
+  ctx.game.visitedGospel = true;
+  ctx.game.unlockPreview = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
+}}
+@finish{credits}
 
 @label{創世記}
+@music{diana12}
+@background{色づいたセカイ}
 #narrator
 仮称リヴァイアサンは、沈黙した。
 関東に集結した巨大群体は、動きを止めた。
@@ -753,10 +784,11 @@ H@v{+}{プラス}八、巨大群体上陸。
 宗教者が困りそう。
 
 #priest
-困りはしないさ。
+困りはしないぞ。
 メシア教はそんなに甘い宗教ではない。
 他の宗教のことは知らんが、な。
 
+@place{地球}
 #narrator
 人類っぽいものは、不老でなくなった。
 人類と人類っぽいものは、増殖して、地に満ちたり、海に満ちたりした。
@@ -770,4 +802,10 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{創世記}{ジェネシス}。
 了。
-@finish
+@enter{{
+  ctx.game.visitedGenesis = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
+}}
+@finish{credits}

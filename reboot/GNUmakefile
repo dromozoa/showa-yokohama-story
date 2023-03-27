@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+# Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 #
 # This file is part of 昭和横濱物語.
 #
@@ -18,25 +18,57 @@
 lua = env "LUA_PATH=tool/?.lua;;" lua
 voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/settings/dic.json
 scenarios = $(wildcard scenario/*.txt)
+credits = scenario/credits
+trophies = scenario/trophies
 targets = \
 	output/loader.html \
 	output/graph.svg \
-	output/voice1.txt \
+	output/credits.html \
+	output/trophies.html \
+	output/voice.txt \
+	output/debug.txt \
 	design2/demeter-scenario.js \
-	design2/sketch1.html
+	design2/demeter-debug-scenario.js \
+	design2/sketch1.html \
+	scenario/scenario.js
 
-ifneq ($(wildcard output/voice1.vpp),)
-targets += output/voice2.vpp
+ifneq ($(wildcard output/voice.vpp),)
+targets += output/voice-out.vpp
 endif
+ifneq ($(wildcard output/debug.vpp),)
+targets += output/debug-out.vpp
+endif
+
+#--------------------------------------------------------------------------
 
 all:: $(voicepeak_dic) $(targets)
 
 clean::
-	rm -f $(targets)
+	rm -f $(targets) output/*.vpp
+
+check:: all
+	./test.sh lua
+
+#--------------------------------------------------------------------------
 
 convert_voice::
-	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice2 "*-voice*.wav"
+	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
 	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+	rm -f output/voice-out/*-voice-out.wav
+
+convert_debug:
+	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
+	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
+	rm -f output/voice-out/*-debug-out.wav
+
+clean_voice::
+	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
+
+convert_effect:
+	./tool/convert_effect.sh output/effect output/effect-out/30 "*.wav"
+	cp -f output/effect/demeter-effect-sprite.js design2/demeter-effect-sprite.js
+
+#--------------------------------------------------------------------------
 
 $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
@@ -48,17 +80,33 @@ output/loader.html: $(scenarios)
 output/graph.svg: $(scenarios)
 	./tool/generate_graph.sh scenario/scenario.txt $@
 
+output/credits.html: $(credits)
+	$(lua) tool/generate_credits.lua $< $@
+
+output/trophies.html: $(trophies)
+	$(lua) tool/generate_trophies.lua $< $@ design2/demeter-trophies.js
+
 design2/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
-design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg
-	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg $@
+design2/demeter-debug-scenario.js: $(scenarios)
+	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-output/voice1.txt: $(scenarios)
+design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html
+	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html $@
+
+scenario/scenario.js: $(scenarios)
+	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
+
+output/voice.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
 
-output/voice2.vpp: output/voice1.vpp $(scenarios)
-	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice1.vpp $@
+output/debug.txt: $(scenarios)
+	$(lua) tool/generate_voice_txt.lua scenario/debug.txt $@
 
-check:: all
-	./test.sh lua
+output/voice-out.vpp: output/voice.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice.vpp $@
+
+output/debug-out.vpp: output/debug.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/debug.txt output/debug.vpp $@
+

@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -17,11 +17,16 @@
 
 local source = io.read "a"
 
-local width, height, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 %1%.00 %2%.00".->%s*(.*)]])
+local width, height, vb_width, vb_height, source = assert(source:match [[<svg width="(%d+)pt" height="(%d+)pt"%s+viewBox="0%.00 0%.00 (%1%.%d%d) (%2%.%d%d)".->%s*(.*)]])
 local tx, ty, source = assert(source:match [[^<g id="graph0" class="graph" transform="scale%(1 1%) rotate%(0%) translate%(([%-%d]+) ([%-%d]+)%)">%s*(.*)]])
 
 local width = tonumber(width)
 local height = tonumber(height)
+local vb_width = tonumber(vb_width)
+local vb_height = tonumber(vb_height)
+width = math.max(width, math.ceil(vb_width))
+height = math.max(height, math.ceil(vb_height))
+
 local tx = tonumber(tx)
 local ty = tonumber(ty)
 
@@ -36,7 +41,7 @@ for group_id, group_class, title, data in source:gmatch [[<g id="(.-)" class="(.
     local n = tonumber(assert(group_id:match "^node(%d+)$"))
     node_max = math.max(node_max, n)
 
-    local cx, cy, rx, ry = data:match [[^<ellipse fill="none" stroke="black" cx="([%-%d]+)" cy="([%-%d]+)" rx="(%d+)" ry="(%d+)"/>$]]
+    local cx, cy, rx, ry = data:match [[^<ellipse fill="none" stroke="black" cx="([%-%.%d]+)" cy="([%-%.%d]+)" rx="(%d+)" ry="(%d+)"/>$]]
     if cx then
       cx = tonumber(cx)
       cy = tonumber(cy)
@@ -52,7 +57,7 @@ for group_id, group_class, title, data in source:gmatch [[<g id="(.-)" class="(.
       }
 
     else
-      local s = assert(data:match [[^<polygon fill="none" stroke="black" points="(.*)"/>$]])
+      local s = assert(data:match [[^<polygon fill="none" stroke="black" points="(.*)"/>$]], "error:"..data)
       local points = {}
       for x, y in s:gmatch "([%-%.%d]+)[%s,]+([%-%.%d]+)" do
         points[#points + 1] = { x = tonumber(x), y = tonumber(y) }
@@ -155,24 +160,35 @@ end
 assert(node_max == #nodes)
 assert(edge_max == #edges)
 
+local function number_tostring(v)
+  return ("%.4f"):format(v):gsub("%.?0*$", "")
+end
+
 local function number_tostring_unpack(source)
   local result = {}
   for i, v in ipairs(source) do
-    result[i] = ("%.4f"):format(v):gsub("%.?0*$", "")
+    result[i] = number_tostring(v)
   end
   return table.unpack(result)
 end
 
 local handle = io.stdout
 handle:write(([[
-<svg viewBox="0 0 %d %d" style="width: %dpx; height: %dpx" xmlns="http://www.w3.org/2000/svg">
+<style>
+:root {
+  --graph-width: %dpx;
+  --graph-height: %dpx;
+  --graph-ratio: %s;
+}
+</style>
+<svg viewBox="0 0 %d %d" data-width="%d" data-height="%d" data-ratio="%s" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <marker id="demeter-graph-marker" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" viewBox="0 0 24 24" refX="24" refY="12" orient="auto">
     <polygon points="6.6795,0 24,10 24,14 6.6795,24"/>
   </marker>
 </defs>
 <g class="edges">
-]]):format(width, height, width, height))
+]]):format(width, height, number_tostring(height / width), width, height, width, height, number_tostring(height / width)))
 
 for _, edge in ipairs(edges) do
   local buffer = {}

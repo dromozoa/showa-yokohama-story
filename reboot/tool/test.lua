@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -17,6 +17,7 @@
 
 local basename = require "basename"
 local dirname = require "dirname"
+local encode_base64 = require "encode_base64"
 local quote_js = require "quote_js"
 
 local parse_json = require "parse_json"
@@ -49,3 +50,8 @@ assert(quote_js "\226\128\168\226\128\169" == [["\u2028\u2029"]])
 assert(quote_js "昭和横濱物語" == [["昭和横濱物語"]])
 
 assert(parse_json[[{"sushi":"\uD83C\uDF63"}]].sushi == "\u{1F363}")
+
+assert(encode_base64 "1234" == "MTIzNA==")
+assert(encode_base64 "12345" == "MTIzNDU=")
+assert(encode_base64 "123456" == "MTIzNDU2")
+assert(encode_base64 "昭和横濱物語" == "5pit5ZKM5qiq5r+x54mp6Kqe")

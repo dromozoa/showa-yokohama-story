@@ -1,4 +1,4 @@
-" Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+" Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 "
 " This file is part of 昭和横濱物語.
 "
@@ -34,17 +34,24 @@ syntax keyword sysTodo TODO FIXME XXX NOTE contained
 syntax match sysComment /@#.*$/ contains=sysTodo
 syntax match sysLabelArg /{[^}]*}/ contained
 syntax match sysLabel /@label{[^}]*}/ contains=sysLabelArg
+syntax match sysLabelRoot /@label_root{[^}]*}/ contains=sysLabelArg
 syntax match sysJump /@jump{[^}]*}/ contains=sysLabelArg
 syntax match sysInclude /@include{[^}]*}/
-syntax match sysFinish /@finish/
-syntax match sysSystem /@system/
+syntax match sysStart /@start{[^}]*}/
+syntax match sysFinish /@finish{[^}]*}/
+syntax match sysMusic /@music{[^}]*}/
+syntax match sysPlace /@place{[^}]*}/
+syntax match sysBackground /@background{[^}]*}/
 syntax match sysDialog /@dialog{[^}]*}/
+syntax match sysDialogChoice /@dialog_choice{[^}]*}{[^}]*}/
+syntax match sysDebug /@debug/
 
 syntax match sysChoiceLabel /{[^}]*}\%({[^}]*}\)\?/ contained
 syntax region sysChoiceScript start=/{{/ end=/}}/ keepend contains=@javascript contained nextgroup=sysChoiceLabel
 syntax region sysChoice start=/@choice{/ end=/}/ contains=sysRawString,sysRuby,sysVoice nextgroup=sysChoiceScript,sysChoiceLabel
 
 syntax region sysWhen start=/@when{{/ end=/}}/ keepend contains=@javascript nextgroup=sysLabelArg
+syntax region sysEnter start=/@enter{{/ end=/}}/ keepend contains=@javascript
 syntax region sysLeave start=/@leave{{/ end=/}}/ keepend contains=@javascript
 
 highlight default link sysRawString String
@@ -55,16 +62,23 @@ highlight default link sysTodo Todo
 highlight default link sysComment Comment
 highlight default link sysLabelArg Macro
 highlight default link sysLabel Statement
+highlight default link sysLabelRoot Statement
 highlight default link sysJump Statement
 highlight default link sysChoiceLabel Macro
 highlight default link sysChoiceScript Conditional
 highlight default link sysChoice Conditional
 highlight default link sysInclude Include
 highlight default link sysWhen Conditional
+highlight default link sysEnter Statement
 highlight default link sysLeave Statement
+highlight default link sysStart Statement
 highlight default link sysFinish Statement
-highlight default link sysSystem Statement
+highlight default link sysMusic Statement
+highlight default link sysPlace Statement
+highlight default link sysBackground Statement
 highlight default link sysDialog Statement
+highlight default link sysDialogChoice Conditional
+highlight default link sysDebug Statement
 
 let b:current_syntax = "showa-yokohama-story"
 

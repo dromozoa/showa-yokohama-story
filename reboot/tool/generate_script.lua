@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -46,10 +46,12 @@ if (D.scenario) {
   return;
 }
 
-D.scenario = [
+D.scenario = {
 ]]
 
-for _, paragraph in ipairs(scenario) do
+local total = 0
+handle:write "paragraphs:[\n"
+for i, paragraph in ipairs(scenario) do
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
@@ -59,7 +61,7 @@ for _, paragraph in ipairs(scenario) do
     for _, jump in ipairs(paragraph.choice_jumps) do
       handle:write("{choice:", encode_text(jump.choice))
       if jump.action then
-        handle:write(",action:$=>{", jump.action, ";}")
+        handle:write(",action:async($,ctx)=>{", jump.action, ";}")
       end
       if jump.barcode then
         handle:write(",barcode:", quote_js(jump.barcode))
@@ -69,17 +71,44 @@ for _, paragraph in ipairs(scenario) do
     handle:write "]"
   end
   if paragraph.when_jumps then
-    handle:write ",when:$=>{\n"
+    handle:write ",when:async($,ctx)=>{\n"
     for _, jump in ipairs(paragraph.when_jumps) do
       handle:write("if(", jump.when, ")return ", scenario.labels[jump.label].index, ";\n")
     end
     handle:write "}"
   end
+  if paragraph.enter then
+    handle:write(",enter:async($,ctx)=>{", paragraph.enter, ";}")
+  end
   if paragraph.leave then
-    handle:write(",leave:$=>{", paragraph.leave, ";}")
+    handle:write(",leave:async($,ctx)=>{", paragraph.leave, ";}")
+  end
+  if paragraph.start then
+    handle:write(",start:", quote_js(paragraph.start))
   end
   if paragraph.finish then
-    handle:write ",finish:true"
+    handle:write(",finish:", quote_js(paragraph.finish))
+  end
+  if paragraph.system then
+    handle:write ",system:true"
+  else
+    total = total + 1
+  end
+  if paragraph.music then
+    handle:write(",music:", quote_js(paragraph.music))
+  end
+  if paragraph.place then
+    handle:write(",place:", quote_js(paragraph.place))
+  end
+  if paragraph.background then
+    handle:write(",background:", quote_js(paragraph.background))
+  end
+  if paragraph.dialog then
+    handle:write ",dialog:["
+    for _, choice in ipairs(paragraph.dialog.choices) do
+      handle:write("{choice:", quote_js(choice.choice), ",result:", quote_js(choice.result), "},")
+    end
+    handle:write "]"
   end
   handle:write "},[\n"
 
@@ -89,9 +118,24 @@ for _, paragraph in ipairs(scenario) do
 
   handle:write "]],\n"
 end
+handle:write "],\n"
+handle:write("total:", total, ",\n")
+
+handle:write "labels:{\n"
+for _, label in ipairs(scenario.labels) do
+  handle:write(quote_js(label.label), ":", label.index, ",\n")
+end
+handle:write "},\n"
+
+handle:write "dialogs:{\n"
+for _, dialog in ipairs(scenario.dialogs) do
+  handle:write(quote_js(dialog.dialog), ":", dialog.index, ",\n")
+end
+handle:write "},\n"
+
 
 handle:write [[
-];
+};
 
 })();
 ]]

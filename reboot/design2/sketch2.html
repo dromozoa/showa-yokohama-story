@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,9 +8,14 @@
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Libre+Barcode+128&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&family=BIZ+UDGothic&family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Libre+Barcode+128&family=Share+Tech&family=Share+Tech+Mono&family=Source+Serif+Pro&display=swap" rel="stylesheet">
+
+  <!-- https://icons8.com/line-awesome/howto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
 
   <link href="demeter.css" rel="stylesheet">
+  <link href="demeter-debug.css" rel="stylesheet">
   <link href="demeter-font.css" rel="stylesheet">
 
   <link href="manifest.webmanifest" rel="manifest">
@@ -19,201 +23,33 @@
   <link href="favicon.svg" rel="icon" type="image/svg+xml">
   <link href="apple-touch-icon.png" rel="apple-touch-icon">
 
-  <!-- https://github.com/tweenjs/tween.js/#installation -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js" integrity="sha256-2xE/Od+yrQ9FR3LZzqk1yNM0880syyumHSG+6fYJF6U=" crossorigin="anonymous"></script>
+  <!-- https://github.com/goldfire/howler.js#quick-start -->
+  <script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js" integrity="sha256-D+v9meJzO2kOysLcNsgohfWBprXHO2WJWJj/hUhBX1s=" crossorigin="anonymous"></script>
 
-  <script defer src="demeter.js"></script>
+  <!-- https://github.com/jakearchibald/idb/#installation -->
+  <script src="https://cdn.jsdelivr.net/npm/idb@7.1.1/build/umd.js" integrity="sha256-ekPnVXAfX/KotKCG3rac/xzpxda6Nl7jK2CU6/I+2tE=" crossorigin="anonymous"></script>
+
+  <!-- https://lil-gui.georgealways.com/#Guide#Installation -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.umd.min.js" integrity="sha256-nxA4RilDJhj/0KWgoBtzApRa21VuGjjinTHof84MK/0=" crossorigin="anonymous"></script>
+
   <script defer src="demeter-jlreq.js"></script>
-
-  <!--
-    cursorを設定するとAndroid EmulatorのChromeがクリック時にハイライトする？
-    この環境では
-      @media (pointer: fine)
-      @media (hover: none)
-    になるので、@media (hover: none)で切り分ける。
-  -->
-  <style>
-    div.choice > svg {
-      display: block;
-      fill: rgba(255, 255, 255, 0.1);
-      stroke: #fff;
-      transition: all 0.5s;
-    }
-
-    div.choice:hover > svg {
-      stroke: #029D93;
-    }
-
-    div.choice:active > svg {
-      fill: rgba(2, 157, 147, 0.1);
-      stroke: #029D93;
-    }
-
-    @media (hover: none) {
-      .hover-none {
-        display: block;
-      }
-      .hover-hover {
-        display: none;
-      }
-    }
-
-    @media (hover: hover) {
-      .hover-none {
-        display: none;
-      }
-      .hover-hover {
-        display: black;
-      }
-      div.choice > svg {
-        cursor: pointer;
-      }
-    }
-
-    div.dialog > svg {
-      display: block;
-      fill: rgba(255, 255, 255, 0.1);
-      stroke: #fff;
-    }
-
-    div.dialog > svg .button1,
-    div.dialog > svg .button2 {
-      transition: all 0.5s;
-    }
-
-    div.dialog > svg .button1:hover,
-    div.dialog > svg .button2:hover {
-      stroke: #029D93;
-    }
-
-    div.dialog > svg .button1:active,
-    div.dialog > svg .button2:active {
-      fill: rgba(2, 157, 147, 0.25);
-      stroke: #029D93;
-    }
-
-
-    @media (hover: hover) {
-      div.dialog > svg .button1:hover,
-      div.dialog > svg .button2:hover {
-        cursor: pointer;
-      }
-    }
-
-  </style>
+  <script defer src="demeter-scanlines.js"></script>
+  <script defer src="demeter-debug-scenario.js"></script>
+  <script defer src="demeter-debug-voice-sprites.js"></script>
+  <script defer src="demeter.js"></script>
+  <script defer src="demeter-debug.js"></script>
 </head>
 
-<body style="
-  margin: 0 0 0 24px;
-  /*
-  background-color: #000;
-  */
-  background-image: url(../output/bg.png);
-  color: #FFF;
-">
+<body class="demeter">
+  <div class="demeter-debug-background"></div>
+  <div class="demeter-debug-screen">
+    <div class="demeter-debug"></div>
+  </div>
 
-<div>
-  <div class="hover-none">hover: none</div>
-  <div class="hover-hover">hover: hover</div>
+  <div class="demeter-offscreen">
+    <div class="demeter-main-logging"></div>
+  </div>
 </div>
-
-<div id="source" style="display: none">
-<div>エデンの園</div>
-<div>グライダー<ruby>銃<rt>ガン</rt></ruby></div>
-</div>
-
-<div id="source-dialog" style="display: none">
-<div>このスロットを<ruby>上書き<rt>Overwrite</rt></ruby>します。<br>よろしくありますか？<br>ほんとうにいいの？<br>.<br
->　　　　　　　　　　はい　　　　　　　　　&nbsp;いいえ</div>
-</div>
-
-<div id="container" style="
-  position: relative;
-  line-height: 2;
-  /*
-  user-select: none;
-  -webkit-user-select: none;
-  */
-"></div>
-
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const D = globalThis.demeter;
-  await D.boot();
-
-  const start = performance.now();
-  const result = await D.loadFontFaces(10000);
-  console.log("loadFontFaces", performance.now() - start, result);
-
-  const fontSize = 24;
-  const font = "'Showa Yokohama Story', 'BIZ UDPGothic', sans-serif";
-
-  const outputNode = document.body.appendChild(document.createElement("div"));
-  outputNode.style.font = D.numberToCss(fontSize) + " " + font;
-
-  let firstTextNode;
-
-  const sourceNodes = document.querySelector("#source").children;
-  const containerNode = document.getElementById("container");
-  containerNode.style.font = D.numberToCss(fontSize) + " " + font;
-
-  for (let i = 0; i < sourceNodes.length; ++i) {
-    const sourceNode = sourceNodes[i];
-    const paragraph = D.parseParagraph(sourceNode, fontSize, font);
-    paragraph.forEach(text => {
-      const choiceNode = document.createElement("div");
-      choiceNode.className = "choice";
-      choiceNode.style.position = "relative";
-      choiceNode.style.width = D.numberToCss(fontSize * 24);
-      choiceNode.style.height = D.numberToCss(fontSize * 4);
-      choiceNode.addEventListener("click", (ev) => {
-        console.log("click", sourceNode);
-      });
-
-      const lines = D.composeText(text, fontSize * 20);
-      const textNode = choiceNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
-      textNode.style.position = "absolute";
-      textNode.style.top = D.numberToCss(fontSize);
-      textNode.style.left = D.numberToCss(fontSize * 2);
-
-      const barcodeNode = choiceNode.appendChild(document.createElement("div"));
-      barcodeNode.style.position = "absolute";
-      barcodeNode.style.display = "inline-block";
-      barcodeNode.style.top = D.numberToCss(fontSize);
-      barcodeNode.style.right = D.numberToCss(fontSize * 0.5);
-      barcodeNode.style.font = D.numberToCss(fontSize) + " 'Libre Barcode 128'";
-      barcodeNode.style.lineHeight = D.numberToCss(fontSize);
-      barcodeNode.textContent = i === 0 ? "Garden of Eden" : "Glider Gun";
-
-      const choiceFrameNode = choiceNode.appendChild(D.createChoiceFrame(fontSize * 24, fontSize * 4, fontSize));
-      choiceFrameNode.style.display = "block";
-
-      containerNode.append(choiceNode);
-    });
-  }
-
-  {
-    const dialogNode = containerNode.appendChild(document.createElement("div"));
-    dialogNode.className = "dialog";
-    dialogNode.style.position = "relative";
-
-    const messageNode = dialogNode.appendChild(document.createElement("div"));
-    messageNode.style.position = "absolute";
-    messageNode.style.top = D.numberToCss(fontSize);
-    messageNode.style.left = D.numberToCss(fontSize * 2);
-    messageNode.style.pointerEvents = "none";
-
-    const paragraph = D.parseParagraph(document.querySelector("#source-dialog").firstElementChild, fontSize, font);
-    paragraph.forEach(text => {
-      const lines = D.composeText(text, fontSize * 20);
-      const textNode = messageNode.appendChild(D.layoutText(lines, fontSize, fontSize * 2));
-    });
-
-    const dialogFrameNode = dialogNode.appendChild(D.createDialogFrame(fontSize * 24, fontSize * 12, fontSize, 2, fontSize * 8, fontSize * 2));
-    dialogFrameNode.style.display = "block";
-  }
-});
-</script>
 
 </body>
 </html>

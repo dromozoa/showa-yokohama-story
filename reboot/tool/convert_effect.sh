@@ -1,4 +1,6 @@
-# Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+#! /bin/sh -e
+
+# Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
 #
 # This file is part of 昭和横濱物語.
 #
@@ -15,8 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, librosa, numpy
+here=`dirname "$0"`
+export LUA_PATH="$here/?.lua;;"
 
-y, nr = librosa.load(sys.argv[1], sr=float(sys.argv[2]))
-M = librosa.feature.mfcc(y=y, sr=nr, lifter=22)
-numpy.savetxt(sys.argv[3], M.transpose(), delimiter="\t")
+output_dirname=`(cd "$1" && pwd)`
+source_dirname=`(cd "$2" && pwd)`
+
+lua "$here/convert_effect.lua" "$output_dirname" "$source_dirname"/$3

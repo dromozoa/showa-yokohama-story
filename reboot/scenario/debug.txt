@@ -1,0 +1,7 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@debug
+
+@include{tutorial.txt}
+@include{system.txt}
+

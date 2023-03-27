@@ -1,4 +1,4 @@
--- Copyright (C) 2022 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2022,2023 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -126,5 +126,17 @@ return {
     fun = "0.0";
     angry = "0.2";
     sad = "0.5";
+  };
+
+  rosa = {
+    speaker = "Speaker/f3";
+    speed = speed;
+    pitch = pitch;
+    pause = pause;
+    volume = "2.0";
+    happy = "0.0";
+    fun = "0.0";
+    angry = "0.0";
+    sad = "1.0";
   };
 }

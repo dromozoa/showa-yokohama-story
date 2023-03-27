@@ -1,0 +1,136 @@
+/*
+ * Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
+ *
+ * This file is part of 昭和横濱物語.
+ *
+ * 昭和横濱物語 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * 昭和横濱物語 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*************************************************************************/
+
+:root {
+  --font-family-debug: 'Showa Yokohama Story', 'BIZ UDPMincho', 'Source Serif Pro', serif;
+}
+
+/*************************************************************************/
+
+.demeter-debug-background {
+  position: absolute;
+  width: calc(var(--font-size) * 48);
+  height: calc(var(--font-size) * 27);
+  left: calc(50vw - var(--font-size) * 24);
+  top: calc(50vh - var(--font-size) * 13.5);
+  background-image: url(bg-landscape.png);
+  filter: brightness(0.2) saturate(0);
+}
+
+.demeter-debug-screen {
+  position: absolute;
+  width: calc(var(--font-size) * 48);
+  height: calc(var(--font-size) * 27);
+  left: calc(50vw - var(--font-size) * 24);
+  top: calc(50vh - var(--font-size) * 13.5);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+/*************************************************************************/
+
+.demeter-debug-paragraph {
+  position: relative;
+  left: var(--font-size);
+  top: 0;
+  width: calc(var(--font-size) * 46);
+  height: calc(var(--font-size) * 10);
+  font-family: var(--font-family-debug);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-debug-paragraph-speaker {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: calc(var(--font-size) * 2);
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-debug-paragraph-text {
+  position: absolute;
+  left: calc(var(--font-size) * 6);
+  top: 0;
+  width: calc(var(--font-size) * 25);
+  height: calc(var(--font-size) * 10);
+}
+
+/*************************************************************************/
+
+.demeter-debug-dialog {
+  position: relative;
+  width: calc(var(--font-size) * 46);
+  height: calc(var(--font-size) * 14);
+  left: var(--font-size);
+  top: 0;
+  font-family: var(--font-family-debug);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-debug-dialog-speaker {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: calc(var(--font-size) * 2);
+  cursor: var(--cursor-pointer, auto);
+}
+
+.demeter-debug-dialog-frame {
+  position: absolute;
+  left: calc(var(--font-size) * 6);
+  top: 0;
+}
+
+.demeter-debug-dialog-frame svg {
+  display: block;
+  fill: var(--color-fill);
+  stroke: var(--color-stroke);
+}
+
+.demeter-debug-dialog-text {
+  position: absolute;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 8);
+  left: calc(var(--font-size) * 8);
+  top: var(--font-size);
+}
+
+.demeter-debug-dialog-item {
+  position: absolute;
+  width: calc(var(--font-size) * 8);
+  height: calc(var(--font-size) * 2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.demeter-debug-dialog-item1 {
+  position: absolute;
+  left: calc(var(--font-size) * 21.5);
+  top: calc(var(--font-size) * 9);
+}
+
+.demeter-debug-dialog-item2 {
+  position: absolute;
+  left: calc(var(--font-size) * 12.5);
+  top: calc(var(--font-size) * 9);
+}
+
+/*************************************************************************/
