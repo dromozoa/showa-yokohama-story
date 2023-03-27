@@ -7,3 +7,13 @@
 - [ ] index.htmlはキャッシュしない
   - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
 
+```
+/index.html
+/sys
+  /game.html
+  /index.html
+  /{serial}/...
+  /voices/{serial}/
+  /musics/{serial}/
+```
+
