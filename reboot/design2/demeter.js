@@ -948,9 +948,9 @@ D.Logging = class {
     this.level = 6;
   }
 
-  update() {
+  update(behavior) {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
-      behavior: "smooth",
+      behavior: behavior,
       block: "end",
       inline: "start",
     });
@@ -967,7 +967,7 @@ D.Logging = class {
     while (loggingNode.children.length > 100) {
       loggingNode.firstElementChild.remove();
     }
-    this.update();
+    this.update("smooth");
   }
 
   setLevel(level) {
@@ -2328,7 +2328,7 @@ const enterMainScreen = () => {
   setScreenName("main");
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-  logging.update();
+  logging.update("auto");
 };
 
 const enterDataScreen = async screenNode => {
