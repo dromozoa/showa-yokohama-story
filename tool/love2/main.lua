@@ -732,7 +732,7 @@ end
 
 --------------------------------------------------------------------------------
 
-local font
+-- local font
 local output_dirpath
 local line_dataset = {}
 
@@ -775,7 +775,7 @@ function love.load(arg)
     return
   end
 
-  font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
+  -- font = love.graphics.newFont(love.font.newRasterizer("ShareTech-Regular.ttf", 20))
   output_dirpath = arg[2]
   for i = 3, #arg do
     line_dataset[#line_dataset + 1] = scanline(new_image_data(arg[i]), function (a) return a > 0.5 end)
@@ -879,16 +879,16 @@ function love.draw()
   local text_y = 20
 
   g.setColor(1, 1, 1)
-  if show_fps then
-    g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
-    text_y = text_y + 30
-  end
-  if show_status then
-    if running then
-      g.print("running", font, text_x, text_y)
-      text_y = text_y + 30
-    end
-  end
+  -- if show_fps then
+  --   g.print("fps: "..love.timer.getFPS(), font, text_x, text_y)
+  --   text_y = text_y + 30
+  -- end
+  -- if show_status then
+  --   if running then
+  --     g.print("running", font, text_x, text_y)
+  --     text_y = text_y + 30
+  --   end
+  -- end
 
   if running then
     frame = frame + 1
