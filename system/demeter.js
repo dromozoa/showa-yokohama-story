@@ -936,9 +936,9 @@ const startTexts = {
 };
 
 D.preferences = {
-  musicDir: "build/music/.",
-  voiceDir: "build/voice/.",
-  effectDir: "system/.",
+  musicDir: "build/music",
+  voiceDir: "build/voice",
+  effectDir: "system",
 };
 
 //-------------------------------------------------------------------------
