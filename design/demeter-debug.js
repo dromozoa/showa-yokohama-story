@@ -77,7 +77,7 @@ const saveParagraph = paragraphIndex => {
 //-------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
-  D.preferences.voiceDir = "../output/debug";
+  D.preferences.voiceDir = "../build/debug";
   D.initializeInternal();
 
   const musicPlayer = new D.MusicPlayer(1, () => {});

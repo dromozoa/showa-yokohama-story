@@ -21,22 +21,22 @@ scenarios = $(wildcard scenario/*.txt)
 credits = scenario/credits
 trophies = scenario/trophies
 targets = \
-	output/loader.html \
-	output/graph.svg \
-	output/credits.html \
-	output/trophies.html \
-	output/voice.txt \
-	output/debug.txt \
+	build/loader.html \
+	build/graph.svg \
+	build/credits.html \
+	build/trophies.html \
+	build/voice.txt \
+	build/debug.txt \
 	design/demeter-scenario.js \
 	design/demeter-debug-scenario.js \
 	design/index.html \
 	scenario/scenario.js
 
-ifneq ($(wildcard output/voice.vpp),)
-targets += output/voice-out.vpp
+ifneq ($(wildcard build/voice.vpp),)
+targets += build/voice-out.vpp
 endif
-ifneq ($(wildcard output/debug.vpp),)
-targets += output/debug-out.vpp
+ifneq ($(wildcard build/debug.vpp),)
+targets += build/debug-out.vpp
 endif
 
 #--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ endif
 all:: $(voicepeak_dic) $(targets)
 
 clean::
-	rm -f $(targets) output/*.vpp
+	rm -f $(targets) build/*.vpp
 
 check:: all
 	./test.sh lua
@@ -52,21 +52,21 @@ check:: all
 #--------------------------------------------------------------------------
 
 convert_voice::
-	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
-	cp -f output/voice/demeter-voice-sprites.js design/demeter-voice-sprites.js
-	rm -f output/voice-out/*-voice-out.wav
+	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
+	cp -f build/voice/demeter-voice-sprites.js design/demeter-voice-sprites.js
+	rm -f build/voice-out/*-voice-out.wav
 
 convert_debug:
-	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
-	cp -f output/debug/demeter-voice-sprites.js design/demeter-debug-voice-sprites.js
-	rm -f output/voice-out/*-debug-out.wav
+	./tool/convert_voice.sh scenario/debug.txt build/debug build/voice-out "*-debug-out.wav"
+	cp -f build/debug/demeter-voice-sprites.js design/demeter-debug-voice-sprites.js
+	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
-	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
+	rm -f build/voice2/*.wav build/voice/*.webm build/voice/*.mp3
 
 convert_effect:
-	./tool/convert_effect.sh output/effect assets/effect "*.mp3"
-	cp -f output/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
+	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
+	cp -f build/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
 
 #--------------------------------------------------------------------------
 
@@ -74,16 +74,16 @@ $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
 	cp -f $< '$@'
 
-output/loader.html: $(scenarios)
+build/loader.html: $(scenarios)
 	$(lua) tool/generate_loader.lua scenario/scenario.txt $@ tool/google_fonts_serif.css
 
-output/graph.svg: $(scenarios)
+build/graph.svg: $(scenarios)
 	./tool/generate_graph.sh scenario/scenario.txt $@
 
-output/credits.html: $(credits)
+build/credits.html: $(credits)
 	$(lua) tool/generate_credits.lua $< $@
 
-output/trophies.html: $(trophies)
+build/trophies.html: $(trophies)
 	$(lua) tool/generate_trophies.lua $< $@ design/demeter-trophies.js
 
 design/demeter-scenario.js: $(scenarios)
@@ -92,21 +92,21 @@ design/demeter-scenario.js: $(scenarios)
 design/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-design/index.html: design/index.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html
-	$(lua) tool/generate_html.lua design/index.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html $@
+design/index.html: design/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
+	$(lua) tool/generate_html.lua design/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
 
-output/voice.txt: $(scenarios)
+build/voice.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
 
-output/debug.txt: $(scenarios)
+build/debug.txt: $(scenarios)
 	$(lua) tool/generate_voice_txt.lua scenario/debug.txt $@
 
-output/voice-out.vpp: output/voice.vpp $(scenarios)
-	$(lua) tool/generate_voice.lua scenario/scenario.txt output/voice.vpp $@
+build/voice-out.vpp: build/voice.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/scenario.txt build/voice.vpp $@
 
-output/debug-out.vpp: output/debug.vpp $(scenarios)
-	$(lua) tool/generate_voice.lua scenario/debug.txt output/debug.vpp $@
+build/debug-out.vpp: build/debug.vpp $(scenarios)
+	$(lua) tool/generate_voice.lua scenario/debug.txt build/debug.vpp $@
 
