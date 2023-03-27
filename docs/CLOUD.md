@@ -4,16 +4,18 @@
 - [x] vaporoid.comの既存コンテンツを更新する。
   - macでやるとUnicode正規化で死ぬので注意
 - [x] cloudfrontでSSLの設定をする
-- [ ] index.htmlはキャッシュしない
+- [ ] /sys/index.htmlとgame.htmlはキャッシュしない
   - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
+- [ ] 圧縮のテスト
+- [ ] キャッシュのテスト
 
 ```
 /index.html
 /sys
   /game.html
   /index.html
-  /{serial}/...
-  /voices/{serial}/
-  /musics/{serial}/
+  /system{serial}/...
+  /voice/{serial}/
+  /music/{serial}/
 ```
 
