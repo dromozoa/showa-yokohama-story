@@ -27,9 +27,9 @@ targets = \
 	build/trophies.html \
 	build/voice.txt \
 	build/debug.txt \
-	design/demeter-scenario.js \
-	design/demeter-debug-scenario.js \
-	design/index.html \
+	system/demeter-scenario.js \
+	system/demeter-debug-scenario.js \
+	system/index.html \
 	scenario/scenario.js
 
 ifneq ($(wildcard build/voice.vpp),)
@@ -54,13 +54,13 @@ check:: all
 convert_voice::
 	mkdir -p build/voice
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
-	cp -f build/voice/demeter-voice-sprites.js design/demeter-voice-sprites.js
+	cp -f build/voice/demeter-voice-sprites.js system/demeter-voice-sprites.js
 	rm -f build/voice-out/*-voice-out.wav
 
 convert_debug:
 	mkdir -p build/debug
 	./tool/convert_voice.sh scenario/debug.txt build/debug build/voice-out "*-debug-out.wav"
-	cp -f build/debug/demeter-voice-sprites.js design/demeter-debug-voice-sprites.js
+	cp -f build/debug/demeter-voice-sprites.js system/demeter-debug-voice-sprites.js
 	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
@@ -68,7 +68,7 @@ clean_voice::
 
 convert_effect:
 	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
-	cp -f build/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
+	cp -f build/effect/demeter-effect-sprite.js system/demeter-effect-sprite.js
 
 clean_effect:
 	rm -f -r build/effect
@@ -89,16 +89,16 @@ build/credits.html: $(credits)
 	$(lua) tool/generate_credits.lua $< $@
 
 build/trophies.html: $(trophies)
-	$(lua) tool/generate_trophies.lua $< $@ design/demeter-trophies.js
+	$(lua) tool/generate_trophies.lua $< $@ system/demeter-trophies.js
 
-design/demeter-scenario.js: $(scenarios)
+system/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
-design/demeter-debug-scenario.js: $(scenarios)
+system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-design/index.html: design/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
-	$(lua) tool/generate_html.lua design/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
+system/index.html: system/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
+	$(lua) tool/generate_html.lua system/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
