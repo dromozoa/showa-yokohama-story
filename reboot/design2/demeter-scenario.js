@@ -920,7 +920,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["終わらせにきた。人類を。世界を。"],
 ["——昭和を。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation2 = true;},finish:"title",music:"diana12",place:"南樺太",background:"モノクローム"},[
+[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation2 = true;},finish:"credits",music:"diana12",place:"南樺太",background:"モノクローム"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],

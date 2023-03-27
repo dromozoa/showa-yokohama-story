@@ -69,5 +69,6 @@ handle_html:write(([[
 }
 </style>
 ]]):format(count))
+
 handle:close()
 handle_html:close()

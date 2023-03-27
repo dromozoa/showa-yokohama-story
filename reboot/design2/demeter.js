@@ -978,6 +978,7 @@ D.Logging = class {
     if (this.level >= 3) {
       this.logImpl(message, exception.message);
     }
+    console.log(message, exception);
   }
 
   warn(message) {
@@ -1673,6 +1674,11 @@ const readStateDefault = {
   map: new Map(),
 };
 
+const trophiesStateDefault = {
+  id: "trophies",
+  map: new Map(),
+};
+
 const saveNewGame = {
   paragraphIndex: D.scenario.labels["ニューゲーム"],
   state: {},
@@ -1704,6 +1710,7 @@ let system;
 let playState;
 let gameState;
 let readState;
+let trophiesState;
 let state;
 
 let screenWidth;
@@ -1743,9 +1750,9 @@ let waitForCredits;
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    logging.debug("システム設定保存: 成功");
+    logging.debug("システム設定書込: 成功");
   } catch (e) {
-    logging.error("システム設定保存: 失敗", e);
+    logging.error("システム設定書込: 失敗", e);
   }
 };
 
@@ -1763,18 +1770,27 @@ const cancelPlayState = async () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    logging.debug("ゲーム状態保存: 成功");
+    logging.debug("共通セーブデータ書込: 成功");
   } catch (e) {
-    logging.error("ゲーム状態保存: 失敗", e);
+    logging.error("共通セーブデータ書込: 失敗", e);
   }
 };
 
 const putReadState = async () => {
   try {
     await database.put("read", readState);
-    logging.debug("既読状態保存: 成功");
+    logging.debug("既読データ書込: 成功");
   } catch (e) {
-    logging.error("既読状態保存: 失敗", e);
+    logging.error("既読データ書込: 失敗", e);
+  }
+};
+
+const putTrophiesState = async () => {
+  try {
+    await database.put("trophies", trophiesState);
+    logging.debug("実績データ書込: 成功");
+  } catch (e) {
+    logging.error("実績データ書込: 失敗", e);
   }
 };
 
@@ -1782,22 +1798,22 @@ const putAutosave = async () => {
   try {
     await database.put("save", {
       id: "autosave",
-      saved: D.dateToString(new Date()),
+      saved: Date.now(),
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.debug("自動保存: 成功");
+    logging.debug("自動セーブデータ書込: 成功");
   } catch (e) {
-    logging.error("自動保存: 失敗", e);
+    logging.error("自動セーブデータ書込: 失敗", e);
   }
 };
 
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    logging.debug("自動保存データ削除: 成功");
+    logging.debug("自動セーブデータ削除: 成功");
   } catch (e) {
-    logging.error("自動保存データ削除: 失敗", e);
+    logging.error("自動セーブデータ削除: 失敗", e);
   }
 };
 
@@ -1805,13 +1821,13 @@ const putSave = async (key, name) => {
   try {
     await database.put("save", {
       id: key,
-      saved: D.dateToString(new Date()),
+      saved: Date.now(),
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    logging.debug(name + "保存: 成功");
+    logging.debug(name + "書込: 成功");
   } catch (e) {
-    logging.error(name + "保存: 失敗", e);
+    logging.error(name + "書込: 失敗", e);
   }
 };
 
@@ -1847,6 +1863,37 @@ const evaluate = async fn => {
   });
   await Promise.all([ putGameState(), putAutosave() ]);
   return result;
+};
+
+//-------------------------------------------------------------------------
+
+const updateTrophies = () => {
+  D.trophies.forEach(trophy => {
+    if (trophiesState.map.has(trophy.key)) {
+      document.querySelector(".demeter-credits-trophy-" + trophy.key).classList.add("demeter-unlocked");
+    } else {
+      document.querySelector(".demeter-credits-trophy-" + trophy.key).classList.remove("demeter-unlocked");
+    }
+  });
+  document.querySelector(".demeter-credits-end-trophies-status").textContent = trophiesState.map.size + " / " + D.trophies.length;
+};
+
+// トロフィーが未獲得であれば獲得する。
+const updateTrophy = async key => {
+  if (!trophiesState.map.has(key)) {
+    trophiesState.map.set(key, Date.now());
+    putTrophiesState();
+    const trophy = D.trophies.find(trophy => trophy.key === key);
+    if (trophy) {
+      logging.notice("実績解除: " + trophy.name);
+      logging.info(trophy.description);
+      updateTrophies();;
+    }
+  }
+};
+
+const checkTrophies = async () => {
+  // next内でチェックする
 };
 
 //-------------------------------------------------------------------------
@@ -1909,6 +1956,7 @@ const unlockAudio = async () => {
 //-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
+  console.log("upgradeDatabase", oldVersion, newVersion);
   for (let version = oldVersion + 1; version <= newVersion; ++version) {
     switch (version) {
       case 1:
@@ -1920,6 +1968,9 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
       case 3:
         db.createObjectStore("game", { keyPath: "id" });
         db.createObjectStore("read", { keyPath: "id" });
+        break;
+      case 4:
+        db.createObjectStore("trophies", { keyPath: "id" });
         break;
     }
   }
@@ -1935,7 +1986,7 @@ const setItemDefault = (item, itemDefault) => {
 
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 3, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 4, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
     setItemDefault(system, systemDefault);
@@ -1948,6 +1999,11 @@ const initializeDatabase = async () => {
     readState = await database.get("read", "read") || {};
     setItemDefault(readState, readStateDefault);
     await database.put("read", readState);
+
+    trophiesState = await database.get("trophies", "trophies") || {};
+    setItemDefault(trophiesState, trophiesStateDefault);
+    await database.put("trophies", trophiesState);
+    updateTrophies();
 
     logging.info("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -2173,9 +2229,9 @@ const initializeSystemUi = () => {
       setItemDefault(gameState, gameStateDefault);
       await putGameState();
       await deleteAutosave();
-      await deleteSave("save1", "#1");
-      await deleteSave("save2", "#2");
-      await deleteSave("save3", "#3");
+      await deleteSave("save1", "セーブデータ#1");
+      await deleteSave("save2", "セーブデータ#2");
+      await deleteSave("save3", "セーブデータ#3");
       leaveMainScreen();
       await enterTitleScreen();
     }
@@ -2265,14 +2321,18 @@ const enterDataScreen = async screenNode => {
   for (let i = 1; i <= 3; ++i) {
     const key = "save" + i;
     const save = await database.get("save", key);
-    screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = save ? " : " + save.saved : "";
+    if (save) {
+      screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = " : " + D.dateToString(new Date(save.saved));
+    } else {
+      screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = "";
+    }
   }
   document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterLoadScreen = async () => {
   setScreenName("load");
-  if (gameState.unlockedPreview) {
+  if (trophiesState.map.has("preview")) {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
@@ -2303,24 +2363,24 @@ const enterCreditsScreen = async () => {
 
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
-  document.querySelector(".demeter-credits-end-trophies-status").textContent = "0 / 0";
 
-  const T1 = 2000;
-  const T2 = 2000;
-  const T3 = 2000;
+  const T1 = 20;
+  const T2 = 20;
+  const T3 = 20;
   const screenNode = document.querySelector(".demeter-credits-screen");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
+  const trophiesNode = document.querySelector(".demeter-credits-trophies");
   const endNode = document.querySelector(".demeter-credits-end");
   const graphRatio = document.querySelector(".demeter-credits-graph svg").dataset.ratio;
 
-  [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
+  [ graphNode, ...paragraphNodes, trophiesNode, endNode ].forEach(node => node.style.opacity = "0");
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-credits-screen"));
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
-  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight) + fontSize * 2;
+  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
 
   screenNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
@@ -2340,15 +2400,28 @@ const enterCreditsScreen = async () => {
     if (i < paragraphNodes.length - 1) {
       end = begin + paragraphHeight;
     } else {
-      end = height - screenHeight;
+      end = height - screenHeight * 2;
     }
     const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
-  if (gameState.unlockPreview && !gameState.unlockedPreview) {
+  // trophies animation
+  {
+    const opacityAnimation = new D.OpacityAnimation([trophiesNode], 0, 1, T1);
+    await opacityAnimation.start();
+
+    await D.setTimeout(T2);
+
+    const begin = height - screenHeight * 2;
+    const end = begin + screenHeight;
+    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    await scrollAnimation.start();
+  }
+
+  if (gameState.unlockPreview && !trophiesState.map.has("preview")) {
     await dialog("credits-tape-preview");
-    gameState.unlockedPreview = true;
+    updateTrophy("preview");
     await putGameState();
   }
 
@@ -2601,7 +2674,7 @@ const initializeLoadScreen = () => {
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
     soundEffectSelect();
-    if (gameState.unlockedPreview) {
+    if (trophiesState.map.has("preview")) {
       if (await dialog("load-tape-preview") === "yes") {
         await stop();
         setSave(savePreview);
@@ -2675,7 +2748,7 @@ const initializeSaveScreen = () => {
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
     soundEffectSelect();
     if (await dialog("save-tape-save1") === "yes") {
-      await putSave("save1", "#1");
+      await putSave("save1", "セーブデータ#1");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2685,7 +2758,7 @@ const initializeSaveScreen = () => {
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
     soundEffectSelect();
     if (await dialog("save-tape-save2") === "yes") {
-      await putSave("save2", "#2");
+      await putSave("save2", "セーブデータ#2");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2695,7 +2768,7 @@ const initializeSaveScreen = () => {
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
     soundEffectSelect();
     if (await dialog("save-tape-save3") === "yes") {
-      await putSave("save3", "#3");
+      await putSave("save3", "セーブデータ#3");
       leaveSaveScreen();
       enterMainScreen();
       restart();
