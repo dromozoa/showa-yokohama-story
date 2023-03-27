@@ -27,9 +27,9 @@ targets = \
 	output/trophies.html \
 	output/voice.txt \
 	output/debug.txt \
-	design2/demeter-scenario.js \
-	design2/demeter-debug-scenario.js \
-	design2/sketch1.html \
+	design/demeter-scenario.js \
+	design/demeter-debug-scenario.js \
+	design/sketch1.html \
 	scenario/scenario.js
 
 ifneq ($(wildcard output/voice.vpp),)
@@ -53,12 +53,12 @@ check:: all
 
 convert_voice::
 	./tool/convert_voice.sh scenario/scenario.txt output/voice output/voice-out "*-voice-out.wav"
-	cp -f output/voice/demeter-voice-sprites.js design2/demeter-voice-sprites.js
+	cp -f output/voice/demeter-voice-sprites.js design/demeter-voice-sprites.js
 	rm -f output/voice-out/*-voice-out.wav
 
 convert_debug:
 	./tool/convert_voice.sh scenario/debug.txt output/debug output/voice-out "*-debug-out.wav"
-	cp -f output/debug/demeter-voice-sprites.js design2/demeter-debug-voice-sprites.js
+	cp -f output/debug/demeter-voice-sprites.js design/demeter-debug-voice-sprites.js
 	rm -f output/voice-out/*-debug-out.wav
 
 clean_voice::
@@ -66,7 +66,7 @@ clean_voice::
 
 convert_effect:
 	./tool/convert_effect.sh output/effect output/effect-out/30 "*.wav"
-	cp -f output/effect/demeter-effect-sprite.js design2/demeter-effect-sprite.js
+	cp -f output/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
 
 #--------------------------------------------------------------------------
 
@@ -84,16 +84,16 @@ output/credits.html: $(credits)
 	$(lua) tool/generate_credits.lua $< $@
 
 output/trophies.html: $(trophies)
-	$(lua) tool/generate_trophies.lua $< $@ design2/demeter-trophies.js
+	$(lua) tool/generate_trophies.lua $< $@ design/demeter-trophies.js
 
-design2/demeter-scenario.js: $(scenarios)
+design/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
-design2/demeter-debug-scenario.js: $(scenarios)
+design/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html
-	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html $@
+design/sketch1.html: design/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html
+	$(lua) tool/generate_html.lua design/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
