@@ -1700,9 +1700,16 @@ const savePreview = {
 };
 
 const logging = new D.Logging();
+
 const sender = {
-  twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
-  marshmallow: () => open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer"),
+  twitter: async () => {
+    open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer");
+    await updateTrophy("sender");
+  },
+  marshmallow: async () => {
+    open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer");
+    await updateTrophy("sender");
+  }
 };
 
 let database;
@@ -1713,6 +1720,7 @@ let readState;
 let trophiesState;
 let state;
 
+let screenOrientation;
 let screenWidth;
 let screenHeight;
 let screenNamePrev;
@@ -1860,6 +1868,7 @@ const evaluate = async fn => {
     read: readState,
     logging: logging,
     sender: sender,
+    trophy: updateTrophy,
   });
   await Promise.all([ putGameState(), putAutosave() ]);
   return result;
@@ -1882,7 +1891,7 @@ const updateTrophies = () => {
 const updateTrophy = async key => {
   if (!trophiesState.map.has(key)) {
     trophiesState.map.set(key, Date.now());
-    putTrophiesState();
+    await putTrophiesState();
     const trophy = D.trophies.find(trophy => trophy.key === key);
     if (trophy) {
       logging.notice("実績解除: " + trophy.name);
@@ -1893,7 +1902,7 @@ const updateTrophy = async key => {
 };
 
 const checkTrophies = async () => {
-  // next内でチェックする
+
 };
 
 //-------------------------------------------------------------------------
@@ -2013,8 +2022,8 @@ const initializeDatabase = async () => {
 
 //-------------------------------------------------------------------------
 
-const updateScaleLimit = () => {
-  D.onResize();
+const updateScaleLimit = async () => {
+  await D.onResize();
 };
 
 const updateSystemSpeed = () => {
@@ -2421,8 +2430,7 @@ const enterCreditsScreen = async () => {
 
   if (gameState.unlockPreview && !trophiesState.map.has("preview")) {
     await dialog("credits-tape-preview");
-    updateTrophy("preview");
-    await putGameState();
+    await updateTrophy("preview");
   }
 
   gameState.visitedCredits = true;
@@ -2935,6 +2943,7 @@ const next = async () => {
     if (playState !== "skip") {
       await Promise.all([ putReadState(), putAutosave() ]);
     }
+    checkTrophies();
 
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;
@@ -3225,6 +3234,7 @@ const checkKCode = async code => {
   if (kCodeBuffer.every((code, i) => kCodeSet[i].includes(code))) {
     if (kCodeBuffer.length === kCodeSet.length) {
       updateKCode();
+      await updateTrophy("kcode");
       kCodePrompt = false;
       await Promise.all([ toggleKCode(), resetKCode() ]);
       kCodePrompt = true;
@@ -3237,14 +3247,16 @@ const checkKCode = async code => {
 
 //-------------------------------------------------------------------------
 
-D.onResize = () => {
+D.onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
   if (W <= H) {
+    screenOrientation = "orientationPortrait";
     screenWidth = fontSize * 27;
     screenHeight = fontSize * 48;
   } else {
+    screenOrientation = "orientationLandscape";
     screenWidth = fontSize * 48;
     screenHeight = fontSize * 27;
   }
@@ -3259,6 +3271,14 @@ D.onResize = () => {
   document.querySelector(".demeter-screen").style.transform = transform;
 
   updateComponents();
+
+  if (!gameState[screenOrientation]) {
+    gameState[screenOrientation] = true;
+    await putGameState();
+    if (gameState.orientationPortrait && gameState.orientationLandscape) {
+      await updateTrophy("orientation");
+    }
+  }
 };
 
 D.onKeydown = async ev => {
@@ -3303,7 +3323,7 @@ D.onDOMContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  D.onResize();
+  await D.onResize();
   initializeBackground();
   await enterTitleScreen();
 
