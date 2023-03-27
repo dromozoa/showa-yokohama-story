@@ -1861,8 +1861,8 @@ const setScreenName = screenNameNext => {
   screenName = screenNameNext;
 };
 
-const evaluate = async fn => {
-  const result = fn(state, {
+const evaluate = async action => {
+  const result = await action(state, {
     system: system,
     game: gameState,
     read: readState,
@@ -1902,7 +1902,12 @@ const updateTrophy = async key => {
 };
 
 const checkTrophies = async () => {
-
+  if (readState.map.size >= D.scenario.total * 0.5) {
+    await updateTrophy("half");
+  }
+  if (readState.map.size >= D.scenario.total) {
+    await updateTrophy("full");
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -2373,9 +2378,9 @@ const enterCreditsScreen = async () => {
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
-  const T1 = 20;
-  const T2 = 20;
-  const T3 = 20;
+  const T1 = 2000;
+  const T2 = 2000;
+  const T3 = 2000;
   const screenNode = document.querySelector(".demeter-credits-screen");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
@@ -2943,7 +2948,7 @@ const next = async () => {
     if (playState !== "skip") {
       await Promise.all([ putReadState(), putAutosave() ]);
     }
-    checkTrophies();
+    await checkTrophies();
 
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;

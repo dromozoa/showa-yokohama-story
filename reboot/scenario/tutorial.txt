@@ -62,8 +62,8 @@
 #narrator
 こんなところ。
 なにか質問ある？
-@choice{ツイッターで質問する}{{ctx.sender.twitter()}}{質問}{Twitter}
-@choice{マシュマロで質問する}{{ctx.sender.marshmallow()}}{質問}{Marshmallow}
+@choice{ツイッターで質問する}{{await ctx.sender.twitter()}}{質問}{Twitter}
+@choice{マシュマロで質問する}{{await ctx.sender.marshmallow()}}{質問}{Marshmallow}
 @choice{質問はない}{チュートリアル終}{THE WRONG GOODBYE}
 
 @label{チュートリアル終}

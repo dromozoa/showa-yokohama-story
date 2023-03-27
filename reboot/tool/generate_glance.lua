@@ -28,14 +28,14 @@ for i, paragraph in ipairs(scenario) do
     for j, jump in ipairs(paragraph.choice_jumps) do
       if jump.action then
         handle:write("// ", jump.file, ":", jump.line, "\n")
-        handle:write("const paragraph", i, "_choice", j, "_action = ($,ctx) => {\n")
+        handle:write("const paragraph", i, "_choice", j, "_action = async ($, ctx) => {\n")
         handle:write(jump.action, ";\n")
         handle:write "};\n\n"
       end
     end
   end
   if paragraph.when_jumps then
-    handle:write("const paragraph", i, "_when = ($,ctx) => {\n")
+    handle:write("const paragraph", i, "_when = async ($, ctx) => {\n")
     for _, jump in ipairs(paragraph.when_jumps) do
       handle:write("// ", jump.file, ":", jump.line, "\n")
       handle:write("if (", jump.when, ") { return ", quote_js(jump.label), "; }\n")
@@ -45,14 +45,14 @@ for i, paragraph in ipairs(scenario) do
   if paragraph.enter then
     local info = paragraph.enter_info
     handle:write("// ", info.file, ":", info.line, "\n")
-    handle:write("const paragraph", i, "_enter = ($,ctx) => {\n")
+    handle:write("const paragraph", i, "_enter = async ($, ctx) => {\n")
     handle:write(paragraph.enter, ";\n")
     handle:write "};\n\n"
   end
   if paragraph.leave then
     local info = paragraph.leave_info
     handle:write("// ", info.file, ":", info.line, "\n")
-    handle:write("const paragraph", i, "_leave = ($,ctx) => {\n")
+    handle:write("const paragraph", i, "_leave = async ($, ctx) => {\n")
     handle:write(paragraph.leave, ";\n")
     handle:write "};\n\n"
   end

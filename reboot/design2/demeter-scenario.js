@@ -11,13 +11,16 @@ paragraphs:[
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:18},
-],when:($,ctx)=>{
+],when:async($,ctx)=>{
 if((() => {
     ctx.hour = new Date().getHours();
     return 4 <= ctx.hour && ctx.hour < 10;
   })())return 2;
 if(10 <= ctx.hour && ctx.hour < 18)return 3;
-},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
+},enter:async($,ctx)=>{ctx.game.newGameEvening = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  };},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんばんは、かな。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -26,7 +29,10 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:18},
-],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
+],enter:async($,ctx)=>{ctx.game.newGameMorning = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  };},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["おはよう。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -35,7 +41,10 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 [{speaker:"narrator",choices:[
 {choice:["チュートリアル"],label:7},
 {choice:["第一節"],label:18},
-],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
+],enter:async($,ctx)=>{ctx.game.newGameAfternoon = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  };},music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんにちは、だね。"],
 ["キミがサブカルの",["初心者","ニュービィ"],"なら、チュートリアルを推奨。"],
 [["古強者","ヴェテラン"],"ならば、おかえりなさい。昨日の戦場に。"],
@@ -43,7 +52,7 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ]],
 [{speaker:"narrator",choices:[
 {choice:["第一節"],label:18},
-],when:($,ctx)=>{
+],when:async($,ctx)=>{
 if(ctx.game.visitedVerse3)return 6;
 if(ctx.game.visitedVerse2)return 5;
 },music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
@@ -117,8 +126,8 @@ if(ctx.game.visitedVerse2)return 5;
 ["システム設定でチェックを入れるまで、未読の段落はスキップされない。"],
 ]],
 [{speaker:"narrator",choices:[
-{choice:["ツイッターで質問する"],action:($,ctx)=>{ctx.sender.twitter();},barcode:"Twitter",label:16},
-{choice:["マシュマロで質問する"],action:($,ctx)=>{ctx.sender.marshmallow();},barcode:"Marshmallow",label:16},
+{choice:["ツイッターで質問する"],action:async($,ctx)=>{await ctx.sender.twitter();},barcode:"Twitter",label:16},
+{choice:["マシュマロで質問する"],action:async($,ctx)=>{await ctx.sender.marshmallow();},barcode:"Marshmallow",label:16},
 {choice:["質問はない"],barcode:"THE WRONG GOODBYE",label:17},
 ],music:"vi03",place:"ここではないどこか",background:"モノクローム"},[
 ["こんなところ。"],
@@ -190,10 +199,10 @@ if(ctx.game.visitedVerse2)return 5;
 ["キミの拳銃を見せてほしい。"],
 ]],
 [{speaker:"alice",choices:[
-{choice:["サム・スペード"],action:($,ctx)=>{ctx.game.father = "サム・スペード";;},barcode:"Sam Spade",label:31},
-{choice:["フィリップ・マーロウ"],action:($,ctx)=>{ctx.game.father = "フィリップ・マーロウ";;},barcode:"Philip Marlowe",label:31},
-{choice:["マイク・ハマー"],action:($,ctx)=>{ctx.game.father = "マイク・ハマー";;},barcode:"Mike Hammer",label:31},
-],music:"diana33",place:"本牧南小学校跡",background:"モノクローム"},[
+{choice:["サム・スペード"],action:async($,ctx)=>{ctx.game.father = "サム・スペード";;},barcode:"Sam Spade",label:31},
+{choice:["フィリップ・マーロウ"],action:async($,ctx)=>{ctx.game.father = "フィリップ・マーロウ";;},barcode:"Philip Marlowe",label:31},
+{choice:["マイク・ハマー"],action:async($,ctx)=>{ctx.game.father = "マイク・ハマー";;},barcode:"Mike Hammer",label:31},
+],enter:async($,ctx)=>{delete ctx.game.father;;},music:"diana33",place:"本牧南小学校跡",background:"モノクローム"},[
 ["年季のはいったガヴァメントだ。"],
 ["刻印がある。"],
 ["そうか。そういうことか。"],
@@ -369,7 +378,8 @@ if(ctx.game.visitedVerse2)return 5;
 ["昭和横濱物語。スティーブンによる福音書。第一節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse2 = true;},leave:($,ctx)=>{delete $.priest;
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedVerse2 = true;
+  delete $.priest;
   delete $.engineer;
   delete $.activist;;},start:"verse2",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
@@ -385,14 +395,14 @@ if(ctx.game.visitedVerse2)return 5;
 {choice:["本牧",["大聖堂","カテドラル"]],barcode:"priest",label:68},
 {choice:["資源循環局"],barcode:"engineer",label:92},
 {choice:["魚人港湾労働組合"],barcode:"activist",label:123},
-],when:($,ctx)=>{
+],when:async($,ctx)=>{
 if($.priest && $.engineer && $.activist)return 163;
 },music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["少尉、どこに手紙を届けるの。"],
 ]],
-[{speaker:"narrator",when:($,ctx)=>{
+[{speaker:"narrator",when:async($,ctx)=>{
 if($.priest)return 91;
-},leave:($,ctx)=>{$.priest = true;},music:"diana19",place:"本牧大聖堂",background:"モノクローム"},[
+},music:"diana19",place:"本牧大聖堂",background:"モノクローム"},[
 ["本牧",["大聖堂","カテドラル"],"。"],
 ["徳川軍政時代末期、居留地に献堂された近代日本最初のメシア教会。"],
 ["関東大震災で崩壊し、現在の場所に移転した。"],
@@ -493,7 +503,7 @@ if($.priest)return 91;
 ["極東",["十字軍","クルセイダーズ"],"は聖別されたカラシニコフで",["屍者","ゾンビ"],"を打倒する。"],
 ["土産を持たせる。すこし待て。"],
 ]],
-[{speaker:"narrator",jump:67,music:"diana19",place:"本牧大聖堂",background:"モノクローム"},[
+[{speaker:"narrator",jump:67,enter:async($,ctx)=>{$.priest = true;},music:"diana19",place:"本牧大聖堂",background:"モノクローム"},[
 ["神父が歩み去る。"],
 ["無名戦士の墓碑に向きなおり、ダヌーは陸式の礼を捧げた。"],
 ["掃除用具を拾い、キミは墓を磨いた。"],
@@ -502,9 +512,9 @@ if($.priest)return 91;
 [{speaker:"danu",jump:67,music:"diana19",place:"本牧大聖堂",background:"モノクローム"},[
 [["大聖堂","カテドラル"],"は行ったじゃん。"],
 ]],
-[{speaker:"danu",when:($,ctx)=>{
+[{speaker:"danu",when:async($,ctx)=>{
 if($.engineer)return 122;
-},leave:($,ctx)=>{$.engineer = true;},music:"diana19",place:"横濱本牧駅",background:"モノクローム"},[
+},music:"diana19",place:"横濱本牧駅",background:"モノクローム"},[
 ["人間だけが、",["屍者","ゾンビ"],"になると思われてきた。"],
 ["咬みつかれても引っかかれても、犬や猫は",["屍者","ゾンビ"],"にならない。"],
 ["毒でやられるだけ。"],
@@ -631,7 +641,7 @@ if($.engineer)return 122;
 [{speaker:"danu",music:"diana19",place:"資源循環局",background:"モノクローム"},[
 ["そのとき、世界は遡及的に変容するのかな。"],
 ]],
-[{speaker:"narrator",jump:67,music:"diana19",place:"資源循環局",background:"モノクローム"},[
+[{speaker:"narrator",jump:67,enter:async($,ctx)=>{$.engineer = true;},music:"diana19",place:"資源循環局",background:"モノクローム"},[
 ["応えはなかった。"],
 ["応えは求められていなかった。"],
 [["珈非","コーヒ"],"を飲みほして、キミは席を立った。"],
@@ -639,14 +649,14 @@ if($.engineer)return 122;
 [{speaker:"danu",jump:67,music:"diana19",place:"横濱本牧駅",background:"モノクローム"},[
 ["資源循環局は、もう行ったよね。"],
 ]],
-[{speaker:"narrator",when:($,ctx)=>{
+[{speaker:"narrator",when:async($,ctx)=>{
 if($.activist)return 162;
-},leave:($,ctx)=>{$.activist = true;},music:"diana19",place:"本牧異人町",background:"モノクローム"},[
+},music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["本牧異人町。"],
 ["蒲鉾兵舎にかかげられたネオンに、灯はともっていない。"],
 ["リックス・カフェ・アメリカン。"],
 ]],
-[{speaker:"narrator",jump:126,when:($,ctx)=>{
+[{speaker:"narrator",jump:126,when:async($,ctx)=>{
 if(ctx.system.unionSetting === "ろうくみ")return 125;
 },music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["入口のかたわらにベニヤ看板。"],
@@ -810,7 +820,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 [["学生","ガキ"],"のころからの習い性だからさ。"],
 ["あ",["奴","いつ"],"とつるんでさ。"],
 ]],
-[{speaker:"narrator",jump:67,music:"diana19",place:"本牧異人町",background:"モノクローム"},[
+[{speaker:"narrator",jump:67,enter:async($,ctx)=>{$.activist = true;},music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["フィルタつき",["叶和圓","イェヘユアン"],"のカートンをキミは受けとる。"],
 ["ダヌーは古い歌をハミングした。"],
 ["ただよう臭いが煙草のせいなのかどうか、キミにはわからなかった。"],
@@ -866,7 +876,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 [["希望","エルピス"],"も",["ロック","エルビス"],"も喪われた。"],
 ]],
 [{speaker:"danu",choices:[
-{choice:["最熱望"],barcode:"Elvis",label:172},
+{choice:["最熱望"],action:async($,ctx)=>{ctx.trophy("elvis");},barcode:"Elvis",label:172},
 {choice:["熱望"],barcode:"Elvis",label:172},
 {choice:["拒否"],label:175},
 ],music:"diana19",place:"本牧異人町",background:"モノクローム"},[
@@ -920,7 +930,10 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["終わらせにきた。人類を。世界を。"],
 ["——昭和を。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation2 = true;},finish:"credits",music:"diana12",place:"南樺太",background:"モノクローム"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedRevelation2 = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  };},finish:"credits",music:"diana12",place:"南樺太",background:"モノクローム"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -930,7 +943,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["昭和横濱物語。スティーブンによる福音書。第二節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",enter:($,ctx)=>{ctx.game.visitedVerse3 = true;},start:"verse3",music:"diana23",place:"本牧異人町",background:"モノクローム"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedVerse3 = true;},start:"verse3",music:"diana23",place:"本牧異人町",background:"モノクローム"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],
@@ -1419,8 +1432,8 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["そんな歴史。とか。"],
 ]],
 [{speaker:"steven",choices:[
-{choice:["エデンの園"],action:($,ctx)=>{$.genesis = false;;},barcode:"Garden of Eden",label:296},
-{choice:["グライダー",["銃","ガン"]],action:($,ctx)=>{$.genesis = true;;},barcode:"Glider Gun",label:297},
+{choice:["エデンの園"],action:async($,ctx)=>{$.genesis = false;;},barcode:"Garden of Eden",label:296},
+{choice:["グライダー",["銃","ガン"]],action:async($,ctx)=>{$.genesis = true;;},barcode:"Glider Gun",label:297},
 {choice:["択ばない"],label:298},
 ],music:"diana23",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["人間が読め。"],
@@ -1482,7 +1495,10 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["人類を。世界を。"],
 ["——昭和を。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedRevelation3 = true;},finish:"credits",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedRevelation3 = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  };},finish:"credits",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム"},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1552,7 +1568,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["火箭が",["内燃機関","ディーゼルエンジン"],"をつらぬく。"],
 ["飛鳥が爆発する。"],
 ]],
-[{speaker:"alice",when:($,ctx)=>{
+[{speaker:"alice",when:async($,ctx)=>{
 if($.genesis)return 341;
 },music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ"},[
 ["世界は書きかわるのか。"],
@@ -1639,8 +1655,11 @@ if($.genesis)return 341;
 ["今度は、この国の。"],
 ["——戦後を。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedGospel = true;
-  ctx.game.unlockPreview = true;;},finish:"credits",music:"diana12",place:"本牧地区",background:"色づいたセカイ"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedGospel = true;
+  ctx.game.unlockPreview = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  };},finish:"credits",music:"diana12",place:"本牧地区",background:"色づいたセカイ"},[
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
@@ -1684,7 +1703,10 @@ if($.genesis)return 341;
 ["いつしか、昭和は終わっていた。"],
 ["新しい年号が制定されたかどうか、ボクは知らない。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedGenesis = true;},finish:"credits",music:"diana12",place:"地球",background:"色づいたセカイ"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedGenesis = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  };},finish:"credits",music:"diana12",place:"地球",background:"色づいたセカイ"},[
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],
@@ -1702,11 +1724,11 @@ if($.genesis)return 341;
 ["このセカイが道理をわきまえているならば。"],
 ["そんなことは、期待するべくもないが。"],
 ]],
-[{speaker:"danu",when:($,ctx)=>{
+[{speaker:"danu",when:async($,ctx)=>{
 if(ctx.game.father === "サム・スペード")return 357;
 if(ctx.game.father === "フィリップ・マーロウ")return 356;
 if(ctx.game.father === "マイク・ハマー")return 358;
-},music:"diana21",place:"文芸部部室",background:"モノクローム"},[
+},enter:async($,ctx)=>{ctx.trophy("doe");},music:"diana21",place:"文芸部部室",background:"モノクローム"},[
 ["ジョン・ドゥ","と","ジェーン・ドゥ","から産まれてしまった、名づけられなかった子供たちがアタシたちだとしたら。"],
 ]],
 [{speaker:"alice",jump:364,music:"diana21",place:"文芸部部室",background:"モノクローム"},[
@@ -1789,7 +1811,7 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ["それは、母殺しの物語。"],
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
-[{speaker:"narrator",leave:($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム"},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 [["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],

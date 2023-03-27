@@ -10,14 +10,18 @@
     return 4 <= ctx.hour && ctx.hour < 10;
   })()
 }}{おはよう}
-@when{{
-  10 <= ctx.hour && ctx.hour < 18
-}}{こんにちは}
+@when{{10 <= ctx.hour && ctx.hour < 18}}{こんにちは}
 #narrator
 こんばんは、かな。
 キミがサブカルの@r{初心者}{ニュービィ}{ニュービィー}なら、チュートリアルを推奨。
 @r{古強者}{ヴェテラン}ならば、おかえりなさい。昨日の戦場に。
 昭和横濱物語。
+@enter{{
+  ctx.game.newGameEvening = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  }
+}}
 @choice{チュートリアル}
 @choice{第一節}
 
@@ -27,6 +31,12 @@
 キミがサブカルの@r{初心者}{ニュービィ}{ニュービィー}なら、チュートリアルを推奨。
 @r{古強者}{ヴェテラン}ならば、おかえりなさい。昨日の戦場に。
 昭和横濱物語。
+@enter{{
+  ctx.game.newGameMorning = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  }
+}}
 @choice{チュートリアル}
 @choice{第一節}
 
@@ -36,8 +46,16 @@
 キミがサブカルの@r{初心者}{ニュービィ}{ニュービィー}なら、チュートリアルを推奨。
 @r{古強者}{ヴェテラン}ならば、おかえりなさい。昨日の戦場に。
 昭和横濱物語。
+@enter{{
+  ctx.game.newGameAfternoon = true;
+  if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
+    await ctx.trophy("newgames");
+  }
+}}
 @choice{チュートリアル}
 @choice{第一節}
+
+@#==============================================================================
 
 @label_root{節選択}
 @music{vi03}

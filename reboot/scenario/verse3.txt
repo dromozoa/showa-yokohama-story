@@ -573,7 +573,12 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{黙示録}{リベレーション}。
 了。
-@leave{{ctx.game.visitedRevelation3 = true}}
+@enter{{
+  ctx.game.visitedRevelation3 = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
+}}
 @finish{credits}
 
 @label{第三節黙示録了}
@@ -647,9 +652,9 @@ H@v{+}{プラス}八、巨大群体上陸。
 @# かたりえないもの
 @# ものがたりのかたりて
 
-@when{{$.genesis}}{創世記}
 @music{diana12}
 @background{色づいたセカイ}
+@when{{$.genesis}}{創世記}
 #alice
 世界は書きかわるのか。
 あるいは、すでに書きかわったのか。
@@ -741,9 +746,12 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。スティーブンによる福音書。最終節。
 了。
-@leave{{
+@enter{{
   ctx.game.visitedGospel = true;
   ctx.game.unlockPreview = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
 }}
 @finish{credits}
 
@@ -794,5 +802,10 @@ H@v{+}{プラス}八、巨大群体上陸。
 #narrator
 昭和横濱物語。アリスの@r{創世記}{ジェネシス}。
 了。
-@leave{{ctx.game.visitedGenesis = true}}
+@enter{{
+  ctx.game.visitedGenesis = true;
+  if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
+    ctx.trophy("ends");
+  }
+}}
 @finish{credits}

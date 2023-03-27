@@ -59,8 +59,8 @@ paragraphs:[
 ["システム設定でチェックを入れるまで、未読の段落はスキップされない。"],
 ]],
 [{speaker:"narrator",choices:[
-{choice:["ツイッターで質問する"],action:($,ctx)=>{ctx.sender.twitter();},barcode:"Twitter",label:10},
-{choice:["マシュマロで質問する"],action:($,ctx)=>{ctx.sender.marshmallow();},barcode:"Marshmallow",label:10},
+{choice:["ツイッターで質問する"],action:async($,ctx)=>{await ctx.sender.twitter();},barcode:"Twitter",label:10},
+{choice:["マシュマロで質問する"],action:async($,ctx)=>{await ctx.sender.marshmallow();},barcode:"Marshmallow",label:10},
 {choice:["質問はない"],barcode:"THE WRONG GOODBYE",label:11},
 ]},[
 ["こんなところ。"],
