@@ -55,4 +55,3 @@ local audio_filter = "loudnorm"
 
 execute(("ffmpeg -y -i %s -filter:a %s %s.wav"):format(quote_shell(source_pathname), quote_shell(audio_filter), quote_shell(result_name)))
 
-

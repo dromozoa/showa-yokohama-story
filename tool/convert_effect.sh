@@ -20,7 +20,15 @@
 here=`dirname "$0"`
 export LUA_PATH="$here/?.lua;;"
 
+I=30
+
+mkdir -p "$1/$I"
 output_dirname=`(cd "$1" && pwd)`
 source_dirname=`(cd "$2" && pwd)`
 
-lua "$here/convert_effect.lua" "$output_dirname" "$source_dirname"/$3
+for i in "$source_dirname"/$3
+do
+  j=`basename "$i" .mp3`
+  lua "$here/normalize_effect.lua" "-$I" "$i" "$output_dirname/$I/$j"
+done
+lua "$here/convert_effect.lua" "$output_dirname" "$output_dirname/$I"/*.wav

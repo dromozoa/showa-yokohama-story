@@ -65,7 +65,7 @@ clean_voice::
 	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
 
 convert_effect:
-	./tool/convert_effect.sh output/effect output/effect-out/30 "*.wav"
+	./tool/convert_effect.sh output/effect assets/effect "*.mp3"
 	cp -f output/effect/demeter-effect-sprite.js design/demeter-effect-sprite.js
 
 #--------------------------------------------------------------------------
