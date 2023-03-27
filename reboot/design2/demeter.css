@@ -41,7 +41,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --screen-background-image: url(bg-portrait.png);
+    --background-image: url(bg-portrait.png);
+    --background-image-kcode: url(bg-portrait-kcode.png);
   }
 }
 
@@ -49,7 +50,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --screen-background-image: url(bg-landscape.png);
+    --background-image: url(bg-landscape.png);
+    --background-image-kcode: url(bg-landscape-kcode.png);
   }
 }
 
@@ -74,11 +76,21 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-screen-background {
+.demeter-background-kcode {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--screen-background-image);
+  background-image: var(--background-image-kcode);
+  opacity: 0;
+  filter: brightness(0.2) saturate(0);
+}
+
+.demeter-background {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  background-image: var(--background-image);
+  opacity: 0;
   filter: brightness(0.2) saturate(0);
 }
 
@@ -212,6 +224,20 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: center;
   pointer-events: none;
+}
+
+.demeter-title-kcode {
+  font-size: calc(var(--font-size) * 0.75);
+  line-height: calc(var(--font-size) * 0.75);
+}
+
+.demeter-title-kcode-item {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.demeter-title-kcode-item.demeter-active {
+  opacity: 1;
 }
 
 /*************************************************************************/
@@ -833,7 +859,7 @@ body.demeter {
   --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
   --credits-height-paragraph: calc(var(--font-size) * 27);
   --credits-height-paragraphs: calc(var(--credits-height-paragraph) * var(--credits-count));
-  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height)) + var(--font-size) * 2);
+  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height) * 2) + var(--font-size) * 2);
 }
 
 .demeter-credits-screen {
@@ -944,6 +970,107 @@ body.demeter {
   top: 0;
 }
 
+.demeter-credits-trophies {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  left: 0;
+  bottom: var(--screen-height);
+  opacity: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-trophies-title {
+  position: absolute;
+  width: var(--screen-width);
+  top: calc(var(--font-size) * 2);
+  left: 0;
+  text-align: center;
+}
+
+.demeter-credits-trophies1,
+.demeter-credits-trophies2 {
+  position: absolute;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 20);
+}
+
+@media (orientation: portrait) {
+  .demeter-credits-trophies1 {
+    top: calc(var(--font-size) * 4);
+    left: calc(var(--font-size) * 3);
+  }
+
+  .demeter-credits-trophies2 {
+    top: calc(var(--font-size) * 24);
+    left: calc(var(--font-size) * 3);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-credits-trophies1 {
+    top: calc(var(--font-size) * 4);
+    left: calc(var(--font-size) * 2);
+  }
+
+  .demeter-credits-trophies2 {
+    top: calc(var(--font-size) * 4);
+    left: calc(var(--font-size) * 25);
+  }
+}
+
+.demeter-credits-trophy {
+  position: relative;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 4);
+}
+
+.demeter-credits-trophy-title {
+  position: absolute;
+  width: calc(var(--font-size) * 21);
+  height: calc(var(--font-size) * 2);
+}
+
+.demeter-credits-trophy-title-locked {
+  display: block;
+}
+
+.demeter-credits-trophy.demeter-unlocked > .demeter-credits-trophy-title-locked {
+  display: none;
+}
+
+.demeter-credits-trophy-title-unlocked {
+  display: none;
+}
+
+.demeter-credits-trophy.demeter-unlocked > .demeter-credits-trophy-title-unlocked {
+  display: block;
+}
+
+.demeter-credits-trophy-icon {
+  width: calc(var(--font-size) * 1.5);
+}
+
+.demeter-credits-trophy-barcode {
+  font-family: var(--font-family-barcode);
+}
+
+.demeter-credits-trophy-description {
+  position: absolute;
+  width: calc(var(--font-size) * 19.5);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 1.5);
+  top: calc(var(--font-size) * 2);
+  color: rgba(255, 255, 255);
+  opacity: 0.25;
+}
+
+.demeter-credits-trophy.demeter-unlocked > .demeter-credits-trophy-description {
+  opacity: 1;
+}
+
 .demeter-credits-end {
   position: absolute;
   width: var(--screen-width);
@@ -961,9 +1088,9 @@ body.demeter {
 .demeter-credits-end-paragraph {
   position: absolute;
   width: var(--screen-width);
-  height: calc(var(--font-size) * 4);
+  height: calc(var(--font-size) * 6);
   left: 0;
-  top: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  top: calc((var(--screen-height) - var(--font-size) * 10) * 0.5);
 }
 
 .demeter-credits-end-icon {
@@ -972,7 +1099,7 @@ body.demeter {
   width: var(--screen-width);
   height: calc(var(--font-size) * 2);
   left: 0;
-  bottom: calc((var(--screen-height) - var(--font-size) * 8) * 0.5);
+  bottom: calc((var(--screen-height) - var(--font-size) * 10) * 0.5);
   transform-origin: center bottom;
   pointer-events: none;
 }

@@ -7,6 +7,10 @@ Scenario	[vaporoid](https://twitter.com/vaporoid)
 Programmer	[vaporoid](https://twitter.com/vaporoid)
 UI Graphics	[vaporoid](https://twitter.com/vaporoid)
 Tools	[vaporoid](https://twitter.com/vaporoid)
+\\
+Libraries	[howler.js](https://howlerjs.com/)
+	[lil-gui](https://lil-gui.georgealways.com/)
+	[idb](https://github.com/jakearchibald/idb)
 
 Western Fonts\
  licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
@@ -35,8 +39,8 @@ Japanese Fonts\
 [Line Awesome](https://icons8.com/line-awesome)\
  licensed under MIT or [Good Boy Licensed](https://icons8.com/good-boy-license)
 
-Libraries	[howler.js](https://howlerjs.com/), [lil-gui](https://lil-gui.georgealways.com/), [idb](https://github.com/jakearchibald/idb)
 Visuals	[shutterstock](https://www.shutterstock.com/)
+Sound Effects	[Sound Effect Lab](https://soundeffect-lab.info/)
 Voices	[VOICEPEAK](https://www.ah-soft.com/voice/6nare/)
 Musics	[Sessions](https://sessions.riotgames.com/)
 Sessions: Vi	03	Hanz	Hollow

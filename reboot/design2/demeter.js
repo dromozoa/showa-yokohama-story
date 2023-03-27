@@ -938,14 +938,19 @@ const startTexts = {
 D.preferences = {
   musicDir: "../output/music",
   voiceDir: "../output/voice",
+  effectDir: "../output/effect",
 };
 
 //-------------------------------------------------------------------------
 
 D.Logging = class {
-  update() {
+  constructor() {
+    this.level = 6;
+  }
+
+  update(behavior) {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
-      behavior: "smooth",
+      behavior: behavior,
       block: "end",
       inline: "start",
     });
@@ -962,44 +967,42 @@ D.Logging = class {
     while (loggingNode.children.length > 100) {
       loggingNode.firstElementChild.remove();
     }
-    this.update();
+    this.update("smooth");
   }
 
-  log(message) {
-    this.logImpl(message);
+  setLevel(level) {
+    this.level = level;
   }
 
   error(message, exception) {
-    this.logImpl(message, exception.message);
-    // TODO 送信
-  }
-};
-
-//-------------------------------------------------------------------------
-
-D.TaskSet = class {
-  constructor() {
-    this.prevTime = undefined;
-    this.set = new Set();
-  }
-
-  async update() {
-    const now = performance.now();
-    if (this.prevTime === undefined) {
-      this.prevTime = now;
-      return;
+    if (this.level >= 3) {
+      this.logImpl(message, exception.message);
     }
-    const duration = now - this.prevTime;
-    if (duration < 1000) {
-      return;
-    }
-    await Promise.all([...this.set].map(task => task()));
-    this.set.clear();
-    this.prevTime = performance.now();
+    console.log(message, exception);
   }
 
-  add(task) {
-    this.set.add(task);
+  warn(message) {
+    if (this.level >= 4) {
+      this.logImpl(message);
+    }
+  }
+
+  notice(message) {
+    if (this.level >= 5) {
+      this.logImpl(message);
+    }
+  }
+
+  info(message) {
+    if (this.level >= 6) {
+      this.logImpl(message);
+    }
+  }
+
+  debug(message) {
+    if (this.level >= 7) {
+      this.logImpl(message);
+    }
   }
 };
 
@@ -1090,7 +1093,7 @@ D.MusicPlayer = class {
     this.key = key;
     this.sound = sound;
     this.soundId = soundId;
-    logging.log("音楽開始: " + musicNames[key]);
+    logging.info("音楽開始: " + musicNames[key]);
   }
 
   fade(key) {
@@ -1103,7 +1106,7 @@ D.MusicPlayer = class {
 
     this.sound.once("fade", soundId=> {
       oldSound.stop();
-      logging.log("音楽終了: " + musicNames[oldKey]);
+      logging.debug("音楽終了: " + musicNames[oldKey]);
     });
 
     oldSound.fade(this.volume, 0, 5000, oldSoundId);
@@ -1504,8 +1507,10 @@ D.NullVoiceSprite = class {
 //-------------------------------------------------------------------------
 
 D.OpacityAnimation = class {
-  constructor(nodes, duration) {
+  constructor(nodes, begin, end, duration) {
     this.nodes = nodes;
+    this.begin = begin;
+    this.end = end;
     this.duration = duration;
   }
 
@@ -1521,10 +1526,11 @@ D.OpacityAnimation = class {
 
       const x = Math.min(duration / this.duration, 1);
       const y = x * (2 - x)
-
-      this.nodes.forEach(node => node.style.opacity = D.numberToString(y));
+      const z = this.begin + (this.end - this.begin) * y;
+      const opacity = D.numberToString(z);
+      this.nodes.forEach(node => node.style.opacity = opacity);
     }
-    this.nodes.forEach(node => node.style.opacity = "1");
+    this.nodes.forEach(node => node.style.opacity = this.end);
   }
 };
 
@@ -1559,8 +1565,8 @@ D.ScrollAnimation = class {
 //-------------------------------------------------------------------------
 
 D.SaturateFilterAnimation = class {
-  constructor(node) {
-    this.node = node;
+  constructor(nodes) {
+    this.nodes = nodes;
     this.key = "モノクローム";
     this.value = 0;
   }
@@ -1587,13 +1593,54 @@ D.SaturateFilterAnimation = class {
     const x = Math.min((now - this.startTime) / this.duration, 1);
     const y = x * (2 - x)
     const z = this.begin + (this.end - this.begin) * y;
-
-    this.node.style.filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+    const filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
+    this.nodes.forEach(node => node.style.filter = filter);
 
     this.value = z;
     if (x === 1) {
       this.startTime = undefined;
     }
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.SoundEffect = class {
+  constructor(volume) {
+    const basename = D.preferences.effectDir + "/effect";
+    this.volume = volume;
+    this.sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      volume: this.volume,
+      sprite: D.effectSprite,
+    });
+  }
+
+  start(sprite) {
+    this.sound.play(sprite);
+  }
+
+  updateVolume(volume) {
+    this.volume = volume;
+    this.sound.volume(volume);
+  }
+};
+
+const soundEffectSelect = () => {
+  if (soundEffect) {
+    soundEffect.start("select");
+  }
+};
+
+const soundEffectCancel = () => {
+  if (soundEffect) {
+    soundEffect.start("cancel");
+  }
+};
+
+const soundEffectBeep = () => {
+  if (soundEffect) {
+    soundEffect.start("beep");
   }
 };
 
@@ -1608,6 +1655,7 @@ const systemDefault = {
   masterVolume: 1,
   musicVolume: 1,
   voiceVolume: 1,
+  effectVolume: 1,
   componentColor: [1, 1, 1],
   componentOpacity: 0.25,
   logging: true,
@@ -1623,6 +1671,11 @@ const gameStateDefault = {
 
 const readStateDefault = {
   id: "read",
+  map: new Map(),
+};
+
+const trophiesStateDefault = {
+  id: "trophies",
   map: new Map(),
 };
 
@@ -1647,10 +1700,16 @@ const savePreview = {
 };
 
 const logging = new D.Logging();
-const taskSet = new D.TaskSet();
+
 const sender = {
-  twitter: () => open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer"),
-  marshmallow: () => open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer"),
+  twitter: async () => {
+    open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer");
+    await updateTrophy("sender");
+  },
+  marshmallow: async () => {
+    open("https://marshmallow-qa.com/vaporoid", "_blank", "noopener,noreferrer");
+    await updateTrophy("sender");
+  }
 };
 
 let database;
@@ -1658,8 +1717,10 @@ let system;
 let playState;
 let gameState;
 let readState;
+let trophiesState;
 let state;
 
+let screenOrientation;
 let screenWidth;
 let screenHeight;
 let screenNamePrev;
@@ -1669,6 +1730,7 @@ let systemUi;
 let backgroundAnimation;
 let iconAnimation;
 let musicPlayer;
+let soundEffect;
 let audioVisualizer;
 let frameRateVisualizer;
 let silhouette;
@@ -1676,6 +1738,7 @@ let place;
 
 let paragraphIndexPrev;
 let paragraphIndexSave;
+let paragraphIndexLast;
 let paragraphIndex;
 let paragraph;
 let paragraphLineNumber;
@@ -1695,14 +1758,18 @@ let waitForCredits;
 const putSystemTask = async () => {
   try {
     await database.put("system", system);
-    // logging.log("システム設定保存: 成功");
+    logging.debug("システム設定書込: 成功");
   } catch (e) {
-    logging.error("システム設定保存: 失敗", e);
+    logging.error("システム設定書込: 失敗", e);
   }
 };
 
 // ユーザ操作が行われたらAUTO/SKIPを解除する。
-const cancelPlayState = () => {
+const cancelPlayState = async () => {
+  // SKIPが解除されたら自動保存する。
+  if (playState === "skip") {
+    await Promise.all([ putReadState(), putAutosave() ]);
+  }
   playState = undefined;
   document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
@@ -1711,19 +1778,27 @@ const cancelPlayState = () => {
 const putGameState = async () => {
   try {
     await database.put("game", gameState);
-    // logging.log("ゲーム状態保存: 成功");
+    logging.debug("共通セーブデータ書込: 成功");
   } catch (e) {
-    logging.error("ゲーム状態保存: 失敗", e);
+    logging.error("共通セーブデータ書込: 失敗", e);
   }
 };
 
 const putReadState = async () => {
   try {
-    readState.map.set(paragraphIndex, Date.now());
     await database.put("read", readState);
-    // logging.log("既読状態保存: 成功");
+    logging.debug("既読データ書込: 成功");
   } catch (e) {
-    logging.error("既読状態保存: 失敗", e);
+    logging.error("既読データ書込: 失敗", e);
+  }
+};
+
+const putTrophiesState = async () => {
+  try {
+    await database.put("trophies", trophiesState);
+    logging.debug("実績データ書込: 成功");
+  } catch (e) {
+    logging.error("実績データ書込: 失敗", e);
   }
 };
 
@@ -1731,22 +1806,22 @@ const putAutosave = async () => {
   try {
     await database.put("save", {
       id: "autosave",
-      saved: D.dateToString(new Date()),
+      saved: Date.now(),
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    // logging.log("自動保存: 成功");
+    logging.debug("自動セーブデータ書込: 成功");
   } catch (e) {
-    logging.error("自動保存: 失敗", e);
+    logging.error("自動セーブデータ書込: 失敗", e);
   }
 };
 
 const deleteAutosave = async () => {
   try {
     await database.delete("save", "autosave");
-    // logging.log("自動保存データ削除: 成功");
+    logging.debug("自動セーブデータ削除: 成功");
   } catch (e) {
-    logging.error("自動保存データ削除: 失敗", e);
+    logging.error("自動セーブデータ削除: 失敗", e);
   }
 };
 
@@ -1754,20 +1829,20 @@ const putSave = async (key, name) => {
   try {
     await database.put("save", {
       id: key,
-      saved: D.dateToString(new Date()),
+      saved: Date.now(),
       paragraphIndex: paragraphIndexSave,
       state: state,
     });
-    // logging.log(name + "保存: 成功");
+    logging.debug(name + "書込: 成功");
   } catch (e) {
-    logging.error(name + "保存: 失敗", e);
+    logging.error(name + "書込: 失敗", e);
   }
 };
 
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
-    // logging.log(name + "削除: 成功");
+    logging.debug(name + "削除: 成功");
   } catch (e) {
     logging.error(name + "削除: 失敗", e);
   }
@@ -1775,6 +1850,9 @@ const deleteSave = async (key, name) => {
 
 const setSave = save => {
   paragraphIndexPrev = save.paragraphIndex - 1;
+  paragraphIndexSave = save.paragraphIndex;
+  paragraphIndexLast = undefined;
+  paragraphIndex = undefined;
   state = save.state;
 };
 
@@ -1783,16 +1861,53 @@ const setScreenName = screenNameNext => {
   screenName = screenNameNext;
 };
 
-const evaluate = async fn => {
-  const result = fn(state, {
+const evaluate = async action => {
+  const result = await action(state, {
     system: system,
     game: gameState,
     read: readState,
     logging: logging,
     sender: sender,
+    trophy: updateTrophy,
   });
   await Promise.all([ putGameState(), putAutosave() ]);
   return result;
+};
+
+//-------------------------------------------------------------------------
+
+const updateTrophies = () => {
+  D.trophies.forEach(trophy => {
+    if (trophiesState.map.has(trophy.key)) {
+      document.querySelector(".demeter-credits-trophy-" + trophy.key).classList.add("demeter-unlocked");
+    } else {
+      document.querySelector(".demeter-credits-trophy-" + trophy.key).classList.remove("demeter-unlocked");
+    }
+  });
+  document.querySelector(".demeter-credits-end-trophies-status").textContent = trophiesState.map.size + " / " + D.trophies.length;
+};
+
+// トロフィーが未獲得であれば獲得する。
+const updateTrophy = async key => {
+  if (!trophiesState.map.has(key)) {
+    trophiesState.map.set(key, Date.now());
+    await putTrophiesState();
+    const trophy = D.trophies.find(trophy => trophy.key === key);
+    if (trophy) {
+      logging.notice("実績解除: " + trophy.name);
+      logging.info(trophy.description);
+      updateTrophies();;
+    }
+  }
+};
+
+const checkTrophies = async () => {
+  if (readState.map.size >= D.scenario.total * 0.5) {
+    await updateTrophy("half");
+  }
+  if (readState.map.size >= D.scenario.total) {
+    await updateTrophy("full");
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -1831,6 +1946,8 @@ const showTitleChoices = async () => {
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
 
+  soundEffect = new D.SoundEffect(system.effectVolume);
+
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
 
@@ -1847,12 +1964,13 @@ const unlockAudio = async () => {
   audioVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
 
-  logging.log("オーディオロック: 解除");
+  logging.info("オーディオロック: 解除");
 };
 
 //-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
+  console.log("upgradeDatabase", oldVersion, newVersion);
   for (let version = oldVersion + 1; version <= newVersion; ++version) {
     switch (version) {
       case 1:
@@ -1864,6 +1982,9 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
       case 3:
         db.createObjectStore("game", { keyPath: "id" });
         db.createObjectStore("read", { keyPath: "id" });
+        break;
+      case 4:
+        db.createObjectStore("trophies", { keyPath: "id" });
         break;
     }
   }
@@ -1879,7 +2000,7 @@ const setItemDefault = (item, itemDefault) => {
 
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 3, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 4, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
     setItemDefault(system, systemDefault);
@@ -1893,7 +2014,12 @@ const initializeDatabase = async () => {
     setItemDefault(readState, readStateDefault);
     await database.put("read", readState);
 
-    logging.log("ローカルデータベース接続: 成功");
+    trophiesState = await database.get("trophies", "trophies") || {};
+    setItemDefault(trophiesState, trophiesStateDefault);
+    await database.put("trophies", trophiesState);
+    updateTrophies();
+
+    logging.info("ローカルデータベース接続: 成功");
   } catch (e) {
     logging.error("ローカルデータベース接続: 失敗", e);
   }
@@ -1901,8 +2027,8 @@ const initializeDatabase = async () => {
 
 //-------------------------------------------------------------------------
 
-const updateScaleLimit = () => {
-  D.onResize();
+const updateScaleLimit = async () => {
+  await D.onResize();
 };
 
 const updateSystemSpeed = () => {
@@ -1926,6 +2052,12 @@ const updateSystemMusicVolume = () => {
 const updateSystemVoiceVolume = () => {
   if (voiceSprite) {
     voiceSprite.updateVolume(system.voiceVolume);
+  }
+};
+
+const updateSystemEffectVolume = () => {
+  if (soundEffect) {
+    soundEffect.updateVolume(system.effectVolume);
   }
 };
 
@@ -2017,7 +2149,7 @@ const initializeComponents = () => {
   updateComponentOpacity();
   updateComponents();
 
-  logging.log("コンポーネント初期化: 完了");
+  logging.info("コンポーネント初期化: 完了");
 };
 
 //-------------------------------------------------------------------------
@@ -2044,7 +2176,7 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
-  systemUi.onChange(() => taskSet.add(putSystemTask));
+  systemUi.onFinishChange(putSystemTask);
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
@@ -2053,6 +2185,7 @@ const initializeSystemUi = () => {
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateSystemMasterVolume);
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
+  systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateSystemEffectVolume);
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -2065,12 +2198,25 @@ const initializeSystemUi = () => {
 
   const commands = {};
 
+  commands.backToTitle = async () => {
+    soundEffectSelect();
+    pause();
+    systemUi.openAnimated(false);
+    if (await dialog("system-back-to-title") === "yes") {
+      await stop();
+      leaveMainScreen();
+      await enterTitleScreen();
+    }
+    restart();
+  };
+
   commands.resetSystem = async () => {
+    soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
-      putSystemTask();
+      await putSystemTask();
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
@@ -2079,6 +2225,7 @@ const initializeSystemUi = () => {
       updateSystemMasterVolume();
       updateSystemMusicVolume();
       updateSystemVoiceVolume();
+      updateSystemEffectVolume();
       updateComponentColor();
       updateComponentOpacity();
       updateComponents();
@@ -2087,6 +2234,7 @@ const initializeSystemUi = () => {
   };
 
   commands.resetSave = async () => {
+    soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-reset-save") === "yes") {
@@ -2095,9 +2243,9 @@ const initializeSystemUi = () => {
       setItemDefault(gameState, gameStateDefault);
       await putGameState();
       await deleteAutosave();
-      await deleteSave("save1", "#1");
-      await deleteSave("save2", "#2");
-      await deleteSave("save3", "#3");
+      await deleteSave("save1", "セーブデータ#1");
+      await deleteSave("save2", "セーブデータ#2");
+      await deleteSave("save3", "セーブデータ#3");
       leaveMainScreen();
       await enterTitleScreen();
     }
@@ -2105,8 +2253,9 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
-  commandsFolder.add(commands, "resetSystem").name("システム設定初期化");
-  commandsFolder.add(commands, "resetSave").name("セーブデータ全削除");
+  commandsFolder.add(commands, "backToTitle").name("タイトル画面に戻る");
+  commandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
+  commandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2117,7 +2266,7 @@ const initializeSystemUi = () => {
       systemUiNode.style.display = "none";
       if (!initialized) {
         initialized = true;
-        logging.log("システム設定初期化: 完了");
+        logging.info("システム設定初期化: 完了");
       }
     }
   });
@@ -2163,6 +2312,7 @@ const enterTitleScreen = async () => {
     iconAnimation.start();
   } else {
     musicPlayer.fade("vi03");
+    place = undefined;
     backgroundAnimation.fade("モノクローム", 2000);
     await showTitleChoices();
   }
@@ -2178,21 +2328,25 @@ const enterMainScreen = () => {
   setScreenName("main");
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-  logging.update();
+  logging.update("auto");
 };
 
 const enterDataScreen = async screenNode => {
   for (let i = 1; i <= 3; ++i) {
     const key = "save" + i;
     const save = await database.get("save", key);
-    screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = save ? " : " + save.saved : "";
+    if (save) {
+      screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = " : " + D.dateToString(new Date(save.saved));
+    } else {
+      screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = "";
+    }
   }
   document.querySelector(".demeter-screen").append(screenNode);
 };
 
 const enterLoadScreen = async () => {
   setScreenName("load");
-  if (gameState.unlockedPreview) {
+  if (trophiesState.map.has("preview")) {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
@@ -2209,22 +2363,20 @@ const enterCreditsScreen = async () => {
   setScreenName("credits");
   musicPlayer.fade("vi05");
 
-  let total = 0;
-  let active = 0;
   D.scenario.paragraphs.forEach((paragraph, i) => {
     if (!paragraph[0].system) {
-      ++total;
       const paragraphIndex = i + 1;
       const nodes = [...document.querySelectorAll(".demeter-credits-graph > svg [data-pid='" + paragraphIndex + "']")];
       if (readState.map.has(paragraphIndex)) {
-        ++active;
         nodes.forEach(node => node.classList.add("demeter-active"));
       } else {
         nodes.forEach(node => node.classList.remove("demeter-active"));
       }
     }
   });
-  document.querySelector(".demeter-credits-end-status").textContent = (active / total * 100).toFixed(2).replace(/\.?0*$/, "") + "%";
+
+  const scenarioStatus = readState.map.size / D.scenario.total * 100;
+  document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
   const T1 = 2000;
   const T2 = 2000;
@@ -2232,16 +2384,17 @@ const enterCreditsScreen = async () => {
   const screenNode = document.querySelector(".demeter-credits-screen");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
+  const trophiesNode = document.querySelector(".demeter-credits-trophies");
   const endNode = document.querySelector(".demeter-credits-end");
   const graphRatio = document.querySelector(".demeter-credits-graph svg").dataset.ratio;
 
-  [ graphNode, ...paragraphNodes, endNode ].forEach(node => node.style.opacity = "0");
+  [ graphNode, ...paragraphNodes, trophiesNode, endNode ].forEach(node => node.style.opacity = "0");
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-credits-screen"));
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
-  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight) + fontSize * 2;
+  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
 
   screenNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
@@ -2250,7 +2403,7 @@ const enterCreditsScreen = async () => {
     if (i === 0) {
       nodes.push(graphNode);
     }
-    const opacityAnimation = new D.OpacityAnimation(nodes, T1);
+    const opacityAnimation = new D.OpacityAnimation(nodes, 0, 1, T1);
     await opacityAnimation.start();
 
     await D.setTimeout(T2);
@@ -2261,22 +2414,34 @@ const enterCreditsScreen = async () => {
     if (i < paragraphNodes.length - 1) {
       end = begin + paragraphHeight;
     } else {
-      end = height - screenHeight;
+      end = height - screenHeight * 2;
     }
     const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
-  if (gameState.unlockPreview && !gameState.unlockedPreview) {
+  // trophies animation
+  {
+    const opacityAnimation = new D.OpacityAnimation([trophiesNode], 0, 1, T1);
+    await opacityAnimation.start();
+
+    await D.setTimeout(T2);
+
+    const begin = height - screenHeight * 2;
+    const end = begin + screenHeight;
+    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    await scrollAnimation.start();
+  }
+
+  if (gameState.unlockPreview && !trophiesState.map.has("preview")) {
     await dialog("credits-tape-preview");
-    gameState.unlockedPreview = true;
-    await putGameState();
+    await updateTrophy("preview");
   }
 
   gameState.visitedCredits = true;
   await putGameState();
 
-  const opacityAnimation = new D.OpacityAnimation([endNode], T1);
+  const opacityAnimation = new D.OpacityAnimation([endNode], 0, 1, T1);
   await opacityAnimation.start();
 
   iconAnimation = new D.IconAnimation(document.querySelector(".demeter-credits-end-icon"));
@@ -2289,6 +2454,7 @@ const enterCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
+  soundEffectCancel();
   if (screenNamePrev === "title") {
     leaveLoadScreen();
     await enterTitleScreen();
@@ -2300,12 +2466,14 @@ const backLoadScreen = async () => {
 };
 
 const backSaveScreen = () => {
+  soundEffectCancel();
   leaveSaveScreen();
   enterMainScreen();
   restart();
 };
 
 const backCreditsScreen = async () => {
+  // 効果音はなしとする。
   if (waitForCredits) {
     waitForCredits = undefined;
     if (iconAnimation) {
@@ -2320,9 +2488,9 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  backgroundAnimation = new D.SaturateFilterAnimation(document.querySelector(".demeter-screen-background"));
-  // debug
-  D.backgroundAnimation = backgroundAnimation;
+  const backgroundNode = document.querySelector(".demeter-background");
+  backgroundAnimation = new D.SaturateFilterAnimation([ backgroundNode, document.querySelector(".demeter-background-kcode") ]);
+  backgroundNode.style.opacity = 1;
 }
 
 const initializeTitleScreen = () => {
@@ -2334,6 +2502,7 @@ const initializeTitleScreen = () => {
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", () => {
+    soundEffectSelect();
     setSave(saveNewGame);
     leaveTitleScreen();
     enterMainScreen();
@@ -2342,12 +2511,14 @@ const initializeTitleScreen = () => {
 
   // LOAD GAME
   choiceButtonNodes[1].addEventListener("click", async () => {
+    soundEffectSelect();
     leaveTitleScreen();
     await enterLoadScreen();
   });
 
   // CONTINUE
   choiceButtonNodes[2].addEventListener("click", async () => {
+    soundEffectSelect();
     setSave(await database.get("save", "autosave"));
     leaveTitleScreen();
     enterMainScreen();
@@ -2356,6 +2527,7 @@ const initializeTitleScreen = () => {
 
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async () => {
+    soundEffectSelect();
     leaveTitleScreen();
     await enterCreditsScreen();
   });
@@ -2369,28 +2541,37 @@ const initializeMainScreen = () => {
   const menuFrameNode = D.createMenuFrame(fontSize * 9, fontSize * 7, fontSize * 2);
   document.querySelector(".demeter-main-menu-frame").append(menuFrameNode);
 
-  document.querySelector(".demeter-main-screen").addEventListener("click", ev => {
+  document.querySelector(".demeter-main-screen").addEventListener("click", async ev => {
     ev.stopPropagation();
-    cancelPlayState();
+    await cancelPlayState();
     next();
   });
 
-  document.querySelector(".demeter-main-system-ui").addEventListener("click", ev => {
-    // システムUIの表示中はバブリングを伝播させない。
+  document.querySelector(".demeter-main-system-ui").addEventListener("click", async ev => {
+    // システムUIの表示中はバブリングを停止する。
     ev.stopPropagation();
-    cancelPlayState();
+    await cancelPlayState();
   });
 
   // SYSTEM
-  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button1").addEventListener("click", async ev => {
     ev.stopPropagation();
-    cancelPlayState();
+
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
+      soundEffectBeep();
+      return;
+    }
+
+    await cancelPlayState();
     if (systemUi._hidden) {
+      soundEffectSelect();
       const systemUiNode = document.querySelector(".demeter-main-system-ui");
       systemUiNode.style.display = "block";
       systemUi.show();
       systemUi.openAnimated();
     } else {
+      soundEffectCancel();
       systemUi.openAnimated(false);
     }
   });
@@ -2398,7 +2579,8 @@ const initializeMainScreen = () => {
   // LOAD
   menuFrameNode.querySelector(".demeter-button2").addEventListener("click", async ev => {
     ev.stopPropagation();
-    cancelPlayState();
+    soundEffectSelect();
+    await cancelPlayState();
     pause();
     leaveMainScreen();
     await enterLoadScreen();
@@ -2407,37 +2589,54 @@ const initializeMainScreen = () => {
   // SAVE
   menuFrameNode.querySelector(".demeter-button3").addEventListener("click", async ev => {
     ev.stopPropagation();
-    cancelPlayState();
+    soundEffectSelect();
+    await cancelPlayState();
     pause();
     leaveMainScreen();
     await enterSaveScreen();
   });
 
   // AUTO
-  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button4").addEventListener("click", async ev => {
     ev.stopPropagation();
 
     if (playState === "auto") {
-      cancelPlayState();
+      soundEffectCancel();
+      await cancelPlayState();
       return;
     }
 
-    cancelPlayState();
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
+      soundEffectBeep();
+      return;
+    }
+
+    soundEffectSelect();
+    await cancelPlayState();
     playState = "auto";
     menuFrameNode.querySelector(".demeter-button4").classList.add("demeter-active");
     next();
   });
 
   // SKIP
-  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", ev => {
+  menuFrameNode.querySelector(".demeter-button5").addEventListener("click", async ev => {
     ev.stopPropagation();
 
     if (playState === "skip") {
-      cancelPlayState();
+      soundEffectCancel();
+      await cancelPlayState();
       return;
     }
 
-    cancelPlayState();
+    // 選択肢表示中は受けつけない。
+    if (waitForChoice) {
+      soundEffectBeep();
+      return;
+    }
+
+    soundEffectSelect();
+    await cancelPlayState();
     playState = "skip";
     menuFrameNode.querySelector(".demeter-button5").classList.add("demeter-active");
     next();
@@ -2446,9 +2645,10 @@ const initializeMainScreen = () => {
   [...document.querySelectorAll(".demeter-main-choice")].forEach((choiceNode, i) => {
     const choiceFrameNode = D.createChoiceFrame(fontSize * 25, fontSize * 4, fontSize);
     choiceNode.append(choiceFrameNode);
-    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", ev => {
+    choiceFrameNode.querySelector(".demeter-button").addEventListener("click", async ev => {
       ev.stopPropagation();
-      cancelPlayState();
+      soundEffectSelect();
+      await cancelPlayState();
       waitForChoice(choices[i + choices.length - 3]);
     });
   });
@@ -2464,6 +2664,7 @@ const initializeLoadScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", backLoadScreen);
 
   document.querySelector(".demeter-load-tape-select").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("load-tape-select") === "yes") {
       await stop();
       setSave(saveSelect);
@@ -2474,6 +2675,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-tutorial").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("load-tape-tutorial") === "yes") {
       await stop();
       setSave(saveTutorial);
@@ -2484,7 +2686,8 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-preview").addEventListener("click", async () => {
-    if (gameState.unlockedPreview) {
+    soundEffectSelect();
+    if (trophiesState.map.has("preview")) {
       if (await dialog("load-tape-preview") === "yes") {
         await stop();
         setSave(savePreview);
@@ -2498,6 +2701,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save1").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save1");
     if (save) {
       if (await dialog("load-tape-save1") === "yes") {
@@ -2513,6 +2717,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save2").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save2");
     if (save) {
       if (await dialog("load-tape-save2") === "yes") {
@@ -2528,6 +2733,7 @@ const initializeLoadScreen = () => {
   });
 
   document.querySelector(".demeter-load-tape-save3").addEventListener("click", async () => {
+    soundEffectSelect();
     const save = await database.get("save", "save3");
     if (save) {
       if (await dialog("load-tape-save3") === "yes") {
@@ -2553,8 +2759,9 @@ const initializeSaveScreen = () => {
   backFrameNode.querySelector(".demeter-button").addEventListener("click", backSaveScreen);
 
   document.querySelector(".demeter-save-tape-save1").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save1") === "yes") {
-      await putSave("save1", "#1");
+      await putSave("save1", "セーブデータ#1");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2562,8 +2769,9 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save2").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save2") === "yes") {
-      await putSave("save2", "#2");
+      await putSave("save2", "セーブデータ#2");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2571,8 +2779,9 @@ const initializeSaveScreen = () => {
   });
 
   document.querySelector(".demeter-save-tape-save3").addEventListener("click", async () => {
+    soundEffectSelect();
     if (await dialog("save-tape-save3") === "yes") {
-      await putSave("save3", "#3");
+      await putSave("save3", "セーブデータ#3");
       leaveSaveScreen();
       enterMainScreen();
       restart();
@@ -2599,7 +2808,7 @@ const initializeAudio = () => {
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
   musicPlayer.start("vi03");
-  logging.log("オーディオ初期化: 完了");
+  logging.info("オーディオ初期化: 完了");
 };
 
 //-------------------------------------------------------------------------
@@ -2694,13 +2903,13 @@ const next = async () => {
   }
 
   if (paragraphIndex === undefined) {
-    const paragraphSave = D.scenario.paragraphs[paragraphIndexSave - 1];
-    if (paragraphSave && paragraphSave[0].finish) {
-      paragraphIndexPrev = undefined;
-      paragraphIndexSave = undefined;
+    const paragraphLast = D.scenario.paragraphs[paragraphIndexLast - 1];
+    if (paragraphLast && paragraphLast[0].finish) {
+      paragraphIndexLast = undefined;
+      resetParagraph();
       await deleteAutosave();
       leaveMainScreen();
-      if (paragraphSave[0].finish === "title") {
+      if (paragraphLast[0].finish === "title") {
         await enterTitleScreen();
       } else {
         await enterCreditsScreen();
@@ -2708,19 +2917,19 @@ const next = async () => {
       return;
     }
 
-    paragraphIndex = paragraphIndexSave = paragraphIndexPrev + 1;
+    paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexPrev + 1;
     paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
     if (paragraph[0].when) {
       const paragraphIndexWhen = await evaluate(paragraph[0].when);
       if (paragraphIndexWhen !== undefined) {
-        paragraphIndex = paragraphIndexSave = paragraphIndexWhen;
+        paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexWhen;
         paragraph = D.scenario.paragraphs[paragraphIndex - 1];
       }
     }
 
     if (playState === "skip" && !system.skipUnread && !readState.map.has(paragraphIndex)) {
-      cancelPlayState();
+      await cancelPlayState();
     }
 
     if (musicPlayer.key !== paragraph[0].music) {
@@ -2728,13 +2937,18 @@ const next = async () => {
     }
     if (place !== paragraph[0].place) {
       place = paragraph[0].place;
-      logging.log("現在地: " + place);
+      logging.notice("現在地: " + place);
     }
     if (backgroundAnimation.key !== paragraph[0].background) {
       backgroundAnimation.fade(paragraph[0].background, 2000);
     }
 
-    await Promise.all([ putReadState(), putAutosave() ]);
+    readState.map.set(paragraphIndex, Date.now());
+    // SKIP中は自動保存しない。
+    if (playState !== "skip") {
+      await Promise.all([ putReadState(), putAutosave() ]);
+    }
+    await checkTrophies();
 
     if (paragraph[0].start) {
       waitForStart = paragraph[0].start;
@@ -2780,7 +2994,6 @@ const next = async () => {
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
   if (waitForStop) {
-    resetParagraph();
     return waitForStop();
   }
 
@@ -2793,9 +3006,8 @@ const next = async () => {
 
     choices = paragraph[0].choices;
     if (choices) {
-      // 選択肢が表示時にAUTO/STOPを解除する。選択肢表示中にAUTO/SAVEがクリック
-      // された場合、選択肢をクリックした時にまた解除される。
-      cancelPlayState();
+      // 選択肢の表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
+      await cancelPlayState();
 
       const choiceNodes = [
         document.querySelector(".demeter-main-choice1"),
@@ -2813,13 +3025,15 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
 
+      systemUi.openAnimated(false);
       document.querySelector(".demeter-main-choices").style.display = "block";
       while (true) {
         const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
         waitForChoice = undefined;
 
         if (waitForStop) {
-          resetParagraph();
+          document.querySelector(".demeter-main-choices").style.display = "none";
+          choices = undefined;
           return waitForStop();
         }
         if (choice.action) {
@@ -2833,8 +3047,8 @@ const next = async () => {
         }
       }
       document.querySelector(".demeter-main-choices").style.display = "none";
-
       choices = undefined;
+
       cont = true;
     }
 
@@ -2843,21 +3057,20 @@ const next = async () => {
     }
 
     if (playState) {
-      // この段落にfinishを指定されていたら、AUTO/SKIPを解除する。
+      // この段落にfinishが指定されていたら、AUTO/SKIPを解除する。
       if (paragraph[0].finish) {
-        cancelPlayState();
+        await cancelPlayState();
       }
       // 次の段落にstartが指定されていたら、AUTO/SKIPを解除する。startとwhenは同
       // 時に指定できないので評価しなくてよい。
       const paragraphIndexNext = paragraphIndexPrev + 1;
       const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
       if (paragraphNext[0].start) {
-        cancelPlayState();
+        await cancelPlayState();
       }
     }
 
     resetParagraph();
-
   }
 
   if (cont) {
@@ -2895,7 +3108,7 @@ const restart = () => {
 
 const stop = async () => {
   if (textAnimation || voiceSprite || waitForChoice) {
-    const run = new Promise(resolve => waitForStop = () => resolve());
+    const stop = new Promise(resolve => waitForStop = () => resolve());
     if (textAnimation) {
       textAnimation.finish();
     }
@@ -2905,11 +3118,11 @@ const stop = async () => {
     if (waitForChoice) {
       waitForChoice(undefined);
     }
-    await run;
+    await stop;
     waitForStop = undefined;
-  } else {
-    resetParagraph();
   }
+  paragraphIndexLast = undefined;
+  resetParagraph();
 };
 
 //-------------------------------------------------------------------------
@@ -2937,7 +3150,9 @@ const dialog = async key => {
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
   const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new Howl({ src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ] });
+  const voiceSound = new Howl({
+    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
+  });
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
@@ -2958,19 +3173,95 @@ const dialog = async key => {
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
-  return dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  const result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  if (result === "no") {
+    soundEffectCancel();
+  } else {
+    soundEffectSelect();
+  }
+  return result;
 };
 
 //-------------------------------------------------------------------------
 
-D.onResize = () => {
+const kCodeSet = [
+  [ "ArrowUp",    "KeyK" ],
+  [ "ArrowUp",    "KeyK" ],
+  [ "ArrowDown",  "KeyJ" ],
+  [ "ArrowDown",  "KeyJ" ],
+  [ "ArrowLeft",  "KeyH" ],
+  [ "ArrowRight", "KeyL" ],
+  [ "ArrowLeft",  "KeyH" ],
+  [ "ArrowRight", "KeyL" ],
+  [ "Enter",      "KeyB" ],
+  [ "Escape",     "KeyA" ],
+];
+const kCodeBuffer = [];
+let kCodeStatus = false;
+let kCodePrompt = true;
+
+const updateKCode = () => {
+  [...document.querySelectorAll(".demeter-title-kcode-item")].forEach((node, i) => {
+    if (kCodeBuffer[i] !== undefined) {
+      node.classList.add("demeter-active");
+    } else {
+      node.classList.remove("demeter-active");
+    }
+  });
+};
+
+const toggleKCode = async () => {
+  const node1 = document.querySelector(".demeter-background-kcode");
+  const node2 = document.querySelector(".demeter-background");
+  kCodeStatus = !kCodeStatus;
+  if (kCodeStatus) {
+    node1.style.opacity = "1";
+    const opacityAnimation = new D.OpacityAnimation([node2], 1, 0, 2000);
+    await opacityAnimation.start();
+  } else {
+    const opacityAnimation = new D.OpacityAnimation([node2], 0, 1, 2000);
+    await opacityAnimation.start();
+    node1.style.opacity = "0";
+  }
+};
+
+const resetKCode = async () => {
+  await D.setTimeout(500);
+  kCodeBuffer.splice(0);
+  updateKCode();
+};
+
+const checkKCode = async code => {
+  if (!kCodePrompt) {
+    return;
+  }
+  kCodeBuffer.push(code);
+  if (kCodeBuffer.every((code, i) => kCodeSet[i].includes(code))) {
+    if (kCodeBuffer.length === kCodeSet.length) {
+      updateKCode();
+      await updateTrophy("kcode");
+      kCodePrompt = false;
+      await Promise.all([ toggleKCode(), resetKCode() ]);
+      kCodePrompt = true;
+    }
+  } else {
+    kCodeBuffer.splice(0);
+  }
+  updateKCode();
+};
+
+//-------------------------------------------------------------------------
+
+D.onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
   if (W <= H) {
+    screenOrientation = "orientationPortrait";
     screenWidth = fontSize * 27;
     screenHeight = fontSize * 48;
   } else {
+    screenOrientation = "orientationLandscape";
     screenWidth = fontSize * 48;
     screenHeight = fontSize * 27;
   }
@@ -2980,19 +3271,30 @@ D.onResize = () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
-  document.querySelector(".demeter-screen-background").style.transform = transform;
+  document.querySelector(".demeter-background-kcode").style.transform = transform;
+  document.querySelector(".demeter-background").style.transform = transform;
   document.querySelector(".demeter-screen").style.transform = transform;
 
   updateComponents();
+
+  if (!gameState[screenOrientation]) {
+    gameState[screenOrientation] = true;
+    await putGameState();
+    if (gameState.orientationPortrait && gameState.orientationLandscape) {
+      await updateTrophy("orientation");
+    }
+  }
 };
 
 D.onKeydown = async ev => {
-  if (screenName === "main") {
+  if (screenName === "title") {
+    await checkKCode(ev.code);
+  } else if (screenName === "main") {
     if (ev.code === "Enter") {
-      cancelPlayState();
+      await cancelPlayState();
       next();
     } else if (ev.code === "Escape") {
-      cancelPlayState();
+      await cancelPlayState();
       systemUi.openAnimated(false);
     }
   } else if (screenName === "load") {
@@ -3011,13 +3313,12 @@ D.onKeydown = async ev => {
 };
 
 D.onError = ev => {
-  logging.error("エラー捕捉", ev);
+  logging.error("ゲームシステム: エラー捕捉", ev);
 };
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
-  initializeBackground();
   initializeTitleScreen();
   initializeStartScreen();
   initializeMainScreen();
@@ -3027,12 +3328,12 @@ D.onDOMContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  D.onResize();
+  await D.onResize();
+  initializeBackground();
   await enterTitleScreen();
 
   while (true) {
     await D.requestAnimationFrame();
-    await taskSet.update();
     if (backgroundAnimation) {
       backgroundAnimation.update();
     }

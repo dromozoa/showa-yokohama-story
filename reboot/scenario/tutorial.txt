@@ -2,7 +2,7 @@
 
 @label{チュートリアル}
 @music{vi03}
-@place{ここではない、どこか}
+@place{ここではないどこか}
 #narrator
 二人称の文体で書かれた、これは無口な一人称の物語。
 画面の右下で弾む円匙と斧槍のアイコンは、キミに入力をうながしている。
@@ -10,9 +10,11 @@
 
 #narrator
 ボクたちは、択ばれなかった選択肢の側に立つ紐帯だ。
-たとえば、——昭和が暴走した。このままでは、終わらない昭和に人類は轢き殺される。選択肢がある。少女を犠牲に捧げれば、人類は救われる。
-@choice{人類を滅ぼす}{トロッコ滅亡}
-@choice{少女を犠牲にする}{トロッコ犠牲}
+たとえば——昭和が暴走した。
+終わらない昭和に、このままでは人類は轢き殺される。
+選択肢がある。少女を犠牲に、人類を救う。
+@choice{人類の滅亡を見守る}{トロッコ滅亡}
+@choice{少女を犠牲に捧げる}{トロッコ犠牲}
 @choice{択ばない}{トロッコ択ばない}
 
 @label{トロッコ滅亡}
@@ -60,8 +62,8 @@
 #narrator
 こんなところ。
 なにか質問ある？
-@choice{ツイッターで質問する}{{ctx.sender.twitter()}}{質問}{Twitter}
-@choice{マシュマロで質問する}{{ctx.sender.marshmallow()}}{質問}{Marshmallow}
+@choice{ツイッターで質問する}{{await ctx.sender.twitter()}}{質問}{Twitter}
+@choice{マシュマロで質問する}{{await ctx.sender.marshmallow()}}{質問}{Marshmallow}
 @choice{質問はない}{チュートリアル終}{THE WRONG GOODBYE}
 
 @label{チュートリアル終}

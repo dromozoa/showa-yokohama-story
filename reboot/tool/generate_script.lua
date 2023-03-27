@@ -49,9 +49,9 @@ if (D.scenario) {
 D.scenario = {
 ]]
 
+local total = 0
 handle:write "paragraphs:[\n"
 for i, paragraph in ipairs(scenario) do
-  handle:write("// index:", i, "\n") -- debug
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
@@ -61,7 +61,7 @@ for i, paragraph in ipairs(scenario) do
     for _, jump in ipairs(paragraph.choice_jumps) do
       handle:write("{choice:", encode_text(jump.choice))
       if jump.action then
-        handle:write(",action:($,ctx)=>{", jump.action, ";}")
+        handle:write(",action:async($,ctx)=>{", jump.action, ";}")
       end
       if jump.barcode then
         handle:write(",barcode:", quote_js(jump.barcode))
@@ -71,17 +71,17 @@ for i, paragraph in ipairs(scenario) do
     handle:write "]"
   end
   if paragraph.when_jumps then
-    handle:write ",when:($,ctx)=>{\n"
+    handle:write ",when:async($,ctx)=>{\n"
     for _, jump in ipairs(paragraph.when_jumps) do
       handle:write("if(", jump.when, ")return ", scenario.labels[jump.label].index, ";\n")
     end
     handle:write "}"
   end
   if paragraph.enter then
-    handle:write(",enter:($,ctx)=>{", paragraph.enter, ";}")
+    handle:write(",enter:async($,ctx)=>{", paragraph.enter, ";}")
   end
   if paragraph.leave then
-    handle:write(",leave:($,ctx)=>{", paragraph.leave, ";}")
+    handle:write(",leave:async($,ctx)=>{", paragraph.leave, ";}")
   end
   if paragraph.start then
     handle:write(",start:", quote_js(paragraph.start))
@@ -91,6 +91,8 @@ for i, paragraph in ipairs(scenario) do
   end
   if paragraph.system then
     handle:write ",system:true"
+  else
+    total = total + 1
   end
   if paragraph.music then
     handle:write(",music:", quote_js(paragraph.music))
@@ -117,6 +119,7 @@ for i, paragraph in ipairs(scenario) do
   handle:write "]],\n"
 end
 handle:write "],\n"
+handle:write("total:", total, ",\n")
 
 handle:write "labels:{\n"
 for _, label in ipairs(scenario.labels) do

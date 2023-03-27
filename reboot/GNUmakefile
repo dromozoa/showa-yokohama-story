@@ -19,10 +19,12 @@ lua = env "LUA_PATH=tool/?.lua;;" lua
 voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/settings/dic.json
 scenarios = $(wildcard scenario/*.txt)
 credits = scenario/credits
+trophies = scenario/trophies
 targets = \
 	output/loader.html \
 	output/graph.svg \
 	output/credits.html \
+	output/trophies.html \
 	output/voice.txt \
 	output/debug.txt \
 	design2/demeter-scenario.js \
@@ -62,6 +64,10 @@ convert_debug:
 clean_voice::
 	rm -f output/voice2/*.wav output/voice/*.webm output/voice/*.mp3
 
+convert_effect:
+	./tool/convert_effect.sh output/effect output/effect-out/30 "*.wav"
+	cp -f output/effect/demeter-effect-sprite.js design2/demeter-effect-sprite.js
+
 #--------------------------------------------------------------------------
 
 $(voicepeak_dic): scenario/dic.json
@@ -77,14 +83,17 @@ output/graph.svg: $(scenarios)
 output/credits.html: $(credits)
 	$(lua) tool/generate_credits.lua $< $@
 
+output/trophies.html: $(trophies)
+	$(lua) tool/generate_trophies.lua $< $@ design2/demeter-trophies.js
+
 design2/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
 design2/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html
-	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html $@
+design2/sketch1.html: design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html
+	$(lua) tool/generate_html.lua design2/sketch1.tmpl output/loader.html output/graph.svg output/credits.html output/trophies.html $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
