@@ -68,7 +68,7 @@ clean_voice::
 
 convert_effect:
 	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
-	cp -f build/effect/demeter-effect-sprite.js system/demeter-effect-sprite.js
+	cp -f build/effect/*effect* system
 
 clean_effect:
 	rm -f -r build/effect
