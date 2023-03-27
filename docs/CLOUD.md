@@ -1,5 +1,9 @@
 # クラウド設計メモ
 
-- AWSCLIv2を更新する。
-- vaporoid.comを更新する
+- [x] AWSCLIv2を更新する。
+- [x] vaporoid.comの既存コンテンツを更新する。
+  - macでやるとUnicode正規化で死ぬので注意
+- [x] cloudfrontでSSLの設定をする
+- [ ] index.htmlはキャッシュしない
+  - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
 
