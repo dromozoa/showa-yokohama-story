@@ -29,7 +29,7 @@ targets = \
 	build/debug.txt \
 	system/demeter-scenario.js \
 	system/demeter-debug-scenario.js \
-	system/index.html \
+	game.html \
 	scenario/scenario.js
 
 ifneq ($(wildcard build/voice.vpp),)
@@ -97,8 +97,8 @@ system/demeter-scenario.js: $(scenarios)
 system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-system/index.html: system/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
-	$(lua) tool/generate_html.lua system/index.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
+game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
+	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
