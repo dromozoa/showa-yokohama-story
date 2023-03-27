@@ -1704,7 +1704,7 @@ const logging = new D.Logging();
 
 const sender = {
   twitter: async () => {
-    open("https://twitter.com/intent/tweet?screen_name=vaporoid", "_blank", "noopener,noreferrer");
+    open("https://twitter.com/intent/tweet?screen_name=vaporoid&text=%23%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E", "_blank", "noopener,noreferrer");
     await updateTrophy("sender");
   },
   marshmallow: async () => {
@@ -2214,6 +2214,18 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.sendViaTwitter = async () => {
+    soundEffectSelect();
+    systemUi.openAnimated(false);
+    await sender.twitter();
+  };
+
+  commands.sendViaMarshmallow = async () => {
+    soundEffectSelect();
+    systemUi.openAnimated(false);
+    await sender.marshmallow();
+  };
+
   commands.resetSystem = async () => {
     soundEffectSelect();
     pause();
@@ -2258,8 +2270,12 @@ const initializeSystemUi = () => {
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
   commandsFolder.add(commands, "backToTitle").name("タイトル画面に戻る");
-  commandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
-  commandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+  commandsFolder.add(commands, "sendViaTwitter").name("ツイッターでメッセージを送る");
+  commandsFolder.add(commands, "sendViaMarshmallow").name("マシュマロでメッセージを送る");
+
+  const systemCommandsFolder = addSystemUiFolder(systemUi, "システムコマンド");
+  systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
+  systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2382,10 +2398,9 @@ const enterCreditsScreen = async () => {
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
-  // TODO なおす
-  const T1 = 20;
-  const T2 = 20;
-  const T3 = 20;
+  const T1 = 2000;
+  const T2 = 2000;
+  const T3 = 2000;
   const screenNode = document.querySelector(".demeter-credits-screen");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
