@@ -378,10 +378,7 @@ if(ctx.game.visitedVerse2)return 5;
 ["昭和横濱物語。スティーブンによる福音書。第一節。"],
 ["了。（つづく）"],
 ]],
-[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedVerse2 = true;
-  delete $.priest;
-  delete $.engineer;
-  delete $.activist;;},start:"verse2",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedVerse2 = true;},start:"verse2",music:"diana19",place:"本牧異人町",background:"モノクローム"},[
 ["昭和七十四年七月、ボクはキミに出逢った。"],
 ["人類が滅亡するまでの、最期のひとつきの、これは物語だ。"],
 ]],

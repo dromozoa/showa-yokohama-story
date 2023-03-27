@@ -69,60 +69,57 @@ const paragraph30_enter = async ($, ctx) => {
 delete ctx.game.father;;
 };
 
-// verse2.txt:15
+// verse2.txt:10
 const paragraph65_enter = async ($, ctx) => {
 ctx.game.visitedVerse2 = true;
-  delete $.priest;
-  delete $.engineer;
-  delete $.activist;;
 };
 
 const paragraph67_when = async ($, ctx) => {
-// verse2.txt:24
+// verse2.txt:19
 if ($.priest && $.engineer && $.activist) { return "特殊攻撃作戦"; }
 };
 
 const paragraph68_when = async ($, ctx) => {
-// verse2.txt:35
+// verse2.txt:30
 if ($.priest) { return "聖職者済"; }
 };
 
-// verse2.txt:143
+// verse2.txt:138
 const paragraph90_enter = async ($, ctx) => {
 $.priest = true;
 };
 
 const paragraph92_when = async ($, ctx) => {
-// verse2.txt:154
+// verse2.txt:149
 if ($.engineer) { return "工学者済"; }
 };
 
-// verse2.txt:288
+// verse2.txt:283
 const paragraph121_enter = async ($, ctx) => {
 $.engineer = true;
 };
 
 const paragraph123_when = async ($, ctx) => {
-// verse2.txt:299
+// verse2.txt:294
 if ($.activist) { return "活動家済"; }
 };
 
 const paragraph124_when = async ($, ctx) => {
-// verse2.txt:306
+// verse2.txt:301
 if (ctx.system.unionSetting === "ろうくみ") { return "ろうくみ"; }
 };
 
-// verse2.txt:476
+// verse2.txt:471
 const paragraph161_enter = async ($, ctx) => {
 $.activist = true;
 };
 
-// verse2.txt:542
+// verse2.txt:537
 const paragraph174_choice1_action = async ($, ctx) => {
 ctx.trophy("elvis");
 };
 
-// verse2.txt:608
+// verse2.txt:603
 const paragraph185_enter = async ($, ctx) => {
 ctx.game.visitedRevelation2 = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {

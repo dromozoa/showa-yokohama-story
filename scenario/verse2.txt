@@ -7,12 +7,7 @@
 昭和七十四年七月、ボクはキミに出逢った。
 人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 @start{verse2}
-@enter{{
-  ctx.game.visitedVerse2 = true;
-  delete $.priest;
-  delete $.engineer;
-  delete $.activist;
-}}
+@enter{{ctx.game.visitedVerse2 = true}}
 
 #alice
 キミには三通の手紙を届けてもらう。
