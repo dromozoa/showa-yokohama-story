@@ -227,6 +227,9 @@ body.demeter {
 }
 
 .demeter-title-kcode {
+  position: absolute;
+  left: calc(var(--font-size) * 0.25);
+  top: calc(var(--font-size) * 0.25);
   font-size: calc(var(--font-size) * 0.75);
   line-height: calc(var(--font-size) * 0.75);
 }
@@ -238,6 +241,16 @@ body.demeter {
 
 .demeter-title-kcode-item.demeter-active {
   opacity: 1;
+}
+
+.demeter-title-version {
+  position: absolute;
+  right: calc(var(--font-size) * 0.25);
+  top: calc(var(--font-size) * 0.25);
+  font-family: var(--font-family-console);
+  font-size: calc(var(--font-size) * 0.75);
+  line-height: calc(var(--font-size) * 0.75);
+  text-align: right;
 }
 
 /*************************************************************************/

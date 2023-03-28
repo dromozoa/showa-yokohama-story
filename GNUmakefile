@@ -97,8 +97,8 @@ system/demeter-scenario.js: $(scenarios)
 system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
-game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html
-	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html $@
+game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
+	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
