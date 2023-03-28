@@ -1692,7 +1692,7 @@ D.UpdateChecker = class {
 
       if (this.status === "detected") {
         this.delayed = true;
-        await dialog();
+        await this.dialog();
       }
     });
   }
@@ -2634,11 +2634,7 @@ const initializeBackground = () => {
   backgroundNode.style.opacity = 1;
 };
 
-const initializeUpdateChecker = () => {
-  // debug
-  D.updateChecker = updateChecker = new D.UpdateChecker(10000);
-  // updateChecker = new D.UpdateChecker(600000);
-};
+const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
 
 //-------------------------------------------------------------------------
 
