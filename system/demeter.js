@@ -1698,6 +1698,10 @@ D.UpdateChecker = class {
   }
 
   async dialog() {
+    if (!this.delayed) {
+      return;
+    }
+
     if (screenName === "title") {
       // アンロックされるまで遅延させる。
       if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
@@ -2316,9 +2320,13 @@ const initializeSystemUi = () => {
     pause();
     systemUi.openAnimated(false);
     if (await dialog("system-back-to-title") === "yes") {
-      await stop();
-      leaveMainScreen();
-      await enterTitleScreen();
+      if (updateChecker.status === "detected") {
+        location.href = "game.html?t=" + Date.now();
+      } else {
+        await stop();
+        leaveMainScreen();
+        await enterTitleScreen();
+      }
     }
     restart();
   };
@@ -3191,7 +3199,7 @@ const next = async () => {
       choices = undefined;
 
       if (updateChecker.delayed) {
-        await updateChecker.dialog();
+        setTimeout(async () => await updateChecker.dialog(), 1000);
       }
 
       cont = true;
@@ -3326,7 +3334,7 @@ const dialog = async key => {
   }
 
   if (updateChecker.delayed) {
-    await updateChecker.dialog();
+    setTimeout(async () => await updateChecker.dialog(), 1000);
   }
 
   return result;
@@ -3497,6 +3505,8 @@ D.onDOMContentLoaded = async () => {
       logging.error("サービスワーカ登録: 失敗", e);
     });
   }
+
+  history.replaceState(null, "", "game.html");
 
   while (true) {
     await D.requestAnimationFrame();
