@@ -4,13 +4,15 @@
 - [x] vaporoid.comの既存コンテンツを更新する。
   - macでやるとUnicode正規化で死ぬので注意
 - [x] cloudfrontでSSLの設定をする
-- [ ] /sys/index.htmlとgame.htmlはキャッシュしない
+- [x] /sys/index.htmlとgame.htmlはキャッシュしない
   - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
-- [ ] 圧縮のテスト
-- [ ] キャッシュのテスト
-- [ ] /./という文字列をserialで置き換える
+- [x] /./という文字列をserialで置き換える
+- [x] 圧縮のテスト
+- [x] キャッシュのテスト
   - demeter.jsはかえなくていいかな。
-- [ ] バージョンチェック
+- [x] バージョンチェック
+- [ ] cache-control: no-storeを自前で設定する。
+- [ ] ホームページをつくる
 - [ ] GitHub Pagesをリダイレクトする
 
 ```
