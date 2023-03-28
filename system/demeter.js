@@ -2281,6 +2281,8 @@ const addSystemUiFolder = (gui, title) => {
   return folder;
 };
 
+let updateSystemUiFullscreen;
+
 // 実際のサイズはtransformのscale(1.5)がかかることに注意
 const initializeSystemUi = () => {
   initializeComponents();
@@ -2314,6 +2316,26 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
   const commands = {};
+
+  commands.fullscreen = async () => {
+    soundEffectSelect();
+    systemUi.openAnimated(false);
+    if (D.getFullscreenElement() === null) {
+      try {
+        await D.requestFullscreen(document.body);
+        logging.info("全画面表示モード切替: 成功");
+      } catch (e) {
+        logging.error("全画面表示モード切替: 失敗", e);
+      }
+    } else {
+      try {
+        await D.exitFullscreen();
+        logging.info("ウィンドウモード切替: 成功");
+      } catch (e) {
+        logging.error("ウィンドウモード切替: 失敗", e);
+      }
+    }
+  };
 
   commands.backToTitle = async () => {
     soundEffectSelect();
@@ -2386,6 +2408,18 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
+  if (D.getFullscreenElement) {
+    const controller = commandsFolder.add(commands, "fullscreen");
+    updateSystemUiFullscreen = () => {
+      if (D.getFullscreenElement() === null) {
+        controller.name("全画面表示モードに切り替える");
+      } else {
+        controller.name("ウィンドウモードに切り替える");
+      }
+    };
+    updateSystemUiFullscreen();
+  }
+
   commandsFolder.add(commands, "backToTitle").name("タイトル画面に戻る");
   commandsFolder.add(commands, "sendViaTwitter").name("ツイッターでメッセージを送る");
   commandsFolder.add(commands, "sendViaMarshmallow").name("マシュマロでメッセージを送る");
@@ -2635,6 +2669,20 @@ const initializeBackground = () => {
 };
 
 const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+
+const initializeFullscreen = () => {
+  if (document.body.requestFullscreen) {
+    D.requestFullscreen = async node => await node.requestFullscreen();
+    D.exitFullscreen = async () => await document.exitFullscreen();
+    D.getFullscreenElement = () => document.fullscreenElement;
+    document.addEventListener("fullscreenchange", () => updateSystemUiFullscreen());
+  } else if (document.body.webkitRequestFullscreen) {
+    D.requestFullscreen = async node => await node.webkitRequestFullscreen();
+    D.exitFullscreen = async () => await document.webkitExitFullscreen();
+    D.getFullscreenElement = () => document.webkitFullscreenElement;
+    document.addEventListener("webkitfullscreenchange", () => updateSystemUiFullscreen());
+  }
+};
 
 //-------------------------------------------------------------------------
 
@@ -3473,6 +3521,7 @@ D.onError = ev => {
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
+  initializeFullscreen(); // initializeSystemUiに先立つ必要がある。
   initializeTitleScreen();
   initializeStartScreen();
   initializeMainScreen();
