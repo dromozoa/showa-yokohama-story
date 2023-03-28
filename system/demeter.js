@@ -26,6 +26,16 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
+D.version = { web: "b3" };
+
+D.preferences = {
+  musicDir: "build/music",
+  voiceDir: "build/voice",
+  effectDir: "system",
+};
+
+//-------------------------------------------------------------------------
+
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
@@ -935,12 +945,6 @@ const startTexts = {
   preview: "SHOWA YOKOHAMA STORY '69",
 };
 
-D.preferences = {
-  musicDir: "build/music",
-  voiceDir: "build/voice",
-  effectDir: "system",
-};
-
 //-------------------------------------------------------------------------
 
 D.Logging = class {
@@ -1645,34 +1649,97 @@ const soundEffectBeep = () => {
   }
 };
 
+const soundEffectAlert = () => {
+  if (soundEffect) {
+    soundEffect.start("alert");
+  }
+};
+
 //-------------------------------------------------------------------------
 
 D.UpdateChecker = class {
   constructor(timeout) {
     this.timeout = timeout;
     this.untilTime = Date.now() + this.timeout;
-    this.waitForCheck = undefined;
+    this.status = undefined; // undefined, "checking" or "detected"
+    this.delayed = undefined;
   }
 
-  update() {
-    if (this.waitForCheck !== undefined) {
+  check() {
+    if (this.status || this.untilTime > Date.now()) {
       return;
     }
 
-    const now = Date.now();
-    if (this.untilTime < now) {
-      this.untilTime = now + this.timeout;
-      this.waitForCheck = now;
-      fetch("version.json", { cache: "no-store" }).then(response => {
-        return response.json();
-      }).then(version => {
+    this.status = "checking";
+    requestAnimationFrame(async () => {
+      let status;
+      try {
+        const response = await fetch("version.json", { cache: "no-store" });
+        const version = await response.json();
+        if (typeof version.web !== "string") {
+          throw new Error("unexpected version");
+        }
         logging.debug("更新チェック: 成功");
-        console.log(version);
-      }).catch(e => {
+        if (D.version.web !== version.web) {
+          logging.notice("更新検出: " + D.version.web + "→" + version.web);
+          status = "detected";
+        }
+      } catch (e) {
         logging.error("更新チェック: 失敗", e);
-      }).finally(() => {
-        this.waitForCheck = undefined;
-      });
+      }
+      this.status = status;
+      this.untilTime = Date.now() + this.timeout;
+
+      if (this.status === "detected") {
+        this.delayed = true;
+        await dialog();
+      }
+    });
+  }
+
+  async dialog() {
+    if (screenName === "title") {
+      // アンロックされるまで遅延させる。
+      if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
+        return;
+      }
+      this.delayed = undefined;
+
+      soundEffectAlert();
+      document.querySelector(".demeter-title-text").style.display = "none";
+      hideTitleChoices();
+      if (await dialog("system-update-title") === "yes") {
+        location.href = "game.html?t=" + Date.now();
+      }
+      document.querySelector(".demeter-title-text").style.display = "block";
+      await showTitleChoices();
+
+    } else if (screenName === "main") {
+      if (waitForChoice || waitForDialog) {
+        return;
+      }
+      this.delayed = undefined;
+
+      soundEffectAlert();
+      pause();
+      systemUi.openAnimated(false);
+      if (await dialog("system-update") === "yes") {
+        location.href = "game.html?t=" + Date.now();
+      }
+      restart();
+
+    } else if (screenName === "load" || screenName === "save") {
+      if (waitForDialog) {
+        return;
+      }
+      this.delayed = undefined;
+
+      soundEffectAlert();
+      if (await dialog("system-update") === "yes") {
+        location.href = "game.html?t=" + Date.now();
+      }
+    } else {
+      // 次の画面で処理する
     }
   }
 };
@@ -1979,7 +2046,11 @@ const showTitleChoices = async () => {
   }
 
   document.querySelector(".demeter-title-choices").style.display = "block";
-}
+};
+
+const hideTitleChoices = () => {
+  document.querySelector(".demeter-title-choices").style.display = "none";
+};
 
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
@@ -2003,6 +2074,10 @@ const unlockAudio = async () => {
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
 
   logging.info("オーディオロック: 解除");
+
+  if (updateChecker.delayed) {
+    await updateChecker.dialog();
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -2369,6 +2444,10 @@ const enterTitleScreen = async () => {
     place = undefined;
     backgroundAnimation.fade("モノクローム", 2000);
     await showTitleChoices();
+
+    if (updateChecker.delayed) {
+      await updateChecker.dialog();
+    }
   }
   document.querySelector(".demeter-screen").append(screenNode);
 };
@@ -2545,7 +2624,15 @@ const initializeBackground = () => {
   const backgroundNode = document.querySelector(".demeter-background");
   backgroundAnimation = new D.SaturateFilterAnimation([ backgroundNode, document.querySelector(".demeter-background-kcode") ]);
   backgroundNode.style.opacity = 1;
-}
+};
+
+const initializeUpdateChecker = () => {
+  // debug
+  D.updateChecker = updateChecker = new D.UpdateChecker(10000);
+  // updateChecker = new D.UpdateChecker(600000);
+};
+
+//-------------------------------------------------------------------------
 
 const initializeTitleScreen = () => {
   const choiceButtonNodes = [...document.querySelectorAll(".demeter-title-choice")].map(choiceNode => {
@@ -3103,6 +3190,10 @@ const next = async () => {
       document.querySelector(".demeter-main-choices").style.display = "none";
       choices = undefined;
 
+      if (updateChecker.delayed) {
+        await updateChecker.dialog();
+      }
+
       cont = true;
     }
 
@@ -3233,6 +3324,11 @@ const dialog = async key => {
   } else {
     soundEffectSelect();
   }
+
+  if (updateChecker.delayed) {
+    await updateChecker.dialog();
+  }
+
   return result;
 };
 
@@ -3384,6 +3480,8 @@ D.onDOMContentLoaded = async () => {
   initializeAudio();
   await D.onResize();
   initializeBackground();
+  initializeUpdateChecker();
+
   await enterTitleScreen();
 
   if (navigator.serviceWorker) {
@@ -3399,10 +3497,6 @@ D.onDOMContentLoaded = async () => {
       logging.error("サービスワーカ登録: 失敗", e);
     });
   }
-
-  // debug
-  updateChecker = new D.UpdateChecker(10000);
-  // updateChecker = new D.UpdateChecker(600000);
 
   while (true) {
     await D.requestAnimationFrame();
@@ -3424,7 +3518,7 @@ D.onDOMContentLoaded = async () => {
       silhouette.draw();
     }
     if (updateChecker) {
-      updateChecker.update();
+      updateChecker.check();
     }
   }
 };

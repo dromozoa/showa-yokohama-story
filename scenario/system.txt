@@ -113,3 +113,21 @@
 捻れた運命がときはなたれた。
 @dialog_choice{了解}{ok}
 
+@#==============================================================================
+
+@dialog{system-update-title}
+#narrator
+物語の新しい@r{版}{バージョン}を検出。
+自己書換のため、システムは@r{再読込}{リロード}を要請。
+更新していい？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
+@dialog{system-update}
+#narrator
+物語の新しい@r{版}{バージョン}を検出。
+自己書換のため、システムは@r{再読込}{リロード}を要請。
+タイトルに戻るけど、更新していい？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+

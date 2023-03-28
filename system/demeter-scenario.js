@@ -1877,6 +1877,16 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ["ここではない、どこか。"],
 ["捻れた運命がときはなたれた。"],
 ]],
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["物語の新しい",["版","バージョン"],"を検出。"],
+["自己書換のため、システムは",["再読込","リロード"],"を要請。"],
+["更新していい？"],
+]],
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},]},[
+["物語の新しい",["版","バージョン"],"を検出。"],
+["自己書換のため、システムは",["再読込","リロード"],"を要請。"],
+["タイトルに戻るけど、更新していい？"],
+]],
 ],
 total:373,
 labels:{
@@ -1942,6 +1952,8 @@ dialogs:{
 "save-tape-save2":386,
 "save-tape-save3":387,
 "credits-tape-preview":388,
+"system-update-title":389,
+"system-update":390,
 },
 };
 
