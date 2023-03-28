@@ -1372,18 +1372,18 @@ D.TextAnimation = class {
 
   async start() {
     let index = 0;
-    let timestampPrev;
+    let prevTime;
     let duration = 0;
     L: while (!this.finished) {
       if (playState === "skip") {
         break;
       }
 
-      const timestamp = await D.requestAnimationFrame();
-      if (timestampPrev !== undefined && !this.paused) {
-        duration += timestamp - timestampPrev;
+      const now = await D.requestAnimationFrame();
+      if (prevTime !== undefined && !this.paused) {
+        duration += now - prevTime;
       }
-      timestampPrev = timestamp;
+      prevTime = now;
 
       if (this.paused) {
         continue;
@@ -1516,14 +1516,14 @@ D.OpacityAnimation = class {
   }
 
   async start() {
-    let timestampPrev;
+    let prevTime;
     let duration = 0;
     while (duration < this.duration) {
-      const timestamp = await D.requestAnimationFrame();
-      if (timestampPrev !== undefined) {
-        duration += timestamp - timestampPrev;
+      const now = await D.requestAnimationFrame();
+      if (prevTime !== undefined) {
+        duration += now - prevTime;
       }
-      timestampPrev = timestamp;
+      prevTime = now;
 
       const x = Math.min(duration / this.duration, 1);
       const y = x * (2 - x)
@@ -1544,14 +1544,14 @@ D.ScrollAnimation = class {
   }
 
   async start() {
-    let timestampPrev;
+    let prevTime;
     let duration = 0;
     while (duration < this.duration) {
-      const timestamp = await D.requestAnimationFrame();
-      if (timestampPrev !== undefined) {
-        duration += timestamp - timestampPrev;
+      const now = await D.requestAnimationFrame();
+      if (prevTime !== undefined) {
+        duration += now - prevTime;
       }
-      timestampPrev = timestamp;
+      prevTime = now;
 
       const x = Math.min(duration / this.duration, 1);
       const y = (Math.cos((x - 1) * Math.PI) + 1) * 0.5;
@@ -1642,6 +1642,38 @@ const soundEffectCancel = () => {
 const soundEffectBeep = () => {
   if (soundEffect) {
     soundEffect.start("beep");
+  }
+};
+
+//-------------------------------------------------------------------------
+
+D.UpdateChecker = class {
+  constructor(timeout) {
+    this.timeout = timeout;
+    this.untilTime = Date.now() + this.timeout;
+    this.waitForCheck = undefined;
+  }
+
+  update() {
+    if (this.waitForCheck !== undefined) {
+      return;
+    }
+
+    const now = Date.now();
+    if (this.untilTime < now) {
+      this.untilTime = now + this.timeout;
+      this.waitForCheck = now;
+      fetch("version.json", { cache: "no-store" }).then(response => {
+        return response.json();
+      }).then(version => {
+        logging.debug("更新チェック: 成功");
+        console.log(version);
+      }).catch(e => {
+        logging.error("更新チェック: 失敗", e);
+      }).finally(() => {
+        this.waitForCheck = undefined;
+      });
+    }
   }
 };
 
@@ -1753,6 +1785,8 @@ let waitForStart;
 let waitForStop;
 let waitForDialog;
 let waitForCredits;
+
+let updateChecker;
 
 //-------------------------------------------------------------------------
 
@@ -3366,6 +3400,10 @@ D.onDOMContentLoaded = async () => {
     });
   }
 
+  // debug
+  updateChecker = new D.UpdateChecker(10000);
+  // updateChecker = new D.UpdateChecker(600000);
+
   while (true) {
     await D.requestAnimationFrame();
     if (backgroundAnimation) {
@@ -3384,6 +3422,9 @@ D.onDOMContentLoaded = async () => {
     }
     if (silhouette) {
       silhouette.draw();
+    }
+    if (updateChecker) {
+      updateChecker.update();
     }
   }
 };
