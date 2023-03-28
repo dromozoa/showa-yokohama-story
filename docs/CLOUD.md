@@ -23,3 +23,9 @@
   /music/{serial}/
 ```
 
+```
+/version.json
+{
+    web: "b3",
+}
+```
