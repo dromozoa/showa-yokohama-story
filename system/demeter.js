@@ -3352,6 +3352,20 @@ D.onDOMContentLoaded = async () => {
   initializeBackground();
   await enterTitleScreen();
 
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener("controllerchange", ev => {
+      logging.info("サービスワーカ変更: 検出");
+    });
+    navigator.serviceWorker.register("service-worker.js").then(registration => {
+      logging.info("サービスワーカ登録: 成功");
+      registration.addEventListener("updatefound", ev => {
+        logging.info("サービスワーカ更新: 検出");
+      });
+    }).catch(e => {
+      logging.error("サービスワーカ登録: 失敗", e);
+    });
+  }
+
   while (true) {
     await D.requestAnimationFrame();
     if (backgroundAnimation) {
