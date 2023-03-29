@@ -97,7 +97,7 @@ c = 0.0722
 
 ```
 // _autoResumeをハック
-const autoResume = HowlerGlobal.prototype._autoResume;
+let autoResume = HowlerGlobal.prototype._autoResume;
 HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume start", this); const r = autoResume.call(this); console.log("_autoResume end", r); return r };
 ```
 

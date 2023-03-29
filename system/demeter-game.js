@@ -29,6 +29,7 @@ D.includeGameGuard = true;
 addEventListener("resize", D.onResize);
 addEventListener("keydown", D.onKeydown);
 addEventListener("error", D.onError);
+addEventListener("unhandledrejection", D.onUnhandledRejection);
 document.addEventListener("DOMContentLoaded", D.onDOMContentLoaded, { once: true });
 
 //-------------------------------------------------------------------------

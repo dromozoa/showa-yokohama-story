@@ -1181,7 +1181,9 @@ D.AudioVisualizer = class {
     for (let i = 0; i < this.analyser.frequencyBinCount; ++i) {
       const v = (Math.max(minDecibels, Math.min(maxDecibels, this.frequencyData[i])) - minDecibels) / rangeDecibels;
       const h = v * H;
-      context.fillRect(i * w, HH - h * 0.5, w, h);
+      if (h > 0) {
+        context.fillRect(i * w, HH - h * 0.5, w, h);
+      }
     }
   }
 };
@@ -3610,8 +3612,12 @@ D.onKeydown = async ev => {
 };
 
 D.onError = ev => {
-  logging.error("ゲームシステム: エラー捕捉", ev);
+  logging.error("ゲームシステムエラー: 捕捉", ev);
 };
+
+D.onUnhandledRejection = ev => {
+  logging.error("ゲームシステムエラー: 拒否", ev.reason);
+}
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
@@ -3646,7 +3652,8 @@ D.onDOMContentLoaded = async () => {
     });
   }
 
-  history.replaceState(null, "", "game.html");
+  // ファイル名は変えない
+  history.replaceState(null, "", document.location.pathname);
 
   while (true) {
     await D.requestAnimationFrame();
