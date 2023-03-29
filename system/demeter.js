@@ -26,16 +26,7 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
-D.version = { web: "b4" };
-
-D.preferences = {
-  musicDir: "build/music",
-  voiceDir: "build/voice",
-  effectDir: "system",
-};
-
-// D.trace = () => {};
-D.trace = (...args) => console.log(...args);
+D.trace = (...args) => D.preferences.trace(...args);
 
 //-------------------------------------------------------------------------
 
@@ -1771,8 +1762,8 @@ D.UpdateChecker = class {
           throw new Error("unexpected version");
         }
         logging.debug("更新チェック: 成功");
-        if (D.version.web !== version.web) {
-          logging.notice("更新検出: " + D.version.web + "→" + version.web);
+        if (D.preferences.version.web !== version.web) {
+          logging.notice("更新検出: " + D.preferences.version.web + "→" + version.web);
           status = "detected";
         }
       } catch (e) {
@@ -3612,11 +3603,11 @@ D.onKeydown = async ev => {
 };
 
 D.onError = ev => {
-  logging.error("ゲームシステムエラー: 捕捉", ev);
+  logging.error("検出: 大域エラー", ev);
 };
 
 D.onUnhandledRejection = ev => {
-  logging.error("ゲームシステムエラー: 拒否", ev.reason);
+  logging.error("検出: 見過ごされた拒否", ev.reason);
 }
 
 D.onDOMContentLoaded = async () => {

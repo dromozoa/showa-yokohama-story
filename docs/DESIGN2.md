@@ -274,6 +274,10 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 ## タスク
 
 - [x] D.trace
+- [x] ヒストリをいじるときに?以降をはずすだけにする
+
+- [ ] 設定部分をif文で書いて、パラメーターだけ渡す。
+  - バージョン文字列とフォルダモードは自動生成したい（まちがえないように）
 
 - [ ] iOSで音が出なくなる
   - resumeに失敗している？
@@ -282,8 +286,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
     - [ ] リロードしてもだめ？
   - [ ] 音の入力が消えたらグラフをノーシグナルにする？
     - [ ] そもそも入力はどうなってる？
-
-- [ ] 設定部分をif文で書いて、パラメーターだけ渡す。
 
 - [ ] iOSで表示がおかしくなる
   - 背景のtransformがきかなくなる
@@ -326,9 +328,8 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] 音が止まったあと、セーブにいって戻ると音が出る
 - [ ] 段落進行が止まる
 
-- [ ] ヒストリをいじるときに?以降をはずすだけにする
-
 - [ ] バージョンチェックセマンティクスを考える
 - [ ] 世界→セカイ
 - [ ] 択べるようだのようだいらない
+- [ ] バージョンチェックセマンティクスを考える
 
