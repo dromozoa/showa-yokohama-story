@@ -11,7 +11,9 @@
 - [x] キャッシュのテスト
   - demeter.jsはかえなくていいかな。
 - [x] バージョンチェック
+
 - [ ] cache-control: no-storeを自前で設定する。
+- [ ] 音声のアップロードが遅いからsyncにしちゃう
 - [ ] ホームページをつくる
   - [ ] 更新履歴を表示する
   - [ ] iOSの注意書き
@@ -33,3 +35,20 @@
     web: "b3",
 }
 ```
+
+## 音楽のアップロード
+
+```
+./tool/upload_music.sh assets/music.txt ../showa-yokohama-story-ext/music s3://dromozoa.com/sys/music/1
+```
+
+## 音声のアップロード
+
+下記の方式でやっているが、aws s3 syncでinclude/excludeしたほうが早そう。
+
+```
+./tool/upload_voice.sh build/voice s3://vaporoid.com/sys/voice/1
+```
+
+
+

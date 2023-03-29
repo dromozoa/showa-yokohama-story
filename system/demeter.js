@@ -26,7 +26,7 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
-D.version = { web: "b3" };
+D.version = { web: "b4" };
 
 D.preferences = {
   musicDir: "build/music",
