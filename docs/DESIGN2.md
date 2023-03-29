@@ -82,7 +82,34 @@ c = 0.0722
 |     s | | B |     | a b c | | B |
 ```
 
-## タスク
+## iOS Safariのエラー
+
+```
+[Error] Unhandled Promise Rejection: InvalidStateError: Failed to start the audio device
+	promiseEmptyOnRejected
+	promiseReactionJob
+```
+
+- https://github.com/goldfire/howler.js/issues/1559
+- audioSuspendを切るのはどうだろう
+- ↑このエラー自体は観測された
+- しかも、その後止まらなかった。
+
+```
+// _autoResumeをハック
+const autoResume = HowlerGlobal.prototype._autoResume;
+HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume start", this); const r = autoResume.call(this); console.log("_autoResume end", r); return r };
+```
+
+- 音声ファイルがダウンロードできないと段落遷移が止まった
+
+- canvasのクラッシュ
+  - https://stackoverflow.com/questions/13751964/scaling-canvas-on-ios-seems-to-crash-mobile-safari
+  - 古いけど
+- https://developer.apple.com/forums/thread/708348
+  - ???
+
+## 完了タスク
 
 - [x] autosave => verse select
 - [x] ラベル文字列→ラベルインデックスの表を作る
@@ -241,7 +268,39 @@ c = 0.0722
 - [x] バージョン更新の仕組み
 - [x] バージョン更新ダイアログを用意しておく。
 - [=] URLをいじる
+- [x] 音声ファイルのダウンロードに失敗した場合のパターン
+  - [x] 切断する
 
+## タスク
+
+- [x] D.trace
+
+- [ ] iOSで音が出なくなる
+  - resumeに失敗している？
+  - オート再生からロック→解除で、メモリ負荷がかかってるとか？
+  - [ ] 他のタブで動画を再生して戻ったりするとだめ
+    - [ ] リロードしてもだめ？
+  - [ ] 音の入力が消えたらグラフをノーシグナルにする？
+    - [ ] そもそも入力はどうなってる？
+
+- [ ] 設定部分をif文で書いて、パラメーターだけ渡す。
+
+- [ ] iOSで表示がおかしくなる
+  - 背景のtransformがきかなくなる
+  - [ ] 背景のトランジションが遅い
+  - canvasがおかしくなる
+    - 他のページやアプリにいってもどると発生
+    - contextはとれる
+    - おそらくcontextがいなくなってつくりなおされた
+      - fillStyleは通った
+        - 白に設定していたのが黒になってた？
+      - サイズがおかしい
+        - scaleがとんでた？
+  - 再現方法は不明
+
+- [ ] トロフィー獲得時に音とメッセージをどこかに出す
+- [ ] メッセージ送信をタイトルかホームページに作る
+- [ ] 先読みする？
 - [ ] デプロイの仕組みを改善する。
 - [ ] スクリプトを圧縮する。
 - [ ] アプリケーションインストールの方法をチュートリアルで
@@ -253,4 +312,23 @@ c = 0.0722
   - [=] バージョン管理
   - [ ] エラー処理
   - [=] トランザクション
+
+- [ ] ダウンロードがおそい
+- [ ] 本州以外の島嶼ってどこが残ってるの
+- [ ] 生体認証装置「も」トルツメ？
+- [ ] こたえと応え
+- [ ] 残り時間？
+- [ ] ここからたどりつけない空虚な中心。とか。
+- [ ] 転送中。通信速度……
+
+- [ ] 画面遷移して戻ったあと音が消えるios
+- [ ] 背景の色がかわらない？
+- [ ] 音が止まったあと、セーブにいって戻ると音が出る
+- [ ] 段落進行が止まる
+
+- [ ] ヒストリをいじるときに?以降をはずすだけにする
+
+- [ ] バージョンチェックセマンティクスを考える
+- [ ] 世界→セカイ
+- [ ] 択べるようだのようだいらない
 

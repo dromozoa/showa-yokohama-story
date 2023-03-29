@@ -26,13 +26,16 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
-D.version = { web: "b3" };
+D.version = { web: "b4" };
 
 D.preferences = {
   musicDir: "build/music",
   voiceDir: "build/voice",
   effectDir: "system",
 };
+
+// D.trace = () => {};
+D.trace = (...args) => console.log(...args);
 
 //-------------------------------------------------------------------------
 
@@ -979,32 +982,35 @@ D.Logging = class {
   }
 
   error(message, exception) {
+    D.trace(message, exception);
     if (this.level >= 3) {
       this.logImpl(message, exception.message);
     }
-    console.error(message, exception);
   }
 
   warn(message) {
+    D.trace(message);
     if (this.level >= 4) {
       this.logImpl(message);
     }
-    console.warn(message, exception);
   }
 
   notice(message) {
+    D.trace(message);
     if (this.level >= 5) {
       this.logImpl(message);
     }
   }
 
   info(message) {
+    D.trace(message);
     if (this.level >= 6) {
       this.logImpl(message);
     }
   }
 
   debug(message) {
+    D.trace(message);
     if (this.level >= 7) {
       this.logImpl(message);
     }
@@ -1070,46 +1076,38 @@ D.MusicPlayer = class {
   }
 
   start(key) {
-    const basename = D.preferences.musicDir + "/sessions_" + key;
+    this.key = key;
 
-    const sound = new Howl({
+    const basename = D.preferences.musicDir + "/sessions_" + this.key;
+    this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       loop: true,
+      onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(message)),
+      onplayerror: (notUsed, message) => logging.error("音楽再生: 失敗", new Error(message)),
     });
-    const soundId = sound.play();
-
-    sound.on("loaderror", (notUsed, message) => {
-      logging.error("音楽読出: 失敗", new Error(message));
-    });
-
-    sound.on("playerror", (notUsed, message) => {
-      logging.error("音楽再生: 失敗", new Error(message));
-    });
-
     if (this.unlock) {
-      sound.once("unlock", () => {
+      this.sound.once("unlock", () => {
         if (this.unlock) {
           this.unlock();
         }
       });
     }
+    this.soundId = this.sound.play();
 
-    this.key = key;
-    this.sound = sound;
-    this.soundId = soundId;
-    logging.info("音楽開始: " + musicNames[key]);
+    logging.info("音楽開始: " + musicNames[this.key]);
   }
 
   fade(key) {
     const oldKey = this.key;
     const oldSound = this.sound;
     const oldSoundId = this.soundId;
+
     this.start(key);
     const newSound = this.sound;
     const newSoundId = this.soundId;
 
-    this.sound.once("fade", soundId=> {
+    oldSound.on("fade", soundId => {
       oldSound.stop();
       logging.debug("音楽終了: " + musicNames[oldKey]);
     });
@@ -1136,10 +1134,6 @@ D.AudioVisualizer = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.fillStyle = color;
-
     const analyser = Howler.ctx.createAnalyser();
     analyser.fftSize = Math.pow(2, Math.ceil(Math.log2(width)));
     analyser.connect(Howler.ctx.destination);
@@ -1148,8 +1142,10 @@ D.AudioVisualizer = class {
     this.canvas = canvas;
     this.width = width;
     this.height = height;
+    this.color = color;
     this.analyser = analyser;
     this.frequencyData = new Float32Array(analyser.fftSize / 2);
+    this.fillStyleSave = undefined;
   }
 
   update() {
@@ -1157,8 +1153,7 @@ D.AudioVisualizer = class {
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.fillStyle = color;
+    this.color = color;
   }
 
   draw() {
@@ -1170,6 +1165,16 @@ D.AudioVisualizer = class {
     const rangeDecibels = maxDecibels - minDecibels;
 
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.fillStyleSave && this.fillStyleSave !== context.fillStyle) {
+      logging.warn("AudioVisualizer canvas context maybe recreated: " + context.fillStyle);
+    }
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = this.color;
+    this.fillStyleSave = context.fillStyle;
+
     context.clearRect(0, 0, W, H);
 
     const w = W / this.analyser.frequencyBinCount;
@@ -1233,21 +1238,16 @@ D.FrameRateVisualizer = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.lineWidth = 1;
-    context.fillStyle = color;
-    context.strokeStyle = color;
-    context.font = D.numberToCss(fontSize) + " " + font;
-    context.textBaseline = "top";
-
     this.canvas = canvas;
     this.width = width;
     this.height = height;
     this.fontSize = fontSize;
+    this.font = font;
+    this.color = color;
     this.prevTime = undefined;
     this.frameCount = 0;
     this.frameRates = new D.RingBuffer(width - 2);
+    this.fillStyleSave = undefined;
   }
 
   update() {
@@ -1269,15 +1269,28 @@ D.FrameRateVisualizer = class {
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.fillStyle = color;
-    context.strokeStyle = color;
+    this.color = color;
   }
 
   draw() {
     const W = this.width;
     const H = this.height;
+
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.fillStyleSave && this.fillStyleSave !== context.fillStyle) {
+      D.trace("FrameRateVisualizer canvas context maybe recreated", context.fillStyle);
+    }
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 1;
+    context.fillStyle = this.color;
+    context.strokeStyle = this.color;
+    context.font = D.numberToCss(this.fontSize) + " " + this.font;
+    context.textBaseline = "top";
+    this.fillStyleSave = context.fillStyle;
+
     context.clearRect(0, 0, W, H);
     context.strokeRect(0.5, this.fontSize + 0.5, W - 1, H - this.fontSize - 1);
 
@@ -1308,20 +1321,16 @@ D.Silhouette = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.lineWidth = 0.5;
-    context.strokeStyle = color;
-
     this.canvas = canvas;
     this.width = width;
     this.height = height;
+    this.color = color;
     this.speaker = undefined;
+    this.strokeStyleSave = undefined;
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.strokeStyle = color;
+    this.color = color;
   }
 
   updateSpeaker(speaker) {
@@ -1330,6 +1339,18 @@ D.Silhouette = class {
 
   draw() {
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.strokeStyleSave && this.strokeStyleSave !== context.strokeStyle) {
+      logging.warn("Silhouette canvas context maybe recreated: " + context.strokeStyle);
+    }
+    // コンテキストが再作成されるかもしれないので、毎回設定する。
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 0.5;
+    context.strokeStyle = this.color;
+    this.strokeStyleSave = context.strokeStyle;
+
     context.clearRect(0, 0, this.width, this.height);
 
     if (!this.speaker) {
@@ -1427,6 +1448,63 @@ D.TextAnimation = class {
 
 //-------------------------------------------------------------------------
 
+D.VoiceSound = class {
+  constructor(basename, sprite) {
+    this.loadErrorSoundId = undefined;
+    this.loadErrorMessage = undefined;
+    this.onceLoadError = undefined;
+
+    this.sound = new Howl({
+      src: [ basename + ".webm", basename + ".mp3" ],
+      sprite: sprite,
+      // 再生に先だってロードエラーが発生した場合、サウンドIDは定義されない。
+      onloaderror: (soundId, message) => {
+        D.trace("VoiceSound onLoadError", soundId, message);
+        this.loadErrorSoundId = soundId;
+        this.loadErrorMessage = message;
+        // 再生開始後にロードエラーが発生した場合、イベントを伝播する。
+        if (this.onceLoadError) {
+          this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
+          this.onceLoadError = undefined;
+        }
+      },
+
+      onplayerror: (soundId, message) => D.trace("VoiceSound onPlayError", soundId, message),
+    });
+  }
+
+  setOnceLoadError(onLoadError) {
+    this.onceLoadError = onLoadError;
+  }
+
+  play(...args) {
+    if (this.onceLoadError && this.loadErrorMessage !== undefined) {
+      this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
+      this.onceLoadError = undefined;
+      // 有効なサウンドIDを返さない。
+      return;
+    } else {
+      return this.sound.play(...args);
+    }
+  }
+
+  pause(...args) {
+    return this.sound.pause(...args);
+  }
+
+  stop(...args) {
+    return this.sound.stop(...args);
+  }
+
+  once(...args) {
+    return this.sound.once(...args);
+  }
+
+  volume(...args) {
+    return this.sound.volume(...args);
+  }
+};
+
 D.VoiceSprite = class {
   constructor(sound, sprite, volume) {
     this.sound = sound;
@@ -1439,7 +1517,14 @@ D.VoiceSprite = class {
 
   start() {
     return new Promise((resolve, reject) => {
+      this.sound.setOnceLoadError((soundId, message) => {
+        D.trace("VoiceSprite onceLoadError", soundId, message, this.soundId);
+        this.soundId = undefined;
+        reject(new Error(message));
+      });
+
       this.sound.once("playerror", (soundId, message) => {
+        D.trace("VoiceSprite oncePlayError", soundId, message, this.soundId);
         if (this.soundId === soundId) {
           this.soundId = undefined;
           reject(new Error(message));
@@ -1447,6 +1532,7 @@ D.VoiceSprite = class {
       });
 
       this.sound.once("end", soundId => {
+        D.trace("VoiceSprite onceEnd", soundId, this.soundId);
         if (this.soundId === soundId) {
           this.soundId = undefined;
           resolve("end");
@@ -1454,6 +1540,7 @@ D.VoiceSprite = class {
       });
 
       this.sound.once("stop", soundId => {
+        D.trace("VoiceSprite onceStop", soundId, this.soundId);
         if (this.soundId === soundId) {
           this.soundId = undefined;
           resolve("stop");
@@ -1618,6 +1705,8 @@ D.SoundEffect = class {
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       sprite: D.effectSprite,
+      onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(message)),
+      onplayerror: (notUsed, message) => logging.error("効果音再生: 失敗", new Error(message)),
     });
   }
 
@@ -2087,7 +2176,7 @@ const unlockAudio = async () => {
 //-------------------------------------------------------------------------
 
 const upgradeDatabase = (db, oldVersion, newVersion) => {
-  console.log("upgradeDatabase", oldVersion, newVersion);
+  D.trace("upgradeDatabase", oldVersion, newVersion);
   for (let version = oldVersion + 1; version <= newVersion; ++version) {
     switch (version) {
       case 1:
@@ -2998,6 +3087,7 @@ const initializeEmptyOverlay = () => {};
 //-------------------------------------------------------------------------
 
 const initializeAudio = () => {
+  Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
   musicPlayer.start("vi03");
@@ -3022,7 +3112,13 @@ const runTextAnimation = async () => {
 };
 
 const runVoiceSprite = async () => {
-  await voiceSprite.start();
+  try {
+    await voiceSprite.start();
+    logging.debug("音声再生: 開始");
+  } catch (e) {
+    logging.error("音声再生: 失敗", e);
+  }
+
   // テキストアニメーションが終了していて、音声を明示的に終了した場合、処理を
   // 継続する。
   const cont = textAnimation === undefined && voiceSprite.finished;
@@ -3171,10 +3267,7 @@ const next = async () => {
     // SKIP中は音声を再生しない。
     if (playState !== "skip") {
       const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-      voiceSound = new Howl({
-        src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
-        sprite: D.voiceSprites[paragraphIndex - 1],
-      });
+      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
     }
   }
 
@@ -3347,9 +3440,7 @@ const dialog = async key => {
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
   const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new Howl({
-    src: [ voiceBasename + ".webm", voiceBasename + ".mp3" ],
-  });
+  const voiceSound = new D.VoiceSound(voiceBasename);
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
@@ -3362,7 +3453,11 @@ const dialog = async key => {
   });
 
   const runVoiceSprite = async () => {
-    await voiceSprite.start();
+    try {
+      await voiceSprite.start();
+    } catch (e) {
+      logging.error("音声処理: 失敗", e);
+    }
     voiceSprite = undefined;
   };
 
