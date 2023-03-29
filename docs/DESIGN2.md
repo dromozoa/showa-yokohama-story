@@ -82,6 +82,19 @@ c = 0.0722
 |     s | | B |     | a b c | | B |
 ```
 
+## iOS Safariのエラー
+
+```
+[Error] Unhandled Promise Rejection: InvalidStateError: Failed to start the audio device
+	promiseEmptyOnRejected
+	promiseReactionJob
+```
+
+- https://github.com/goldfire/howler.js/issues/1559
+- audioSuspendを切るのはどうだろう
+
+- 通信エラーで死ぬ？
+
 ## タスク
 
 - [x] autosave => verse select
@@ -254,15 +267,12 @@ c = 0.0722
       - サイズがおかしい
         - scaleがとんでた？
   - 再現方法は不明
-
 - [ ] iOSで音が出なくなる
   - オート再生からロック→解除で、メモリ負荷がかかってるとか？
-
-- [ ] 他のタブで動画を再生して戻ったりするとだめ
-  - [ ] リロードしてもだめ？
-
-- [ ] 音の入力が消えたらグラフをノーシグナルにする？
-  - [ ] そもそも入力はどうなってる？
+  - [ ] 他のタブで動画を再生して戻ったりするとだめ
+    - [ ] リロードしてもだめ？
+  - [ ] 音の入力が消えたらグラフをノーシグナルにする？
+    - [ ] そもそも入力はどうなってる？
 
 - [ ] トロフィー獲得時に音とメッセージをどこかに出す
 - [ ] メッセージ送信をタイトルかホームページに作る

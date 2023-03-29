@@ -989,7 +989,6 @@ D.Logging = class {
     if (this.level >= 4) {
       this.logImpl(message);
     }
-    console.warn(message, exception);
   }
 
   notice(message) {
@@ -1136,10 +1135,6 @@ D.AudioVisualizer = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.fillStyle = color;
-
     const analyser = Howler.ctx.createAnalyser();
     analyser.fftSize = Math.pow(2, Math.ceil(Math.log2(width)));
     analyser.connect(Howler.ctx.destination);
@@ -1148,8 +1143,10 @@ D.AudioVisualizer = class {
     this.canvas = canvas;
     this.width = width;
     this.height = height;
+    this.color = color;
     this.analyser = analyser;
     this.frequencyData = new Float32Array(analyser.fftSize / 2);
+    this.fillStyleSave = undefined;
   }
 
   update() {
@@ -1157,8 +1154,7 @@ D.AudioVisualizer = class {
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.fillStyle = color;
+    this.color = color;
   }
 
   draw() {
@@ -1170,6 +1166,16 @@ D.AudioVisualizer = class {
     const rangeDecibels = maxDecibels - minDecibels;
 
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.fillStyleSave && this.fillStyleSave !== context.fillStyle) {
+      logging.warn("AudioVisualizer canvas context maybe recreated: " + context.fillStyle);
+    }
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.fillStyle = this.color;
+    this.fillStyleSave = context.fillStyle;
+
     context.clearRect(0, 0, W, H);
 
     const w = W / this.analyser.frequencyBinCount;
@@ -1233,21 +1239,16 @@ D.FrameRateVisualizer = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.lineWidth = 1;
-    context.fillStyle = color;
-    context.strokeStyle = color;
-    context.font = D.numberToCss(fontSize) + " " + font;
-    context.textBaseline = "top";
-
     this.canvas = canvas;
     this.width = width;
     this.height = height;
     this.fontSize = fontSize;
+    this.font = font;
+    this.color = color;
     this.prevTime = undefined;
     this.frameCount = 0;
     this.frameRates = new D.RingBuffer(width - 2);
+    this.fillStyleSave = undefined;
   }
 
   update() {
@@ -1269,15 +1270,28 @@ D.FrameRateVisualizer = class {
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.fillStyle = color;
-    context.strokeStyle = color;
+    this.color = color;
   }
 
   draw() {
     const W = this.width;
     const H = this.height;
+
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.fillStyleSave && this.fillStyleSave !== context.fillStyle) {
+      console.log("FrameRateVisualizer canvas context maybe recreated", context.fillStyle);
+    }
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 1;
+    context.fillStyle = this.color;
+    context.strokeStyle = this.color;
+    context.font = D.numberToCss(this.fontSize) + " " + this.font;
+    context.textBaseline = "top";
+    this.fillStyleSave = context.fillStyle;
+
     context.clearRect(0, 0, W, H);
     context.strokeRect(0.5, this.fontSize + 0.5, W - 1, H - this.fontSize - 1);
 
@@ -1308,20 +1322,16 @@ D.Silhouette = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const context = canvas.getContext("2d");
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.lineWidth = 0.5;
-    context.strokeStyle = color;
-
     this.canvas = canvas;
     this.width = width;
     this.height = height;
+    this.color = color;
     this.speaker = undefined;
+    this.strokeStyleSave = undefined;
   }
 
   updateColor(color) {
-    const context = this.canvas.getContext("2d");
-    context.strokeStyle = color;
+    this.color = color;
   }
 
   updateSpeaker(speaker) {
@@ -1330,6 +1340,18 @@ D.Silhouette = class {
 
   draw() {
     const context = this.canvas.getContext("2d");
+    // コンテキストの再作成を検出する。今のところ、コンテキストの再作成は確認さ
+    // れていない。
+    if (this.strokeStyleSave && this.strokeStyleSave !== context.strokeStyle) {
+      logging.warn("Silhouette canvas context maybe recreated: " + context.strokeStyle);
+    }
+    // コンテキストが再作成されるかもしれないので、毎回設定する。
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 0.5;
+    context.strokeStyle = this.color;
+    this.strokeStyleSave = context.strokeStyle;
+
     context.clearRect(0, 0, this.width, this.height);
 
     if (!this.speaker) {
