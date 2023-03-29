@@ -50,5 +50,15 @@
 ./tool/upload_voice.sh build/voice s3://vaporoid.com/sys/voice/1
 ```
 
+## 本体のアップロード
 
+- ビルドの前にmakeしておく必要がある。
+- というか、makeのあとにビルド自体まで終わらせておくべき。
+
+```
+aws s3 cp --cache-control no-store service-worker.js s3://vaporoid.com/sys/
+aws s3 cp --cache-control no-store index.html s3://vaporoid.com/sys/
+aws s3 cp --cache-control no-store game.html s3://vaporoid.com/sys/
+aws s3 cp --cache-control no-store version.json s3://vaporoid.com/sys/
+```
 
