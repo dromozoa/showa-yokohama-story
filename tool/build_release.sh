@@ -21,8 +21,8 @@ here=`dirname "$0"`
 export LUA_PATH="$here/?.lua;;"
 
 source_dirname=$1
-output_dirname=$2 # build/b3
-system_dirname=$3 # system/1
+output_dirname=$2 # build/b4
+system_dirname=$3 # system/2
 music_dirname=$4 # music/1
 voice_dirname=$5 # voice/1
 
