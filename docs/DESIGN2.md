@@ -103,6 +103,12 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 - 音声ファイルがダウンロードできないと段落遷移が止まった
 
+- canvasのクラッシュ
+  - https://stackoverflow.com/questions/13751964/scaling-canvas-on-ios-seems-to-crash-mobile-safari
+  - 古いけど
+- https://developer.apple.com/forums/thread/708348
+  - ???
+
 ## 完了タスク
 
 - [x] autosave => verse select
@@ -307,7 +313,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [ ] エラー処理
   - [=] トランザクション
 
-
 - [ ] ダウンロードがおそい
 - [ ] 本州以外の島嶼ってどこが残ってるの
 - [ ] 生体認証装置「も」トルツメ？
@@ -320,4 +325,10 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] 背景の色がかわらない？
 - [ ] 音が止まったあと、セーブにいって戻ると音が出る
 - [ ] 段落進行が止まる
+
+- [ ] ヒストリをいじるときに?以降をはずすだけにする
+
+- [ ] バージョンチェックセマンティクスを考える
+- [ ] 世界→セカイ
+- [ ] 択べるようだのようだいらない
 
