@@ -29,6 +29,7 @@ targets = \
 	build/debug.txt \
 	system/demeter-scenario.js \
 	system/demeter-debug-scenario.js \
+	version.json \
 	game.html \
 	scenario/scenario.js
 
@@ -96,6 +97,9 @@ system/demeter-scenario.js: $(scenarios)
 
 system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
+
+version.json: versions
+	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js
 
 game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
 	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json $@
