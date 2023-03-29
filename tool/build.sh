@@ -22,17 +22,20 @@ export LUA_PATH="$here/?.lua;;"
 
 source_root=$1
 output_root=$2
-system_version=$3
+version_system=$3
+version_web=$4
 
-mkdir -p "$output_root/system/$system_version"
+mkdir -p "$output_root/system/$version_system"
 
 cp "$source_root"/*.html "$source_root"/*.js* "$output_root"
-cp -R "$source_root/system"/* "$output_root/system/$system_version"
+cp -R "$source_root/system"/* "$output_root/system/$version_system"
 
-lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$system_version/]])))" \
+lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$version_system/]])))" \
   <"$source_root/game.html" \
   >"$output_root/game.html"
 
+cp "$output_root/game.html" "$output_root/game-$version_web.html"
+
 lua -e 'io.write((io.read "a":gsub([[const mode = "develop"]], [[const mode = "release"]])))' \
   <"$source_root/system/demeter-preferences.js" \
-  >"$output_root/system/$system_version/demeter-preferences.js"
+  >"$output_root/system/$version_system/demeter-preferences.js"

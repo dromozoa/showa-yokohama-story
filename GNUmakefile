@@ -54,7 +54,7 @@ check:: all
 
 build::
 	rm -f -r build/$(version_web)
-	./tool/build.sh . build/$(version_web) $(version_system)
+	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)
 
 #--------------------------------------------------------------------------
 
@@ -79,6 +79,32 @@ convert_effect:
 
 clean_effect:
 	rm -f -r build/effect
+
+#--------------------------------------------------------------------------
+
+deploy_dry_run::
+	./tool/deploy.sh --dryrun build/$(version_web) s3://vaporoid.com/sys
+
+deploy_execute::
+	./tool/deploy.sh "" build/$(version_web) s3://vaporoid.com/sys
+
+deploy_system_dry_run::
+	aws s3 sync --dryrun build/$(version_web)/system/$(version_system) s3://vaporoid.com/sys/system/$(version_system)
+
+deploy_system_execute::
+	aws s3 sync build/$(version_web)/system/$(version_system) s3://vaporoid.com/sys/system/$(version_system)
+
+deploy_music_dry_run::
+	./tool/deploy_music.sh --dryrun assets/music.txt build/music s3://vaporoid.com/sys/music/$(version_music)
+
+deploy_music_execute::
+	./tool/deploy_music.sh "" assets/music.txt build/music s3://vaporoid.com/sys/music/$(version_music)
+
+deploy_voice_dry_run::
+	aws s3 sync --dryrun --exclude '*.*' --include '*.mp3' --include '*.webm' build/voice s3://vaporoid.com/sys/voice/$(version_voice)
+
+deploy_voice_execute::
+	aws s3 sync --exclude '*.*' --include '*.mp3' --include '*.webm' build/voice s3://vaporoid.com/sys/voice/$(version_voice)
 
 #--------------------------------------------------------------------------
 

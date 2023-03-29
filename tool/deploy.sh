@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-for i in "$1"/*.mp3 "$1"/*.webm
+for i in $2/*.*
 do
   j=`basename "$i"`
-  aws s3 cp "$i" "$2/$j"
+  aws s3 cp $1 --cache-control no-store "$i" "$3/$j"
 done
