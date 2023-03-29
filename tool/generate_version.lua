@@ -17,7 +17,7 @@
 
 local quote_js = require "quote_js"
 
-local versions_pathname, version_pathname, preferences_pathname = ...
+local versions_pathname, version_pathname, preferences_pathname, makefile_pathname = ...
 
 local header
 local versions = {}
@@ -61,5 +61,11 @@ local handle = assert(io.open(preferences_pathname, "w"))
 handle:write(result)
 handle:close()
 
-
-
+local handle = assert(io.open(makefile_pathname, "w"))
+handle:write(([[
+version_web = %s
+version_system = %d
+version_music = %d
+version_voice = %d
+]]):format(version.web, version.system, version.music, version.voice))
+handle:close()

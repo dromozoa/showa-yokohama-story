@@ -40,6 +40,8 @@ ifneq ($(wildcard build/debug.vpp),)
 targets += build/debug-out.vpp
 endif
 
+include version.mk
+
 #--------------------------------------------------------------------------
 
 all:: $(voicepeak_dic) $(targets)
@@ -49,6 +51,10 @@ clean::
 
 check:: all
 	./test.sh lua
+
+build::
+	rm -f -r build/$(version_web)
+	./tool/build.sh . build/$(version_web) $(version_system)
 
 #--------------------------------------------------------------------------
 
@@ -99,7 +105,7 @@ system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
 
 version.json: versions
-	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js
+	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js version.mk
 
 game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
 	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json $@
