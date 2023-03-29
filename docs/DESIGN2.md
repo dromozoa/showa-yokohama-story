@@ -103,7 +103,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 - 音声ファイルがダウンロードできないと段落遷移が止まった
 
-## タスク
+## 完了タスク
 
 - [x] autosave => verse select
 - [x] ラベル文字列→ラベルインデックスの表を作る
@@ -265,6 +265,10 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [x] 音声ファイルのダウンロードに失敗した場合のパターン
   - [x] 切断する
 
+## タスク
+
+- [x] D.trace
+
 - [ ] iOSで音が出なくなる
   - resumeに失敗している？
   - オート再生からロック→解除で、メモリ負荷がかかってるとか？
@@ -272,7 +276,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
     - [ ] リロードしてもだめ？
   - [ ] 音の入力が消えたらグラフをノーシグナルにする？
     - [ ] そもそも入力はどうなってる？
-
 
 - [ ] 設定部分をif文で書いて、パラメーターだけ渡す。
 
@@ -303,4 +306,18 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [=] バージョン管理
   - [ ] エラー処理
   - [=] トランザクション
+
+
+- [ ] ダウンロードがおそい
+- [ ] 本州以外の島嶼ってどこが残ってるの
+- [ ] 生体認証装置「も」トルツメ？
+- [ ] こたえと応え
+- [ ] 残り時間？
+- [ ] ここからたどりつけない空虚な中心。とか。
+- [ ] 転送中。通信速度……
+
+- [ ] 画面遷移して戻ったあと音が消えるios
+- [ ] 背景の色がかわらない？
+- [ ] 音が止まったあと、セーブにいって戻ると音が出る
+- [ ] 段落進行が止まる
 
