@@ -54,4 +54,19 @@ addEventListener("fetch", ev => {
   })());
 });
 
+addEventListener("message", async ev => {
+  const method = ev.data.method;
+  if (method === "getClients") {
+    ev.source.postMessage({
+      method: method,
+      messageId: ev.data.messageId,
+      body: (await clients.matchAll()).map(client => ({
+        id: client.id,
+        type: client.type,
+        url: client.url,
+      })),
+    });
+  }
+});
+
 })();

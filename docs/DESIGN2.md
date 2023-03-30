@@ -295,8 +295,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [=] アプリケーションインストールの方法をチュートリアルで
 - [=] 通知の方法をチュートリアルで
 
-## タスク
-
 - [x] バージョンチェックセマンティクスを考える
 - [x] iOSで背景の色がかわらない？
   - [x] 背景の仕組みを変える
@@ -329,9 +327,11 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] 択べるようだのようだいらない
   - [x] ボボボクハ
 
-- [ ] 開発中のbuild/debugは除外
-- [ ] 複数タブで開いている場合の検出
+- [x] 開発中のbuild/debugは除外
+- [x] 複数タブで開いている場合の検出
   - ServiceWorkerでいけないかな？
+
+## タスク
 
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。

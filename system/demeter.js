@@ -2232,6 +2232,30 @@ const unlockAudio = async () => {
 
   logging.info("オーディオロック: 解除");
 
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    const message = await new Promise((resolve, reject) => {
+      const onMessage = ev => {
+        navigator.serviceWorker.removeEventListener("message", onMessage);
+        resolve(ev.data);
+      };
+      navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
+      navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
+    });
+
+    message.body.forEach(client => {
+      logging.info("実行文脈識別子: " + client.id);
+    });
+
+    if (message.body.length > 1) {
+      soundEffectAlert();
+      document.querySelector(".demeter-title-text").style.display = "none";
+      hideTitleChoices();
+      await dialog("system-multiple");
+      document.querySelector(".demeter-title-text").style.display = "block";
+      await showTitleChoices();
+    }
+  }
+
   if (updateChecker.delayed) {
     await updateChecker.dialog();
   }
@@ -2820,7 +2844,9 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+// const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+// debug
+const initializeUpdateChecker = () => D.updateChecker = updateChecker = new D.UpdateChecker(600000);
 
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
@@ -3701,6 +3727,7 @@ D.onDOMContentLoaded = async () => {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
       logging.info("サービスワーカ変更: 検出");
     });
+
     navigator.serviceWorker.register("service-worker.js").then(registration => {
       logging.info("サービスワーカ登録: 成功");
       registration.addEventListener("updatefound", ev => {
