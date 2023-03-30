@@ -28,10 +28,10 @@ addEventListener("activate", ev => {
   ev.waitUntil(clients.claim());
 });
 
-const regexPathnameDevelop = /^\/sys\/build\//;
+const regexPathnameDevelop = /^\/sys\/build\/(?:music|voice)/;
 const regexPathnameRelease = /^\/sys\/[^\/]+\//;
 const isCacheTarget = url => {
-  // 開発環境ではsystemディレクトリを暗黙にキャッシュしない。
+  // 開発環境では暗黙にキャッシュするディレクトリをしぼる。
   if (url.hostname.toLowerCase() === "localhost") {
     return regexPathnameDevelop.test(url.pathname);
   } else {

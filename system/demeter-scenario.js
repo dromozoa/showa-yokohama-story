@@ -538,7 +538,7 @@ if($.priest)return 91;
 ]],
 // index: 81
 [{speaker:"danu",music:"diana19",place:"本牧大聖堂",background:"モノクローム",adjacencies:[82]},[
-["こたえになってなくね。"],
+["応えになってなくね。"],
 ["原罪を、あらかじめ喪ったアタシたちに救いはあるの。"],
 ]],
 // index: 82
@@ -1487,7 +1487,8 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index: 250
 [{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[251]},[
 ["起動を確認。"],
-["生体認証装置も正常。"],
+[["演算結節","コンピュート・ノード"],"を順次起動中。"],
+["生体認証装置、正常。"],
 ]],
 // index: 251
 [{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[252]},[
@@ -1536,7 +1537,6 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index: 259
 [{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[260]},[
 ["テープ",["読出","ロード"],"開始。"],
-["残り時間三分。"],
 ]],
 // index: 260
 [{speaker:"alice",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[261]},[
@@ -1718,9 +1718,9 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index: 294
 [{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[295]},[
 ["ここではない、どこか。とか。"],
-["ここからはたどりつけない。"],
+["辿りつけない空虚な中心。とか。"],
 ["いまではない、いつか。とか。"],
-["そんな歴史。とか。"],
+["人類が騙りつづけた",["偽史","フィクション"],"。とか。"],
 ]],
 // index: 295
 [{speaker:"steven",choices:[
@@ -2117,7 +2117,7 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ]],
 // index: 361
 [{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[362]},[
-["ボ、ボ、ボクは、自ら名乗ってるわけじゃないからセーフ。"],
+["ボ、ボ、ボク","は、自ら名乗ってるわけじゃないからセーフ。"],
 ]],
 // index: 362
 [{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[363]},[
@@ -2203,7 +2203,7 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 // index: 377
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["頭出し用の信号が記録されている。"],
-["このテープでは既読の","節","を択べるようだ。"],
+["このテープでは既読の","節","を択べる。"],
 ["選択する？"],
 ]],
 // index: 378
@@ -2277,9 +2277,15 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ["反映のため、システムは",["再読込","リロード"],"を要請。"],
 ["タイトルに戻って、更新していい？"],
 ]],
+// index: 391
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
+["物語の並列起動を検出。"],
+["データの整合性をたもてなくなる可能性あり。"],
+["ただひとつの起動を推奨。"],
+]],
 ],
 total:373,
-starts:[1,2,3,4,6,5,351,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390],
+starts:[1,2,3,4,6,5,351,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391],
 labels:{
 "ニューゲーム":1,
 "おはよう":2,
@@ -2345,6 +2351,7 @@ dialogs:{
 "credits-tape-preview":388,
 "system-update-title":389,
 "system-update":390,
+"system-multiple":391,
 },
 };
 

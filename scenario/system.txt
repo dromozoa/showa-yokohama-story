@@ -26,7 +26,7 @@
 @dialog{load-tape-select}
 #narrator
 頭出し用の信号が記録されている。
-このテープでは既読の@v{節}{セツ}を択べるようだ。
+このテープでは既読の@v{節}{セツ}を択べる。
 選択する？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
@@ -130,4 +130,12 @@
 タイトルに戻って、更新していい？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
+
+@dialog{system-multiple}
+#narrator
+物語の並列起動を検出。
+データの整合性をたもてなくなる可能性あり。
+ただひとつの起動を推奨。
+@dialog_choice{了解}{ok}
+
 
