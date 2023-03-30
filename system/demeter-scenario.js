@@ -150,7 +150,7 @@ if(ctx.game.visitedVerse2)return 5;
 ["なにか質問ある？"],
 ]],
 // index: 17
-[{speaker:"narrator",finish:"title",music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[18]},[
+[{speaker:"narrator",finish:"title",music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[]},[
 ["それじゃあ、良き、終末を。"],
 ]],
 // index: 18
@@ -1115,7 +1115,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedRevelation2 = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
-  };},finish:"credits",music:"diana12",place:"南樺太",background:"モノクローム",adjacencies:[186]},[
+  };},finish:"credits",music:"diana12",place:"南樺太",background:"モノクローム",adjacencies:[]},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1802,7 +1802,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedRevelation3 = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
-  };},finish:"credits",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[308]},[
+  };},finish:"credits",music:"diana12",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[]},[
 ["昭和横濱物語。アリスの",["黙示録","リベレーション"],"。"],
 ["了。"],
 ]],
@@ -1996,7 +1996,7 @@ if($.genesis)return 341;
   ctx.game.unlockPreview = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
-  };},finish:"credits",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[341]},[
+  };},finish:"credits",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[]},[
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
@@ -2053,7 +2053,7 @@ if($.genesis)return 341;
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedGenesis = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
-  };},finish:"credits",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[351]},[
+  };},finish:"credits",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[]},[
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],
@@ -2181,93 +2181,170 @@ if(ctx.game.father === "マイク・ハマー")return 358;
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
 // index: 373
-[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[374]},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[]},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 [["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],
 // index: 374
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[375]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["タイトルに戻る？"],
 ]],
 // index: 375
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[376]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
 // index: 376
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[377]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["全セーブデータを削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
 // index: 377
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[378]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
 // index: 378
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[379]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["チュートリアルをはじめる？"],
 ]],
 // index: 379
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[380]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
 // index: 380
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[381]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
 // index: 381
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[382]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 382
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[383]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 383
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[384]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 384
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[385]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
 // index: 385
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[386]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 386
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[387]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 387
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[388]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 388
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[389]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
 ["ここではない、どこか。"],
 ["捻れた運命がときはなたれた。"],
 ]],
 // index: 389
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[390]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"を検出。"],
 ["反映のため、システムは",["再読込","リロード"],"を要請。"],
 ["更新していい？"],
 ]],
+// index: 390
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"を検出。"],
+["反映のため、システムは",["再読込","リロード"],"を要請。"],
+["タイトルに戻って、更新していい？"],
+]],
+],
+total:373,
+labels:{
+"ニューゲーム":1,
+"おはよう":2,
+"こんにちは":3,
+"節選択":4,
+"節選択2":5,
+"節選択3":6,
+"チュートリアル":7,
+"トロッコ滅亡":9,
+"トロッコ犠牲":10,
+"トロッコ択ばない":11,
+"トロッコ終":12,
+"質問":16,
+"チュートリアル終":17,
+"第一節":18,
+"銃の持ち主":31,
+"聞いたことがある":57,
+"聞いたことがない":58,
+"手紙を届けてもらう":59,
+"第二節":65,
+"手紙の届けさき":67,
+"聖職者":68,
+"聖職者済":91,
+"工学者":92,
+"工学者済":122,
+"活動家":123,
+"ろうくみ":125,
+"ピケやぶり":126,
+"活動家済":162,
+"特殊攻撃作戦":163,
+"熱望":172,
+"希望":173,
+"拒否":175,
+"第二節黙示録了":186,
+"第三節":187,
+"エデンの園":296,
+"グライダー銃":297,
+"択ばない":298,
+"第三節黙示録了":308,
+"創世記":341,
+"プレビュー":351,
+"フィリップ・マーロウ":356,
+"サム・スペード":357,
+"マイク・ハマー":358,
+"ゲバルト・ローザ":359,
+"ゲバルト・ローザ終":364,
+},
+dialogs:{
+"system-back-to-title":374,
+"system-reset-system":375,
+"system-reset-save":376,
+"load-tape-select":377,
+"load-tape-tutorial":378,
+"load-tape-broken":379,
+"load-tape-preview":380,
+"load-tape-save1":381,
+"load-tape-save2":382,
+"load-tape-save3":383,
+"load-tape-empty":384,
+"save-tape-save1":385,
+"save-tape-save2":386,
+"save-tape-save3":387,
+"credits-tape-preview":388,
+"system-update-title":389,
+"system-update":390,
+},
+};
+
+})();

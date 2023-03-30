@@ -77,92 +77,131 @@ paragraphs:[
 ["なにか質問ある？"],
 ]],
 // index: 11
-[{speaker:"narrator",finish:"title",adjacencies:[12]},[
+[{speaker:"narrator",finish:"title",adjacencies:[]},[
 ["それじゃあ、良き、終末を。"],
 ]],
 // index: 12
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[13]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["タイトルに戻る？"],
 ]],
 // index: 13
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[14]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
 // index: 14
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[15]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["全セーブデータを削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
 // index: 15
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[16]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べるようだ。"],
 ["選択する？"],
 ]],
 // index: 16
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[17]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["チュートリアルをはじめる？"],
 ]],
 // index: 17
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[18]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
 // index: 18
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[19]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
 // index: 19
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[20]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 20
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[21]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 21
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[22]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
 // index: 22
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[23]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
 // index: 23
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[24]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 24
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[25]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 25
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[26]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
 // index: 26
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[27]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
 ["ここではない、どこか。"],
 ["捻れた運命がときはなたれた。"],
 ]],
 // index: 27
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[28]},[
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"を検出。"],
 ["反映のため、システムは",["再読込","リロード"],"を要請。"],
 ["更新していい？"],
 ]],
+// index: 28
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"を検出。"],
+["反映のため、システムは",["再読込","リロード"],"を要請。"],
+["タイトルに戻って、更新していい？"],
+]],
+],
+total:11,
+labels:{
+"チュートリアル":1,
+"トロッコ滅亡":3,
+"トロッコ犠牲":4,
+"トロッコ択ばない":5,
+"トロッコ終":6,
+"質問":10,
+"チュートリアル終":11,
+},
+dialogs:{
+"system-back-to-title":12,
+"system-reset-system":13,
+"system-reset-save":14,
+"load-tape-select":15,
+"load-tape-tutorial":16,
+"load-tape-broken":17,
+"load-tape-preview":18,
+"load-tape-save1":19,
+"load-tape-save2":20,
+"load-tape-save3":21,
+"load-tape-empty":22,
+"save-tape-save1":23,
+"save-tape-save2":24,
+"save-tape-save3":25,
+"credits-tape-preview":26,
+"system-update-title":27,
+"system-update":28,
+},
+};
+
+})();
