@@ -17,8 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-for i in "$1"/*.mp3 "$1"/*.webm
-do
-  j=`basename "$i"`
-  aws s3 cp "$i" "$2/$j"
-done
+here=`dirname "$0"`
+export LUA_PATH="$here/?.lua;;"
+
+source_root=$1
+output_root=$2
+version_system=$3
+version_web=$4
+
+mkdir -p "$output_root/system/$version_system"
+
+cp "$source_root"/*.html "$source_root"/*.js* "$output_root"
+cp -R "$source_root/system"/* "$output_root/system/$version_system"
+
+lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$version_system/]])))" \
+  <"$source_root/game.html" \
+  >"$output_root/game.html"
+
+cp "$output_root/game.html" "$output_root/game-$version_web.html"
+
+lua -e 'io.write((io.read "a":gsub([[const mode = "develop"]], [[const mode = "release"]])))' \
+  <"$source_root/system/demeter-preferences.js" \
+  >"$output_root/system/$version_system/demeter-preferences.js"

@@ -29,6 +29,7 @@ targets = \
 	build/debug.txt \
 	system/demeter-scenario.js \
 	system/demeter-debug-scenario.js \
+	version.json \
 	game.html \
 	scenario/scenario.js
 
@@ -39,6 +40,8 @@ ifneq ($(wildcard build/debug.vpp),)
 targets += build/debug-out.vpp
 endif
 
+include version.mk
+
 #--------------------------------------------------------------------------
 
 all:: $(voicepeak_dic) $(targets)
@@ -48,6 +51,10 @@ clean::
 
 check:: all
 	./test.sh lua
+
+build::
+	rm -f -r build/$(version_web)
+	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)
 
 #--------------------------------------------------------------------------
 
@@ -75,6 +82,32 @@ clean_effect:
 
 #--------------------------------------------------------------------------
 
+deploy_dry_run::
+	./tool/deploy.sh --dryrun build/$(version_web) s3://vaporoid.com/sys
+
+deploy_execute::
+	./tool/deploy.sh "" build/$(version_web) s3://vaporoid.com/sys
+
+deploy_system_dry_run::
+	aws s3 sync --dryrun build/$(version_web)/system/$(version_system) s3://vaporoid.com/sys/system/$(version_system)
+
+deploy_system_execute::
+	aws s3 sync build/$(version_web)/system/$(version_system) s3://vaporoid.com/sys/system/$(version_system)
+
+deploy_music_dry_run::
+	./tool/deploy_music.sh --dryrun assets/music.txt build/music s3://vaporoid.com/sys/music/$(version_music)
+
+deploy_music_execute::
+	./tool/deploy_music.sh "" assets/music.txt build/music s3://vaporoid.com/sys/music/$(version_music)
+
+deploy_voice_dry_run::
+	aws s3 sync --dryrun --exclude '*.*' --include '*.mp3' --include '*.webm' build/voice s3://vaporoid.com/sys/voice/$(version_voice)
+
+deploy_voice_execute::
+	aws s3 sync --exclude '*.*' --include '*.mp3' --include '*.webm' build/voice s3://vaporoid.com/sys/voice/$(version_voice)
+
+#--------------------------------------------------------------------------
+
 $(voicepeak_dic): scenario/dic.json
 	cp -f '$@' '$@'.backup-`date '+%Y%m%d%H%M%S'` || :
 	cp -f $< '$@'
@@ -96,6 +129,9 @@ system/demeter-scenario.js: $(scenarios)
 
 system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
+
+version.json: versions
+	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js version.mk
 
 game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
 	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json $@

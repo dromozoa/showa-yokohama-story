@@ -151,12 +151,12 @@ ctx.game.visitedRevelation3 = true;
 };
 
 const paragraph323_when = async ($, ctx) => {
-// verse3.txt:657
+// verse3.txt:653
 if ($.genesis) { return "創世記"; }
 };
 
-// verse3.txt:755
-const paragraph340_enter = async ($, ctx) => {
+// verse3.txt:756
+const paragraph341_enter = async ($, ctx) => {
 ctx.game.visitedGospel = true;
   ctx.game.unlockPreview = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
@@ -164,15 +164,15 @@ ctx.game.visitedGospel = true;
   };
 };
 
-// verse3.txt:810
-const paragraph350_enter = async ($, ctx) => {
+// verse3.txt:811
+const paragraph351_enter = async ($, ctx) => {
 ctx.game.visitedGenesis = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
   };
 };
 
-const paragraph354_when = async ($, ctx) => {
+const paragraph355_when = async ($, ctx) => {
 // preview.txt:21
 if (ctx.game.father === "サム・スペード") { return "サム・スペード"; }
 // preview.txt:22
@@ -182,12 +182,12 @@ if (ctx.game.father === "マイク・ハマー") { return "マイク・ハマー
 };
 
 // preview.txt:26
-const paragraph354_enter = async ($, ctx) => {
+const paragraph355_enter = async ($, ctx) => {
 ctx.trophy("doe");
 };
 
 // preview.txt:122
-const paragraph373_enter = async ($, ctx) => {
+const paragraph374_enter = async ($, ctx) => {
 ctx.game.visitedSixtyNine = true;
 };
 

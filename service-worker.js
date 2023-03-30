@@ -18,7 +18,7 @@
 (() => {
 "use strict";
 
-addEventListener("install", async ev => {
+addEventListener("install", ev => {
   // activate状態に移行する。
   ev.waitUntil(skipWaiting());
 });
@@ -28,6 +28,45 @@ addEventListener("activate", ev => {
   ev.waitUntil(clients.claim());
 });
 
-addEventListener("fetch", ev => {});
+const regexPathnameDevelop = /^\/sys\/build\/(?:music|voice)/;
+const regexPathnameRelease = /^\/sys\/[^\/]+\//;
+const isCacheTarget = url => {
+  // 開発環境では暗黙にキャッシュするディレクトリをしぼる。
+  if (url.hostname.toLowerCase() === "localhost") {
+    return regexPathnameDevelop.test(url.pathname);
+  } else {
+    return regexPathnameRelease.test(url.pathname);
+  }
+};
+
+addEventListener("fetch", ev => {
+  ev.respondWith((async () => {
+    const cache = await caches.open("昭和横濱物語");
+    const cachedResponse = await cache.match(ev.request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    const response = await fetch(ev.request);
+    if (isCacheTarget(new URL(ev.request.url))) {
+      cache.put(ev.request, response.clone());
+    }
+    return response;
+  })());
+});
+
+addEventListener("message", async ev => {
+  const method = ev.data.method;
+  if (method === "getClients") {
+    ev.source.postMessage({
+      method: method,
+      messageId: ev.data.messageId,
+      body: (await clients.matchAll()).map(client => ({
+        id: client.id,
+        type: client.type,
+        url: client.url,
+      })),
+    });
+  }
+});
 
 })();
