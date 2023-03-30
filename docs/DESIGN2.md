@@ -289,9 +289,13 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 - [x] D.trace
 - [x] ヒストリをいじるときに?以降をはずすだけにする
-
-- [ ] 設定部分をif文で書いて、パラメーターだけ渡す。
+- [x] 設定部分をif文で書いて、パラメーターだけ渡す。
   - バージョン文字列とフォルダモードは自動生成したい（まちがえないように）
+- [x] デプロイの仕組みを改善する。
+
+- [ ] バージョンチェックセマンティクスを考える
+- [ ] ダウンロードがおそい
+  - [ ] ウォーミングアップしてみる？
 
 - [ ] iOSで音が出なくなる
   - resumeに失敗している？
@@ -317,7 +321,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] トロフィー獲得時に音とメッセージをどこかに出す
 - [ ] メッセージ送信をタイトルかホームページに作る
 - [ ] 先読みする？
-- [ ] デプロイの仕組みを改善する。
 - [ ] スクリプトを圧縮する。
 - [ ] アプリケーションインストールの方法をチュートリアルで
 - [ ] 通知の方法をチュートリアルで
@@ -329,7 +332,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [ ] エラー処理
   - [=] トランザクション
 
-- [ ] ダウンロードがおそい
 - [ ] 本州以外の島嶼ってどこが残ってるの
 - [ ] 生体認証装置「も」トルツメ？
 - [ ] こたえと応え
@@ -345,7 +347,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] バージョンチェックセマンティクスを考える
 - [ ] 世界→セカイ
 - [ ] 択べるようだのようだいらない
-- [ ] バージョンチェックセマンティクスを考える
 
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
