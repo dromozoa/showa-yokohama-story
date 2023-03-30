@@ -333,6 +333,13 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 ## タスク
 
+- [x] setTimeoutのパラメータ
+- [x] args→params?
+- [ ] 複数タブで開いている場合の検出にタイムアウトをつける
+
+- [ ] シナリオ
+  - [ ] 幾度も騙られなおした
+
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
   - [ ] 更新履歴を表示する

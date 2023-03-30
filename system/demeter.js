@@ -26,13 +26,13 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
-D.trace = (...args) => D.preferences.trace(...args);
+D.trace = (...params) => D.preferences.trace(...params);
 
 //-------------------------------------------------------------------------
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
+D.setTimeout = (delay, ...params) => new Promise(resolve => setTimeout(resolve, delay, ...params));
 
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
@@ -1470,31 +1470,31 @@ D.VoiceSound = class {
     this.onceLoadError = onLoadError;
   }
 
-  play(...args) {
+  play(...params) {
     if (this.onceLoadError && this.loadErrorMessage !== undefined) {
       this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
       this.onceLoadError = undefined;
       // 有効なサウンドIDを返さない。
       return;
     } else {
-      return this.sound.play(...args);
+      return this.sound.play(...params);
     }
   }
 
-  pause(...args) {
-    return this.sound.pause(...args);
+  pause(...params) {
+    return this.sound.pause(...params);
   }
 
-  stop(...args) {
-    return this.sound.stop(...args);
+  stop(...params) {
+    return this.sound.stop(...params);
   }
 
-  once(...args) {
-    return this.sound.once(...args);
+  once(...params) {
+    return this.sound.once(...params);
   }
 
-  volume(...args) {
-    return this.sound.volume(...args);
+  volume(...params) {
+    return this.sound.volume(...params);
   }
 };
 
