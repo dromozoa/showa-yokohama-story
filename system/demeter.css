@@ -1292,3 +1292,16 @@ div.demeter-text > div > span > div > span {
 }
 
 /*************************************************************************/
+
+.demeter-cache-background {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-width);
+}
+
+.demeter-cache-background1 { background-image: url(bg-portrait.png); }
+.demeter-cache-background2 { background-image: url(bg-landscape.png); }
+.demeter-cache-background3 { background-image: url(bg-portrait-kcode.png); }
+.demeter-cache-background4 { background-image: url(bg-landscape-kcode.png); }
+
+/*************************************************************************/
