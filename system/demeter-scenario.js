@@ -1487,7 +1487,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index: 250
 [{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[251]},[
 ["起動を確認。"],
-[["演算結節","コンピュート・ノード"],"を順次起動中。"],
+[["演算結節","コンピュート・ノード"],"を順次起動。"],
 ["生体認証装置、正常。"],
 ]],
 // index: 251
@@ -1819,7 +1819,7 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 // index: 310
 [{speaker:"demeter",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[311]},[
 ["空中巡洋艦と",["連結","リンク"],"成立。"],
-[["読取専用","ROM"],"構造物を転送中。"],
+[["読取専用","ROM"],"構造物転送開始。"],
 ]],
 // index: 311
 [{speaker:"priest",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[312]},[

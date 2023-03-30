@@ -326,6 +326,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] 世界→セカイ
   - [x] 択べるようだのようだいらない
   - [x] ボボボクハ
+  - [x] 中。
 
 - [x] 開発中のbuild/debugは除外
 - [x] 複数タブで開いている場合の検出
@@ -341,13 +342,17 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 ## タスク
 
+- [ ] GitHub Pagesをリダイレクトする
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
   - [ ] 更新履歴を表示する
   - [ ] iOSの注意書き
   - [ ] アプリケーションインストール
   - [ ] メッセージ送信をタイトルかホームページに作る
-- [ ] GitHub Pagesをリダイレクトする
+
+- [ ] ビルドの依存関係を再検討する。
+  - make cleanの必要をなくしたい。
+  - VOICEPEAKの操作をミスったときに検出したい
 
 ## タスク
 
