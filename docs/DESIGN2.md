@@ -344,6 +344,9 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 - [ ] スタート画面からの戻りのところで文字を消す
   - SAVE/LOADからの戻りといっしょ
+  - safari
+- [ ] キャッシュを消す
+- [ ] SAVE/LOAD段落を起点とするキャッシュ
 
 - [ ] GitHub Pagesをリダイレクトする
 - [ ] ホームページをつくる
