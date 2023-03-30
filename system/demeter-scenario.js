@@ -1882,116 +1882,122 @@ if(ctx.system.unionSetting === "ろうくみ")return 125;
 ["飛鳥を海岸線から逃せ。"],
 ]],
 // index: 322
-[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[323,341]},[
+[{speaker:"narrator",music:"diana23",place:"一般設計学研究所跡",background:"モノクローム",adjacencies:[323,342]},[
 ["退避は間に合わない。"],
 ["火箭が",["内燃機関","ディーゼルエンジン"],"をつらぬく。"],
 ["飛鳥が爆発する。"],
 ]],
 // index: 323
-[{speaker:"alice",when:async($,ctx)=>{
-if($.genesis)return 341;
+[{speaker:"narrator",when:async($,ctx)=>{
+if($.genesis)return 342;
 },music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[324]},[
+["仮称リヴァイアサンは、沈黙した。"],
+["語りえないものを騙るがゆえに、物語論兵器。"],
+["有限の文字が書きだした無限の言葉。"],
+]],
+// index: 324
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[325]},[
 ["世界は書きかわるのか。"],
 ["あるいは、すでに書きかわったのか。"],
 ]],
-// index: 324
-[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[325]},[
+// index: 325
+[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[326]},[
 ["えっと、書きかわりつつある、たぶん。"],
 ["ダヌー姐さんは、ちょっとだけまちがってた。"],
 ["構造が寄生するのは、生物の脳だけじゃない。"],
 ["たがいに依存して、三位一体計算が成立した。"],
 ]],
-// index: 325
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[326]},[
+// index: 326
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[327]},[
 ["だいじょうぶかな。"],
 ["円環構造になっちゃわないかな。"],
 ["否定神学とか。"],
 ["無限後退とか。"],
 ]],
-// index: 326
-[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[327]},[
+// index: 327
+[{speaker:"alice",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[328]},[
 ["それならば。"],
 ["それがそれならば。"],
 ["キミが撃て。その銃で。"],
 ["この世界の天井を","撃","ちやぶれ。"],
 ]],
-// index: 327
-[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[328]},[
+// index: 328
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[329]},[
 [["予言機械","オラクルマシン"],"から、したたりおちる言葉。"],
 ["無限のそのさき、予言値は拡散していく。"],
 [["永遠","えいえん"],"のそのさき、ボクたちは出逢いなおす。"],
 ]],
-// index: 328
-[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[329]},[
+// index: 329
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[330]},[
 ["これは手紙。"],
 ["これは郵便。"],
 ["これは",["物語","ナラティブ"],"。"],
 ]],
-// index: 329
-[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[330]},[
+// index: 330
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[331]},[
 ["一九八九","年一月七日午前六時三十三分。"],
 [["破局","カタストロフ"],"は、発生しなかった。"],
 ["昭和が、終わった。"],
 ]],
-// index: 330
-[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[331]},[
+// index: 331
+[{speaker:"narrator",music:"diana12",place:"いまではないいつか",background:"色づいたセカイ",adjacencies:[332]},[
 ["一九八九","年。"],
 ["二月、手塚治虫が死んだ。"],
 ["六月、美空ひばりが死んだ。"],
 ["十一月、",["槌","ハンマー"],"がベルリンの壁をたたきこわした。"],
 ]],
-// index: 331
-[{speaker:"narrator",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[332]},[
+// index: 332
+[{speaker:"narrator",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[333]},[
 ["元町の坂のうえ、メサイア会の高校は共学になった。"],
 ["文芸部の部室。"],
 ["窓際、透きとおるように白い肌の少女が、ふわりと振りむいて。カラコンをつけたボクなんだけど。"],
 ]],
-// index: 332
-[{speaker:"alice",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[333]},[
+// index: 333
+[{speaker:"alice",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[334]},[
 ["ネットニュースで","前世","の記憶をもつ","転生","戦士をさがした。"],
 ["ソウルネーム","気高き","天の女王さんから連絡が来た。"],
 ["会いにいこう。"],
 ]],
-// index: 333
-[{speaker:"narrator",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[334]},[
+// index: 334
+[{speaker:"narrator",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[335]},[
 ["灼けてる肌。白い髪。ガングロ。"],
 ]],
-// index: 334
-[{speaker:"danu",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[335]},[
+// index: 335
+[{speaker:"danu",music:"diana12",place:"文芸部部室",background:"色づいたセカイ",adjacencies:[336]},[
 ["気高き","天の女王だよ。"],
 ["よろー。"],
 ["これ中華街の肉まんね。"],
 ["食べながら話そ。"],
 ]],
-// index: 335
-[{speaker:"narrator",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[336]},[
+// index: 336
+[{speaker:"narrator",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[337]},[
 ["米軍",["住宅","ハウス"],"の",["金網","フェンス"],"を眺めながら、ボクたちは肉まんを食べる。"],
 ]],
-// index: 336
-[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[337]},[
+// index: 337
+[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[338]},[
 ["このセカイでは、本牧は返還されていない。"],
 ["だから、マイカル本牧は誕生しない。"],
 ["だから、イオン本牧になることもない。"],
 ]],
-// index: 337
-[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[338]},[
+// index: 338
+[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[339]},[
 ["ソ連は、まだ崩壊しなさそうだ。"],
 ["ルイセンコが重用されなかったせいかもしれない。"],
 ["このセカイでは、冷戦が終わっていない。"],
 ["このセカイでは、戦後がつづいている。"],
 ]],
-// index: 338
-[{speaker:"danu",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[339]},[
+// index: 339
+[{speaker:"danu",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[340]},[
 ["セカイっていうのは、",["PHS","ピッチ"],"の電波が届く場所なんだって、漠然と思っていた。"],
 ]],
-// index: 339
-[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[340]},[
+// index: 340
+[{speaker:"alice",music:"diana12",place:"本牧地区",background:"色づいたセカイ",adjacencies:[341]},[
 ["今回もアリスと地獄につきあってもらう。"],
 ["終わらせよう。"],
 ["今度は、この国の。"],
 ["——戦後を。"],
 ]],
-// index: 340
+// index: 341
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedGospel = true;
   ctx.game.unlockPreview = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
@@ -2000,56 +2006,56 @@ if($.genesis)return 341;
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
 ["了。"],
 ]],
-// index: 341
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[342]},[
+// index: 342
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[343]},[
 ["仮称リヴァイアサンは、沈黙した。"],
 ["関東に集結した巨大群体は、動きを止めた。"],
 ]],
-// index: 342
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[343]},[
+// index: 343
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[344]},[
 ["ところでさ。"],
 ["グライダー",["銃","ガン"],"が",["長命者","メトセラ"],"を撃つんなら。"],
 ["アタシたちは、どうなるのかな。"],
 ]],
-// index: 343
-[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[344]},[
+// index: 344
+[{speaker:"demeter",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[345]},[
 ["生体認証装置に、人類の魔人は、血をささげた。"],
 ]],
-// index: 344
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[345]},[
+// index: 345
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[346]},[
 [["無原罪","シンレス"],"の人類の血。"],
 [["配置","コンフィギュレーション"],"に埋めこまれた、それは感染するのかな。"],
 ]],
-// index: 345
-[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[346]},[
+// index: 346
+[{speaker:"narrator",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[347]},[
 ["それは感染する。"],
 ["人類は変容した。"],
 ["人類は、緩やかに、人類に変容した。"],
 ["人類は、遡及的に、人類に変容した。"],
 ]],
-// index: 346
-[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[347]},[
+// index: 347
+[{speaker:"danu",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[348]},[
 ["宗教者が困りそう。"],
 ]],
-// index: 347
-[{speaker:"priest",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[348]},[
+// index: 348
+[{speaker:"priest",music:"diana12",place:"一般設計学研究所跡",background:"色づいたセカイ",adjacencies:[349]},[
 ["困りはしないぞ。"],
 ["メシア教はそんなに甘い宗教ではない。"],
 ["他の宗教のことは知らんが、な。"],
 ]],
-// index: 348
-[{speaker:"narrator",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[349]},[
+// index: 349
+[{speaker:"narrator",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[350]},[
 ["人類っぽいものは、不老でなくなった。"],
 ["人類と人類っぽいものは、増殖して、地に満ちたり、海に満ちたりした。"],
 [["屍者","ゾンビ"],"はそこにたたずみ、じっと哲学している。"],
 ]],
-// index: 349
-[{speaker:"narrator",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[350]},[
+// index: 350
+[{speaker:"narrator",music:"diana12",place:"地球",background:"色づいたセカイ",adjacencies:[351]},[
 ["空を飛べるようにはならなかったけれど、宇宙で生存可能な人類っぽいものは産まれた。"],
 ["いつしか、昭和は終わっていた。"],
 ["新しい年号が制定されたかどうか、ボクは知らない。"],
 ]],
-// index: 350
+// index: 351
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedGenesis = true;
   if (ctx.game.visitedRevelation2 && ctx.game.visitedRevelation3 && ctx.game.visitedGospel && ctx.game.visitedGenesis) {
     ctx.trophy("ends");
@@ -2057,235 +2063,235 @@ if($.genesis)return 341;
 ["昭和横濱物語。アリスの",["創世記","ジェネシス"],"。"],
 ["了。"],
 ]],
-// index: 351
-[{speaker:"narrator",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[352]},[
+// index: 352
+[{speaker:"narrator",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[353]},[
 ["文芸部の部室。"],
 ["壊れかけの黒いラジオから、頭脳警察が流れている。"],
 ["都市地図が広げられた",["卓子","テーブル"],"を囲む少女たち。"],
 ]],
-// index: 352
-[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[353]},[
+// index: 353
+[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[354]},[
 ["ねえ、アリス。"],
 ["パパがいたってことはさ。"],
 ["アリスには、ママもいたわけだよね。"],
 ]],
-// index: 353
-[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[354,357,356,358]},[
+// index: 354
+[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[355,358,357,359]},[
 ["このセカイが道理をわきまえているならば。"],
 ["そんなことは、期待するべくもないが。"],
 ]],
-// index: 354
+// index: 355
 [{speaker:"danu",when:async($,ctx)=>{
-if(ctx.game.father === "サム・スペード")return 357;
-if(ctx.game.father === "フィリップ・マーロウ")return 356;
-if(ctx.game.father === "マイク・ハマー")return 358;
-},enter:async($,ctx)=>{ctx.trophy("doe");},music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[355]},[
+if(ctx.game.father === "サム・スペード")return 358;
+if(ctx.game.father === "フィリップ・マーロウ")return 357;
+if(ctx.game.father === "マイク・ハマー")return 359;
+},enter:async($,ctx)=>{ctx.trophy("doe");},music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[356]},[
 ["ジョン・ドゥ","と","ジェーン・ドゥ","から産まれてしまった、名づけられなかった子供たちがアタシたちだとしたら。"],
 ]],
-// index: 355
-[{speaker:"alice",jump:364,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[364]},[
+// index: 356
+[{speaker:"alice",jump:365,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[365]},[
 ["天照","機関を出奔した人造魔人。"],
 ["量産型天皇霊を","降ろした","十三人の聖女の最後のひとり。"],
 [["暴力の聖女","ゲバルト・ローザ"],"と",["字名","あざな"],"された女。"],
 ["かつてボクの母だった人間だ。"],
 ]],
-// index: 356
-[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[359]},[
+// index: 357
+[{speaker:"demeter",jump:360,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[360]},[
 ["先輩のお父さんって、フィリップ・マーロウを名乗ってたんでしたっけ。"],
 ["お母さんも、ダサい",["偽名","ソウルネーム"],"を持ってたんですか。"],
 ]],
-// index: 357
-[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[359]},[
+// index: 358
+[{speaker:"demeter",jump:360,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[360]},[
 ["先輩のお父さんって、サム・スペードを名乗ってたんでしたっけ。"],
 ["お母さんも、趣味の悪い",["偽名","ソウルネーム"],"を持ってたんですか。"],
 ]],
-// index: 358
-[{speaker:"demeter",jump:359,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[359]},[
+// index: 359
+[{speaker:"demeter",jump:360,music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[360]},[
 ["先輩のお父さんって、マイク・ハマーを名乗ってたんでしたっけ。いや、あれれ。","濱","マイクのほうだったかな。"],
 ["お母さんも、野暮ったい",["偽名","ソウルネーム"],"を持ってたんですか。"],
 ]],
-// index: 359
-[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[360]},[
+// index: 360
+[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[361]},[
 ["いってくれるじゃないか。"],
 ["やれやれ。ソウルネーム——",["暴力の聖女","ゲバルト・ローザ"],"。"],
 ["品性のなさにかけては、父も母もどっこいどっこいだな。"],
 ["破れ鍋に綴じ","蓋","だったのかもしれないが。"],
 ]],
-// index: 360
-[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[361]},[
+// index: 361
+[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[362]},[
 ["屍都の女王も、たいがい。"],
 ]],
-// index: 361
-[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[362]},[
+// index: 362
+[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[363]},[
 ["ボ、ボ、ボク","は、自ら名乗ってるわけじゃないからセーフ。"],
 ]],
-// index: 362
-[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[363]},[
+// index: 363
+[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[364]},[
 ["アタシってば、自称なんだけど。"],
 ]],
-// index: 363
-[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[364]},[
+// index: 364
+[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[365]},[
 ["姐さんはいいんです。"],
 ]],
-// index: 364
-[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[365]},[
+// index: 365
+[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[366]},[
 ["そんなことより、",["仕事","ビズ"],"の話だ。"],
 ]],
-// index: 365
-[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[366]},[
+// index: 366
+[{speaker:"danu",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[367]},[
 ["ねぇ、あのコ、泣いてた。助けてって。"],
 ["友達の友達の友達なんだけど。"],
 ["両親が偽メシア教カルトらしくてさ。"],
 ]],
-// index: 366
-[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[367]},[
+// index: 367
+[{speaker:"demeter",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[368]},[
 ["最近、",["アシッド","LSD"],"ばらまいてる、あ",["奴","いつ"],"ら","。"],
 ["各方面から絶賛睨まれ発生中。"],
 ["武装はせいぜい",["黒星","ヘイシン"],"くらい。"],
 ]],
-// index: 367
-[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[368]},[
+// index: 368
+[{speaker:"alice",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[369]},[
 ["そのコを","助","ける。"],
 ["しかるのち、撃滅する。"],
 ["いつもどおり、最大の火力をもって。"],
 ["いつもどおりの単純な",["仕事","ラン"],"だ。"],
 ]],
-// index: 368
-[{speaker:"narrator",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[369]},[
+// index: 369
+[{speaker:"narrator",music:"diana21",place:"文芸部部室",background:"モノクローム",adjacencies:[370]},[
 ["少女たちが去った部室。"],
 ["窓からさしこむ、あえやかな月の光。"],
 ["ラジオがささやく",["雑音","ノイズ"],"のなか、遠く、その声は聴こえた。"],
 ]],
-// index: 369
-[{speaker:"rosa",start:"preview",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[370]},[
+// index: 370
+[{speaker:"rosa",start:"preview",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[371]},[
 ["こちらは、自由ラジオ横濱",["前線","フロント"],"。"],
 ["ライシャワーが死んだセカイ線、バリケードの裡から、あの山岳",["根拠地","ベース"],"で産まれてしまった子供たちへ。"],
 ["聴こえてるかな。"],
 ]],
-// index: 370
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[371]},[
+// index: 371
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[372]},[
 ["城市","が",["叢林","ジャングル"],"を","包圍","する時。"],
 ["城市","もまた",["叢林","ジャングル"],"に","包圍","されてる。"],
 ["聴こえてるんでしょ。"],
 ]],
-// index: 371
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[372]},[
+// index: 372
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[373]},[
 ["子供たち。聴こえているならば。"],
 ["母が見つけられなかった、この国の戦後にさよならを告げる方法を見つけておくれ。"],
 [["さよなら","アスタ・ルエゴ"],"、",["ヤルタ","Y"],"・",["ポツダム","P"],["体制","レジーム"],"。"],
 ]],
-// index: 372
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[373]},[
+// index: 373
+[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[374]},[
 ["それは、父殺しの物語。"],
 ["それは、母殺しの物語。"],
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
-// index: 373
+// index: 374
 [{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[]},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 [["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],
-// index: 374
+// index: 375
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["タイトルに戻る？"],
 ]],
-// index: 375
+// index: 376
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["システム設定とコンポーネント設定を、工場出荷状態に戻す。"],
 ["本当に設定を戻していい？"],
 ]],
-// index: 376
+// index: 377
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["全セーブデータを削除して、タイトルに戻る。"],
 ["実績データと既読データは、そのまま。"],
 ["本当にセーブデータを消していい？"],
 ]],
-// index: 377
+// index: 378
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["頭出し用の信号が記録されている。"],
 ["このテープでは既読の","節","を択べる。"],
 ["選択する？"],
 ]],
-// index: 378
+// index: 379
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["このテープにはチュートリアルが記録されている。"],
 ["チュートリアルをはじめる？"],
 ]],
-// index: 379
+// index: 380
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["この",["因果","テープ"],"は、捻れて捩れて絡まりあっている。"],
 ["この",["運命","テープ"],"は、再生できない。"],
 ["今のところは。"],
 ]],
-// index: 380
+// index: 381
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["年代物のテープが修復された。"],
 ["正常に読めるかは未知数。"],
 ["再生してみる？"],
 ]],
-// index: 381
+// index: 382
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index: 382
+// index: 383
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index: 383
+// index: 384
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープの",["読出","ロード"],"準備完了。"],
 ["再生する？"],
 ]],
-// index: 384
+// index: 385
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["このテープはからっぽだ。"],
 ["なにも記録されていない。"],
 ]],
-// index: 385
+// index: 386
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["一巻","めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index: 386
+// index: 387
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["二巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index: 387
+// index: 388
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["三巻めのテープへの",["書込","セーブ"],"準備完了。"],
 ["保存する？"],
 ]],
-// index: 388
+// index: 389
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["いまではない、いつか。"],
 ["絡まりあった因果がほどけた。"],
 ["ここではない、どこか。"],
 ["捻れた運命がときはなたれた。"],
 ]],
-// index: 389
+// index: 390
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"を検出。"],
 ["反映のため、システムは",["再読込","リロード"],"を要請。"],
 ["更新していい？"],
 ]],
-// index: 390
+// index: 391
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"を検出。"],
 ["反映のため、システムは",["再読込","リロード"],"を要請。"],
 ["タイトルに戻って、更新していい？"],
 ]],
-// index: 391
+// index: 392
 [{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
 ["物語の並列起動を検出。"],
 ["データの整合性をたもてなくなる可能性あり。"],
 ["ただひとつの起動を推奨。"],
 ]],
 ],
-total:373,
-starts:[1,2,3,4,6,5,351,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391],
+total:374,
+starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392],
 labels:{
 "ニューゲーム":1,
 "おはよう":2,
@@ -2325,33 +2331,33 @@ labels:{
 "グライダー銃":297,
 "択ばない":298,
 "第三節黙示録了":308,
-"創世記":341,
-"プレビュー":351,
-"フィリップ・マーロウ":356,
-"サム・スペード":357,
-"マイク・ハマー":358,
-"ゲバルト・ローザ":359,
-"ゲバルト・ローザ終":364,
+"創世記":342,
+"プレビュー":352,
+"フィリップ・マーロウ":357,
+"サム・スペード":358,
+"マイク・ハマー":359,
+"ゲバルト・ローザ":360,
+"ゲバルト・ローザ終":365,
 },
 dialogs:{
-"system-back-to-title":374,
-"system-reset-system":375,
-"system-reset-save":376,
-"load-tape-select":377,
-"load-tape-tutorial":378,
-"load-tape-broken":379,
-"load-tape-preview":380,
-"load-tape-save1":381,
-"load-tape-save2":382,
-"load-tape-save3":383,
-"load-tape-empty":384,
-"save-tape-save1":385,
-"save-tape-save2":386,
-"save-tape-save3":387,
-"credits-tape-preview":388,
-"system-update-title":389,
-"system-update":390,
-"system-multiple":391,
+"system-back-to-title":375,
+"system-reset-system":376,
+"system-reset-save":377,
+"load-tape-select":378,
+"load-tape-tutorial":379,
+"load-tape-broken":380,
+"load-tape-preview":381,
+"load-tape-save1":382,
+"load-tape-save2":383,
+"load-tape-save3":384,
+"load-tape-empty":385,
+"save-tape-save1":386,
+"save-tape-save2":387,
+"save-tape-save3":388,
+"credits-tape-preview":389,
+"system-update-title":390,
+"system-update":391,
+"system-multiple":392,
 },
 };
 
