@@ -342,6 +342,9 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 ## タスク
 
+- [ ] スタート画面からの戻りのところで文字を消す
+  - SAVE/LOADからの戻りといっしょ
+
 - [ ] GitHub Pagesをリダイレクトする
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
