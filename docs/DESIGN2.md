@@ -271,6 +271,20 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [x] 音声ファイルのダウンロードに失敗した場合のパターン
   - [x] 切断する
 
+- [x] AWSCLIv2を更新する。
+- [x] vaporoid.comの既存コンテンツを更新する。
+  - macでやるとUnicode正規化で死ぬので注意
+- [x] cloudfrontでSSLの設定をする
+- [x] /sys/index.htmlとgame.htmlはキャッシュしない
+  - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
+- [x] /./という文字列をserialで置き換える
+- [x] 圧縮のテスト
+- [x] キャッシュのテスト
+  - demeter.jsはかえなくていいかな。
+- [x] バージョンチェック
+- [x] cache-control: no-storeを自前で設定する。
+- [x] 音声のアップロードが遅いからsyncにしちゃう
+
 ## タスク
 
 - [x] D.trace
@@ -332,4 +346,9 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] 世界→セカイ
 - [ ] 択べるようだのようだいらない
 - [ ] バージョンチェックセマンティクスを考える
+
+- [ ] ホームページをつくる
+  - [ ] 更新履歴を表示する
+  - [ ] iOSの注意書き
+- [ ] GitHub Pagesをリダイレクトする
 
