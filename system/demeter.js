@@ -1739,6 +1739,30 @@ const soundEffectAlert = () => {
 
 //-------------------------------------------------------------------------
 
+D.compareVersion = version => {
+  if (typeof version !== "object" || typeof version.web !== "string") {
+    throw new Error("invalid version object");
+  }
+
+  if (version.web === D.preferences.version.web) {
+    return;
+  }
+
+  if (version.system && version.system < D.preferences.version.system) {
+    return;
+  }
+
+  if (version.music && version.music < D.preferences.version.music) {
+    return;
+  }
+
+  if (version.voice && version.voice < D.preferences.version.voice) {
+    return;
+  }
+
+  return version.web;
+};
+
 D.UpdateChecker = class {
   constructor(timeout) {
     this.timeout = timeout;
@@ -1758,12 +1782,10 @@ D.UpdateChecker = class {
       try {
         const response = await fetch("version.json", { cache: "no-store" });
         const version = await response.json();
-        if (typeof version.web !== "string") {
-          throw new Error("unexpected version");
-        }
+        const result = D.compareVersion(version);
         logging.debug("更新チェック: 成功");
-        if (D.preferences.version.web !== version.web) {
-          logging.notice("更新検出: " + D.preferences.version.web + "→" + version.web);
+        if (result) {
+          logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
           status = "detected";
         }
       } catch (e) {
