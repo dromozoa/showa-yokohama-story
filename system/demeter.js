@@ -2138,17 +2138,15 @@ const updateTrophy = async key => {
       logging.notice("実績解除: " + trophy.name);
       logging.info(trophy.description);
 
-      const T1 = 500;
-      const T2 = 1000;
-      const T3 = 500;
+      const T1 = 1000;
+      const T2 = 2000;
+      const T3 = 1000;
 
       trophyAnimationQueue.push(async () => {
         soundEffectTrophy();
+        [...document.querySelectorAll(".demeter-notice-trophy-name")].forEach(node => node.textContent = trophy.name);
         const nodes = [...document.querySelectorAll(".demeter-notice")];
-        nodes.forEach(node => {
-          node.style.opacity = "0";
-          node.textContent = trophy.name;
-        });
+        nodes.forEach(node => node.style.opacity = "0");
         await new D.OpacityAnimation(nodes, 0, 1, T1).start();
         await D.setTimeout(T2);
         await new D.OpacityAnimation(nodes, 1, 0, T3).start();
