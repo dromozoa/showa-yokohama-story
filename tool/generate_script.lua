@@ -168,6 +168,7 @@ for i, paragraph in ipairs(scenario) do
 end
 handle:write "],\n"
 handle:write("total:", total, ",\n")
+handle:write("starts:[", table.concat(starts, ","), "],\n")
 
 handle:write "labels:{\n"
 for _, label in ipairs(scenario.labels) do

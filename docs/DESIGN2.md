@@ -317,6 +317,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] URLは適当でよい？
   - [x] 背景画像のキャッシュを改善する。
   - [ ] グラフにしたがってボイスをキャッシュする。
+  - [=] キャッシュの削除
 
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
