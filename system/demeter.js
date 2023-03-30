@@ -1718,6 +1718,12 @@ const soundEffectAlert = () => {
   }
 };
 
+const soundEffectTrophy = () => {
+  if (soundEffect) {
+    soundEffect.start("trophy");
+  }
+};
+
 //-------------------------------------------------------------------------
 
 D.compareVersion = version => {
@@ -2088,9 +2094,10 @@ const updateTrophy = async key => {
     await putTrophiesState();
     const trophy = D.trophies.find(trophy => trophy.key === key);
     if (trophy) {
+      updateTrophies();;
+      soundEffectTrophy();
       logging.notice("実績解除: " + trophy.name);
       logging.info(trophy.description);
-      updateTrophies();;
     }
   }
 };
