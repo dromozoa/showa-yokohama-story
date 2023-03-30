@@ -308,7 +308,6 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] トロフィー獲得時に音とメッセージをどこかに出す
   - [ ] タイトルだったらバージョンを一時的に非表示にする
   - [ ] 3Dでくるっとでてくる？
-- [ ] メッセージ送信をタイトルかホームページに作る
 - [ ] 先読みする？
 
 - [ ] ホームページをつくる
@@ -316,6 +315,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [ ] 更新履歴を表示する
   - [ ] iOSの注意書き
   - [ ] アプリケーションインストール
+  - [ ] メッセージ送信をタイトルかホームページに作る
 - [ ] GitHub Pagesをリダイレクトする
 
 - [ ] シナリオ
