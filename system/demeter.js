@@ -2233,26 +2233,34 @@ const unlockAudio = async () => {
   logging.info("オーディオロック: 解除");
 
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-    const message = await new Promise((resolve, reject) => {
-      const onMessage = ev => {
-        navigator.serviceWorker.removeEventListener("message", onMessage);
-        resolve(ev.data);
-      };
-      navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
-      navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
-    });
+    const message = await Promise.any([
+      new Promise(resolve => {
+        const onMessage = ev => {
+          navigator.serviceWorker.removeEventListener("message", onMessage);
+          resolve(ev.data);
+        };
+        navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
+        navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
+      }),
+      D.setTimeout(100),
+    ]);
 
-    message.body.forEach(client => {
-      logging.info("実行文脈識別子: " + client.id);
-    });
+    if (message) {
+      logging.info("サービスワーカ通信: 成功");
+      message.body.forEach(client => {
+        logging.info("実行文脈識別子: " + client.id);
+      });
 
-    if (message.body.length > 1) {
-      soundEffectAlert();
-      document.querySelector(".demeter-title-text").style.display = "none";
-      hideTitleChoices();
-      await dialog("system-multiple");
-      document.querySelector(".demeter-title-text").style.display = "block";
-      await showTitleChoices();
+      if (message.body.length > 1) {
+        soundEffectAlert();
+        document.querySelector(".demeter-title-text").style.display = "none";
+        hideTitleChoices();
+        await dialog("system-multiple");
+        document.querySelector(".demeter-title-text").style.display = "block";
+        await showTitleChoices();
+      }
+    } else {
+      logging.error("サービスワーカ通信: 失敗", new Error("timed out"));
     }
   }
 
