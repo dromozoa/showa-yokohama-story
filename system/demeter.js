@@ -1113,11 +1113,6 @@ D.MusicPlayer = class {
       this.sound.volume(volume);
     }
   }
-
-  cache() {
-    const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-    D.cache(...Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext));
-  }
 };
 
 //-------------------------------------------------------------------------
@@ -1973,12 +1968,26 @@ const cacheImpl = async (sourceUrls) => {
   return targetUrls;
 };
 
-D.cache = (...sourceUrls) => {
+D.cache = sourceUrls => {
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
     D.trace("addCache", sourceUrls, e);
   });
+};
+
+const getBackgroundImageUrls = () => {
+  return [ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg");
+};
+
+const getMusicUrls = () => {
+  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
+  return Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext);
+};
+
+const getVoiceUrls = paragraphIndices => {
+  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
+  return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
 };
 
 //-------------------------------------------------------------------------
@@ -3322,6 +3331,9 @@ const next = async () => {
     if (playState !== "skip") {
       const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
       voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+
+      // 次に到達する可能性がある段落のボイスをキャッシュする。
+      D.cache(getVoiceUrls(paragraph[0].adjacencies));
     }
   }
 
@@ -3703,10 +3715,10 @@ D.onDOMContentLoaded = async () => {
   history.replaceState(null, "", document.location.pathname);
 
   // 背景画像をキャッシュ
-  D.cache(...[ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg"));
+  D.cache(getBackgroundImageUrls());
 
   // 音楽をキャッシュ
-  musicPlayer.cache();
+  D.cache(getMusicUrls());
 
   while (true) {
     await D.requestAnimationFrame();
