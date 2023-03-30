@@ -1113,6 +1113,12 @@ D.MusicPlayer = class {
       this.sound.volume(volume);
     }
   }
+
+  cache() {
+    const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
+    const urls = Object.keys(musicNames).map(key => new URL(D.preferences.musicDir + "/sessions_" + key + ext, document.location.href).toString());
+    cache(...urls);
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -1950,6 +1956,29 @@ let waitForDialog;
 let waitForCredits;
 
 let updateChecker;
+
+//-------------------------------------------------------------------------
+
+const cacheImpl = async (sourceUrls) => {
+  const cache = await caches.open("昭和横濱物語");
+  const targetUrls = [];
+  for (let i = 0; i < sourceUrls.length; ++i) {
+    const url = sourceUrls[i];
+    if (!await cache.match(url)) {
+      targetUrls.push(url);
+    }
+  }
+  await cache.addAll(targetUrls);
+  return targetUrls;
+};
+
+const cache = (...sourceUrls) => {
+  cacheImpl(sourceUrls).then(targetUrls => {
+    D.trace("addCache", sourceUrls, targetUrls);
+  }).catch(e => {
+    D.trace("addCache", sourceUrls, e);
+  });
+};
 
 //-------------------------------------------------------------------------
 
@@ -3114,6 +3143,8 @@ const initializeAudio = () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
+  // debug
+  D.musicPlayer = musicPlayer;
   musicPlayer.start("vi03");
   logging.info("オーディオ初期化: 完了");
 };

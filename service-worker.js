@@ -18,7 +18,7 @@
 (() => {
 "use strict";
 
-addEventListener("install", async ev => {
+addEventListener("install", ev => {
   // activate状態に移行する。
   ev.waitUntil(skipWaiting());
 });
@@ -28,6 +28,23 @@ addEventListener("activate", ev => {
   ev.waitUntil(clients.claim());
 });
 
-addEventListener("fetch", ev => {});
+const regexHostname = /^(?:localhost|vaporoid\.com)$/i;
+const regexPathname = /^\/sys\/[^\/]+\//;
+const isCacheTarget = url => regexHostname.test(url.hostname) && regexPathname.test(url.pathname);
+
+addEventListener("fetch", ev => {
+  ev.respondWith((async () => {
+    const cache = await caches.open("昭和横濱物語");
+    const cachedResponse = await cache.match(ev.request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    const response = await fetch(ev.request);
+    if (isCacheTarget(new URL(ev.request.url))) {
+      cache.put(ev.request, response.clone());
+    }
+    return response;
+  })());
+});
 
 })();
