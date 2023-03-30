@@ -331,11 +331,11 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [x] 複数タブで開いている場合の検出
   - ServiceWorkerでいけないかな？
 
-## タスク
-
 - [x] setTimeoutのパラメータ
 - [x] args→params?
-- [ ] 複数タブで開いている場合の検出にタイムアウトをつける
+- [x] 複数タブで開いている場合の検出にタイムアウトをつける
+
+## タスク
 
 - [ ] シナリオ
   - [ ] 幾度も騙られなおした
