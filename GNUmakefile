@@ -71,7 +71,10 @@ convert_debug:
 	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
-	rm -fr build/voice-out/*.wav build/voice build/debug
+	rm -fr build/voice-out/*.wav build/voice
+
+clean_debug::
+	rm -fr build/voice-out/*.wav build/debug
 
 convert_effect:
 	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
