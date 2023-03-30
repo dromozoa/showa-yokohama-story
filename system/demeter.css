@@ -41,8 +41,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --background-image: url(bg-portrait.png);
-    --background-image-kcode: url(bg-portrait-kcode.png);
+    --background-image: url(bg-portrait.jpg);
+    --background-image-kcode: url(bg-portrait-kcode.jpg);
   }
 }
 
@@ -50,8 +50,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --background-image: url(bg-landscape.png);
-    --background-image-kcode: url(bg-landscape-kcode.png);
+    --background-image: url(bg-landscape.jpg);
+    --background-image-kcode: url(bg-landscape-kcode.jpg);
   }
 }
 
@@ -1299,9 +1299,9 @@ div.demeter-text > div > span > div > span {
   height: var(--screen-width);
 }
 
-.demeter-cache-background1 { background-image: url(bg-portrait.png); }
-.demeter-cache-background2 { background-image: url(bg-landscape.png); }
-.demeter-cache-background3 { background-image: url(bg-portrait-kcode.png); }
-.demeter-cache-background4 { background-image: url(bg-landscape-kcode.png); }
+.demeter-cache-background1 { background-image: url(bg-portrait.jpg); }
+.demeter-cache-background2 { background-image: url(bg-landscape.jpg); }
+.demeter-cache-background3 { background-image: url(bg-portrait-kcode.jpg); }
+.demeter-cache-background4 { background-image: url(bg-landscape-kcode.jpg); }
 
 /*************************************************************************/

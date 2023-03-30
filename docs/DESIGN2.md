@@ -301,8 +301,9 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [x] iOSで背景の色がかわらない？
   - [x] 背景の仕組みを変える
   - [x] filterのアニメーションができなかったのでトランジションに変更
-
-- [ ] 背景の画像のロードが遅い
+- [x] 背景の画像のロードが遅い
+  - [x] キャッシュ
+  - [x] JPEGにする
 
 - [ ] トロフィー獲得時に音とメッセージをどこかに出す
   - [ ] タイトルだったらバージョンを一時的に非表示にする
