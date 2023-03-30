@@ -28,9 +28,16 @@ addEventListener("activate", ev => {
   ev.waitUntil(clients.claim());
 });
 
-const regexHostname = /^(?:localhost|vaporoid\.com)$/i;
-const regexPathname = /^\/sys\/[^\/]+\//;
-const isCacheTarget = url => regexHostname.test(url.hostname) && regexPathname.test(url.pathname);
+const regexPathnameDevelop = /^\/sys\/build\//;
+const regexPathnameRelease = /^\/sys\/[^\/]+\//;
+const isCacheTarget = url => {
+  // 開発環境ではsystemディレクトリを暗黙にキャッシュしない。
+  if (url.hostname.toLowerCase() === "localhost") {
+    return regexPathnameDevelop.test(url.pathname);
+  } else {
+    return regexPathnameRelease.test(url.pathname);
+  }
+};
 
 addEventListener("fetch", ev => {
   ev.respondWith((async () => {

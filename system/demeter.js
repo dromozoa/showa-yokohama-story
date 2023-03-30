@@ -1116,8 +1116,7 @@ D.MusicPlayer = class {
 
   cache() {
     const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-    const urls = Object.keys(musicNames).map(key => new URL(D.preferences.musicDir + "/sessions_" + key + ext, document.location.href).toString());
-    cache(...urls);
+    D.cache(...Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext));
   }
 };
 
@@ -1679,7 +1678,7 @@ D.BackgroundTransition = class {
 
 D.SoundEffect = class {
   constructor(volume) {
-    const basename = D.preferences.effectDir + "/effect";
+    const basename = D.preferences.systemDir + "/effect";
     this.volume = volume;
     this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
@@ -1968,11 +1967,13 @@ const cacheImpl = async (sourceUrls) => {
       targetUrls.push(url);
     }
   }
-  await cache.addAll(targetUrls);
+  if (targetUrls.length > 0) {
+    await cache.addAll(targetUrls);
+  }
   return targetUrls;
 };
 
-const cache = (...sourceUrls) => {
+D.cache = (...sourceUrls) => {
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -3143,8 +3144,6 @@ const initializeAudio = () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
   musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
-  // debug
-  D.musicPlayer = musicPlayer;
   musicPlayer.start("vi03");
   logging.info("オーディオ初期化: 完了");
 };
@@ -3702,6 +3701,12 @@ D.onDOMContentLoaded = async () => {
 
   // ファイル名は変えない
   history.replaceState(null, "", document.location.pathname);
+
+  // 背景画像をキャッシュ
+  D.cache(...[ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg"));
+
+  // 音楽をキャッシュ
+  musicPlayer.cache();
 
   while (true) {
     await D.requestAnimationFrame();

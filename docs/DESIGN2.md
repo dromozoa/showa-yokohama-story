@@ -314,7 +314,9 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] 先読みする？
   - [=] ServiceWorkerにリクエストを送る。
   - [x] UIスレッドでキャッシュすればよかった。
-  - [ ] 背景画像のキャッシュを改善する。
+  - [x] URLは適当でよい？
+  - [x] 背景画像のキャッシュを改善する。
+  - [ ] グラフにしたがってボイスをキャッシュする。
 
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。

@@ -29,17 +29,17 @@ const version = { web: "b5", system: 3, music: 1, voice: 1 };
 if (mode === "develop") {
   D.preferences = {
     version: version,
+    systemDir: "system",
     musicDir: "build/music",
     voiceDir: "build/voice",
-    effectDir: "system",
     trace: (...args) => console.log(...args),
   };
 } else {
   D.preferences = {
     version: version,
+    systemDir: "/sys/system/" + version.system,
     musicDir: "/sys/music/" + version.music,
     voiceDir: "/sys/voice/" + version.voice,
-    effectDir: "/sys/system/" + version.system,
     trace: () => {},
   };
 }
