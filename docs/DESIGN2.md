@@ -348,6 +348,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] バージョンチェックセマンティクスを考える
 
 - [ ] ホームページをつくる
+  - [ ] faviconを設定する。
   - [ ] 更新履歴を表示する
   - [ ] iOSの注意書き
 - [ ] GitHub Pagesをリダイレクトする
