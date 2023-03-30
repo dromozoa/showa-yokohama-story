@@ -1649,41 +1649,22 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
-D.SaturateFilterAnimation = class {
+D.BackgroundTransition = class {
   constructor(nodes) {
     this.nodes = nodes;
     this.key = "モノクローム";
-    this.value = 0;
   }
 
-  fade(key, duration) {
-    this.key = key;
-    this.duration = duration;
-
-    this.startTime = performance.now();
-    this.begin = this.value;
-    if (key === "モノクローム") {
-      this.end = 0;
-    } else {
-      this.end = 1;
-    }
-  }
-
-  update() {
-    if (!this.startTime) {
+  fade(key) {
+    if (this.key === key) {
       return;
     }
 
-    const now = performance.now();
-    const x = Math.min((now - this.startTime) / this.duration, 1);
-    const y = x * (2 - x)
-    const z = this.begin + (this.end - this.begin) * y;
-    const filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
-    this.nodes.forEach(node => node.style.filter = filter);
-
-    this.value = z;
-    if (x === 1) {
-      this.startTime = undefined;
+    this.key = key;
+    if (this.key === "モノクローム") {
+      this.nodes.forEach(node => node.classList.remove("demeter-saturate"));
+    } else {
+      this.nodes.forEach(node => node.classList.add("demeter-saturate"));
     }
   }
 };
@@ -1935,7 +1916,7 @@ let screenNamePrev;
 let screenName;
 let systemUi;
 
-let backgroundAnimation;
+let backgroundTransition;
 let iconAnimation;
 let musicPlayer;
 let soundEffect;
@@ -2588,7 +2569,7 @@ const enterTitleScreen = async () => {
   } else {
     musicPlayer.fade("vi03");
     place = undefined;
-    backgroundAnimation.fade("モノクローム", 2000);
+    backgroundTransition.fade("モノクローム");
     await showTitleChoices();
 
     if (updateChecker.delayed) {
@@ -2767,9 +2748,8 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  const backgroundNode = document.querySelector(".demeter-background");
-  backgroundAnimation = new D.SaturateFilterAnimation([ backgroundNode, document.querySelector(".demeter-background-kcode") ]);
-  backgroundNode.style.opacity = 1;
+  document.querySelector(".demeter-backgrounds").style.display = "block";
+  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
 const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
@@ -3243,8 +3223,8 @@ const next = async () => {
       place = paragraph[0].place;
       logging.notice("現在地: " + place);
     }
-    if (backgroundAnimation.key !== paragraph[0].background) {
-      backgroundAnimation.fade(paragraph[0].background, 2000);
+    if (backgroundTransition.key !== paragraph[0].background) {
+      backgroundTransition.fade(paragraph[0].background);
     }
 
     readState.map.set(paragraphIndex, Date.now());
@@ -3523,17 +3503,14 @@ const updateKCode = () => {
 };
 
 const toggleKCode = async () => {
-  const node1 = document.querySelector(".demeter-background-kcode");
-  const node2 = document.querySelector(".demeter-background");
+  const nodes = [...document.querySelectorAll(".demeter-background")];
   kCodeStatus = !kCodeStatus;
   if (kCodeStatus) {
-    node1.style.opacity = "1";
-    const opacityAnimation = new D.OpacityAnimation([node2], 1, 0, 2000);
-    await opacityAnimation.start();
+    nodes[0].classList.add("demeter-active");
+    nodes[1].classList.remove("demeter-active");
   } else {
-    const opacityAnimation = new D.OpacityAnimation([node2], 0, 1, 2000);
-    await opacityAnimation.start();
-    node1.style.opacity = "0";
+    nodes[0].classList.remove("demeter-active");
+    nodes[1].classList.add("demeter-active");
   }
 };
 
@@ -3583,9 +3560,7 @@ D.onResize = async () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
-  document.querySelector(".demeter-background-kcode").style.transform = transform;
-  document.querySelector(".demeter-background").style.transform = transform;
-  document.querySelector(".demeter-screen").style.transform = transform;
+  [ ...document.querySelectorAll(".demeter-background"), document.querySelector(".demeter-screen") ].forEach(node => node.style.transform = transform);
 
   updateComponents();
 
@@ -3670,9 +3645,6 @@ D.onDOMContentLoaded = async () => {
 
   while (true) {
     await D.requestAnimationFrame();
-    if (backgroundAnimation) {
-      backgroundAnimation.update();
-    }
     if (iconAnimation) {
       iconAnimation.update();
     }

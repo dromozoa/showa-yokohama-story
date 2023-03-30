@@ -76,22 +76,33 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-background-kcode {
-  position: absolute;
-  width: var(--screen-width);
-  height: var(--screen-height);
-  background-image: var(--background-image-kcode);
-  opacity: 0;
-  filter: brightness(0.2) saturate(0);
+.demeter-backgrounds {
+  display: none;
 }
 
 .demeter-background {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--background-image);
   opacity: 0;
   filter: brightness(0.2) saturate(0);
+  transition: opacity 2s, filter 2s;
+}
+
+.demeter-background-kcode {
+  background-image: var(--background-image-kcode);
+}
+
+.demeter-background-main {
+  background-image: var(--background-image);
+}
+
+.demeter-background.demeter-active {
+  opacity: 1;
+}
+
+.demeter-background.demeter-saturate {
+  filter: brightness(0.2) saturate(1);
 }
 
 .demeter-screen {
