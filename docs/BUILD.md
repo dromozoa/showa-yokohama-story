@@ -31,8 +31,6 @@ make deply_music_execute
 
 ## 音声のアップロード
 
-下記の方式でやっているが、aws s3 syncでinclude/excludeしたほうが早そう。
-
 ```
 make deploy_voice_dry_run
 make deploy_voice_execute
@@ -52,3 +50,11 @@ make deploy_dry_run
 make deploy_execute
 ```
 
+## ウォーミングアップ
+
+一度アクセスしてみる。意味があるかどうかわからない。
+
+```
+./tool/warm.sh sys/system/3/
+./tool/warm.sh sys/voice/2/
+```
