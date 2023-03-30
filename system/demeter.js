@@ -1923,6 +1923,7 @@ let screenName;
 let systemUi;
 
 let backgroundTransition;
+let trophyAnimationQueue = [];
 let iconAnimation;
 let musicPlayer;
 let soundEffect;
@@ -2095,9 +2096,30 @@ const updateTrophy = async key => {
     const trophy = D.trophies.find(trophy => trophy.key === key);
     if (trophy) {
       updateTrophies();;
-      soundEffectTrophy();
       logging.notice("実績解除: " + trophy.name);
       logging.info(trophy.description);
+
+      const T1 = 500;
+      const T2 = 1000;
+      const T3 = 500;
+
+      trophyAnimationQueue.push(async () => {
+        soundEffectTrophy();
+        const nodes = [...document.querySelectorAll(".demeter-notice")];
+        nodes.forEach(node => {
+          node.style.opacity = "0";
+          node.textContent = trophy.name;
+        });
+        await new D.OpacityAnimation(nodes, 0, 1, T1).start();
+        await D.setTimeout(T2);
+        await new D.OpacityAnimation(nodes, 1, 0, T3).start();
+      });
+      if (trophyAnimationQueue.length === 1) {
+        while (trophyAnimationQueue.length > 0) {
+          await trophyAnimationQueue[0]();
+          trophyAnimationQueue.shift();
+        }
+      }
     }
   }
 };
@@ -2648,7 +2670,7 @@ const enterCreditsScreen = async () => {
   const T1 = 2000;
   const T2 = 2000;
   const T3 = 2000;
-  const screenNode = document.querySelector(".demeter-credits-screen");
+  const scrollNode = document.querySelector(".demeter-credits-scroll");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
   const trophiesNode = document.querySelector(".demeter-credits-trophies");
@@ -2663,7 +2685,7 @@ const enterCreditsScreen = async () => {
   const paragraphHeight = fontSize * 27;
   const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
 
-  screenNode.scrollTo(0, 0);
+  scrollNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
     const paragraphNode = paragraphNodes[i];
     const nodes = [paragraphNode];
@@ -2683,7 +2705,7 @@ const enterCreditsScreen = async () => {
     } else {
       end = height - screenHeight * 2;
     }
-    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    const scrollAnimation = new D.ScrollAnimation(scrollNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
@@ -2696,7 +2718,7 @@ const enterCreditsScreen = async () => {
 
     const begin = height - screenHeight * 2;
     const end = begin + screenHeight;
-    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    const scrollAnimation = new D.ScrollAnimation(scrollNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
