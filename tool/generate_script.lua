@@ -21,6 +21,13 @@ local quote_js = require "quote_js"
 local scenario_pathname, result_pathname = ...
 local scenario = parse(scenario_pathname)
 
+local function add_map(map, items, item)
+  if not map[item] then
+    map[item] = true
+    items[#items + 1] = item
+  end
+end
+
 local function encode_text(text)
   local result = {}
   for i, v in ipairs(text) do
@@ -49,9 +56,49 @@ if (D.scenario) {
 D.scenario = {
 ]]
 
+local start_map = {}
+local starts = {}
+
 local total = 0
 handle:write "paragraphs:[\n"
 for i, paragraph in ipairs(scenario) do
+
+  -- 開始段落か、開始段落から@whenで飛びうる段落を開始段落とする。
+  if paragraph.label_root or paragraph.system then
+    add_map(start_map, starts, i)
+    if paragraph.when_jumps then
+      for _, jump in ipairs(paragraph.when_jumps) do
+        add_map(start_map, starts, scenario.labels[jump.label].index)
+      end
+    end
+  end
+
+  -- この段落は含めない。
+  local adjacency_map = { [i] = true }
+  local adjacencies = {}
+
+  -- @when以外による飛び先を調べる。
+  if paragraph.jump then
+    add_map(adjacency_map, adjacencies, scenario.labels[paragraph.jump.label].index)
+  elseif paragraph.choice_jumps then
+    for _, jump in ipairs(paragraph.choice_jumps) do
+      add_map(adjacency_map, adjacencies, scenario.labels[jump.label].index)
+    end
+  elseif not paragraph.finish and not paragraph.system and i < #scenario then
+    add_map(adjacency_map, adjacencies, i + 1)
+  end
+
+  -- 飛び先から@whenで飛びうる段落を加える。
+  for j = 1, #adjacencies do
+    local paragraph = assert(scenario[adjacencies[j]])
+    if paragraph.when_jumps then
+      for _, jump in ipairs(paragraph.when_jumps) do
+        add_map(adjacency_map, adjacencies, scenario.labels[jump.label].index)
+      end
+    end
+  end
+
+  handle:write("// index: ", i, "\n")
   handle:write("[{speaker:", quote_js(paragraph.speaker))
   if paragraph.jump then
     handle:write(",jump:", scenario.labels[paragraph.jump.label].index)
@@ -110,6 +157,7 @@ for i, paragraph in ipairs(scenario) do
     end
     handle:write "]"
   end
+  handle:write(",adjacencies:[", table.concat(adjacencies, ","), "]")
   handle:write "},[\n"
 
   for _, text in ipairs(paragraph) do
@@ -120,6 +168,7 @@ for i, paragraph in ipairs(scenario) do
 end
 handle:write "],\n"
 handle:write("total:", total, ",\n")
+handle:write("starts:[", table.concat(starts, ","), "],\n")
 
 handle:write "labels:{\n"
 for _, label in ipairs(scenario.labels) do

@@ -26,22 +26,13 @@ D.includeGuard = true;
 
 //-------------------------------------------------------------------------
 
-D.version = { web: "b4" };
-
-D.preferences = {
-  musicDir: "build/music",
-  voiceDir: "build/voice",
-  effectDir: "system",
-};
-
-// D.trace = () => {};
-D.trace = (...args) => console.log(...args);
+D.trace = (...params) => D.preferences.trace(...params);
 
 //-------------------------------------------------------------------------
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-D.setTimeout = delay => new Promise(resolve => setTimeout(resolve, delay));
+D.setTimeout = (delay, ...params) => new Promise(resolve => setTimeout(resolve, delay, ...params));
 
 D.numberToString = v => Math.abs(v) < 0.00005 ? "0" : v.toFixed(4).replace(/\.?0*$/, "");
 
@@ -1181,7 +1172,9 @@ D.AudioVisualizer = class {
     for (let i = 0; i < this.analyser.frequencyBinCount; ++i) {
       const v = (Math.max(minDecibels, Math.min(maxDecibels, this.frequencyData[i])) - minDecibels) / rangeDecibels;
       const h = v * H;
-      context.fillRect(i * w, HH - h * 0.5, w, h);
+      if (h > 0) {
+        context.fillRect(i * w, HH - h * 0.5, w, h);
+      }
     }
   }
 };
@@ -1477,31 +1470,31 @@ D.VoiceSound = class {
     this.onceLoadError = onLoadError;
   }
 
-  play(...args) {
+  play(...params) {
     if (this.onceLoadError && this.loadErrorMessage !== undefined) {
       this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
       this.onceLoadError = undefined;
       // 有効なサウンドIDを返さない。
       return;
     } else {
-      return this.sound.play(...args);
+      return this.sound.play(...params);
     }
   }
 
-  pause(...args) {
-    return this.sound.pause(...args);
+  pause(...params) {
+    return this.sound.pause(...params);
   }
 
-  stop(...args) {
-    return this.sound.stop(...args);
+  stop(...params) {
+    return this.sound.stop(...params);
   }
 
-  once(...args) {
-    return this.sound.once(...args);
+  once(...params) {
+    return this.sound.once(...params);
   }
 
-  volume(...args) {
-    return this.sound.volume(...args);
+  volume(...params) {
+    return this.sound.volume(...params);
   }
 };
 
@@ -1656,41 +1649,22 @@ D.ScrollAnimation = class {
 
 //-------------------------------------------------------------------------
 
-D.SaturateFilterAnimation = class {
+D.BackgroundTransition = class {
   constructor(nodes) {
     this.nodes = nodes;
     this.key = "モノクローム";
-    this.value = 0;
   }
 
-  fade(key, duration) {
-    this.key = key;
-    this.duration = duration;
-
-    this.startTime = performance.now();
-    this.begin = this.value;
-    if (key === "モノクローム") {
-      this.end = 0;
-    } else {
-      this.end = 1;
-    }
-  }
-
-  update() {
-    if (!this.startTime) {
+  fade(key) {
+    if (this.key === key) {
       return;
     }
 
-    const now = performance.now();
-    const x = Math.min((now - this.startTime) / this.duration, 1);
-    const y = x * (2 - x)
-    const z = this.begin + (this.end - this.begin) * y;
-    const filter = "brightness(0.2) saturate(" + D.numberToString(z) + ")";
-    this.nodes.forEach(node => node.style.filter = filter);
-
-    this.value = z;
-    if (x === 1) {
-      this.startTime = undefined;
+    this.key = key;
+    if (this.key === "モノクローム") {
+      this.nodes.forEach(node => node.classList.remove("demeter-saturate"));
+    } else {
+      this.nodes.forEach(node => node.classList.add("demeter-saturate"));
     }
   }
 };
@@ -1699,7 +1673,7 @@ D.SaturateFilterAnimation = class {
 
 D.SoundEffect = class {
   constructor(volume) {
-    const basename = D.preferences.effectDir + "/effect";
+    const basename = D.preferences.systemDir + "/effect";
     this.volume = volume;
     this.sound = new Howl({
       src: [ basename + ".webm", basename + ".mp3" ],
@@ -1744,7 +1718,37 @@ const soundEffectAlert = () => {
   }
 };
 
+const soundEffectTrophy = () => {
+  if (soundEffect) {
+    soundEffect.start("trophy");
+  }
+};
+
 //-------------------------------------------------------------------------
+
+D.compareVersion = version => {
+  if (typeof version !== "object" || typeof version.web !== "string") {
+    throw new Error("invalid version object");
+  }
+
+  if (version.web === D.preferences.version.web) {
+    return;
+  }
+
+  if (version.system && version.system < D.preferences.version.system) {
+    return;
+  }
+
+  if (version.music && version.music < D.preferences.version.music) {
+    return;
+  }
+
+  if (version.voice && version.voice < D.preferences.version.voice) {
+    return;
+  }
+
+  return version.web;
+};
 
 D.UpdateChecker = class {
   constructor(timeout) {
@@ -1765,12 +1769,10 @@ D.UpdateChecker = class {
       try {
         const response = await fetch("version.json", { cache: "no-store" });
         const version = await response.json();
-        if (typeof version.web !== "string") {
-          throw new Error("unexpected version");
-        }
+        const result = D.compareVersion(version);
         logging.debug("更新チェック: 成功");
-        if (D.version.web !== version.web) {
-          logging.notice("更新検出: " + D.version.web + "→" + version.web);
+        if (result) {
+          logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
           status = "detected";
         }
       } catch (e) {
@@ -1920,7 +1922,8 @@ let screenNamePrev;
 let screenName;
 let systemUi;
 
-let backgroundAnimation;
+let backgroundTransition;
+let trophyAnimationQueue = [];
 let iconAnimation;
 let musicPlayer;
 let soundEffect;
@@ -1947,6 +1950,45 @@ let waitForDialog;
 let waitForCredits;
 
 let updateChecker;
+
+//-------------------------------------------------------------------------
+
+const cacheImpl = async (sourceUrls) => {
+  const cache = await caches.open("昭和横濱物語");
+  const targetUrls = [];
+  for (let i = 0; i < sourceUrls.length; ++i) {
+    const url = sourceUrls[i];
+    if (!await cache.match(url)) {
+      targetUrls.push(url);
+    }
+  }
+  if (targetUrls.length > 0) {
+    await cache.addAll(targetUrls);
+  }
+  return targetUrls;
+};
+
+D.cache = sourceUrls => {
+  cacheImpl(sourceUrls).then(targetUrls => {
+    D.trace("addCache", sourceUrls, targetUrls);
+  }).catch(e => {
+    D.trace("addCache", sourceUrls, e);
+  });
+};
+
+const getBackgroundImageUrls = () => {
+  return [ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg");
+};
+
+const getMusicUrls = () => {
+  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
+  return Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext);
+};
+
+const getVoiceUrls = paragraphIndices => {
+  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
+  return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
+};
 
 //-------------------------------------------------------------------------
 
@@ -2092,9 +2134,31 @@ const updateTrophy = async key => {
     await putTrophiesState();
     const trophy = D.trophies.find(trophy => trophy.key === key);
     if (trophy) {
+      updateTrophies();;
       logging.notice("実績解除: " + trophy.name);
       logging.info(trophy.description);
-      updateTrophies();;
+
+      const T1 = 500;
+      const T2 = 1000;
+      const T3 = 500;
+
+      trophyAnimationQueue.push(async () => {
+        soundEffectTrophy();
+        const nodes = [...document.querySelectorAll(".demeter-notice")];
+        nodes.forEach(node => {
+          node.style.opacity = "0";
+          node.textContent = trophy.name;
+        });
+        await new D.OpacityAnimation(nodes, 0, 1, T1).start();
+        await D.setTimeout(T2);
+        await new D.OpacityAnimation(nodes, 1, 0, T3).start();
+      });
+      if (trophyAnimationQueue.length === 1) {
+        while (trophyAnimationQueue.length > 0) {
+          await trophyAnimationQueue[0]();
+          trophyAnimationQueue.shift();
+        }
+      }
     }
   }
 };
@@ -2167,6 +2231,38 @@ const unlockAudio = async () => {
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
 
   logging.info("オーディオロック: 解除");
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    const message = await Promise.any([
+      new Promise(resolve => {
+        const onMessage = ev => {
+          navigator.serviceWorker.removeEventListener("message", onMessage);
+          resolve(ev.data);
+        };
+        navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
+        navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
+      }),
+      D.setTimeout(100),
+    ]);
+
+    if (message) {
+      logging.info("サービスワーカ通信: 成功");
+      message.body.forEach(client => {
+        logging.info("実行文脈識別子: " + client.id);
+      });
+
+      if (message.body.length > 1) {
+        soundEffectAlert();
+        document.querySelector(".demeter-title-text").style.display = "none";
+        hideTitleChoices();
+        await dialog("system-multiple");
+        document.querySelector(".demeter-title-text").style.display = "block";
+        await showTitleChoices();
+      }
+    } else {
+      logging.error("サービスワーカ通信: 失敗", new Error("timed out"));
+    }
+  }
 
   if (updateChecker.delayed) {
     await updateChecker.dialog();
@@ -2573,7 +2669,7 @@ const enterTitleScreen = async () => {
   } else {
     musicPlayer.fade("vi03");
     place = undefined;
-    backgroundAnimation.fade("モノクローム", 2000);
+    backgroundTransition.fade("モノクローム");
     await showTitleChoices();
 
     if (updateChecker.delayed) {
@@ -2645,7 +2741,7 @@ const enterCreditsScreen = async () => {
   const T1 = 2000;
   const T2 = 2000;
   const T3 = 2000;
-  const screenNode = document.querySelector(".demeter-credits-screen");
+  const scrollNode = document.querySelector(".demeter-credits-scroll");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
   const trophiesNode = document.querySelector(".demeter-credits-trophies");
@@ -2660,7 +2756,7 @@ const enterCreditsScreen = async () => {
   const paragraphHeight = fontSize * 27;
   const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
 
-  screenNode.scrollTo(0, 0);
+  scrollNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
     const paragraphNode = paragraphNodes[i];
     const nodes = [paragraphNode];
@@ -2680,7 +2776,7 @@ const enterCreditsScreen = async () => {
     } else {
       end = height - screenHeight * 2;
     }
-    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    const scrollAnimation = new D.ScrollAnimation(scrollNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
@@ -2693,7 +2789,7 @@ const enterCreditsScreen = async () => {
 
     const begin = height - screenHeight * 2;
     const end = begin + screenHeight;
-    const scrollAnimation = new D.ScrollAnimation(screenNode, begin, end, T3);
+    const scrollAnimation = new D.ScrollAnimation(scrollNode, begin, end, T3);
     await scrollAnimation.start();
   }
 
@@ -2752,12 +2848,13 @@ const backCreditsScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
-  const backgroundNode = document.querySelector(".demeter-background");
-  backgroundAnimation = new D.SaturateFilterAnimation([ backgroundNode, document.querySelector(".demeter-background-kcode") ]);
-  backgroundNode.style.opacity = 1;
+  document.querySelector(".demeter-backgrounds").style.display = "block";
+  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+// const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+// debug
+const initializeUpdateChecker = () => D.updateChecker = updateChecker = new D.UpdateChecker(600000);
 
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
@@ -3228,8 +3325,8 @@ const next = async () => {
       place = paragraph[0].place;
       logging.notice("現在地: " + place);
     }
-    if (backgroundAnimation.key !== paragraph[0].background) {
-      backgroundAnimation.fade(paragraph[0].background, 2000);
+    if (backgroundTransition.key !== paragraph[0].background) {
+      backgroundTransition.fade(paragraph[0].background);
     }
 
     readState.map.set(paragraphIndex, Date.now());
@@ -3268,6 +3365,9 @@ const next = async () => {
     if (playState !== "skip") {
       const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
       voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+
+      // 次に到達する可能性がある段落のボイスをキャッシュする。
+      D.cache(getVoiceUrls(paragraph[0].adjacencies));
     }
   }
 
@@ -3508,17 +3608,14 @@ const updateKCode = () => {
 };
 
 const toggleKCode = async () => {
-  const node1 = document.querySelector(".demeter-background-kcode");
-  const node2 = document.querySelector(".demeter-background");
+  const nodes = [...document.querySelectorAll(".demeter-background")];
   kCodeStatus = !kCodeStatus;
   if (kCodeStatus) {
-    node1.style.opacity = "1";
-    const opacityAnimation = new D.OpacityAnimation([node2], 1, 0, 2000);
-    await opacityAnimation.start();
+    nodes[0].classList.add("demeter-active");
+    nodes[1].classList.remove("demeter-active");
   } else {
-    const opacityAnimation = new D.OpacityAnimation([node2], 0, 1, 2000);
-    await opacityAnimation.start();
-    node1.style.opacity = "0";
+    nodes[0].classList.remove("demeter-active");
+    nodes[1].classList.add("demeter-active");
   }
 };
 
@@ -3568,9 +3665,7 @@ D.onResize = async () => {
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
     D.numberToString(scale) + ")";
-  document.querySelector(".demeter-background-kcode").style.transform = transform;
-  document.querySelector(".demeter-background").style.transform = transform;
-  document.querySelector(".demeter-screen").style.transform = transform;
+  [ ...document.querySelectorAll(".demeter-background"), document.querySelector(".demeter-screen") ].forEach(node => node.style.transform = transform);
 
   updateComponents();
 
@@ -3610,8 +3705,12 @@ D.onKeydown = async ev => {
 };
 
 D.onError = ev => {
-  logging.error("ゲームシステム: エラー捕捉", ev);
+  logging.error("検出: 大域エラー", ev);
 };
+
+D.onUnhandledRejection = ev => {
+  logging.error("検出: 見過ごされた拒否", ev.reason);
+}
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
@@ -3636,6 +3735,7 @@ D.onDOMContentLoaded = async () => {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
       logging.info("サービスワーカ変更: 検出");
     });
+
     navigator.serviceWorker.register("service-worker.js").then(registration => {
       logging.info("サービスワーカ登録: 成功");
       registration.addEventListener("updatefound", ev => {
@@ -3646,13 +3746,20 @@ D.onDOMContentLoaded = async () => {
     });
   }
 
-  history.replaceState(null, "", "game.html");
+  // ファイル名は変えない。
+  history.replaceState(null, "", document.location.pathname);
+
+  // 背景画像をキャッシュする。
+  D.cache(getBackgroundImageUrls());
+
+  // 音楽をキャッシュする。
+  D.cache(getMusicUrls());
+
+  // 開始段落の音声をキャッシュする。
+  D.cache(getVoiceUrls(D.scenario.starts));
 
   while (true) {
     await D.requestAnimationFrame();
-    if (backgroundAnimation) {
-      backgroundAnimation.update();
-    }
     if (iconAnimation) {
       iconAnimation.update();
     }

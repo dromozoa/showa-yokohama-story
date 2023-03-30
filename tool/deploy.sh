@@ -17,27 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-here=`dirname "$0"`
-export LUA_PATH="$here/?.lua;;"
-
-source_dirname=$1
-output_dirname=$2 # build/b4
-system_dirname=$3 # system/2
-music_dirname=$4 # music/1
-voice_dirname=$5 # voice/1
-
-mkdir -p "$output_dirname/$system_dirname"
-
-cp "$source_dirname"/*.html "$source_dirname"/*.js* "$output_dirname"
-cp -R "$source_dirname/system"/* "$output_dirname/$system_dirname"
-
-lua -e 'io.write((io.read "a":gsub("system/%.", "'"$3"'")))' \
-  <"$source_dirname/game.html" \
-  >"$output_dirname/game.html"
-
-lua "$here/build_release.lua" \
-  "$source_dirname/system/demeter.js" \
-  "$output_dirname/$system_dirname/demeter.js" \
-  "$music_dirname" \
-  "$voice_dirname" \
-  "$system_dirname"
+for i in $2/*.*
+do
+  j=`basename "$i"`
+  aws s3 cp $1 --cache-control no-store "$i" "$3/$j"
+done

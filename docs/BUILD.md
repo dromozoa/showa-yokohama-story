@@ -1,45 +1,32 @@
-# クラウド設計メモ
+# ビルドメモ
 
-- [x] AWSCLIv2を更新する。
-- [x] vaporoid.comの既存コンテンツを更新する。
-  - macでやるとUnicode正規化で死ぬので注意
-- [x] cloudfrontでSSLの設定をする
-- [x] /sys/index.htmlとgame.htmlはキャッシュしない
-  - https://repost.aws/ja/knowledge-center/prevent-cloudfront-from-caching-files
-- [x] /./という文字列をserialで置き換える
-- [x] 圧縮のテスト
-- [x] キャッシュのテスト
-  - demeter.jsはかえなくていいかな。
-- [x] バージョンチェック
+## 開発中のビルドプロセス
 
-- [ ] cache-control: no-storeを自前で設定する。
-- [ ] 音声のアップロードが遅いからsyncにしちゃう
-- [ ] ホームページをつくる
-  - [ ] 更新履歴を表示する
-  - [ ] iOSの注意書き
-- [ ] GitHub Pagesをリダイレクトする
+### 音声の生成と変換
 
-```
-/index.html
-/sys
-  /game.html
-  /index.html
-  /system/{serial}/...
-  /voice/{serial}/
-  /music/{serial}/
-```
+1. `make`する。
+2. VOICEPEAKで`build/voice.txt`を開く。
+3. VOICEPEAKで`build/voice-out.vpp`に保存する。
+4. `make`する。
+5. VOICEPEAKで`build/voice-out.vpp`を開く。
+6. VOICEPEAKで`build/voice-out`以下に出力する。
+7. `make convert_voice`する。
 
-```
-/version.json
-{
-    web: "b3",
-}
-```
+### バージョン設定
+
+1. `versions`ファイルを修正する。
+2. `make`する。
+
+### リリースビルド
+
+1. `make`する。
+2. `make build`する。
 
 ## 音楽のアップロード
 
 ```
-./tool/upload_music.sh assets/music.txt ../showa-yokohama-story-ext/music s3://dromozoa.com/sys/music/1
+make deply_music_dry_run
+make deply_music_execute
 ```
 
 ## 音声のアップロード
@@ -47,18 +34,21 @@
 下記の方式でやっているが、aws s3 syncでinclude/excludeしたほうが早そう。
 
 ```
-./tool/upload_voice.sh build/voice s3://vaporoid.com/sys/voice/1
+make deploy_voice_dry_run
+make deploy_voice_execute
+```
+
+## システムのアップロード
+
+```
+make deploy_system_dry_run
+make deploy_system_execute
 ```
 
 ## 本体のアップロード
 
-- ビルドの前にmakeしておく必要がある。
-- というか、makeのあとにビルド自体まで終わらせておくべき。
-
 ```
-aws s3 cp --cache-control no-store service-worker.js s3://vaporoid.com/sys/
-aws s3 cp --cache-control no-store index.html s3://vaporoid.com/sys/
-aws s3 cp --cache-control no-store game.html s3://vaporoid.com/sys/
-aws s3 cp --cache-control no-store version.json s3://vaporoid.com/sys/
+make deploy_dry_run
+make deploy_execute
 ```
 

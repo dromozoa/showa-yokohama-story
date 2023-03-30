@@ -18,25 +18,30 @@
 (() => {
 "use strict";
 
-const D = globalThis.demeter;
-if (D.includeGameGuard) {
+const D = globalThis.demeter ||= {};
+if (D.preferenes) {
   return;
 }
-D.includeGameGuard = true;
 
-//-------------------------------------------------------------------------
+const mode = "develop";
+const version = { web: "b5", system: 3, music: 1, voice: 1 };
 
-addEventListener("resize", D.onResize);
-addEventListener("keydown", D.onKeydown);
-addEventListener("error", D.onError);
-addEventListener("unhandledrejection", D.onUnhandledRejection);
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", D.onDOMContentLoaded, { once: true });
+if (mode === "develop") {
+  D.preferences = {
+    version: version,
+    systemDir: "system",
+    musicDir: "build/music",
+    voiceDir: "build/voice",
+    trace: (...args) => console.log(...args),
+  };
 } else {
-  D.onDOMContentLoaded().then(() => {});
+  D.preferences = {
+    version: version,
+    systemDir: "/sys/system/" + version.system,
+    musicDir: "/sys/music/" + version.music,
+    voiceDir: "/sys/voice/" + version.voice,
+    trace: () => {},
+  };
 }
-
-//-------------------------------------------------------------------------
 
 })();

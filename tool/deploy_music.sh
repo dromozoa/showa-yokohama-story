@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-for i in `cat "$1"`
+for i in `cat "$2"`
 do
   basename=sessions_$i
-  aws s3 cp "$2/$basename.mp3" "$3/$basename.mp3"
-  aws s3 cp "$2/$basename.webm" "$3/$basename.webm"
+  aws s3 cp $1 "$3/$basename.mp3" "$4/$basename.mp3"
+  aws s3 cp $1 "$3/$basename.webm" "$4/$basename.webm"
 done

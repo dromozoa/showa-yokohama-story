@@ -41,8 +41,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 27);
     --screen-height: calc(var(--font-size) * 48);
-    --background-image: url(bg-portrait.png);
-    --background-image-kcode: url(bg-portrait-kcode.png);
+    --background-image: url(bg-portrait.jpg);
+    --background-image-kcode: url(bg-portrait-kcode.jpg);
   }
 }
 
@@ -50,8 +50,8 @@
   :root {
     --screen-width: calc(var(--font-size) * 48);
     --screen-height: calc(var(--font-size) * 27);
-    --background-image: url(bg-landscape.png);
-    --background-image-kcode: url(bg-landscape-kcode.png);
+    --background-image: url(bg-landscape.jpg);
+    --background-image-kcode: url(bg-landscape-kcode.jpg);
   }
 }
 
@@ -76,22 +76,33 @@ body.demeter {
 
 /*************************************************************************/
 
-.demeter-background-kcode {
-  position: absolute;
-  width: var(--screen-width);
-  height: var(--screen-height);
-  background-image: var(--background-image-kcode);
-  opacity: 0;
-  filter: brightness(0.2) saturate(0);
+.demeter-backgrounds {
+  display: none;
 }
 
 .demeter-background {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
-  background-image: var(--background-image);
   opacity: 0;
   filter: brightness(0.2) saturate(0);
+  transition: opacity 2s, filter 2s;
+}
+
+.demeter-background-kcode {
+  background-image: var(--background-image-kcode);
+}
+
+.demeter-background-main {
+  background-image: var(--background-image);
+}
+
+.demeter-background.demeter-active {
+  opacity: 1;
+}
+
+.demeter-background.demeter-saturate {
+  filter: brightness(0.2) saturate(1);
 }
 
 .demeter-screen {
@@ -228,8 +239,8 @@ body.demeter {
 
 .demeter-title-kcode {
   position: absolute;
-  left: calc(var(--font-size) * 0.25);
-  top: calc(var(--font-size) * 0.25);
+  left: var(--font-size);
+  top: var(--font-size);
   font-size: calc(var(--font-size) * 0.75);
   line-height: calc(var(--font-size) * 0.75);
 }
@@ -245,12 +256,17 @@ body.demeter {
 
 .demeter-title-version {
   position: absolute;
-  right: calc(var(--font-size) * 0.25);
-  top: calc(var(--font-size) * 0.25);
+  right: var(--font-size);
+  top: var(--font-size);
   font-family: var(--font-family-console);
   font-size: calc(var(--font-size) * 0.75);
   line-height: calc(var(--font-size) * 0.75);
   text-align: right;
+}
+
+.demeter-title-notice {
+  right: var(--font-size);
+  top: calc(var(--font-size) * 2);
 }
 
 /*************************************************************************/
@@ -293,6 +309,11 @@ body.demeter {
   display: block;
   width: calc(var(--font-size) * 15);
   height: calc(var(--font-size) * 12);
+}
+
+.demeter-start-notice {
+  right: var(--font-size);
+  top: var(--font-size);
 }
 
 /*************************************************************************/
@@ -634,6 +655,20 @@ body.demeter {
   pointer-events: none;
 }
 
+@media (orientation: portrait) {
+  .demeter-main-notice {
+    right: var(--font-size);
+    top: calc(var(--font-size) * 7);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-main-notice {
+    right: var(--font-size);
+    top: var(--font-size);
+  }
+}
+
 /*************************************************************************/
 
 .demeter-data-screen {
@@ -774,6 +809,20 @@ body.demeter {
   top: 27px;
 }
 
+@media (orientation: portrait) {
+  .demeter-data-notice {
+    right: var(--font-size);
+    top: calc(var(--font-size) * 3);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-data-notice {
+    right: var(--font-size);
+    top: var(--font-size);
+  }
+}
+
 /*************************************************************************/
 
 @media (orientation: portrait) {
@@ -876,6 +925,12 @@ body.demeter {
 }
 
 .demeter-credits-screen {
+  position: absolute;
+  width: var(--screen-width);
+  height: var(--screen-height);
+}
+
+.demeter-credits-scroll {
   position: absolute;
   width: var(--screen-width);
   height: var(--screen-height);
@@ -1117,6 +1172,11 @@ body.demeter {
   pointer-events: none;
 }
 
+.demeter-credits-notice {
+  right: var(--font-size);
+  top: var(--font-size);
+}
+
 /*************************************************************************/
 
 .demeter-dialog-overlay {
@@ -1207,6 +1267,18 @@ body.demeter {
 
 .demeter-icon::before {
   content: '\E000';
+}
+
+/*************************************************************************/
+
+.demeter-notice {
+  position: absolute;
+  font-family: var(--font-family);
+  font-size: calc(var(--font-size) * 0.75);
+  line-height: calc(var(--font-size) * 0.75);
+  text-align: right;
+  pointer-events: none;
+  opacity: 0;
 }
 
 /*************************************************************************/

@@ -37,6 +37,8 @@
   <script defer src="system/./demeter-scenario.js"></script>
   <script defer src="system/./demeter-trophies.js"></script>
   <script defer src="system/./demeter-voice-sprites.js"></script>
+
+  <script defer src="system/./demeter-preferences.js"></script>
   <script defer src="system/./demeter.js"></script>
   <script defer src="system/./demeter-game.js"></script>
 </head>
@@ -44,8 +46,10 @@
 <body class="demeter">
 
 <div class="demeter-projector">
-  <div class="demeter-background-kcode"></div>
-  <div class="demeter-background"></div>
+  <div class="demeter-backgrounds">
+    <div class="demeter-background demeter-background-kcode"></div>
+    <div class="demeter-background demeter-background-main demeter-active"></div>
+  </div>
   <div class="demeter-screen"></div>
 </div>
 
@@ -132,6 +136,7 @@
     class="demeter-title-kcode-item las la-times-circle"></span><span
     class="demeter-title-kcode-item las la-stop-circle"></span></div>
   <div class="demeter-title-version">Ver. $version</div>
+  <div class="demeter-notice demeter-title-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <div class="demeter-start-screen">
@@ -139,6 +144,7 @@
     <div class="demeter-start-display"></div>
     <div class="demeter-start-text"></div>
   </div>
+  <div class="demeter-notice demeter-start-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <img class="demeter-start-image demeter-start-image-verse1" src="system/./verse1.png">
@@ -188,6 +194,7 @@
     <div class="demeter-main-paragraph-text"></div>
     <div class="demeter-main-paragraph-icon"><span class="demeter-icon"></span></div>
   </div>
+  <div class="demeter-notice demeter-main-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <div class="demeter-data-screen demeter-load-screen">
@@ -225,6 +232,7 @@
       <div class="demeter-data-tape-label">#3<span class="demeter-data-tape-save3-text"></span></div>
     </div>
   </div>
+  <div class="demeter-notice demeter-data-notice demeter-load-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <div class="demeter-data-screen demeter-save-screen">
@@ -250,29 +258,33 @@
       <div class="demeter-data-tape-label">#3<span class="demeter-data-tape-save3-text"></span></div>
     </div>
   </div>
+  <div class="demeter-notice demeter-data-notice demeter-save-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <div class="demeter-credits-screen">
-  <div class="demeter-credits">
-    <div class="demeter-graph demeter-credits-graph">
-    $graph
-    </div>
-    <div class="demeter-credits-paragraphs">
-    $credits
-    </div>
-    <div class="demeter-credits-trophies">
-    <div class="demeter-credits-trophies-title">実績</div>
-    $trophies
-    </div>
-    <div class="demeter-credits-end">
-      <div class="demeter-credits-end-paragraph">
-        <div class="demeter-credits-end-text">THANK YOU FOR PLAYING</div>
-        <div class="demeter-credits-end-text"><span class="las la-paragraph"></span> <span class="demeter-credits-end-scenario-status"></span></div>
-        <div class="demeter-credits-end-text"><span class="las la-trophy"></span> <span class="demeter-credits-end-trophies-status"></span></div>
+  <div class="demeter-credits-scroll">
+    <div class="demeter-credits">
+      <div class="demeter-graph demeter-credits-graph">
+      $graph
       </div>
-      <div class="demeter-credits-end-icon"><span class="demeter-icon"></span></div>
+      <div class="demeter-credits-paragraphs">
+      $credits
+      </div>
+      <div class="demeter-credits-trophies">
+      <div class="demeter-credits-trophies-title">実績</div>
+      $trophies
+      </div>
+      <div class="demeter-credits-end">
+        <div class="demeter-credits-end-paragraph">
+          <div class="demeter-credits-end-text">THANK YOU FOR PLAYING</div>
+          <div class="demeter-credits-end-text"><span class="las la-paragraph"></span> <span class="demeter-credits-end-scenario-status"></span></div>
+          <div class="demeter-credits-end-text"><span class="las la-trophy"></span> <span class="demeter-credits-end-trophies-status"></span></div>
+        </div>
+        <div class="demeter-credits-end-icon"><span class="demeter-icon"></span></div>
+      </div>
     </div>
   </div>
+  <div class="demeter-notice demeter-credits-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
 
 <div class="demeter-dialog-overlay">
