@@ -310,13 +310,12 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] 画面ごとに場所をきめる
     - 16文字ぶんとっておく。
     - 「○ 今夜はブギー・バック」
-
-- [ ] 先読みする？
+- [x] 先読みする？
   - [=] ServiceWorkerにリクエストを送る。
   - [x] UIスレッドでキャッシュすればよかった。
   - [x] URLは適当でよい？
   - [x] 背景画像のキャッシュを改善する。
-  - [ ] グラフにしたがってボイスをキャッシュする。
+  - [x] グラフにしたがってボイスをキャッシュする。
   - [=] キャッシュの削除
 
 - [ ] ホームページをつくる
@@ -336,6 +335,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [ ] 転送中。通信速度……
   - [ ] 世界→セカイ
   - [ ] 択べるようだのようだいらない
+  - [ ] ボボボクハ
 
 ## タスク
 

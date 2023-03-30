@@ -3711,14 +3711,17 @@ D.onDOMContentLoaded = async () => {
     });
   }
 
-  // ファイル名は変えない
+  // ファイル名は変えない。
   history.replaceState(null, "", document.location.pathname);
 
-  // 背景画像をキャッシュ
+  // 背景画像をキャッシュする。
   D.cache(getBackgroundImageUrls());
 
-  // 音楽をキャッシュ
+  // 音楽をキャッシュする。
   D.cache(getMusicUrls());
+
+  // 開始段落の音声をキャッシュする。
+  D.cache(getVoiceUrls(D.scenario.starts));
 
   while (true) {
     await D.requestAnimationFrame();
