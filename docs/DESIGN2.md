@@ -348,7 +348,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] キャッシュを消す
 - [ ] SAVE/LOAD段落を起点とするキャッシュ
 
-- [ ] GitHub Pagesをリダイレクトする
+- [x] GitHub Pagesをリダイレクトする
 - [ ] ホームページをつくる
   - [ ] faviconを設定する。
   - [ ] 更新履歴を表示する
