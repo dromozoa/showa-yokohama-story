@@ -2587,6 +2587,38 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.resetAudio = async () => {
+    try {
+      await Howler.ctx.suspend();
+      logging.info("オーディオ一時停止: 成功");
+    } catch (e) {
+      logging.error("オーディオ一時停止: 失敗", e);
+    }
+    await D.setTimeout(100);
+    try {
+      await Howler.ctx.resume();
+      logging.info("オーディオ再開: 成功");
+    } catch (e) {
+      logging.error("オーディオ再開: 失敗", e);
+    }
+  };
+
+  commands.resetCache = async () => {
+    try {
+      const cache = await caches.open("昭和横濱物語");
+      const keys = await cache.keys();
+      let n = 0;
+      for (let i = 0; i < keys.length; ++i) {
+        if (await cache.delete(keys[i])) {
+          ++n;
+        }
+      }
+      logging.info("キャッシュ削除: 成功 (" + n + "/" + keys.length + ")");
+    } catch (e) {
+      logging.info("キャッシュ削除: 失敗");
+    }
+  };
+
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
   if (D.getFullscreenElement) {
     const controller = commandsFolder.add(commands, "fullscreen");
@@ -2607,6 +2639,10 @@ const initializeSystemUi = () => {
   const systemCommandsFolder = addSystemUiFolder(systemUi, "システムコマンド");
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+
+  const debugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
+  debugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
+  debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
