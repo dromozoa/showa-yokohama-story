@@ -1,17 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>昭和横濱物語 (GitHub Pages)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown-dark.css" integrity="sha256-sVwvm2LgPvs8KmgAtivJZES8stEW61Mz9Pt/ync4TCc=" crossorigin="anonymous">
-  <link rel="stylesheet" href="common.css">
-<body>
-<div class="markdown-body">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>昭和横濱物語 (GitHub Pages)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown-dark.css" integrity="sha256-sVwvm2LgPvs8KmgAtivJZES8stEW61Mz9Pt/ync4TCc=" crossorigin="anonymous">
+<style>
+body {
+  color: #c9d1d9;
+  background-color: #0d1117;
+}
+
+.markdown-body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+
+@media (max-width: 767px) {
+  .markdown-body {
+    padding: 15px;
+  }
+}
+</style>
+
+</head><body><div class="markdown-body">
 
 <h1>昭和横濱物語 (GitHub)</h1>
 
-<p>昭和七十四年七月、ボクはキミに出逢った。人類が滅亡するまでの、最期のひとつきの、これは物語だ。なお、このページは<span class="danu-text">五秒後</span>に自動的に遷移する。</p>
+<p>昭和七十四年七月、ボクはキミに出逢った。人類が滅亡するまでの、最期のひとつきの、これは物語だ。なお、このページは<span class="text">五秒後</span>に自動的に遷移する（<a class="count" href="#">カウントダウン停止</a>）。</p>
 
 <ul>
   <li><a href="https://vaporoid.com/sys/">ウェブサイト</a>でベータ版公開中。</li>
@@ -19,16 +39,40 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+  let stopped = false;
+  document.querySelector(".count").addEventListener("click", ev => {
+    ev.preventDefault();
+    stopped = !stopped;
+    document.querySelector(".count").textContent = "カウントダウン" + (stopped ? "再開" : "停止");
+  });
+
   const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
-  const node = document.querySelector(".danu-text");
-  const texts = [ "ただち", "一秒後", "二秒後", "三秒後", "四秒後", "五秒後" ];
-  for (let i = 4; i >= 0; --i) {
-    await sleep(1000);
-    node.textContent = texts[i];
+  const node = document.querySelector(".text");
+  const texts = [ "五秒後", "四秒後", "三秒後", "二秒後", "一秒後", "ただち" ];
+
+  let elapsed = 0;
+  let prevTime = performance.now();
+  let prevIndex = 0;
+  while (true) {
+    await sleep(200);
+    const now = performance.now();
+    if (!stopped) {
+      elapsed += now - prevTime;
+    }
+    prevTime = now;
+
+    if (!stopped && prevIndex === texts.length - 1) {
+      break;
+    }
+
+    const index = Math.floor(elapsed / 1000);
+    if (prevIndex !== index) {
+      node.textContent = texts[index];
+      prevIndex = index;
+    }
   }
   location.href = "https://vaporoid.com/sys/";
 }, { once: true });
 </script>
 
-</div>
-</body><html>
+</div></body><html>
