@@ -343,8 +343,8 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 ## タスク
 
 - シナリオ
-  - [ ] リサイクル→再資源化
-    - [ ] 再戦力化
+  - [=] リサイクル→再資源化
+    - [=] 再戦力化
   - [ ] 建設予定地はやめるか。
   - [ ] リヴァイアサン戦後の尺をのばす
 
