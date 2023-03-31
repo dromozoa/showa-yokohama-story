@@ -356,41 +356,18 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] メッセージ送信をタイトルかホームページに作る
   - [=] brotliで圧縮したサイズを計算する
 
-```
-23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
-    next http://localhost/sys/system/demeter.js:3369
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-demeter-preferences.js:35:33
-
-23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
-    next http://localhost/sys/system/demeter.js:3369
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-demeter.js:3369:3
-    next http://localhost/sys/system/demeter.js:3474
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-    InterpretGeneratorResume self-hosted:1822
-    AsyncFunctionNext self-hosted:810
-```
-
-## タスク
-
-- シナリオ
-  - [ ] リヴァイアサン戦後の尺をのばす
-
-- [ ] キャッシュを消す
-- [ ] SAVE/LOAD段落を起点とするキャッシュ
-- [ ] スキップ中のトロフィーで例外？
-
 - ホームページをつくる
   - [x] 更新履歴を表示する
-  - [ ] アプリケーションインストール
   - [x] 幅がせまいと更新日が重なる
 
-- [ ] ビルドの依存関係を再検討する。
-  - make cleanの必要をなくしたい。
-  - VOICEPEAKの操作をミスったときに検出したい
+- [=] スクリプトを圧縮する。
+- [=] エラー通報
+- [=] データベースの処理を検討する
+  - [=] バージョン管理
+  - [=] エラー処理
+  - [=] トランザクション
 
-## タスク
+## 保存
 
 - [ ] iOSで音が出なくなる
   - resumeに失敗している？
@@ -415,11 +392,67 @@ demeter.js:3369:3
         - scaleがとんでた？
   - 再現方法は不明
 
-- [ ] スクリプトを圧縮する。
+## 例外発生時のログ
+
+```
+23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter-preferences.js:35:33
+
+23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter.js:3369:3
+    next http://localhost/sys/system/demeter.js:3474
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+    InterpretGeneratorResume self-hosted:1822
+    AsyncFunctionNext self-hosted:810
+```
+
+## タスク
+
+- シナリオ
+  - [ ] リヴァイアサン戦後の尺をのばす
+
+- [ ] キャッシュを消す
+  - [ ] 古いのを消す
+- [ ] SAVE/LOAD段落を起点とするキャッシュ
+- [ ] textAnimationsがundefinedになるタイミングがある
+  - スキップ中のわりこみで発生した？
+    - 単純には発生しなかった
+
+- ホームページをつくる
+  - [ ] ホームページのリソースをsystem以下に置くか検討する
+  - [ ] ツイッターカード
+  - [ ] アプリケーションインストール
+  - [ ] ろうくみ／ろうそ
+
+- [ ] ビルドの依存関係を再検討する。
+  - make cleanの必要をなくしたい。
+  - VOICEPEAKの操作をミスったときに検出したい
+  - [ ] デプロイ前のチェックツール
+
+- [ ] iOSで音が出なくなる
+  - 他のページやアプリにいってもどると発生しがち
+  - resumeに失敗している？
+  - suspend/resumeでなおるパターンがあった
+  - [ ] Howler.jsと衝突しないsuspend/resumeを実装する
+  - [ ] iOSだけで発動する実行する
+    - iPadの判定条件
+
+- [ ] iOSで表示がおかしくなる
+  - 他のページやアプリにいってもどるとまれに発生する
+  - 背景のtransformが効いていない状態になる
+  - Canvasのスタイルが聴いていない状態になる
+    - 黒で描かれる
+    - contextはロストしていないように見える
+  - [ ] 検出方法を検討する
+  - [ ] Canvasをつくりなおす
+
 - [ ] バージョンアップと既読率について考える
-- [ ] エラー通報
-- [ ] データベースの処理を検討する
-  - [=] バージョン管理
-  - [ ] エラー処理
-  - [=] トランザクション
+  - [ ] 既読率の計算方式を変更
+
+- [ ] キーボードナビゲーション
+- [ ] ゲームパッド対応
 
