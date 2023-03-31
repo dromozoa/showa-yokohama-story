@@ -3232,6 +3232,8 @@ const runStartScreen = async () => {
   await textAnimation.start();
   await D.setTimeout(2000);
 
+  // メイン画面に戻る前に段落表示をクリアする。
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren();
   leaveStartScreen();
   enterMainScreen();
 
