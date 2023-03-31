@@ -340,30 +340,51 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [x] トロフィーの表示が短すぎる
 - [x] トロフィーのアイコンが表示されていない？
 
-## タスク
-
 - シナリオ
   - [=] リサイクル→再資源化
     - [=] 再戦力化
-  - [ ] 建設予定地はやめるか。
-  - [ ] リヴァイアサン戦後の尺をのばす
-
+  - [x] 建設予定地はやめるか。
 - [x] clientsのパスをチェックする
   - index.htmlもコントロールされるので
 - [x] スタート画面からの戻りのところで文字を消す
   - SAVE/LOADからの戻りといっしょ
   - safari
-- [ ] キャッシュを消す
-- [ ] SAVE/LOAD段落を起点とするキャッシュ
-
 - [x] GitHub Pagesをリダイレクトする
 - [x] ホームページをつくる
   - [x] faviconを設定する。
-  - [ ] 更新履歴を表示する
   - [x] iOSの注意書き
-  - [ ] アプリケーションインストール
   - [x] メッセージ送信をタイトルかホームページに作る
   - [=] brotliで圧縮したサイズを計算する
+
+```
+23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter-preferences.js:35:33
+
+23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter.js:3369:3
+    next http://localhost/sys/system/demeter.js:3474
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+    InterpretGeneratorResume self-hosted:1822
+    AsyncFunctionNext self-hosted:810
+```
+
+## タスク
+
+- シナリオ
+  - [ ] リヴァイアサン戦後の尺をのばす
+
+- [ ] キャッシュを消す
+- [ ] SAVE/LOAD段落を起点とするキャッシュ
+- [ ] スキップ中のトロフィーで例外？
+
+- ホームページをつくる
+  - [x] 更新履歴を表示する
+  - [ ] アプリケーションインストール
+  - [x] 幅がせまいと更新日が重なる
 
 - [ ] ビルドの依存関係を再検討する。
   - make cleanの必要をなくしたい。
