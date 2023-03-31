@@ -33,50 +33,11 @@ body {
 
 <p>
 昭和七十四年七月、ボクはキミに出逢った。<br>
-人類が滅亡するまでの、最期のひとつきの、これは物語だ。<br>
-なお、このページは<span class="text">五秒後</span>に自動的に遷移する（<a class="count" href="#">カウントダウン停止</a>）。
+人類が滅亡するまでの、最期のひとつきの、これは物語だ。
 </p>
 
 <ul>
   <li><a href="https://vaporoid.com/sys/">ウェブサイト</a>でブラウザ版公開中。</li>
 </ul>
-
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  let stopped = false;
-  document.querySelector(".count").addEventListener("click", ev => {
-    ev.preventDefault();
-    stopped = !stopped;
-    document.querySelector(".count").textContent = "カウントダウン" + (stopped ? "再開" : "停止");
-  });
-
-  const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
-  const node = document.querySelector(".text");
-  const texts = [ "五秒後", "四秒後", "三秒後", "二秒後", "一秒後", "ただち" ];
-
-  let elapsed = 0;
-  let prevTime = performance.now();
-  let prevIndex = 0;
-  while (true) {
-    await sleep(200);
-    const now = performance.now();
-    if (!stopped) {
-      elapsed += now - prevTime;
-    }
-    prevTime = now;
-
-    if (!stopped && prevIndex === texts.length - 1) {
-      break;
-    }
-
-    const index = Math.floor(elapsed / 1000);
-    if (prevIndex !== index) {
-      node.textContent = texts[index];
-      prevIndex = index;
-    }
-  }
-  location.href = "https://vaporoid.com/sys/";
-}, { once: true });
-</script>
 
 </div></body><html>

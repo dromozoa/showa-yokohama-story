@@ -342,6 +342,8 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 
 ## タスク
 
+- [ ] clientsのパスをチェックする
+  - index.htmlもコントロールされるので
 - [ ] スタート画面からの戻りのところで文字を消す
   - SAVE/LOADからの戻りといっしょ
   - safari
@@ -349,13 +351,13 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
 - [ ] SAVE/LOAD段落を起点とするキャッシュ
 
 - [x] GitHub Pagesをリダイレクトする
-- [ ] ホームページをつくる
-  - [ ] faviconを設定する。
+- [x] ホームページをつくる
+  - [x] faviconを設定する。
   - [ ] 更新履歴を表示する
-  - [ ] iOSの注意書き
+  - [x] iOSの注意書き
   - [ ] アプリケーションインストール
-  - [ ] メッセージ送信をタイトルかホームページに作る
-  - [ ] brotliで圧縮したサイズを計算する
+  - [x] メッセージ送信をタイトルかホームページに作る
+  - [=] brotliで圧縮したサイズを計算する
 
 - [ ] ビルドの依存関係を再検討する。
   - make cleanの必要をなくしたい。
