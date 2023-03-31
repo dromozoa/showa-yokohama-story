@@ -42,6 +42,10 @@ body.danu {
   font-family: 'Yuji Syuku', serif;
 }
 
+.danu h2 {
+  font-family: 'BIZ UDPGothic', sans-serif;
+}
+
 .danu cite:before {
   content: '——';
 }
@@ -52,24 +56,19 @@ body.danu {
   text-align: right;
 }
 
-.danu-title {
-  position: relative;
+.danu-updated {
+  text-align: right;
 }
-
-.danu-title-updated {
-  position: absolute;
-  right: 0;
-  bottom: 12px;
-}
-
-/* 9,16 16,9 */
 
 .danu-screen-shots {
   position: relative;
 }
 
-.danu-icon {
+.danu-screen-shots img {
   display: block;
+}
+
+.danu-icon {
   position: absolute;
   width: 20%;
   left: 40%;
@@ -77,34 +76,33 @@ body.danu {
 }
 
 .danu-screen-shot1 {
-  display: block;
   position: relative;
   width: 36%;
+  border: 1px solid #029D93;
 }
 
 .danu-screen-shot2 {
-  display: block;
   position: absolute;
   width: 64%;
   left: 36%;
   top: 0;
+  border: 1px solid #029D93;
 }
 
 .danu-screen-shot3 {
-  display: block;
   position: absolute;
   width: 36%;
   left: 64%;
   top: 36%;
+  border: 1px solid #029D93;
 }
 
 .danu-screen-shot4 {
-  display: block;
   position: relative;
   width: 64%;
+  border: 1px solid #029D93;
 }
 
-
-
-
-
+.danu-footer {
+  text-align: right;
+}
