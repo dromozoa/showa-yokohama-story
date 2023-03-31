@@ -355,6 +355,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [ ] iOSの注意書き
   - [ ] アプリケーションインストール
   - [ ] メッセージ送信をタイトルかホームページに作る
+  - [ ] brotliで圧縮したサイズを計算する
 
 - [ ] ビルドの依存関係を再検討する。
   - make cleanの必要をなくしたい。
