@@ -17,26 +17,94 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * github-markdown-cssから引用。
- * https://github.com/sindresorhus/github-markdown-css/blob/main/github-markdown.css
- */
-
-body {
+body.danu {
   color: #c9d1d9;
   background-color: #0d1117;
 }
 
-.markdown-body {
+.danu .markdown-body {
   box-sizing: border-box;
   min-width: 200px;
   max-width: 980px;
   margin: 0 auto;
   padding: 45px;
+
+  font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
 }
 
 @media (max-width: 767px) {
-  .markdown-body {
+  .danu .markdown-body {
     padding: 15px;
   }
 }
+
+.danu h1 {
+  font-family: 'Yuji Syuku', serif;
+}
+
+.danu cite:before {
+  content: '——';
+}
+
+.danu cite {
+  display: block;
+  font-style: normal;
+  text-align: right;
+}
+
+.danu-title {
+  position: relative;
+}
+
+.danu-title-updated {
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+}
+
+/* 9,16 16,9 */
+
+.danu-screen-shots {
+  position: relative;
+}
+
+.danu-icon {
+  display: block;
+  position: absolute;
+  width: 20%;
+  left: 40%;
+  top: 40%;
+}
+
+.danu-screen-shot1 {
+  display: block;
+  position: relative;
+  width: 36%;
+}
+
+.danu-screen-shot2 {
+  display: block;
+  position: absolute;
+  width: 64%;
+  left: 36%;
+  top: 0;
+}
+
+.danu-screen-shot3 {
+  display: block;
+  position: absolute;
+  width: 36%;
+  left: 64%;
+  top: 36%;
+}
+
+.danu-screen-shot4 {
+  display: block;
+  position: relative;
+  width: 64%;
+}
+
+
+
+
+

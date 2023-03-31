@@ -33,6 +33,9 @@ local credits = read_all(credits_pathname)
 local trophies = read_all(trophies_pathname)
 local version = parse_json(read_all(version_pathname))
 
+local date = os.date "*t"
+local updated = ("%d年%d月%d日"):format(date.year, date.month, date.day)
+
 local handle = assert(io.open(result_pathname, "w"))
 local result = template
   :gsub("$loader\n", loader)
@@ -40,5 +43,6 @@ local result = template
   :gsub("$credits\n", credits)
   :gsub("$trophies\n", trophies)
   :gsub("$version", version.web)
+  :gsub("$updated", updated)
 handle:write(result)
 handle:close()

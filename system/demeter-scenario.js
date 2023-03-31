@@ -2163,31 +2163,31 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["ラジオがささやく",["雑音","ノイズ"],"のなか、遠く、その声は聴こえた。"],
 ]],
 // index: 370
-[{speaker:"rosa",start:"preview",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[371]},[
+[{speaker:"rosa",start:"preview",music:"diana21",place:"カルチェ・ラタン",background:"モノクローム",adjacencies:[371]},[
 ["こちらは、自由ラジオ横濱",["前線","フロント"],"。"],
 ["ライシャワーが死んだセカイ線、バリケードの裡から、あの山岳",["根拠地","ベース"],"で産まれてしまった子供たちへ。"],
 ["聴こえてるかな。"],
 ]],
 // index: 371
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[372]},[
+[{speaker:"rosa",music:"diana21",place:"カルチェ・ラタン",background:"モノクローム",adjacencies:[372]},[
 ["城市","が",["叢林","ジャングル"],"を","包圍","する時。"],
 ["城市","もまた",["叢林","ジャングル"],"に","包圍","されてる。"],
 ["聴こえてるんでしょ。"],
 ]],
 // index: 372
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[373]},[
+[{speaker:"rosa",music:"diana21",place:"カルチェ・ラタン",background:"モノクローム",adjacencies:[373]},[
 ["子供たち。聴こえているならば。"],
 ["母が見つけられなかった、この国の戦後にさよならを告げる方法を見つけておくれ。"],
 [["さよなら","アスタ・ルエゴ"],"、",["ヤルタ","Y"],"・",["ポツダム","P"],["体制","レジーム"],"。"],
 ]],
 // index: 373
-[{speaker:"rosa",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[374]},[
+[{speaker:"rosa",music:"diana21",place:"カルチェ・ラタン",background:"モノクローム",adjacencies:[374]},[
 ["それは、父殺しの物語。"],
 ["それは、母殺しの物語。"],
 ["さよならを","いうのは","わずかのあいだ死ぬことだから。"],
 ]],
 // index: 374
-[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"一般設計学研究所建設予定地",background:"モノクローム",adjacencies:[]},[
+[{speaker:"narrator",enter:async($,ctx)=>{ctx.game.visitedSixtyNine = true;},finish:"title",music:"diana21",place:"カルチェ・ラタン",background:"モノクローム",adjacencies:[]},[
 ["三十八度線上空で消息を","絶った","日航","三百五十一便に、",["暴力の聖女","ゲバルト・ローザ"],"が搭乗していた","と",["中央情報局","ラングレー"],"は報告している。"],
 [["予告","USODESU"],"。——昭和横濱物語","'69","。"],
 ]],
