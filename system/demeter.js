@@ -2245,11 +2245,8 @@ const unlockAudio = async () => {
 
     if (message) {
       logging.info("サービスワーカ通信: 成功");
-      message.body.forEach(client => {
-        logging.info("実行文脈識別子: " + client.id);
-      });
-
-      if (message.body.length > 1) {
+      const regexPathname = /^\/sys\/game.*\.html$/;
+      if (message.body.filter(client => regexPathname.test(new URL(client.url).pathname)).length > 1) {
         soundEffectAlert();
         document.querySelector(".demeter-title-text").style.display = "none";
         hideTitleChoices();
@@ -3235,6 +3232,8 @@ const runStartScreen = async () => {
   await textAnimation.start();
   await D.setTimeout(2000);
 
+  // メイン画面に戻る前に段落表示をクリアする。
+  document.querySelector(".demeter-main-paragraph-text").replaceChildren();
   leaveStartScreen();
   enterMainScreen();
 

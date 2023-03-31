@@ -30,10 +30,12 @@ mkdir -p "$output_root/system/$version_system"
 cp "$source_root"/*.html "$source_root"/*.js* "$output_root"
 cp -R "$source_root/system"/* "$output_root/system/$version_system"
 
-lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$version_system/]])))" \
-  <"$source_root/game.html" \
-  >"$output_root/game.html"
-
+for i in index.html game.html
+do
+  lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$version_system/]])))" \
+    <"$source_root/$i" \
+    >"$output_root/$i"
+done
 cp "$output_root/game.html" "$output_root/game-$version_web.html"
 
 lua -e 'io.write((io.read "a":gsub([[const mode = "develop"]], [[const mode = "release"]])))' \
