@@ -20,6 +20,7 @@ voicepeak_dic = $(HOME)/Library/Application\ Support/Dreamtonics/Voicepeak/setti
 scenarios = $(wildcard scenario/*.txt)
 credits = scenario/credits
 trophies = scenario/trophies
+contexts = game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
 targets = \
 	build/loader.html \
 	build/graph.svg \
@@ -71,7 +72,10 @@ convert_debug:
 	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
-	rm -fr build/voice-out/*.wav build/voice build/debug
+	rm -fr build/voice-out/*.wav build/voice
+
+clean_debug::
+	rm -fr build/voice-out/*.wav build/debug
 
 convert_effect:
 	./tool/convert_effect.sh build/effect assets/effect "*.mp3"
@@ -133,8 +137,8 @@ system/demeter-debug-scenario.js: $(scenarios)
 version.json: versions
 	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js version.mk
 
-game.html: game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
-	$(lua) tool/generate_html.lua game.tmpl build/loader.html build/graph.svg build/credits.html build/trophies.html version.json $@
+game.html: $(contexts)
+	$(lua) tool/generate_html.lua $(contexts) $@
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@

@@ -3,17 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>昭和横濱物語</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown.min.css">
+  <title>昭和横濱物語 (GitHub Pages)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown-dark.css" integrity="sha256-sVwvm2LgPvs8KmgAtivJZES8stEW61Mz9Pt/ync4TCc=" crossorigin="anonymous">
   <link rel="stylesheet" href="common.css">
 <body>
 <div class="markdown-body">
 
-<h1>昭和横濱物語</h1>
+<h1>昭和横濱物語 (GitHub)</h1>
+
+<p>昭和七十四年七月、ボクはキミに出逢った。人類が滅亡するまでの、最期のひとつきの、これは物語だ。なお、このページは<span class="danu-text">五秒後</span>に自動的に遷移する。</p>
 
 <ul>
-  <li><a href="https://vaporoid.com/sys/">ホームページ</a></li>
+  <li><a href="https://vaporoid.com/sys/">ウェブサイト</a>でベータ版公開中。</li>
 </ul>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+  const node = document.querySelector(".danu-text");
+  const texts = [ "ただち", "一秒後", "二秒後", "三秒後", "四秒後", "五秒後" ];
+  for (let i = 4; i >= 0; --i) {
+    await sleep(1000);
+    node.textContent = texts[i];
+  }
+  location.href = "https://vaporoid.com/sys/";
+}, { once: true });
+</script>
 
 </div>
 </body><html>
