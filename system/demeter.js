@@ -955,17 +955,20 @@ D.Logging = class {
   }
 
   logImpl(...messages) {
+    // DOMの準備が完了する前にログが出力されるかもしれない。
     const loggingNode = document.querySelector(".demeter-main-logging");
-    const messageNodes = messages.map(message => {
-      const messageNode = document.createElement("div");
-      messageNode.textContent = message;
-      return messageNode;
-    });
-    loggingNode.append(...messageNodes);
-    while (loggingNode.children.length > 100) {
-      loggingNode.firstElementChild.remove();
+    if (loggingNode) {
+      const messageNodes = messages.map(message => {
+        const messageNode = document.createElement("div");
+        messageNode.textContent = message;
+        return messageNode;
+      });
+      loggingNode.append(...messageNodes);
+      while (loggingNode.children.length > 100) {
+        loggingNode.firstElementChild.remove();
+      }
+      this.update("smooth");
     }
-    this.update("smooth");
   }
 
   setLevel(level) {
@@ -1969,6 +1972,10 @@ const cacheImpl = async (sourceUrls) => {
 };
 
 D.cache = sourceUrls => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported", sourceUrls);
+    return;
+  }
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -2207,10 +2214,52 @@ const hideTitleChoices = () => {
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
+const resetAudioContext = async quiet => {
+  try {
+    await Howler.ctx.suspend();
+    if (!quiet) {
+      logging.info("オーディオ一時停止: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ一時停止: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.suspend", e);
+    }
+  }
+  await D.setTimeout(100);
+  try {
+    await Howler.ctx.resume();
+    if (!quiet) {
+      logging.info("オーディオ再開: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ再開: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.resume", e);
+    }
+  }
+};
+
+const setupAudioContextHandler = () => {
+  const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
+  if (isSafari && document.ontouchend !== undefined) {
+    document.addEventListener("visibilitychange", async () => {
+      D.trace("onVisibilityChange", document.visibilityState);
+      if (document.visibilityState === "visible") {
+        await D.setTimeout(100);
+        await resetAudioContext(true);
+      }
+    });
+  }
+};
+
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
 
   soundEffect = new D.SoundEffect(system.effectVolume);
+  setupAudioContextHandler();
 
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
@@ -2587,21 +2636,7 @@ const initializeSystemUi = () => {
     restart();
   };
 
-  commands.resetAudio = async () => {
-    try {
-      await Howler.ctx.suspend();
-      logging.info("オーディオ一時停止: 成功");
-    } catch (e) {
-      logging.error("オーディオ一時停止: 失敗", e);
-    }
-    await D.setTimeout(100);
-    try {
-      await Howler.ctx.resume();
-      logging.info("オーディオ再開: 成功");
-    } catch (e) {
-      logging.error("オーディオ再開: 失敗", e);
-    }
-  };
+  commands.resetAudio = resetAudioContext;
 
   commands.resetCache = async () => {
     try {
@@ -2642,7 +2677,9 @@ const initializeSystemUi = () => {
 
   const debugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   debugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
-  debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
+  if (globalThis.caches) {
+    debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
+  }
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -3679,7 +3716,12 @@ const checkKCode = async code => {
 
 //-------------------------------------------------------------------------
 
-D.onResize = async () => {
+D.setupErrorHandler = () => {
+  addEventListener("error", ev => logging.error("検出: 大域エラー", ev));
+  addEventListener("unhandledrejection", ev => logging.error("検出: 見過ごされた拒否", ev.reason));
+};
+
+const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
@@ -3702,6 +3744,7 @@ D.onResize = async () => {
 
   updateComponents();
 
+  // onResize
   if (!gameState[screenOrientation]) {
     gameState[screenOrientation] = true;
     await putGameState();
@@ -3711,7 +3754,7 @@ D.onResize = async () => {
   }
 };
 
-D.onKeydown = async ev => {
+const onKeydown = async ev => {
   if (screenName === "title") {
     await checkKCode(ev.code);
   } else if (screenName === "main") {
@@ -3737,14 +3780,6 @@ D.onKeydown = async ev => {
   }
 };
 
-D.onError = ev => {
-  logging.error("検出: 大域エラー", ev);
-};
-
-D.onUnhandledRejection = ev => {
-  logging.error("検出: 見過ごされた拒否", ev.reason);
-}
-
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
@@ -3758,9 +3793,12 @@ D.onDOMContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  await D.onResize();
+  await onResize();
   initializeBackground();
   initializeUpdateChecker();
+
+  addEventListener("resize", onResize);
+  addEventListener("keydown", onKeydown);
 
   await enterTitleScreen();
 

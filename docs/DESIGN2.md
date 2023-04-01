@@ -392,7 +392,37 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
         - scaleがとんでた？
   - 再現方法は不明
 
+## Howler.jsのresume/suspend
+
+- `_autoResume`の呼び出しもと
+  - `_unlockAudio`: `unlock`コールバックから呼ぶ
+  - `_autoSuspend`: `Howler.autoSuspend`が偽のときは呼ばれなさそう
+  - `play`
+- `_autoSuspend`は`Howler.autoSuspend`が偽のときはすぐにreturnする
+
+- UA判定
+  - safariである: Safariを含んでChromeを含まない
+  - iOSである
+    - Macintoshを名乗るiPadの可能性がある
+    - ontouchstartやontouchendのイベントを調べる
+      - iOS: documnet.ontouchstartがnullで、undefinedでない
+
+- 参考: https://developer.apple.com/forums/thread/658375
+
+- [x] イベントリスナーの登録タイミングを修正する
+- [x] iOSで音が出なくなる
+  - 他のページやアプリにいってもどると発生しがち
+  - resumeに失敗している？
+  - suspend/resumeでなおるパターンがあった
+  - [x] Howler.jsと衝突しないsuspend/resumeを実装する
+  - [x] iOSだけで発動する実行する
+    - iPadの判定条件
+- [=] iOSでキャッシュまわりのエラーが出ているのを修正する
+  - LAN内でhttpアクセスしていたから。
+
 ## 例外発生時のログ
+
+### テキストアニメーション
 
 ```
 23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
@@ -410,17 +440,36 @@ demeter.js:3369:3
     AsyncFunctionNext self-hosted:810
 ```
 
+### イベントリスナー
+
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'gameState[screenOrientation]')
+	（anonymous関数） (demeter.js:3742)
+	asyncFunctionResume
+```
+
+### cachesが存在しない
+
+LAN内でhttpアクセスしてるから。
+
+```
+[Log] addCache (2) (demeter.js, line 1978)
+["build/voice/0001.mp3", "build/voice/0002.mp3", "build/voice/0003.mp3", "build/voice/0004.mp3", "build/voice/0006.mp3", "build/voice/0005.mp3", "build/voice/0352.mp3", "build/voice/0375.mp3", "build/voice/0376.mp3", "build/voice/0377.mp3", …] (25)
+ReferenceError: Can't find variable: caches
+（anonymous関数） — demeter.js:1960
+asyncFunctionResume
+（anonymous関数） — demeter.js:1975
+（anonymous関数） — demeter.js:3833
+asyncFunctionResume
+（anonymous関数）
+promiseReactionJobWithoutPromise
+promiseReactionJob
+```
+
 ## タスク
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
-
-- [ ] キャッシュを消す
-  - [ ] 古いのを消す
-- [ ] SAVE/LOAD段落を起点とするキャッシュ
-- [ ] textAnimationsがundefinedになるタイミングがある
-  - スキップ中のわりこみで発生した？
-    - 単純には発生しなかった
 
 - ホームページをつくる
   - [ ] ホームページのリソースをsystem以下に置くか検討する
@@ -429,18 +478,18 @@ demeter.js:3369:3
   - [=] s3バージョニングを検討
   - [ ] ろうくみ／ろうそを宣伝する
 
+- [ ] キャッシュを消す
+  - [ ] 古いのを消す
+- [ ] SAVE/LOAD段落を起点とするキャッシュ
+- [ ] textAnimationsがundefinedになるタイミングがある
+  - スキップ中のわりこみで発生した？
+    - 単純には発生しなかった
+
 - [ ] ビルドの依存関係を再検討する。
   - make cleanの必要をなくしたい。
   - VOICEPEAKの操作をミスったときに検出したい
   - [ ] デプロイ前のチェックツール
-
-- [ ] iOSで音が出なくなる
-  - 他のページやアプリにいってもどると発生しがち
-  - resumeに失敗している？
-  - suspend/resumeでなおるパターンがあった
-  - [ ] Howler.jsと衝突しないsuspend/resumeを実装する
-  - [ ] iOSだけで発動する実行する
-    - iPadの判定条件
+  - [ ] RCをデプロイする
 
 - [ ] iOSで表示がおかしくなる
   - 他のページやアプリにいってもどるとまれに発生する
@@ -453,6 +502,7 @@ demeter.js:3369:3
 
 - [ ] バージョンアップと既読率について考える
   - [ ] 既読率の計算方式を変更
+  - 段落の削除時に実装すればよい
 
 - [ ] キーボードナビゲーション
 - [ ] ゲームパッド対応
