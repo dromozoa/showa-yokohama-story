@@ -24,14 +24,14 @@ if (D.preferenes) {
 }
 
 const mode = "develop";
-const version = { web: "b7", system: 5, music: 1, voice: 3 };
+const version = { web: "b9", system: 7, music: 1, voice: 3 };
 
 if (mode === "develop") {
   D.preferences = {
     version: version,
-    systemDir: "system",
-    musicDir: "build/music",
-    voiceDir: "build/voice",
+    systemDir: "/sys/system",
+    musicDir: "/sys/build/music",
+    voiceDir: "/sys/build/voice",
     trace: (...args) => console.log(...args),
   };
 } else {

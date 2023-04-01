@@ -17,6 +17,12 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@media (hover: hover) {
+  :root {
+    --cursor-pointer: pointer;
+  }
+}
+
 body.danu {
   color: #c9d1d9;
   background-color: #0d1117;
@@ -56,16 +62,91 @@ body.danu {
   text-align: right;
 }
 
+/*************************************************************************/
+
 .danu-updated {
   text-align: right;
 }
 
-.danu-screen-shots {
+/*************************************************************************/
+
+.danu-a-japan {
+  display: inline-block;
   position: relative;
+  width: 1em;
 }
 
-.danu-screen-shots img {
+.danu-a-japan-ex {
+  display: inline-block;
+  position: relative;
+  left: 0;
+  opacity: 1;
+}
+
+.danu-a-japan-nn {
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  opacity: 0;
+}
+
+/*************************************************************************/
+
+.danu-screen-shots {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+}
+
+.danu-screen-shot {
+  position: absolute;
+  border: 1px solid #029D93;
+  cursor: var(--cursor-pointer, auto);
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: transform 1s;
+}
+
+.danu-screen-shot.danu-active {
+  transform: translate3d(0, 0, 1px) scale(1.594);
+}
+
+.danu-screen-shot img {
   display: block;
+}
+
+.danu-screen-shot1,
+.danu-screen-shot3 {
+  width: 35.28%;
+}
+
+.danu-screen-shot2,
+.danu-screen-shot4 {
+  width: 62.72%;
+}
+
+.danu-screen-shot1 {
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+}
+
+.danu-screen-shot2 {
+  right: 0;
+  top: 0;
+  transform-origin: top right;
+}
+
+.danu-screen-shot3 {
+  right: 0;
+  bottom: 0;
+  transform-origin: bottom right;
+}
+
+.danu-screen-shot4 {
+  left: 0;
+  bottom: 0;
+  transform-origin: bottom left;
 }
 
 .danu-icon {
@@ -75,33 +156,7 @@ body.danu {
   top: 40%;
 }
 
-.danu-screen-shot1 {
-  position: relative;
-  width: 36%;
-  border: 1px solid #029D93;
-}
-
-.danu-screen-shot2 {
-  position: absolute;
-  width: 64%;
-  left: 36%;
-  top: 0;
-  border: 1px solid #029D93;
-}
-
-.danu-screen-shot3 {
-  position: absolute;
-  width: 36%;
-  left: 64%;
-  top: 36%;
-  border: 1px solid #029D93;
-}
-
-.danu-screen-shot4 {
-  position: relative;
-  width: 64%;
-  border: 1px solid #029D93;
-}
+/*************************************************************************/
 
 .danu-footer {
   text-align: right;

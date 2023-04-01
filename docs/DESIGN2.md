@@ -356,6 +356,110 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - [x] メッセージ送信をタイトルかホームページに作る
   - [=] brotliで圧縮したサイズを計算する
 
+- ホームページをつくる
+  - [x] 更新履歴を表示する
+  - [x] 幅がせまいと更新日が重なる
+
+- [=] スクリプトを圧縮する。
+- [=] エラー通報
+- [=] データベースの処理を検討する
+  - [=] バージョン管理
+  - [=] エラー処理
+  - [=] トランザクション
+
+## 保存
+
+- [ ] iOSで音が出なくなる
+  - resumeに失敗している？
+  - オート再生からロック→解除で、メモリ負荷がかかってるとか？
+  - [ ] 他のタブで動画を再生して戻ったりするとだめ
+    - [ ] リロードしてもだめ？
+  - [ ] 音の入力が消えたらグラフをノーシグナルにする？
+    - [ ] そもそも入力はどうなってる？
+  - [ ] 音が止まったあと、セーブにいって戻ると音が出るときもある
+    - resume?
+
+- [ ] iOSで表示がおかしくなる
+  - 背景のtransformがきかなくなる
+  - [=] 背景のトランジションが遅い
+  - canvasがおかしくなる
+    - 他のページやアプリにいってもどると発生
+    - contextはとれる
+    - おそらくcontextがいなくなってつくりなおされた
+      - fillStyleは通った
+        - 白に設定していたのが黒になってた？
+      - サイズがおかしい
+        - scaleがとんでた？
+  - 再現方法は不明
+
+## Howler.jsのresume/suspend
+
+- `_autoResume`の呼び出しもと
+  - `_unlockAudio`: `unlock`コールバックから呼ぶ
+  - `_autoSuspend`: `Howler.autoSuspend`が偽のときは呼ばれなさそう
+  - `play`
+- `_autoSuspend`は`Howler.autoSuspend`が偽のときはすぐにreturnする
+
+## 例外発生時のログ（対応済み）
+
+### イベントリスナー
+
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'gameState[screenOrientation]')
+	（anonymous関数） (demeter.js:3742)
+	asyncFunctionResume
+```
+
+### cachesが存在しない
+
+LAN内でhttpアクセスしてるから。
+
+```
+[Log] addCache (2) (demeter.js, line 1978)
+["build/voice/0001.mp3", "build/voice/0002.mp3", "build/voice/0003.mp3", "build/voice/0004.mp3", "build/voice/0006.mp3", "build/voice/0005.mp3", "build/voice/0352.mp3", "build/voice/0375.mp3", "build/voice/0376.mp3", "build/voice/0377.mp3", …] (25)
+ReferenceError: Can't find variable: caches
+（anonymous関数） — demeter.js:1960
+asyncFunctionResume
+（anonymous関数） — demeter.js:1975
+（anonymous関数） — demeter.js:3833
+asyncFunctionResume
+（anonymous関数）
+promiseReactionJobWithoutPromise
+promiseReactionJob
+```
+
+## 完了タスク
+
+- UA判定
+  - safariである: Safariを含んでChromeを含まない
+  - iOSである
+    - Macintoshを名乗るiPadの可能性がある
+    - ontouchstartやontouchendのイベントを調べる
+      - iOS: documnet.ontouchstartがnullで、undefinedでない
+
+- 参考: https://developer.apple.com/forums/thread/658375
+
+- [x] イベントリスナーの登録タイミングを修正する
+- [x] iOSで音が出なくなる
+  - 他のページやアプリにいってもどると発生しがち
+  - resumeに失敗している？
+  - suspend/resumeでなおるパターンがあった
+  - [x] Howler.jsと衝突しないsuspend/resumeを実装する
+  - [x] iOSだけで発動する実行する
+    - iPadの判定条件
+- [=] iOSでキャッシュまわりのエラーが出ているのを修正する
+  - LAN内でhttpアクセスしていたから。
+
+- [x] RCのデプロイ
+  - game-Ver.htmlをアップロードする
+- [x] キャッシュを消す
+  - [x] 古いのを消す
+- [x] SAVE/LOAD段落を起点とするキャッシュ
+
+## 例外発生時
+
+### テキストアニメーション
+
 ```
 23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
     next http://localhost/sys/system/demeter.js:3369
@@ -377,49 +481,43 @@ demeter.js:3369:3
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
 
-- [ ] キャッシュを消す
-- [ ] SAVE/LOAD段落を起点とするキャッシュ
-- [ ] スキップ中のトロフィーで例外？
+- [ ] バックログ
+  - HISTORY
+  - チュートリアルで「どうしてバックログっていうんだろうね」
+- [ ] 一瞬表示の停止
+- [ ] オフライン用のダウンロード
 
 - ホームページをつくる
-  - [x] 更新履歴を表示する
+  - [ ] ホームページのリソースをsystem以下に置くか検討する
+  - [ ] ツイッターカード
   - [ ] アプリケーションインストール
-  - [x] 幅がせまいと更新日が重なる
+  - [=] s3バージョニングを検討
+  - [x] 画像が動くようにする。
+
+- [ ] textAnimationsがundefinedになるタイミングがある
+  - スキップ中のわりこみで発生した？
+    - 単純には発生しなかった
 
 - [ ] ビルドの依存関係を再検討する。
   - make cleanの必要をなくしたい。
   - VOICEPEAKの操作をミスったときに検出したい
+  - [ ] デプロイ前のチェックツール
 
-## タスク
+- [ ] バージョンアップと既読率について考える
+  - [ ] 既読率の計算方式を変更
+  - 段落の削除時に実装すればよい
 
-- [ ] iOSで音が出なくなる
-  - resumeに失敗している？
-  - オート再生からロック→解除で、メモリ負荷がかかってるとか？
-  - [ ] 他のタブで動画を再生して戻ったりするとだめ
-    - [ ] リロードしてもだめ？
-  - [ ] 音の入力が消えたらグラフをノーシグナルにする？
-    - [ ] そもそも入力はどうなってる？
-  - [ ] 音が止まったあと、セーブにいって戻ると音が出るときもある
-    - resume?
+- [ ] キーボードナビゲーション
+- [ ] ゲームパッド対応
 
 - [ ] iOSで表示がおかしくなる
-  - 背景のtransformがきかなくなる
-  - [ ] 背景のトランジションが遅い
-  - canvasがおかしくなる
-    - 他のページやアプリにいってもどると発生
-    - contextはとれる
-    - おそらくcontextがいなくなってつくりなおされた
-      - fillStyleは通った
-        - 白に設定していたのが黒になってた？
-      - サイズがおかしい
-        - scaleがとんでた？
-  - 再現方法は不明
-
-- [ ] スクリプトを圧縮する。
-- [ ] バージョンアップと既読率について考える
-- [ ] エラー通報
-- [ ] データベースの処理を検討する
-  - [=] バージョン管理
-  - [ ] エラー処理
-  - [=] トランザクション
+  - 他のページやアプリにいってもどるとまれに発生する
+  - 背景のtransformが効いていない状態になる
+  - Canvasのスタイルが聴いていない状態になる
+    - 黒で描かれる
+    - contextはロストしていないように見える
+  - 音も出なくなった
+    - suspend/resumeでなおらず
+  - [ ] 検出方法を検討する
+  - [ ] Canvasをつくりなおす
 

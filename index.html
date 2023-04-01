@@ -20,6 +20,8 @@
   <link href="system/./favicon.ico" rel="icon" sizes="any">
   <link href="system/./favicon.svg" rel="icon" type="image/svg+xml">
   <link href="system/./apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script defer src="system/./danu.js"></script>
 </head>
 
 <body class="danu">
@@ -43,7 +45,7 @@
 <h2>ブラウザ版</h2>
 
 <p>
-<a target="_blank" rel="noopener noreferrer" href="game.html">『昭和横濱物語 Ver. b7』</a>を、今すぐはじめよう！<br>
+<a target="_blank" rel="noopener noreferrer" href="game.html">『昭和横濱物語 Ver.b9』</a>を、今すぐはじめよう！<br>
 実質無料にして完全無料にして永年無料！<br>
 なぜって課金やら広告やら実装するのめんどいから。
 </p>
@@ -53,6 +55,19 @@
     <th>Ver.</th>
     <th>リリース日</th>
     <th>詳細</th>
+  </tr>
+  <tr>
+    <td rowspan="2">b9</td>
+    <td rowspan="2">2023年4月1日</td>
+    <td>キャッシュ処理をチューニング</td>
+  </tr>
+  <tr>
+    <td>Mobile Safariで、タブ・アプリ切り替え時にオーディオの文脈をリセット</td>
+  </tr>
+  <tr>
+    <td>b8</td>
+    <td>2023年4月1日</td>
+    <td>システム設定にデバッグコマンドを追加</td>
   </tr>
   <tr>
     <td>b7</td>
@@ -71,12 +86,17 @@
 
 <p>
 このフィクションは小説です。あらゆる物語はロマンスなので、登場する団体名、会社名、及び個人名と現実のそれらとは一切関係がないなどと誰に断ずる権利があるでしょう。<br>
-<cite>矢作俊彦『あ・じゃ・ぱん！』</cite>
+<cite>矢作俊彦『あ・じゃ・ぱ<span class="danu-a-japan"><span class="danu-a-japan-ex">！</span><span class="danu-a-japan-nn">ん</span></span>』</cite>
 </p>
 
 <ul>
   <li>転送量はぜんぶで50MBくらい。3Gだときびしいかも。</li>
-  <li>iOSでアプリを切り替えていると、オーディオやグラフィックスの文脈がどこかにいっちゃうことがある。そんなときは、再読込。</li>
+  <li>iOSでアプリを切り替えていると、オーディオやグラフィックスの文脈がどこかにいっちゃうことがある。そんなときは、再読込。
+    <ul>
+      <li>Ver.b9でオーディオについて緩和策を導入。</li>
+      <li>発生頻度は減少したけど、まれに発生する。</li>
+    </ul>
+  </li>
   <li>ただでさえ、物語の文脈を見失いがちだっていうのにね。</li>
 </ul>
 
@@ -89,10 +109,10 @@
 
 <div class="danu-screen-shots">
   <div class="danu-icon"><img src="system/./icon-index.png"></div>
-  <div class="danu-screen-shot1"><img src="system/./screen-shot1.jpg"></div>
-  <div class="danu-screen-shot2"><img src="system/./screen-shot2.jpg"></div>
-  <div class="danu-screen-shot3"><img src="system/./screen-shot3.jpg"></div>
-  <div class="danu-screen-shot4"><img src="system/./screen-shot4.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot1"><img src="system/./screen-shot1.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot2"><img src="system/./screen-shot2.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot3"><img src="system/./screen-shot3.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot4"><img src="system/./screen-shot4.jpg"></div>
 </div>
 
 
@@ -121,7 +141,10 @@
 </p>
 
 <p>
-それからながいながい時間が経った。<br>
+それからながいながい時間が経った。
+</p>
+
+<p>
 ブラウザのルビでは、じゅうぶんでなかった。<br>
 じまえでテクストをレイアウトしよう。<br>
 そういうことになった。

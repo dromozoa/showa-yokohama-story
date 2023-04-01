@@ -955,17 +955,20 @@ D.Logging = class {
   }
 
   logImpl(...messages) {
+    // DOMの準備が完了する前にログが出力されるかもしれない。
     const loggingNode = document.querySelector(".demeter-main-logging");
-    const messageNodes = messages.map(message => {
-      const messageNode = document.createElement("div");
-      messageNode.textContent = message;
-      return messageNode;
-    });
-    loggingNode.append(...messageNodes);
-    while (loggingNode.children.length > 100) {
-      loggingNode.firstElementChild.remove();
+    if (loggingNode) {
+      const messageNodes = messages.map(message => {
+        const messageNode = document.createElement("div");
+        messageNode.textContent = message;
+        return messageNode;
+      });
+      loggingNode.append(...messageNodes);
+      while (loggingNode.children.length > 100) {
+        loggingNode.firstElementChild.remove();
+      }
+      this.update("smooth");
     }
-    this.update("smooth");
   }
 
   setLevel(level) {
@@ -1969,6 +1972,10 @@ const cacheImpl = async (sourceUrls) => {
 };
 
 D.cache = sourceUrls => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported", sourceUrls);
+    return;
+  }
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -1988,6 +1995,39 @@ const getMusicUrls = () => {
 const getVoiceUrls = paragraphIndices => {
   const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
   return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
+};
+
+const isDeleteOldCacheTarget = url => (
+  !url.pathname.startsWith(D.preferences.systemDir) &&
+  !url.pathname.startsWith(D.preferences.musicDir) &&
+  !url.pathname.startsWith(D.preferences.voiceDir)
+);
+
+const deleteOldCachesImpl = async () => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported", sourceUrls);
+    return;
+  }
+  const cache = await caches.open("昭和横濱物語");
+  const keys = await cache.keys();
+  const deletedUrls = [];
+  for (let i = 0; i < keys.length; ++i) {
+    const request = keys[i];
+    if (isDeleteOldCacheTarget(new URL(request.url))) {
+      if (await cache.delete(request)) {
+        deletedUrls.push(request.url);
+      }
+    }
+  }
+  return deletedUrls;
+};
+
+const deleteOldCaches = () => {
+  deleteOldCachesImpl().then(deletedUrls => {
+    D.trace("deleteOldCaches", deletedUrls);
+  }).catch(e => {
+    D.trace("deleteOldCaches", e);
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -2181,6 +2221,8 @@ const showTitleChoices = async () => {
   if (autosave) {
     choice3Node.style.display = "block";
     ++n;
+    // 自動保存の段落の音声をキャッシュする。
+    D.cache(getVoiceUrls([autosave.paragraphIndex]));
   } else {
     choice3Node.style.display = "none";
   }
@@ -2207,10 +2249,52 @@ const hideTitleChoices = () => {
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
+const resetAudioContext = async quiet => {
+  try {
+    await Howler.ctx.suspend();
+    if (!quiet) {
+      logging.info("オーディオ一時停止: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ一時停止: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.suspend", e);
+    }
+  }
+  await D.setTimeout(100);
+  try {
+    await Howler.ctx.resume();
+    if (!quiet) {
+      logging.info("オーディオ再開: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ再開: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.resume", e);
+    }
+  }
+};
+
+const setupAudioContextHandler = () => {
+  const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
+  if (isSafari && document.ontouchend !== undefined) {
+    document.addEventListener("visibilitychange", async () => {
+      D.trace("onVisibilityChange", document.visibilityState);
+      if (document.visibilityState === "visible") {
+        await D.setTimeout(100);
+        await resetAudioContext(true);
+      }
+    });
+  }
+};
+
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
 
   soundEffect = new D.SoundEffect(system.effectVolume);
+  setupAudioContextHandler();
 
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
@@ -2587,6 +2671,24 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.resetAudio = resetAudioContext;
+
+  commands.resetCache = async () => {
+    try {
+      const cache = await caches.open("昭和横濱物語");
+      const keys = await cache.keys();
+      let n = 0;
+      for (let i = 0; i < keys.length; ++i) {
+        if (await cache.delete(keys[i])) {
+          ++n;
+        }
+      }
+      logging.info("キャッシュ削除: 成功 (" + n + "/" + keys.length + ")");
+    } catch (e) {
+      logging.info("キャッシュ削除: 失敗");
+    }
+  };
+
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
   if (D.getFullscreenElement) {
     const controller = commandsFolder.add(commands, "fullscreen");
@@ -2607,6 +2709,12 @@ const initializeSystemUi = () => {
   const systemCommandsFolder = addSystemUiFolder(systemUi, "システムコマンド");
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+
+  const debugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
+  debugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
+  if (globalThis.caches) {
+    debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
+  }
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2687,16 +2795,21 @@ const enterMainScreen = () => {
 };
 
 const enterDataScreen = async screenNode => {
+  const paragraphIndices = [];
+
   for (let i = 1; i <= 3; ++i) {
     const key = "save" + i;
     const save = await database.get("save", key);
     if (save) {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = " : " + D.dateToString(new Date(save.saved));
+      paragraphIndices.push(save.paragraphIndex);
     } else {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = "";
     }
   }
   document.querySelector(".demeter-screen").append(screenNode);
+
+  return paragraphIndices;
 };
 
 const enterLoadScreen = async () => {
@@ -2706,7 +2819,9 @@ const enterLoadScreen = async () => {
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
-  await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  // セーブされている段落の音声をキャッシュする。
+  D.cache(getVoiceUrls(paragraphIndices));
 };
 
 const enterSaveScreen = async () => {
@@ -3643,7 +3758,12 @@ const checkKCode = async code => {
 
 //-------------------------------------------------------------------------
 
-D.onResize = async () => {
+D.setupErrorHandler = () => {
+  addEventListener("error", ev => logging.error("検出: 大域エラー", ev));
+  addEventListener("unhandledrejection", ev => logging.error("検出: 見過ごされた拒否", ev.reason));
+};
+
+const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
@@ -3666,6 +3786,7 @@ D.onResize = async () => {
 
   updateComponents();
 
+  // onResize
   if (!gameState[screenOrientation]) {
     gameState[screenOrientation] = true;
     await putGameState();
@@ -3675,7 +3796,7 @@ D.onResize = async () => {
   }
 };
 
-D.onKeydown = async ev => {
+const onKeydown = async ev => {
   if (screenName === "title") {
     await checkKCode(ev.code);
   } else if (screenName === "main") {
@@ -3701,14 +3822,6 @@ D.onKeydown = async ev => {
   }
 };
 
-D.onError = ev => {
-  logging.error("検出: 大域エラー", ev);
-};
-
-D.onUnhandledRejection = ev => {
-  logging.error("検出: 見過ごされた拒否", ev.reason);
-}
-
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
@@ -3722,9 +3835,12 @@ D.onDOMContentLoaded = async () => {
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  await D.onResize();
+  await onResize();
   initializeBackground();
   initializeUpdateChecker();
+
+  addEventListener("resize", onResize);
+  addEventListener("keydown", onKeydown);
 
   await enterTitleScreen();
 
@@ -3754,6 +3870,9 @@ D.onDOMContentLoaded = async () => {
 
   // 開始段落の音声をキャッシュする。
   D.cache(getVoiceUrls(D.scenario.starts));
+
+  // 古いキャッシュを消す。
+  deleteOldCaches();
 
   while (true) {
     await D.requestAnimationFrame();

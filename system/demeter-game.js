@@ -26,11 +26,7 @@ D.includeGameGuard = true;
 
 //-------------------------------------------------------------------------
 
-addEventListener("resize", D.onResize);
-addEventListener("keydown", D.onKeydown);
-addEventListener("error", D.onError);
-addEventListener("unhandledrejection", D.onUnhandledRejection);
-
+D.setupErrorHandler();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", D.onDOMContentLoaded, { once: true });
 } else {
