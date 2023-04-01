@@ -400,45 +400,7 @@ HowlerGlobal.prototype._autoResume = function () { console.log("_autoResume star
   - `play`
 - `_autoSuspend`は`Howler.autoSuspend`が偽のときはすぐにreturnする
 
-- UA判定
-  - safariである: Safariを含んでChromeを含まない
-  - iOSである
-    - Macintoshを名乗るiPadの可能性がある
-    - ontouchstartやontouchendのイベントを調べる
-      - iOS: documnet.ontouchstartがnullで、undefinedでない
-
-- 参考: https://developer.apple.com/forums/thread/658375
-
-- [x] イベントリスナーの登録タイミングを修正する
-- [x] iOSで音が出なくなる
-  - 他のページやアプリにいってもどると発生しがち
-  - resumeに失敗している？
-  - suspend/resumeでなおるパターンがあった
-  - [x] Howler.jsと衝突しないsuspend/resumeを実装する
-  - [x] iOSだけで発動する実行する
-    - iPadの判定条件
-- [=] iOSでキャッシュまわりのエラーが出ているのを修正する
-  - LAN内でhttpアクセスしていたから。
-
-## 例外発生時のログ
-
-### テキストアニメーション
-
-```
-23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
-    next http://localhost/sys/system/demeter.js:3369
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-demeter-preferences.js:35:33
-
-23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
-    next http://localhost/sys/system/demeter.js:3369
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-demeter.js:3369:3
-    next http://localhost/sys/system/demeter.js:3474
-    initializeMainScreen http://localhost/sys/system/demeter.js:2921
-    InterpretGeneratorResume self-hosted:1822
-    AsyncFunctionNext self-hosted:810
-```
+## 例外発生時のログ（対応済み）
 
 ### イベントリスナー
 
@@ -466,10 +428,62 @@ promiseReactionJobWithoutPromise
 promiseReactionJob
 ```
 
+## 完了タスク
+
+- UA判定
+  - safariである: Safariを含んでChromeを含まない
+  - iOSである
+    - Macintoshを名乗るiPadの可能性がある
+    - ontouchstartやontouchendのイベントを調べる
+      - iOS: documnet.ontouchstartがnullで、undefinedでない
+
+- 参考: https://developer.apple.com/forums/thread/658375
+
+- [x] イベントリスナーの登録タイミングを修正する
+- [x] iOSで音が出なくなる
+  - 他のページやアプリにいってもどると発生しがち
+  - resumeに失敗している？
+  - suspend/resumeでなおるパターンがあった
+  - [x] Howler.jsと衝突しないsuspend/resumeを実装する
+  - [x] iOSだけで発動する実行する
+    - iPadの判定条件
+- [=] iOSでキャッシュまわりのエラーが出ているのを修正する
+  - LAN内でhttpアクセスしていたから。
+
+- [x] RCのデプロイ
+  - game-Ver.htmlをアップロードする
+- [x] キャッシュを消す
+  - [x] 古いのを消す
+- [x] SAVE/LOAD段落を起点とするキャッシュ
+
+## 例外発生時
+
+### テキストアニメーション
+
+```
+23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter-preferences.js:35:33
+
+23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter.js:3369:3
+    next http://localhost/sys/system/demeter.js:3474
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+    InterpretGeneratorResume self-hosted:1822
+    AsyncFunctionNext self-hosted:810
+```
+
 ## タスク
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
+
+- [ ] バックログ
+- [ ] 一瞬表示の停止
+- [ ] オフライン用のダウンロード
 
 - ホームページをつくる
   - [ ] ホームページのリソースをsystem以下に置くか検討する
@@ -477,13 +491,6 @@ promiseReactionJob
   - [ ] アプリケーションインストール
   - [=] s3バージョニングを検討
   - [ ] ろうくみ／ろうそを宣伝する
-
-- [ ] RCのデプロイ
-  - game-Ver.htmlをアップロードする
-
-- [ ] キャッシュを消す
-  - [ ] 古いのを消す
-- [x] SAVE/LOAD段落を起点とするキャッシュ
 
 - [ ] textAnimationsがundefinedになるタイミングがある
   - スキップ中のわりこみで発生した？
@@ -494,19 +501,21 @@ promiseReactionJob
   - VOICEPEAKの操作をミスったときに検出したい
   - [ ] デプロイ前のチェックツール
 
-- [ ] iOSで表示がおかしくなる
-  - 他のページやアプリにいってもどるとまれに発生する
-  - 背景のtransformが効いていない状態になる
-  - Canvasのスタイルが聴いていない状態になる
-    - 黒で描かれる
-    - contextはロストしていないように見える
-  - [ ] 検出方法を検討する
-  - [ ] Canvasをつくりなおす
-
 - [ ] バージョンアップと既読率について考える
   - [ ] 既読率の計算方式を変更
   - 段落の削除時に実装すればよい
 
 - [ ] キーボードナビゲーション
 - [ ] ゲームパッド対応
+
+- [ ] iOSで表示がおかしくなる
+  - 他のページやアプリにいってもどるとまれに発生する
+  - 背景のtransformが効いていない状態になる
+  - Canvasのスタイルが聴いていない状態になる
+    - 黒で描かれる
+    - contextはロストしていないように見える
+  - 音も出なくなった
+    - suspend/resumeでなおらず
+  - [ ] 検出方法を検討する
+  - [ ] Canvasをつくりなおす
 

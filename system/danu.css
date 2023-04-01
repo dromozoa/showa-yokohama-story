@@ -60,6 +60,14 @@ body.danu {
   text-align: right;
 }
 
+.danu-a-japan:after {
+  content: '！';
+}
+
+.danu-a-japan:hover:after {
+  content: 'ん';
+}
+
 .danu-screen-shots {
   position: relative;
 }
