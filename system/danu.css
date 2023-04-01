@@ -70,6 +70,8 @@ body.danu {
 
 .danu-screen-shots {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1;
 }
 
 .danu-screen-shots img {
@@ -85,29 +87,31 @@ body.danu {
 
 .danu-screen-shot1 {
   position: relative;
-  width: 36%;
+  width: 35.64%;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot2 {
   position: absolute;
-  width: 64%;
-  left: 36%;
+  width: 63.36%;
+  left: 36.64%;
   top: 0;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot3 {
   position: absolute;
-  width: 36%;
-  left: 64%;
-  top: 36%;
+  width: 35.64%;
+  left: 64.36%;
+  top: 36.64%;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot4 {
   position: relative;
-  width: 64%;
+  width: 63.36%;
+  left: 0;
+  top: 0.72%;
   border: 1px solid #029D93;
 }
 
