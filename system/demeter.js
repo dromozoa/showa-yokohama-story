@@ -1997,6 +1997,39 @@ const getVoiceUrls = paragraphIndices => {
   return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
 };
 
+const isDeleteOldCacheTarget = url => (
+  !url.pathname.startsWith(D.preferences.systemDir) &&
+  !url.pathname.startsWith(D.preferences.musicDir) &&
+  !url.pathname.startsWith(D.preferences.voiceDir)
+);
+
+const deleteOldCachesImpl = async () => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported", sourceUrls);
+    return;
+  }
+  const cache = await caches.open("昭和横濱物語");
+  const keys = await cache.keys();
+  const deletedUrls = [];
+  for (let i = 0; i < keys.length; ++i) {
+    const request = keys[i];
+    if (isDeleteOldCacheTarget(new URL(request.url))) {
+      if (await cache.delete(request)) {
+        deletedUrls.push(request.url);
+      }
+    }
+  }
+  return deletedUrls;
+};
+
+const deleteOldCaches = () => {
+  deleteOldCachesImpl().then(deletedUrls => {
+    D.trace("deleteOldCaches", deletedUrls);
+  }).catch(e => {
+    D.trace("deleteOldCaches", e);
+  });
+};
+
 //-------------------------------------------------------------------------
 
 const putSystemTask = async () => {
@@ -3837,6 +3870,9 @@ D.onDOMContentLoaded = async () => {
 
   // 開始段落の音声をキャッシュする。
   D.cache(getVoiceUrls(D.scenario.starts));
+
+  // 古いキャッシュを消す。
+  deleteOldCaches();
 
   while (true) {
     await D.requestAnimationFrame();
