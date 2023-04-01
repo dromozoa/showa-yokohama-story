@@ -86,32 +86,32 @@ body.danu {
 }
 
 .danu-screen-shot1 {
-  position: relative;
-  width: 35.64%;
+  position: absolute;
+  width: 35.28%;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot2 {
   position: absolute;
-  width: 63.36%;
-  left: 36.64%;
+  width: 62.72%;
+  right: 0;
   top: 0;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot3 {
   position: absolute;
-  width: 35.64%;
-  left: 64.36%;
-  top: 36.64%;
+  width: 35.28%;
+  right: 0;
+  bottom: 0;
   border: 1px solid #029D93;
 }
 
 .danu-screen-shot4 {
-  position: relative;
-  width: 63.36%;
+  position: absolute;
+  width: 62.72%;
   left: 0;
-  top: 0.72%;
+  bottom: 0;
   border: 1px solid #029D93;
 }
 
