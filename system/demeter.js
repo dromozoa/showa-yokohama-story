@@ -2188,6 +2188,8 @@ const showTitleChoices = async () => {
   if (autosave) {
     choice3Node.style.display = "block";
     ++n;
+    // 自動保存の段落の音声をキャッシュする。
+    D.cache(getVoiceUrls([autosave.paragraphIndex]));
   } else {
     choice3Node.style.display = "none";
   }
@@ -2760,16 +2762,21 @@ const enterMainScreen = () => {
 };
 
 const enterDataScreen = async screenNode => {
+  const paragraphIndices = [];
+
   for (let i = 1; i <= 3; ++i) {
     const key = "save" + i;
     const save = await database.get("save", key);
     if (save) {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = " : " + D.dateToString(new Date(save.saved));
+      paragraphIndices.push(save.paragraphIndex);
     } else {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = "";
     }
   }
   document.querySelector(".demeter-screen").append(screenNode);
+
+  return paragraphIndices;
 };
 
 const enterLoadScreen = async () => {
@@ -2779,7 +2786,9 @@ const enterLoadScreen = async () => {
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
-  await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  // セーブされている段落の音声をキャッシュする。
+  D.cache(getVoiceUrls(paragraphIndices));
 };
 
 const enterSaveScreen = async () => {
