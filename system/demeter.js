@@ -1513,6 +1513,11 @@ D.VoiceSprite = class {
 
   start() {
     return new Promise((resolve, reject) => {
+      if (playState === "skip") {
+        resolve("end");
+        return;
+      }
+
       this.sound.setOnceLoadError((soundId, message) => {
         D.trace("VoiceSprite onceLoadError", soundId, message, this.soundId);
         this.soundId = undefined;
@@ -1574,22 +1579,6 @@ D.VoiceSprite = class {
       this.sound.stop(this.soundId);
     }
   }
-};
-
-D.NullVoiceSprite = class {
-  constructor() {
-    this.paused = false;
-    this.finished = false;
-  }
-
-  async start() {
-    return "end";
-  }
-
-  updateVolume() {}
-  pause() {}
-  restart() {}
-  finish() {}
 };
 
 //-------------------------------------------------------------------------
@@ -3637,22 +3626,17 @@ const next = async () => {
     textNode.replaceChildren(...textNodes);
     textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-    // SKIP中は音声を再生しない。
-    if (playState !== "skip") {
-      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
+    voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
 
-      // 次に到達する可能性がある段落のボイスをキャッシュする。
+    // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
+    if (playState !== "skip") {
       D.cache(getVoiceUrls(paragraph[0].adjacencies));
     }
   }
 
   textAnimation = textAnimations[paragraphLineNumber - 1];
-  if (voiceSound && playState !== "skip") {
-    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
-  } else {
-    voiceSprite = new D.NullVoiceSprite();
-  }
+  voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
   if (waitForStop) {
