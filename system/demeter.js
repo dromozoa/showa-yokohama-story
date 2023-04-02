@@ -1921,9 +1921,11 @@ let state;
 let screenOrientation;
 let screenWidth;
 let screenHeight;
+let screenScale;
 let screenNamePrev;
 let screenName;
 let systemUi;
+let mainToHistoryScreenOnce;
 
 let backgroundTransition;
 let trophyAnimationQueue = [];
@@ -2760,6 +2762,10 @@ const leaveCreditsScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-credits-screen"));
 };
 
+const leaveHistoryScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-history-screen"));
+};
+
 //-------------------------------------------------------------------------
 
 const enterTitleScreen = async () => {
@@ -2789,6 +2795,8 @@ const enterStartScreen = () => {
 
 const enterMainScreen = () => {
   setScreenName("main");
+  // ヒストリ画面への遷移フラグを初期化する。
+  mainToHistoryScreenOnce = undefined;
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
   logging.update("auto");
@@ -2921,6 +2929,11 @@ const enterCreditsScreen = async () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 };
 
+const enterHistoryScreen = async () => {
+  setScreenName("history");
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+};
+
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
@@ -2955,6 +2968,27 @@ const backCreditsScreen = async () => {
   }
 };
 
+const backHistoryScreen = () => {
+  soundEffectCancel();
+  leaveHistoryScreen();
+  enterMainScreen();
+  restart();
+};
+
+//-------------------------------------------------------------------------
+
+const mainToHistoryScreen = async () => {
+  if (mainToHistoryScreenOnce) {
+    return;
+  }
+  mainToHistoryScreenOnce = true;
+  soundEffectSelect();
+  await cancelPlayState();
+  pause();
+  leaveMainScreen();
+  await enterHistoryScreen();
+};
+
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
@@ -2962,9 +2996,7 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-// const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
-// debug
-const initializeUpdateChecker = () => D.updateChecker = updateChecker = new D.UpdateChecker(600000);
+const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
 
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
@@ -3036,8 +3068,59 @@ const initializeMainScreen = () => {
     next();
   });
 
+  const paragraphNode = document.querySelector(".demeter-main-paragraph");
+  const paragraphTouches = new Map();
+
+  paragraphNode.addEventListener("wheel", async ev => {
+    // スクロールを止める。
+    ev.preventDefault();
+    if (ev.deltaY < 0) {
+      await mainToHistoryScreen();
+    }
+  });
+  paragraphNode.addEventListener("touchstart", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchStart", changedTouch.identifier);
+      paragraphTouches.set(changedTouch.identifier, {
+        screenX: changedTouch.screenX,
+        screenY: changedTouch.screenY,
+      });
+    }
+  });
+  paragraphNode.addEventListener("touchend", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchEnd", changedTouch.identifier);
+      paragraphTouches.delete(changedTouch.identifier);
+    }
+  });
+  paragraphNode.addEventListener("touchcancel", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchCancel", changedTouch.identifier);
+      paragraphTouches.delete(changedTouch.identifier);
+    }
+  });
+  paragraphNode.addEventListener("touchmove", async ev => {
+    // スクロールを止める。
+    ev.preventDefault();
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      const touch = paragraphTouches.get(changedTouch.identifier);
+      const deltaX = changedTouch.screenX - touch.screenX;
+      const deltaY = changedTouch.screenY - touch.screenY;
+      if (-deltaY > fontSize * 2 * screenScale && Math.abs(deltaY) > Math.abs(deltaX)) {
+        await mainToHistoryScreen();
+      }
+    }
+  });
+
+
+
+
   document.querySelector(".demeter-main-system-ui").addEventListener("click", async ev => {
-    // システムUIの表示中はバブリングを停止する。
+    // システムUIのうしろにバブリングしない。
     ev.stopPropagation();
     await cancelPlayState();
   });
@@ -3280,6 +3363,16 @@ const initializeSaveScreen = () => {
 
 const initializeCreditsScreen = () => {
   document.querySelector(".demeter-credits-end").addEventListener("click", backCreditsScreen);
+};
+
+const initializeHistoryScreen = () => {
+  const backFrameNode = D.createBackFrame(fontSize * 10 + 1, fontSize * 2 + 1, fontSize * 10, fontSize * 2, 1);
+  document.querySelector(".demeter-history-back-frame").append(backFrameNode);
+
+  const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
+  document.querySelector(".demeter-history-title-frame").append(titleFrameNode);
+
+  backFrameNode.querySelector(".demeter-button").addEventListener("click", backHistoryScreen);
 };
 
 const initializeDialogOverlay = () => {
@@ -3777,11 +3870,11 @@ const onResize = async () => {
     screenHeight = fontSize * 27;
   }
 
-  const scale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
+  screenScale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
   const transform = "translate(" +
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
-    D.numberToString(scale) + ")";
+    D.numberToString(screenScale) + ")";
   [ ...document.querySelectorAll(".demeter-background"), document.querySelector(".demeter-screen") ].forEach(node => node.style.transform = transform);
 
   updateComponents();
@@ -3806,6 +3899,8 @@ const onKeydown = async ev => {
     } else if (ev.code === "Escape") {
       await cancelPlayState();
       systemUi.openAnimated(false);
+    } else if (ev.code === "ArrowUp" || ev.code === "KeyK") {
+      await mainToHistoryScreen();
     }
   } else if (screenName === "load") {
     if (ev.code === "Escape" && !waitForDialog) {
@@ -3832,6 +3927,7 @@ D.onDOMContentLoaded = async () => {
   initializeLoadScreen();
   initializeSaveScreen();
   initializeCreditsScreen();
+  initializeHistoryScreen();
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
