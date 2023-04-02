@@ -939,6 +939,10 @@ body.demeter {
   scrollbar-width: none;
 }
 
+.demeter-credits-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .demeter-credits {
   position: absolute;
   width: var(--screen-width);
@@ -1189,6 +1193,10 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   overflow: auto;
   scrollbar-width: none;
+}
+
+.demeter-history-paragraphs::-webkit-scrollbar {
+  display: none;
 }
 
 @media (orientation: portrait) {
