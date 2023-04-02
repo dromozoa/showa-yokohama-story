@@ -1519,7 +1519,7 @@ D.VoiceSprite = class {
   start(pauseState) {
     return new Promise((resolve, reject) => {
       if (playState === "skip") {
-        resolve("end");
+        resolve("skip");
         return;
       }
 
@@ -2010,7 +2010,7 @@ const isDeleteOldCacheTarget = url => (
 
 const deleteOldCachesImpl = async () => {
   if (!globalThis.caches) {
-    D.trace("cache not supported", sourceUrls);
+    D.trace("cache not supported");
     return;
   }
   const cache = await caches.open("昭和横濱物語");
@@ -2139,6 +2139,9 @@ const setSave = save => {
 
   // メイン画面に戻る前に段落表示をクリアする。
   document.querySelector(".demeter-main-paragraph-text").replaceChildren();
+
+  // ヒストリ画面をクリアする。
+  document.querySelector(".demeter-history-paragraphs").replaceChildren();
 };
 
 const setScreenName = screenNameNext => {
@@ -2935,10 +2938,19 @@ const enterCreditsScreen = async () => {
 
 const enterHistoryScreen = async () => {
   setScreenName("history");
+  let paragraphNode = document.querySelector(".demeter-history-paragraphs").lastElementChild;
+  if (!paragraphNode) {
+    const paragraphIndex = D.scenario.labels["空の履歴"];
+    const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+    const speaker = speakerNames[paragraph[0].speaker];
+    const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
+    const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
+    paragraphNode.classList.add("demeter-history-paragraph-empty");
+    document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+  }
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-  // TODO 空だとエラーになる: 空のときだけのメッセージをいれるので回避できるようになる。
-  document.querySelector(".demeter-history-paragraphs").lastElementChild.scrollIntoView({
+  paragraphNode.scrollIntoView({
     behavior: "auto",
     block: "end",
     inline: "start",
@@ -2983,6 +2995,10 @@ const backHistoryScreen = () => {
   if (historyVoiceSprite) {
     historyVoiceSprite.finish();
   }
+  const paragraphNode = document.querySelector(".demeter-history-paragraph-empty");
+  if (paragraphNode) {
+    paragraphNode.remove();
+  }
   soundEffectCancel();
   leaveHistoryScreen();
   enterMainScreen();
@@ -2991,12 +3007,7 @@ const backHistoryScreen = () => {
 
 //-------------------------------------------------------------------------
 
-const moveToHistoryScreen = () => {
-  const textNode = document.querySelector(".demeter-main-paragraph-text");
-  if (textNode.children.length === 0) {
-    return;
-  }
-
+const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   const template = document.createElement("template");
   template.innerHTML = `
     <div class="demeter-history-paragraph">
@@ -3007,7 +3018,6 @@ const moveToHistoryScreen = () => {
   `;
   const paragraphNode = template.content.firstElementChild;
 
-  const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
     paragraphSpeakerBarcodeNode.classList.add("demeter-history-paragraph-speaker-barcode");
@@ -3017,9 +3027,8 @@ const moveToHistoryScreen = () => {
   }
 
   const paragraphTextNode = paragraphNode.querySelector(".demeter-history-paragraph-text");
-  paragraphTextNode.append(...textNode.children);
+  paragraphTextNode.append(...textNodes);
 
-  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
   const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
   paragraphVoiceNode.addEventListener("click", async () => {
     const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
@@ -3042,7 +3051,6 @@ const moveToHistoryScreen = () => {
     } catch (e) {
       logging.error("音声再生: 失敗", e);
     }
-    D.trace("end/stop", paragraphIndex, historyParagraphIndex);
     if (historyParagraphIndex === paragraphIndex) {
       historyVoiceSprite = undefined;
       historyParagraphIndex = undefined;
@@ -3051,6 +3059,18 @@ const moveToHistoryScreen = () => {
     paragraphVoiceNode.classList.remove("demeter-active");
   });
 
+  return paragraphNode;
+};
+
+const moveToHistoryScreen = () => {
+  const textNode = document.querySelector(".demeter-main-paragraph-text");
+  if (textNode.children.length === 0) {
+    return;
+  }
+
+  const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
+  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
+  const paragraphNode = createHistoryParagraphNode(speaker, textNode.children, paragraphIndex);
   document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
 };
 
