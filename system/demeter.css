@@ -1180,7 +1180,77 @@ body.demeter {
 
 /*************************************************************************/
 
-/* TODO demeter-history */
+.demeter-history-paragraphs {
+  position: absolute;
+  left: var(--font-size);
+  top: calc(var(--font-size) * 3);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraphs {
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 44);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraphs {
+    width: calc(var(--font-size) * 46);
+    height: calc(var(--font-size) * 23);
+  }
+}
+
+.demeter-history-paragraph {
+  position: relative;
+  border-top: 1px solid var(--color-stroke);
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph {
+    width: calc(var(--font-size) * 25);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph {
+    width: calc(var(--font-size) * 46);
+  }
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph-speaker {
+    position: relative;
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 2);
+    text-align: center;
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph-speaker {
+    position: absolute;
+    width: calc(var(--font-size) * 6);
+    height: calc(var(--font-size) * 2);
+  }
+}
+
+.demeter-history-paragraph-text {
+  position: relative;
+  width: calc(var(--font-size) * 25);
+  pointer-events: none;
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph-text {
+    left: calc(var(--font-size) * 6);
+    top: 0;
+  }
+}
 
 /*************************************************************************/
 

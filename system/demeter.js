@@ -2977,6 +2977,24 @@ const backHistoryScreen = () => {
 
 //-------------------------------------------------------------------------
 
+const moveToHistoryScreen = () => {
+  const textNodes = document.querySelector(".demeter-main-paragraph-text").children;
+  D.trace(textNodes.length, textNodes);
+  if (textNodes.length === 0) {
+    return;
+  }
+
+  const paragraphNode = document.createElement("div");
+  paragraphNode.classList.add("demeter-history-paragraph");
+  const paragraphSpeakerNode = paragraphNode.appendChild(document.createElement("div"));
+  paragraphSpeakerNode.classList.add("demeter-history-paragraph-speaker");
+  paragraphSpeakerNode.textContent = document.querySelector(".demeter-main-paragraph-speaker").textContent;
+  const paragraphTextNode = paragraphNode.appendChild(document.createElement("div"));
+  paragraphTextNode.classList.add("demeter-history-paragraph-text");
+  paragraphTextNode.replaceChildren(...textNodes);
+  document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+};
+
 const mainToHistoryScreen = async () => {
   if (mainToHistoryScreenOnce) {
     return;
@@ -3563,6 +3581,9 @@ const next = async () => {
     if (silhouette) {
       silhouette.updateSpeaker(speaker);
     }
+
+    moveToHistoryScreen();
+
     document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
     document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
 
@@ -3860,14 +3881,20 @@ const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
 
+  const projectorNode = document.querySelector(".demeter-projector");
+
   if (W <= H) {
     screenOrientation = "orientationPortrait";
     screenWidth = fontSize * 27;
     screenHeight = fontSize * 48;
+    projectorNode.classList.remove("demeter-landscape");
+    projectorNode.classList.add("demeter-portrait");
   } else {
     screenOrientation = "orientationLandscape";
     screenWidth = fontSize * 48;
     screenHeight = fontSize * 27;
+    projectorNode.classList.remove("demeter-portrait");
+    projectorNode.classList.add("demeter-landscape");
   }
 
   screenScale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
@@ -3879,7 +3906,6 @@ const onResize = async () => {
 
   updateComponents();
 
-  // onResize
   if (!gameState[screenOrientation]) {
     gameState[screenOrientation] = true;
     await putGameState();
