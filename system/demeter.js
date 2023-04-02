@@ -2978,20 +2978,38 @@ const backHistoryScreen = () => {
 //-------------------------------------------------------------------------
 
 const moveToHistoryScreen = () => {
-  const textNodes = document.querySelector(".demeter-main-paragraph-text").children;
-  D.trace(textNodes.length, textNodes);
-  if (textNodes.length === 0) {
+  const textNode = document.querySelector(".demeter-main-paragraph-text");
+  if (textNode.children.length === 0) {
     return;
   }
 
-  const paragraphNode = document.createElement("div");
-  paragraphNode.classList.add("demeter-history-paragraph");
-  const paragraphSpeakerNode = paragraphNode.appendChild(document.createElement("div"));
-  paragraphSpeakerNode.classList.add("demeter-history-paragraph-speaker");
-  paragraphSpeakerNode.textContent = document.querySelector(".demeter-main-paragraph-speaker").textContent;
-  const paragraphTextNode = paragraphNode.appendChild(document.createElement("div"));
-  paragraphTextNode.classList.add("demeter-history-paragraph-text");
-  paragraphTextNode.replaceChildren(...textNodes);
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <div class="demeter-history-paragraph">
+      <div class="demeter-history-paragraph-speaker"></div>
+      <div class="demeter-history-paragraph-text"></div>
+      <div class="demeter-history-paragraph-control"><span class="la la-bullhorn"></span></div>
+    </div>
+  `;
+  const paragraphNode = template.content.firstElementChild;
+
+  const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
+  if (speaker === "") {
+    const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
+    paragraphSpeakerBarcodeNode.classList.add("demeter-history-paragraph-speaker-barcode");
+    paragraphSpeakerBarcodeNode.textContent = "after W.W.Z.";
+  } else {
+    paragraphNode.querySelector(".demeter-history-paragraph-speaker").textContent = speaker;
+  }
+
+  const paragraphTextNode = paragraphNode.querySelector(".demeter-history-paragraph-text");
+  paragraphTextNode.append(...textNode.children);
+
+  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
+  paragraphNode.querySelector(".demeter-history-paragraph-control").addEventListener("click", ev => {
+    D.trace("onClick", paragraphIndex);
+  });
+
   document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
 };
 
@@ -3585,7 +3603,9 @@ const next = async () => {
     moveToHistoryScreen();
 
     document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
-    document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+    const textNode = document.querySelector(".demeter-main-paragraph-text");
+    textNode.replaceChildren(...textNodes);
+    textNode.dataset.pid = D.numberToString(paragraphIndex);
 
     // SKIP中は音声を再生しない。
     if (playState !== "skip") {

@@ -1222,6 +1222,15 @@ body.demeter {
   }
 }
 
+.demeter-history-paragraph-control {
+  position: absolute;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
+  right: 0;
+  top: 0;
+  cursor: var(--cursor-pointer, auto);
+}
+
 @media (orientation: portrait) {
   .demeter-history-paragraph-speaker {
     position: relative;
@@ -1237,6 +1246,10 @@ body.demeter {
     width: calc(var(--font-size) * 6);
     height: calc(var(--font-size) * 2);
   }
+}
+
+.demeter-history-paragraph-speaker-barcode {
+  font-family: var(--font-family-barcode);
 }
 
 .demeter-history-paragraph-text {

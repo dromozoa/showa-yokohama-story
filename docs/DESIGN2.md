@@ -476,6 +476,34 @@ demeter.js:3369:3
     AsyncFunctionNext self-hosted:810
 ```
 
+```
+15:43:06.069 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3614
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+demeter-preferences.js:35:33
+```
+
 ## タスク
 
 - シナリオ
