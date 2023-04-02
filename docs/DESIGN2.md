@@ -476,14 +476,49 @@ demeter.js:3369:3
     AsyncFunctionNext self-hosted:810
 ```
 
+```
+15:43:06.069 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3614
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+demeter-preferences.js:35:33
+```
+
 ## タスク
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
 
-- [ ] バックログ
+- [x] バックログ
   - HISTORY
   - チュートリアルで「どうしてバックログっていうんだろうね」
+  - 音声はla-bullhornで
+- [x] SKIPからのpause/restartの動きがおかしい？
+  - SKIP中も音を出すことにしてOK
+  - ただし、SKIP中に画面遷移すると声が残っちゃう。
+  - pauseタイミングの問題？
+- [ ] iOSでSKIP中のわりこみがとれてないような？
+  - console出力のせい？
 - [ ] 一瞬表示の停止
 - [ ] オフライン用のダウンロード
 

@@ -77,23 +77,25 @@ for i, paragraph in ipairs(scenario) do
   local adjacency_map = { [i] = true }
   local adjacencies = {}
 
-  -- @when以外による飛び先を調べる。
-  if paragraph.jump then
-    add_map(adjacency_map, adjacencies, scenario.labels[paragraph.jump.label].index)
-  elseif paragraph.choice_jumps then
-    for _, jump in ipairs(paragraph.choice_jumps) do
-      add_map(adjacency_map, adjacencies, scenario.labels[jump.label].index)
-    end
-  elseif not paragraph.finish and not paragraph.system and i < #scenario then
-    add_map(adjacency_map, adjacencies, i + 1)
-  end
-
-  -- 飛び先から@whenで飛びうる段落を加える。
-  for j = 1, #adjacencies do
-    local paragraph = assert(scenario[adjacencies[j]])
-    if paragraph.when_jumps then
-      for _, jump in ipairs(paragraph.when_jumps) do
+  if not scenario.debug then
+    -- @when以外による飛び先を調べる。
+    if paragraph.jump then
+      add_map(adjacency_map, adjacencies, scenario.labels[paragraph.jump.label].index)
+    elseif paragraph.choice_jumps then
+      for _, jump in ipairs(paragraph.choice_jumps) do
         add_map(adjacency_map, adjacencies, scenario.labels[jump.label].index)
+      end
+    elseif not paragraph.finish and not paragraph.system and i < #scenario then
+      add_map(adjacency_map, adjacencies, i + 1)
+    end
+
+    -- 飛び先から@whenで飛びうる段落を加える。
+    for j = 1, #adjacencies do
+      local paragraph = assert(scenario[adjacencies[j]])
+      if paragraph.when_jumps then
+        for _, jump in ipairs(paragraph.when_jumps) do
+          add_map(adjacency_map, adjacencies, scenario.labels[jump.label].index)
+        end
       end
     end
   end
