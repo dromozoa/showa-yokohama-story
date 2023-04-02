@@ -1,0 +1,110 @@
+# タスクリスト
+
+## エラー記録
+
+```
+23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter-preferences.js:35:33
+
+23:10:06.520 Uncaught (in promise) TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3369
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+demeter.js:3369:3
+    next http://localhost/sys/system/demeter.js:3474
+    initializeMainScreen http://localhost/sys/system/demeter.js:2921
+    InterpretGeneratorResume self-hosted:1822
+    AsyncFunctionNext self-hosted:810
+```
+
+```
+15:43:06.069 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
+    next http://localhost/sys/system/demeter.js:3614
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+    next http://localhost/sys/system/demeter.js:3716
+demeter-preferences.js:35:33
+```
+
+## 完了タスク
+
+
+## タスク
+
+- ビルド
+  - [ ] ビルド時のチェックツール
+    - VOICEPEAKの操作をミスったときに検出したい
+  - [ ] デプロイ前のチェックツール
+
+- シナリオ
+  - [ ] リヴァイアサン戦後の尺をのばす
+
+- システム
+  - [ ] スクリーンのトランジションアニメーション
+  - [ ] オートセーブ情報から、タイトル画面で流す音楽を決められる
+  - [ ] システム設定
+  - [ ] 既読リセット
+  - [ ] スタート画面の入力待ち
+  - [ ] モバイルでスクロールを禁止する？
+    - touchイベント
+    - そこまでやる必要はないかも
+  - [ ] 既読率100%をテストする
+  - [ ] 既読率0%をテストする
+  - [ ] ログレベル設定
+  - [ ] スクリプトを圧縮する。
+  - [ ] エラー通報
+  - [ ] 一瞬表示の停止
+    - スタート画面でセーブしてロードしたとき、一瞬、メイン画面が見える
+  - [ ] オフライン用のダウンロード
+  - [ ] バージョンアップと既読率について考える
+    - [ ] 既読率の計算方式を変更
+    - 段落の削除時に実装すればよい
+  - [ ] キーボードナビゲーション
+    - マウスとのコンフリクションを要検討
+  - [ ] ゲームパッド対応
+    - マウスとのコンフリクションを要検討
+
+- ウェブページ
+  - [ ] ツイッターカード
+  - [ ] アプリケーションインストール
+
+- デバッグ
+  - [ ] iOSで表示がおかしくなる問題
+    - 背景のtransformがきいていない状態になる
+    - canvasもおかしくなる
+      - 他のページやアプリにいってもどるとときどき発生
+        - 再現手順は不明
+      - contextはロストしていないように見える
+      - Canvasのスタイルが聴いていない状態になる
+        - 黒で描かれる
+    - [ ] 検出方法を検討する
+    - [ ] Canvasをつくりなおす
+  - [ ] iOSで音が出なくなる問題
+    - iOSで表示がおかしくなると、音も出なくなる
+    - suspend/resumeでなおらず
+  - [ ] iOSでSKIP中のわりこみの反応が遅い
+  - [ ] iOSでD.onResizeがないというエラー
+  - [ ] textAnimationsがundefinedになるタイミングがある
+    - スキップ中のわりこみで発生した？
+      - 単純には発生しなかった
+
