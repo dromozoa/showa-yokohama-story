@@ -2924,6 +2924,13 @@ const enterCreditsScreen = async () => {
 const enterHistoryScreen = async () => {
   setScreenName("history");
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+  // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
+  // TODO 空だとエラーになる: 空のときだけのメッセージをいれるので回避できるようになる。
+  document.querySelector(".demeter-history-paragraphs").lastElementChild.scrollIntoView({
+    behavior: "auto",
+    block: "end",
+    inline: "start",
+  });
 };
 
 //-------------------------------------------------------------------------
