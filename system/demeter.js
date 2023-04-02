@@ -2944,7 +2944,7 @@ const enterHistoryScreen = async () => {
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const speaker = speakerNames[paragraph[0].speaker];
     const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
-    const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
+    paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
     paragraphNode.classList.add("demeter-history-paragraph-empty");
     document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
   }
