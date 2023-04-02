@@ -1,0 +1,7 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@label_root{空の履歴}
+@system
+#narrator
+この@r{時間線}{タイムライン}に、過去はまだ存在していない。
+

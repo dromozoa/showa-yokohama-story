@@ -271,6 +271,9 @@ local function parse(scenario, include_path, filename)
       -- 背景を切り替えを割り当てる。
       paragraph = update(paragraph, "background", trim(_1))
 
+    elseif match "^@system" then
+      paragraph = update(paragraph, "system", true)
+
     elseif match "^@dialog{([^}]*)}" then
       -- @dialog{キー}
       -- システム用とする。
