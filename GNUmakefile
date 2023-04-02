@@ -88,10 +88,16 @@ clean_effect:
 #--------------------------------------------------------------------------
 
 deploy_dry_run::
-	./tool/deploy.sh --dryrun build/$(version_web) s3://vaporoid.com/sys
+	./tool/deploy.sh --dryrun s3://vaporoid.com/sys build/$(version_web)/*.*
 
 deploy_execute::
-	./tool/deploy.sh "" build/$(version_web) s3://vaporoid.com/sys
+	./tool/deploy.sh "" s3://vaporoid.com/sys build/$(version_web)/*.*
+
+deploy_release_candidate_dry_run::
+	./tool/deploy.sh --dryrun s3://vaporoid.com/sys build/$(version_web)/game-$(version_web).html
+
+deploy_release_candidate_execute::
+	./tool/deploy.sh "" s3://vaporoid.com/sys build/$(version_web)/game-$(version_web).html
 
 deploy_system_dry_run::
 	aws s3 sync --dryrun build/$(version_web)/system/$(version_system) s3://vaporoid.com/sys/system/$(version_system)

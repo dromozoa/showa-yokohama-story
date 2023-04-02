@@ -22,8 +22,8 @@
     await ctx.trophy("newgames");
   }
 }}
-@choice{チュートリアル}
-@choice{第一節}
+@choice{チュートリアル}{チュートリアル}{Tutorial}
+@choice{第一節}{第一節}{Verse I}
 
 @label{おはよう}
 #narrator
@@ -37,8 +37,8 @@
     await ctx.trophy("newgames");
   }
 }}
-@choice{チュートリアル}
-@choice{第一節}
+@choice{チュートリアル}{チュートリアル}{Tutorial}
+@choice{第一節}{第一節}{Verse I}
 
 @label{こんにちは}
 #narrator
@@ -52,8 +52,8 @@
     await ctx.trophy("newgames");
   }
 }}
-@choice{チュートリアル}
-@choice{第一節}
+@choice{チュートリアル}{チュートリアル}{Tutorial}
+@choice{第一節}{第一節}{Verse I}
 
 @#==============================================================================
 
@@ -66,21 +66,21 @@
 #narrator
 第一節は、@v{一本道}{イッポンみち}の迷路。
 第二節と第三節は、まだ開放されていない。
-@choice{第一節}
+@choice{第一節}{第一節}{Verse I}
 
 @label_root{節選択2}
 #narrator
 第二節には、@r{バッド}{アングッド}エンドがあるので、気をつけて。
 それを択んだら、少しだけ間をおいて終わりがきます。
 第三節は、まだ開放されていない。
-@choice{第一節}
-@choice{第二節}
+@choice{第一節}{第一節}{Verse I}
+@choice{第二節}{第二節}{Verse II}
 
 @label_root{節選択3}
 #narrator
 @r{順番}{シーケンシャル}にしか読むことができない@v{類}{たぐい}の、これは@r{媒体}{メディア}。
 昭和横濱物語。スティーブンによる福音書。最終節。
-@choice{第一節}
-@choice{第二節}
-@choice{第三節}
+@choice{第一節}{第一節}{Verse I}
+@choice{第二節}{第二節}{Verse II}
+@choice{第三節}{第三節}{Verse III}
 

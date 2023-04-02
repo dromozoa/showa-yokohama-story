@@ -17,8 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-for i in $2/*.*
+s3_opts=$1
+s3_url=$2
+shift 2
+
+for i in "$@"
 do
   j=`basename "$i"`
-  aws s3 cp $1 --cache-control no-store "$i" "$3/$j"
+  aws s3 cp $s3_opts --cache-control no-store "$i" "$s3_url/$j"
 done

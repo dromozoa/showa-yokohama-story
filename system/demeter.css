@@ -480,6 +480,7 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+  pointer-events: none;
 }
 
 /* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
@@ -1175,6 +1176,108 @@ body.demeter {
 .demeter-credits-notice {
   right: var(--font-size);
   top: var(--font-size);
+}
+
+/*************************************************************************/
+
+.demeter-history-paragraphs {
+  position: absolute;
+  left: var(--font-size);
+  top: calc(var(--font-size) * 3);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraphs {
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 44);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraphs {
+    width: calc(var(--font-size) * 46);
+    height: calc(var(--font-size) * 23);
+  }
+}
+
+.demeter-history-paragraph {
+  position: relative;
+  padding: calc(var(--font-size) * 0.125) 0;
+}
+
+.demeter-history-paragraph:not(:first-child) {
+  border-top: 1px solid var(--color-stroke);
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph {
+    width: calc(var(--font-size) * 25);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph {
+    width: calc(var(--font-size) * 46);
+  }
+}
+
+.demeter-history-paragraph-speaker {
+  pointer-events: none;
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph-speaker {
+    position: relative;
+    width: calc(var(--font-size) * 25);
+    height: calc(var(--font-size) * 2);
+    text-align: center;
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph-speaker {
+    position: absolute;
+    width: calc(var(--font-size) * 6);
+    height: calc(var(--font-size) * 2);
+  }
+}
+
+.demeter-history-paragraph-speaker-barcode {
+  font-family: var(--font-family-barcode);
+}
+
+.demeter-history-paragraph-text {
+  position: relative;
+  width: calc(var(--font-size) * 25);
+  pointer-events: none;
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph-text {
+    left: calc(var(--font-size) * 6);
+    top: 0;
+  }
+}
+
+.demeter-history-paragraph-voice {
+  position: absolute;
+  width: calc(var(--font-size) * 4);
+  height: calc(var(--font-size) * 2);
+  right: 0;
+  top: 0;
+  font-family: var(--font-family-console);
+  text-align: right;
+  cursor: var(--cursor-pointer, auto);
+  transition: color 0.5s;
+}
+
+.demeter-history-paragraph-voice.demeter-active {
+  color: var(--color-console);
 }
 
 /*************************************************************************/

@@ -955,17 +955,20 @@ D.Logging = class {
   }
 
   logImpl(...messages) {
+    // DOMの準備が完了する前にログが出力されるかもしれない。
     const loggingNode = document.querySelector(".demeter-main-logging");
-    const messageNodes = messages.map(message => {
-      const messageNode = document.createElement("div");
-      messageNode.textContent = message;
-      return messageNode;
-    });
-    loggingNode.append(...messageNodes);
-    while (loggingNode.children.length > 100) {
-      loggingNode.firstElementChild.remove();
+    if (loggingNode) {
+      const messageNodes = messages.map(message => {
+        const messageNode = document.createElement("div");
+        messageNode.textContent = message;
+        return messageNode;
+      });
+      loggingNode.append(...messageNodes);
+      while (loggingNode.children.length > 100) {
+        loggingNode.firstElementChild.remove();
+      }
+      this.update("smooth");
     }
-    this.update("smooth");
   }
 
   setLevel(level) {
@@ -1388,10 +1391,15 @@ D.TextAnimation = class {
     this.speed = speed;
   }
 
-  async start() {
+  async start(pauseState) {
     let index = 0;
     let prevTime;
     let duration = 0;
+
+    if (pauseState) {
+      this.pause();
+    }
+
     L: while (!this.finished) {
       if (playState === "skip") {
         break;
@@ -1508,8 +1516,13 @@ D.VoiceSprite = class {
     this.finished = false;
   }
 
-  start() {
+  start(pauseState) {
     return new Promise((resolve, reject) => {
+      if (playState === "skip") {
+        resolve("skip");
+        return;
+      }
+
       this.sound.setOnceLoadError((soundId, message) => {
         D.trace("VoiceSprite onceLoadError", soundId, message, this.soundId);
         this.soundId = undefined;
@@ -1542,6 +1555,10 @@ D.VoiceSprite = class {
 
       this.soundId = this.sound.play(this.sprite);
       this.updateVolume(this.volume);
+
+      if (pauseState) {
+        this.pause();
+      }
     });
   }
 
@@ -1571,22 +1588,6 @@ D.VoiceSprite = class {
       this.sound.stop(this.soundId);
     }
   }
-};
-
-D.NullVoiceSprite = class {
-  constructor() {
-    this.paused = false;
-    this.finished = false;
-  }
-
-  async start() {
-    return "end";
-  }
-
-  updateVolume() {}
-  pause() {}
-  restart() {}
-  finish() {}
 };
 
 //-------------------------------------------------------------------------
@@ -1820,6 +1821,7 @@ D.UpdateChecker = class {
       systemUi.openAnimated(false);
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
       restart();
 
@@ -1910,6 +1912,7 @@ const sender = {
 let database;
 let system;
 let playState;
+let pauseState;
 let gameState;
 let readState;
 let trophiesState;
@@ -1918,6 +1921,7 @@ let state;
 let screenOrientation;
 let screenWidth;
 let screenHeight;
+let screenScale;
 let screenNamePrev;
 let screenName;
 let systemUi;
@@ -1951,6 +1955,10 @@ let waitForCredits;
 
 let updateChecker;
 
+let mainToHistoryScreenOnce;
+let historyVoiceSprite;
+let historyParagraphIndex;
+
 //-------------------------------------------------------------------------
 
 const cacheImpl = async (sourceUrls) => {
@@ -1969,6 +1977,10 @@ const cacheImpl = async (sourceUrls) => {
 };
 
 D.cache = sourceUrls => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported", sourceUrls);
+    return;
+  }
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -1988,6 +2000,39 @@ const getMusicUrls = () => {
 const getVoiceUrls = paragraphIndices => {
   const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
   return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
+};
+
+const isDeleteOldCacheTarget = url => (
+  !url.pathname.startsWith(D.preferences.systemDir) &&
+  !url.pathname.startsWith(D.preferences.musicDir) &&
+  !url.pathname.startsWith(D.preferences.voiceDir)
+);
+
+const deleteOldCachesImpl = async () => {
+  if (!globalThis.caches) {
+    D.trace("cache not supported");
+    return;
+  }
+  const cache = await caches.open("昭和横濱物語");
+  const keys = await cache.keys();
+  const deletedUrls = [];
+  for (let i = 0; i < keys.length; ++i) {
+    const request = keys[i];
+    if (isDeleteOldCacheTarget(new URL(request.url))) {
+      if (await cache.delete(request)) {
+        deletedUrls.push(request.url);
+      }
+    }
+  }
+  return deletedUrls;
+};
+
+const deleteOldCaches = () => {
+  deleteOldCachesImpl().then(deletedUrls => {
+    D.trace("deleteOldCaches", deletedUrls);
+  }).catch(e => {
+    D.trace("deleteOldCaches", e);
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -2094,6 +2139,9 @@ const setSave = save => {
 
   // メイン画面に戻る前に段落表示をクリアする。
   document.querySelector(".demeter-main-paragraph-text").replaceChildren();
+
+  // ヒストリ画面をクリアする。
+  document.querySelector(".demeter-history-paragraphs").replaceChildren();
 };
 
 const setScreenName = screenNameNext => {
@@ -2181,6 +2229,8 @@ const showTitleChoices = async () => {
   if (autosave) {
     choice3Node.style.display = "block";
     ++n;
+    // 自動保存の段落の音声をキャッシュする。
+    D.cache(getVoiceUrls([autosave.paragraphIndex]));
   } else {
     choice3Node.style.display = "none";
   }
@@ -2207,10 +2257,52 @@ const hideTitleChoices = () => {
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
+const resetAudioContext = async quiet => {
+  try {
+    await Howler.ctx.suspend();
+    if (!quiet) {
+      logging.info("オーディオ一時停止: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ一時停止: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.suspend", e);
+    }
+  }
+  await D.setTimeout(100);
+  try {
+    await Howler.ctx.resume();
+    if (!quiet) {
+      logging.info("オーディオ再開: 成功");
+    }
+  } catch (e) {
+    if (!quiet) {
+      logging.error("オーディオ再開: 失敗", e);
+    } else {
+      D.trace("Howler.ctx.resume", e);
+    }
+  }
+};
+
+const setupAudioContextHandler = () => {
+  const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
+  if (isSafari && document.ontouchend !== undefined) {
+    document.addEventListener("visibilitychange", async () => {
+      D.trace("onVisibilityChange", document.visibilityState);
+      if (document.visibilityState === "visible") {
+        await D.setTimeout(100);
+        await resetAudioContext(true);
+      }
+    });
+  }
+};
+
 const unlockAudio = async () => {
   musicPlayer.resetUnlock();
 
   soundEffect = new D.SoundEffect(system.effectVolume);
+  setupAudioContextHandler();
 
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
@@ -2583,8 +2675,27 @@ const initializeSystemUi = () => {
       await deleteSave("save3", "セーブデータ#3");
       leaveMainScreen();
       await enterTitleScreen();
+      return;
     }
     restart();
+  };
+
+  commands.resetAudio = resetAudioContext;
+
+  commands.resetCache = async () => {
+    try {
+      const cache = await caches.open("昭和横濱物語");
+      const keys = await cache.keys();
+      let n = 0;
+      for (let i = 0; i < keys.length; ++i) {
+        if (await cache.delete(keys[i])) {
+          ++n;
+        }
+      }
+      logging.info("キャッシュ削除: 成功 (" + n + "/" + keys.length + ")");
+    } catch (e) {
+      logging.info("キャッシュ削除: 失敗");
+    }
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
@@ -2607,6 +2718,12 @@ const initializeSystemUi = () => {
   const systemCommandsFolder = addSystemUiFolder(systemUi, "システムコマンド");
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+
+  const debugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
+  debugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
+  if (globalThis.caches) {
+    debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
+  }
 
   // openAnimated(false)のトランジションが終わったらUIを隠す。
   // ev.propertyNameは安定しないので判定に利用しない。
@@ -2652,6 +2769,10 @@ const leaveCreditsScreen = () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-credits-screen"));
 };
 
+const leaveHistoryScreen = () => {
+  document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-history-screen"));
+};
+
 //-------------------------------------------------------------------------
 
 const enterTitleScreen = async () => {
@@ -2681,22 +2802,29 @@ const enterStartScreen = () => {
 
 const enterMainScreen = () => {
   setScreenName("main");
+  // ヒストリ画面への遷移フラグを初期化する。
+  mainToHistoryScreenOnce = undefined;
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
   logging.update("auto");
 };
 
 const enterDataScreen = async screenNode => {
+  const paragraphIndices = [];
+
   for (let i = 1; i <= 3; ++i) {
     const key = "save" + i;
     const save = await database.get("save", key);
     if (save) {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = " : " + D.dateToString(new Date(save.saved));
+      paragraphIndices.push(save.paragraphIndex);
     } else {
       screenNode.querySelector(".demeter-data-tape-" + key + "-text").textContent = "";
     }
   }
   document.querySelector(".demeter-screen").append(screenNode);
+
+  return paragraphIndices;
 };
 
 const enterLoadScreen = async () => {
@@ -2706,7 +2834,9 @@ const enterLoadScreen = async () => {
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
-  await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
+  // セーブされている段落の音声をキャッシュする。
+  D.cache(getVoiceUrls(paragraphIndices));
 };
 
 const enterSaveScreen = async () => {
@@ -2806,6 +2936,27 @@ const enterCreditsScreen = async () => {
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-empty-overlay"));
 };
 
+const enterHistoryScreen = async () => {
+  setScreenName("history");
+  let paragraphNode = document.querySelector(".demeter-history-paragraphs").lastElementChild;
+  if (!paragraphNode) {
+    const paragraphIndex = D.scenario.labels["空の履歴"];
+    const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+    const speaker = speakerNames[paragraph[0].speaker];
+    const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
+    paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
+    paragraphNode.classList.add("demeter-history-paragraph-empty");
+    document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+  }
+  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+  // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
+  paragraphNode.scrollIntoView({
+    behavior: "auto",
+    block: "end",
+    inline: "start",
+  });
+};
+
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
@@ -2840,6 +2991,101 @@ const backCreditsScreen = async () => {
   }
 };
 
+const backHistoryScreen = () => {
+  if (historyVoiceSprite) {
+    historyVoiceSprite.finish();
+  }
+  const paragraphNode = document.querySelector(".demeter-history-paragraph-empty");
+  if (paragraphNode) {
+    paragraphNode.remove();
+  }
+  soundEffectCancel();
+  leaveHistoryScreen();
+  enterMainScreen();
+  restart();
+};
+
+//-------------------------------------------------------------------------
+
+const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <div class="demeter-history-paragraph">
+      <div class="demeter-history-paragraph-speaker"></div>
+      <div class="demeter-history-paragraph-text"></div>
+      <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
+    </div>
+  `;
+  const paragraphNode = template.content.firstElementChild;
+
+  if (speaker === "") {
+    const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
+    paragraphSpeakerBarcodeNode.classList.add("demeter-history-paragraph-speaker-barcode");
+    paragraphSpeakerBarcodeNode.textContent = "Alice in the WWZ";
+  } else {
+    paragraphNode.querySelector(".demeter-history-paragraph-speaker").textContent = speaker;
+  }
+
+  const paragraphTextNode = paragraphNode.querySelector(".demeter-history-paragraph-text");
+  paragraphTextNode.append(...textNodes);
+
+  const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
+  paragraphVoiceNode.addEventListener("click", async () => {
+    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
+    const voiceSound = new D.VoiceSound(voiceBasename);
+    const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
+
+    if (historyVoiceSprite) {
+      historyVoiceSprite.finish();
+      if (historyParagraphIndex === paragraphIndex) {
+        return;
+      }
+    }
+    paragraphVoiceNode.classList.add("demeter-active");
+
+    historyVoiceSprite = voiceSprite;
+    historyParagraphIndex = paragraphIndex;
+    try {
+      await voiceSprite.start();
+      logging.debug("音声再生: 開始");
+    } catch (e) {
+      logging.error("音声再生: 失敗", e);
+    }
+    if (historyParagraphIndex === paragraphIndex) {
+      historyVoiceSprite = undefined;
+      historyParagraphIndex = undefined;
+    }
+
+    paragraphVoiceNode.classList.remove("demeter-active");
+  });
+
+  return paragraphNode;
+};
+
+const moveToHistoryScreen = () => {
+  const textNode = document.querySelector(".demeter-main-paragraph-text");
+  if (textNode.children.length === 0) {
+    return;
+  }
+
+  const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
+  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
+  const paragraphNode = createHistoryParagraphNode(speaker, textNode.children, paragraphIndex);
+  document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+};
+
+const mainToHistoryScreen = async () => {
+  if (mainToHistoryScreenOnce) {
+    return;
+  }
+  mainToHistoryScreenOnce = true;
+  soundEffectSelect();
+  await cancelPlayState();
+  pause();
+  leaveMainScreen();
+  await enterHistoryScreen();
+};
+
 //-------------------------------------------------------------------------
 
 const initializeBackground = () => {
@@ -2847,9 +3093,7 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-// const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
-// debug
-const initializeUpdateChecker = () => D.updateChecker = updateChecker = new D.UpdateChecker(600000);
+const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
 
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
@@ -2921,8 +3165,56 @@ const initializeMainScreen = () => {
     next();
   });
 
+  const paragraphNode = document.querySelector(".demeter-main-paragraph");
+  const paragraphTouches = new Map();
+
+  paragraphNode.addEventListener("wheel", async ev => {
+    // スクロールを止める。
+    ev.preventDefault();
+    if (ev.deltaY < 0) {
+      await mainToHistoryScreen();
+    }
+  });
+  paragraphNode.addEventListener("touchstart", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchStart", changedTouch.identifier);
+      paragraphTouches.set(changedTouch.identifier, {
+        screenX: changedTouch.screenX,
+        screenY: changedTouch.screenY,
+      });
+    }
+  });
+  paragraphNode.addEventListener("touchend", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchEnd", changedTouch.identifier);
+      paragraphTouches.delete(changedTouch.identifier);
+    }
+  });
+  paragraphNode.addEventListener("touchcancel", async ev => {
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      D.trace("onTouchCancel", changedTouch.identifier);
+      paragraphTouches.delete(changedTouch.identifier);
+    }
+  });
+  paragraphNode.addEventListener("touchmove", async ev => {
+    // スクロールを止める。
+    ev.preventDefault();
+    for (let i = 0; i < ev.changedTouches.length; ++i) {
+      const changedTouch = ev.changedTouches.item(i);
+      const touch = paragraphTouches.get(changedTouch.identifier);
+      const deltaX = changedTouch.screenX - touch.screenX;
+      const deltaY = changedTouch.screenY - touch.screenY;
+      if (deltaY > fontSize * 2 * screenScale && deltaY > Math.abs(deltaX)) {
+        await mainToHistoryScreen();
+      }
+    }
+  });
+
   document.querySelector(".demeter-main-system-ui").addEventListener("click", async ev => {
-    // システムUIの表示中はバブリングを停止する。
+    // システムUIのうしろにバブリングしない。
     ev.stopPropagation();
     await cancelPlayState();
   });
@@ -3167,6 +3459,16 @@ const initializeCreditsScreen = () => {
   document.querySelector(".demeter-credits-end").addEventListener("click", backCreditsScreen);
 };
 
+const initializeHistoryScreen = () => {
+  const backFrameNode = D.createBackFrame(fontSize * 10 + 1, fontSize * 2 + 1, fontSize * 10, fontSize * 2, 1);
+  document.querySelector(".demeter-history-back-frame").append(backFrameNode);
+
+  const titleFrameNode = D.createTitleFrame(fontSize * 15, fontSize * 3, fontSize * 13, fontSize * 2);
+  document.querySelector(".demeter-history-title-frame").append(titleFrameNode);
+
+  backFrameNode.querySelector(".demeter-button").addEventListener("click", backHistoryScreen);
+};
+
 const initializeDialogOverlay = () => {
   const dialogFrameNode = D.createDialogFrame(fontSize * 25, fontSize * 12, fontSize, 2, fontSize * 8, fontSize * 2);
   document.querySelector(".demeter-dialog-frame").append(dialogFrameNode);
@@ -3194,7 +3496,7 @@ const runTextAnimation = async () => {
     iconAnimation = undefined;
   }
 
-  await textAnimation.start();
+  await textAnimation.start(pauseState);
   textAnimation = undefined;
 
   if (!iconAnimation) {
@@ -3205,7 +3507,7 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   try {
-    await voiceSprite.start();
+    await voiceSprite.start(pauseState);
     logging.debug("音声再生: 開始");
   } catch (e) {
     logging.error("音声再生: 失敗", e);
@@ -3256,7 +3558,6 @@ const next = async () => {
     return;
   }
 
-  // テキストアニメーション中ならば、テキストアニメーションを終了する。
   if (textAnimation) {
     if (playState === "auto") {
       // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
@@ -3270,19 +3571,23 @@ const next = async () => {
       }
       return;
     } else {
+      // テキストアニメーション中ならば、テキストアニメーションを終了する。
       textAnimation.finish();
       return;
     }
   }
 
-  // テキストアニメーションは終了しているが、音声は再生中ならば、音声を終了する。
   if (voiceSprite) {
-    // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
-    // 実行に任される。
-    if (playState !== "auto") {
+    if (playState === "auto") {
+      // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
+      // 実行に任される。
+      return;
+    } else {
+      // テキストアニメーションは終了しているが、音声は再生中ならば、音声を終了
+      // する。
       voiceSprite.finish();
+      return;
     }
-    return;
   }
 
   if (paragraphIndex === undefined) {
@@ -3355,25 +3660,25 @@ const next = async () => {
     if (silhouette) {
       silhouette.updateSpeaker(speaker);
     }
+
+    moveToHistoryScreen();
+
     document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
-    document.querySelector(".demeter-main-paragraph-text").replaceChildren(...textNodes);
+    const textNode = document.querySelector(".demeter-main-paragraph-text");
+    textNode.replaceChildren(...textNodes);
+    textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-    // SKIP中は音声を再生しない。
+    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
+    voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+
+    // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
     if (playState !== "skip") {
-      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
-
-      // 次に到達する可能性がある段落のボイスをキャッシュする。
       D.cache(getVoiceUrls(paragraph[0].adjacencies));
     }
   }
 
   textAnimation = textAnimations[paragraphLineNumber - 1];
-  if (voiceSound && playState !== "skip") {
-    voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
-  } else {
-    voiceSprite = new D.NullVoiceSprite();
-  }
+  voiceSprite = new D.VoiceSprite(voiceSound, D.numberToString(paragraphLineNumber), system.voiceVolume);
 
   let [notUsed, cont] = await Promise.all([ runTextAnimation(), runVoiceSprite() ]);
   if (waitForStop) {
@@ -3476,6 +3781,7 @@ const next = async () => {
 };
 
 const pause = () => {
+  pauseState = true;
   if (textAnimation) {
     textAnimation.pause();
   }
@@ -3485,6 +3791,7 @@ const pause = () => {
 };
 
 const restart = () => {
+  pauseState = undefined;
   if (textAnimation) {
     textAnimation.restart();
   }
@@ -3494,6 +3801,7 @@ const restart = () => {
 };
 
 const stop = async () => {
+  pauseState = undefined;
   if (textAnimation || voiceSprite || waitForChoice) {
     const stop = new Promise(resolve => waitForStop = () => resolve());
     if (textAnimation) {
@@ -3643,25 +3951,36 @@ const checkKCode = async code => {
 
 //-------------------------------------------------------------------------
 
-D.onResize = async () => {
+D.setupErrorHandler = () => {
+  addEventListener("error", ev => logging.error("検出: 大域エラー", ev));
+  addEventListener("unhandledrejection", ev => logging.error("検出: 見過ごされた拒否", ev.reason));
+};
+
+const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
+
+  const projectorNode = document.querySelector(".demeter-projector");
 
   if (W <= H) {
     screenOrientation = "orientationPortrait";
     screenWidth = fontSize * 27;
     screenHeight = fontSize * 48;
+    projectorNode.classList.remove("demeter-landscape");
+    projectorNode.classList.add("demeter-portrait");
   } else {
     screenOrientation = "orientationLandscape";
     screenWidth = fontSize * 48;
     screenHeight = fontSize * 27;
+    projectorNode.classList.remove("demeter-portrait");
+    projectorNode.classList.add("demeter-landscape");
   }
 
-  const scale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
+  screenScale = Math.min(W / screenWidth, H / screenHeight, system.scaleLimit ? 1 : Infinity);
   const transform = "translate(" +
     D.numberToCss((W - screenWidth) * 0.5) + "," +
     D.numberToCss((H - screenHeight) * 0.5) + ") scale(" +
-    D.numberToString(scale) + ")";
+    D.numberToString(screenScale) + ")";
   [ ...document.querySelectorAll(".demeter-background"), document.querySelector(".demeter-screen") ].forEach(node => node.style.transform = transform);
 
   updateComponents();
@@ -3675,7 +3994,7 @@ D.onResize = async () => {
   }
 };
 
-D.onKeydown = async ev => {
+const onKeydown = async ev => {
   if (screenName === "title") {
     await checkKCode(ev.code);
   } else if (screenName === "main") {
@@ -3685,6 +4004,8 @@ D.onKeydown = async ev => {
     } else if (ev.code === "Escape") {
       await cancelPlayState();
       systemUi.openAnimated(false);
+    } else if (ev.code === "ArrowUp" || ev.code === "KeyK") {
+      await mainToHistoryScreen();
     }
   } else if (screenName === "load") {
     if (ev.code === "Escape" && !waitForDialog) {
@@ -3698,16 +4019,12 @@ D.onKeydown = async ev => {
     if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
       backCreditsScreen();
     }
+  } else if (screenName === "history") {
+    if (ev.code === "Escape") {
+      backHistoryScreen();
+    }
   }
 };
-
-D.onError = ev => {
-  logging.error("検出: 大域エラー", ev);
-};
-
-D.onUnhandledRejection = ev => {
-  logging.error("検出: 見過ごされた拒否", ev.reason);
-}
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
@@ -3719,12 +4036,16 @@ D.onDOMContentLoaded = async () => {
   initializeLoadScreen();
   initializeSaveScreen();
   initializeCreditsScreen();
+  initializeHistoryScreen();
   initializeDialogOverlay();
   initializeEmptyOverlay();
   initializeAudio();
-  await D.onResize();
+  await onResize();
   initializeBackground();
   initializeUpdateChecker();
+
+  addEventListener("resize", onResize);
+  addEventListener("keydown", onKeydown);
 
   await enterTitleScreen();
 
@@ -3754,6 +4075,9 @@ D.onDOMContentLoaded = async () => {
 
   // 開始段落の音声をキャッシュする。
   D.cache(getVoiceUrls(D.scenario.starts));
+
+  // 古いキャッシュを消す。
+  deleteOldCaches();
 
   while (true) {
     await D.requestAnimationFrame();

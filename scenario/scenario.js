@@ -39,12 +39,12 @@ if (ctx.game.visitedVerse3) { return "節選択3"; }
 if (ctx.game.visitedVerse2) { return "節選択2"; }
 };
 
-// tutorial.txt:65
+// tutorial.txt:66
 const paragraph16_choice1_action = async ($, ctx) => {
 await ctx.sender.twitter();
 };
 
-// tutorial.txt:66
+// tutorial.txt:67
 const paragraph16_choice2_action = async ($, ctx) => {
 await ctx.sender.marshmallow();
 };

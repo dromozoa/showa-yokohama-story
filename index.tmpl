@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>昭和横濱物語</title>
 
+  <!-- https://fonts.google.com/ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&text=%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=BIZ+UDPMincho&family=Source+Serif+Pro&display=swap" rel="stylesheet">
+
   <!-- https://github.com/sindresorhus/github-markdown-css#usage -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown-dark.css" integrity="sha256-sVwvm2LgPvs8KmgAtivJZES8stEW61Mz9Pt/ync4TCc=" crossorigin="anonymous">
 
@@ -14,21 +20,22 @@
   <link href="system/./favicon.ico" rel="icon" sizes="any">
   <link href="system/./favicon.svg" rel="icon" type="image/svg+xml">
   <link href="system/./apple-touch-icon.png" rel="apple-touch-icon">
+
+  <script defer src="system/./danu.js"></script>
 </head>
 
 <body class="danu">
 <div class="markdown-body">
 
-<div class="danu-title">
-  <h1><span
-    style="letter-spacing: -0.06em">昭</span><span
-    style="letter-spacing: -0.02em">和</span><span
-    style="letter-spacing: -0.03em">横</span><span
-    style="letter-spacing: -0.05em">濱</span><span
-    style="letter-spacing: -0.07em">物</span><span
-    style="letter-spacing: 0">語</span></h1>
-  <div class="danu-title-updated">最終更新日: $updated</div>
-</div>
+<div class="danu-updated">最終更新日: $updated</div>
+
+<h1><span
+  style="letter-spacing: -0.06em">昭</span><span
+  style="letter-spacing: -0.02em">和</span><span
+  style="letter-spacing: -0.03em">横</span><span
+  style="letter-spacing: -0.05em">濱</span><span
+  style="letter-spacing: -0.07em">物</span><span
+  style="letter-spacing: 0">語</span></h1>
 
 <p>
 昭和七十四年七月、ボクはキミに出逢った。<br>
@@ -38,10 +45,46 @@
 <h2>ブラウザ版</h2>
 
 <p>
-<a target="_blank" rel="noopener noreferrer" href="game.html">『昭和横濱物語 Ver. $version』</a>を、今すぐはじめよう！<br>
+<a target="_blank" rel="noopener noreferrer" href="game.html">『昭和横濱物語 Ver.$version』</a>を、今すぐはじめよう！<br>
 実質無料にして完全無料にして永年無料！<br>
-なぜって課金やら広告やら実装するのめんどうだから。
+なぜって課金やら広告やら実装するのめんどいから。
 </p>
+
+<table>
+  <tr>
+    <th>Ver.</th>
+    <th>リリース日</th>
+    <th>詳細</th>
+  </tr>
+  <tr>
+    <td>b11</td>
+    <td>2023年4月2日</td>
+    <td>ちょっとしたあやまちを修正</td>
+  </tr>
+  <tr>
+    <td>b10</td>
+    <td>2023年4月2日</td>
+    <td>履歴表示（いわゆるバックログ）を追加</td>
+  </tr>
+  <tr>
+    <td rowspan="2">b9</td>
+    <td rowspan="2">2023年4月1日</td>
+    <td>キャッシュ処理をチューニング</td>
+  </tr>
+  <tr>
+    <td>Mobile Safariで、タブ・アプリ切り替え時にオーディオの文脈をリセット</td>
+  </tr>
+  <tr>
+    <td>b8</td>
+    <td>2023年4月1日</td>
+    <td>システム設定にデバッグコマンドを追加</td>
+  </tr>
+  <tr>
+    <td>b7</td>
+    <td>2023年3月31日</td>
+    <td>最初の公開ベータ版</td>
+  </tr>
+</table>
 
 <h2>アプリ版</h2>
 
@@ -53,12 +96,17 @@
 
 <p>
 このフィクションは小説です。あらゆる物語はロマンスなので、登場する団体名、会社名、及び個人名と現実のそれらとは一切関係がないなどと誰に断ずる権利があるでしょう。<br>
-<cite>矢作俊彦『あ・じゃ・ぱん！』</cite>
+<cite>矢作俊彦『あ・じゃ・ぱ<span class="danu-a-japan"><span class="danu-a-japan-ex">！</span><span class="danu-a-japan-nn">ん</span></span>』</cite>
 </p>
 
 <ul>
   <li>転送量はぜんぶで50MBくらい。3Gだときびしいかも。</li>
-  <li>iOSでアプリを切り替えていると、オーディオやグラフィックスの文脈がどこかにいっちゃうことがある。そんなときは、再読込。</li>
+  <li>iOSでアプリを切り替えていると、オーディオやグラフィックスの文脈がどこかにいっちゃうことがある。そんなときは、再読込。
+    <ul>
+      <li>Ver.b9でオーディオについて緩和策を導入。</li>
+      <li>発生頻度は減少したけど、まれに発生する。</li>
+    </ul>
+  </li>
   <li>ただでさえ、物語の文脈を見失いがちだっていうのにね。</li>
 </ul>
 
@@ -70,11 +118,11 @@
 </p>
 
 <div class="danu-screen-shots">
-  <img class="danu-icon" src="system/./icon-index.png">
-  <img class="danu-screen-shot1" src="system/./screen-shot1.jpg">
-  <img class="danu-screen-shot2" src="system/./screen-shot2.jpg">
-  <img class="danu-screen-shot3" src="system/./screen-shot3.jpg">
-  <img class="danu-screen-shot4" src="system/./screen-shot4.jpg">
+  <div class="danu-icon"><img src="system/./icon-index.png"></div>
+  <div class="danu-screen-shot danu-screen-shot1"><img src="system/./screen-shot1.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot2"><img src="system/./screen-shot2.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot3"><img src="system/./screen-shot3.jpg"></div>
+  <div class="danu-screen-shot danu-screen-shot4"><img src="system/./screen-shot4.jpg"></div>
 </div>
 
 
@@ -103,17 +151,26 @@
 </p>
 
 <p>
-それからながいながい時間が経った。<br>
-ブラウザのルビに我慢がならなくなった。<br>
-自前でテキストレイアウトすることにした。
+それからながいながい時間が経った。
 </p>
 
-<h2>ご質問・ご意見・お問い合わせ</h2>
+<p>
+ブラウザのルビでは、じゅうぶんでなかった。<br>
+じまえでテクストをレイアウトしよう。<br>
+そういうことになった。
+</p>
+
+<h2>ご質問・ご意見・フィードバックなど</h2>
 
 <ul>
   <li><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/tweet?screen_name=vaporoid&amp;text=%23%E6%98%AD%E5%92%8C%E6%A8%AA%E6%BF%B1%E7%89%A9%E8%AA%9E">ツイッターで</a></li>
   <li><a target="_blank" rel="noopener noreferrer" href="https://marshmallow-qa.com/vaporoid">マシュマロで</a></li>
+  <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/dromozoa/showa-yokohama-story">GitHubで</a></li>
 </ul>
+
+<p class="danu-footer">
+Copyright &copy; 2022,2023 煙人計画
+</p>
 
 </div>
 </body>
