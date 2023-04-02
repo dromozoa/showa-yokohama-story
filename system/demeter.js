@@ -1391,10 +1391,15 @@ D.TextAnimation = class {
     this.speed = speed;
   }
 
-  async start() {
+  async start(pauseState) {
     let index = 0;
     let prevTime;
     let duration = 0;
+
+    if (pauseState) {
+      this.pause();
+    }
+
     L: while (!this.finished) {
       if (playState === "skip") {
         break;
@@ -1511,7 +1516,7 @@ D.VoiceSprite = class {
     this.finished = false;
   }
 
-  start() {
+  start(pauseState) {
     return new Promise((resolve, reject) => {
       if (playState === "skip") {
         resolve("end");
@@ -1550,6 +1555,10 @@ D.VoiceSprite = class {
 
       this.soundId = this.sound.play(this.sprite);
       this.updateVolume(this.volume);
+
+      if (pauseState) {
+        this.pause();
+      }
     });
   }
 
@@ -1812,6 +1821,7 @@ D.UpdateChecker = class {
       systemUi.openAnimated(false);
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
       restart();
 
@@ -1902,6 +1912,7 @@ const sender = {
 let database;
 let system;
 let playState;
+let pauseState;
 let gameState;
 let readState;
 let trophiesState;
@@ -2661,6 +2672,7 @@ const initializeSystemUi = () => {
       await deleteSave("save3", "セーブデータ#3");
       leaveMainScreen();
       await enterTitleScreen();
+      return;
     }
     restart();
   };
@@ -3464,7 +3476,7 @@ const runTextAnimation = async () => {
     iconAnimation = undefined;
   }
 
-  await textAnimation.start();
+  await textAnimation.start(pauseState);
   textAnimation = undefined;
 
   if (!iconAnimation) {
@@ -3475,7 +3487,7 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   try {
-    await voiceSprite.start();
+    await voiceSprite.start(pauseState);
     logging.debug("音声再生: 開始");
   } catch (e) {
     logging.error("音声再生: 失敗", e);
@@ -3526,7 +3538,6 @@ const next = async () => {
     return;
   }
 
-  // テキストアニメーション中ならば、テキストアニメーションを終了する。
   if (textAnimation) {
     if (playState === "auto") {
       // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
@@ -3540,19 +3551,23 @@ const next = async () => {
       }
       return;
     } else {
+      // テキストアニメーション中ならば、テキストアニメーションを終了する。
       textAnimation.finish();
       return;
     }
   }
 
-  // テキストアニメーションは終了しているが、音声は再生中ならば、音声を終了する。
   if (voiceSprite) {
-    // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
-    // 実行に任される。
-    if (playState !== "auto") {
+    if (playState === "auto") {
+      // AUTO由来である場合、なにもせずに関数を抜ける。AUTO処理の本体は先行する
+      // 実行に任される。
+      return;
+    } else {
+      // テキストアニメーションは終了しているが、音声は再生中ならば、音声を終了
+      // する。
       voiceSprite.finish();
+      return;
     }
-    return;
   }
 
   if (paragraphIndex === undefined) {
@@ -3746,6 +3761,7 @@ const next = async () => {
 };
 
 const pause = () => {
+  pauseState = true;
   if (textAnimation) {
     textAnimation.pause();
   }
@@ -3755,6 +3771,7 @@ const pause = () => {
 };
 
 const restart = () => {
+  pauseState = undefined;
   if (textAnimation) {
     textAnimation.restart();
   }
@@ -3764,6 +3781,7 @@ const restart = () => {
 };
 
 const stop = async () => {
+  pauseState = undefined;
   if (textAnimation || voiceSprite || waitForChoice) {
     const stop = new Promise(resolve => waitForStop = () => resolve());
     if (textAnimation) {
