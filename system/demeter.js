@@ -1925,7 +1925,6 @@ let screenScale;
 let screenNamePrev;
 let screenName;
 let systemUi;
-let mainToHistoryScreenOnce;
 
 let backgroundTransition;
 let trophyAnimationQueue = [];
@@ -1955,6 +1954,10 @@ let waitForDialog;
 let waitForCredits;
 
 let updateChecker;
+
+let mainToHistoryScreenOnce;
+let historyVoiceSprite;
+let historyParagraphIndex;
 
 //-------------------------------------------------------------------------
 
@@ -2969,6 +2972,9 @@ const backCreditsScreen = async () => {
 };
 
 const backHistoryScreen = () => {
+  if (historyVoiceSprite) {
+    historyVoiceSprite.finish();
+  }
   soundEffectCancel();
   leaveHistoryScreen();
   enterMainScreen();
@@ -2988,7 +2994,7 @@ const moveToHistoryScreen = () => {
     <div class="demeter-history-paragraph">
       <div class="demeter-history-paragraph-speaker"></div>
       <div class="demeter-history-paragraph-text"></div>
-      <div class="demeter-history-paragraph-control"><span class="la la-bullhorn"></span></div>
+      <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
     </div>
   `;
   const paragraphNode = template.content.firstElementChild;
@@ -2997,7 +3003,7 @@ const moveToHistoryScreen = () => {
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
     paragraphSpeakerBarcodeNode.classList.add("demeter-history-paragraph-speaker-barcode");
-    paragraphSpeakerBarcodeNode.textContent = "after W.W.Z.";
+    paragraphSpeakerBarcodeNode.textContent = "Alice in the WWZ";
   } else {
     paragraphNode.querySelector(".demeter-history-paragraph-speaker").textContent = speaker;
   }
@@ -3006,8 +3012,35 @@ const moveToHistoryScreen = () => {
   paragraphTextNode.append(...textNode.children);
 
   const paragraphIndex = Number.parseInt(textNode.dataset.pid);
-  paragraphNode.querySelector(".demeter-history-paragraph-control").addEventListener("click", ev => {
-    D.trace("onClick", paragraphIndex);
+  const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
+  paragraphVoiceNode.addEventListener("click", async () => {
+    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
+    const voiceSound = new D.VoiceSound(voiceBasename);
+    const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
+
+    if (historyVoiceSprite) {
+      historyVoiceSprite.finish();
+      if (historyParagraphIndex === paragraphIndex) {
+        return;
+      }
+    }
+    paragraphVoiceNode.classList.add("demeter-active");
+
+    historyVoiceSprite = voiceSprite;
+    historyParagraphIndex = paragraphIndex;
+    try {
+      await voiceSprite.start();
+      logging.debug("音声再生: 開始");
+    } catch (e) {
+      logging.error("音声再生: 失敗", e);
+    }
+    D.trace("end/stop", paragraphIndex, historyParagraphIndex);
+    if (historyParagraphIndex === paragraphIndex) {
+      historyVoiceSprite = undefined;
+      historyParagraphIndex = undefined;
+    }
+
+    paragraphVoiceNode.classList.remove("demeter-active");
   });
 
   document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
@@ -3146,14 +3179,11 @@ const initializeMainScreen = () => {
       const touch = paragraphTouches.get(changedTouch.identifier);
       const deltaX = changedTouch.screenX - touch.screenX;
       const deltaY = changedTouch.screenY - touch.screenY;
-      if (-deltaY > fontSize * 2 * screenScale && Math.abs(deltaY) > Math.abs(deltaX)) {
+      if (deltaY > fontSize * 2 * screenScale && deltaY > Math.abs(deltaX)) {
         await mainToHistoryScreen();
       }
     }
   });
-
-
-
 
   document.querySelector(".demeter-main-system-ui").addEventListener("click", async ev => {
     // システムUIのうしろにバブリングしない。
@@ -3959,6 +3989,10 @@ const onKeydown = async ev => {
   } else if (screenName === "credits") {
     if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
       backCreditsScreen();
+    }
+  } else if (screenName === "history") {
+    if (ev.code === "Escape") {
+      backHistoryScreen();
     }
   }
 };

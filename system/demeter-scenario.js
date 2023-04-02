@@ -10,8 +10,8 @@ D.scenario = {
 paragraphs:[
 // index: 1
 [{speaker:"narrator",choices:[
-{choice:["チュートリアル"],label:7},
-{choice:["第一節"],label:18},
+{choice:["チュートリアル"],barcode:"Tutorial",label:7},
+{choice:["第一節"],barcode:"Verse I",label:18},
 ],when:async($,ctx)=>{
 if((() => {
     ctx.hour = new Date().getHours();
@@ -29,8 +29,8 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ]],
 // index: 2
 [{speaker:"narrator",choices:[
-{choice:["チュートリアル"],label:7},
-{choice:["第一節"],label:18},
+{choice:["チュートリアル"],barcode:"Tutorial",label:7},
+{choice:["第一節"],barcode:"Verse I",label:18},
 ],enter:async($,ctx)=>{ctx.game.newGameMorning = true;
   if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
     await ctx.trophy("newgames");
@@ -42,8 +42,8 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ]],
 // index: 3
 [{speaker:"narrator",choices:[
-{choice:["チュートリアル"],label:7},
-{choice:["第一節"],label:18},
+{choice:["チュートリアル"],barcode:"Tutorial",label:7},
+{choice:["第一節"],barcode:"Verse I",label:18},
 ],enter:async($,ctx)=>{ctx.game.newGameAfternoon = true;
   if (ctx.game.newGameMorning && ctx.game.newGameAfternoon && ctx.game.newGameEvening) {
     await ctx.trophy("newgames");
@@ -55,7 +55,7 @@ if(10 <= ctx.hour && ctx.hour < 18)return 3;
 ]],
 // index: 4
 [{speaker:"narrator",choices:[
-{choice:["第一節"],label:18},
+{choice:["第一節"],barcode:"Verse I",label:18},
 ],when:async($,ctx)=>{
 if(ctx.game.visitedVerse3)return 6;
 if(ctx.game.visitedVerse2)return 5;
@@ -65,8 +65,8 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index: 5
 [{speaker:"narrator",choices:[
-{choice:["第一節"],label:18},
-{choice:["第二節"],label:65},
+{choice:["第一節"],barcode:"Verse I",label:18},
+{choice:["第二節"],barcode:"Verse II",label:65},
 ],music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[18,65]},[
 ["第二節には、",["バッド","アングッド"],"エンドがあるので、気をつけて。"],
 ["それを択んだら、少しだけ間をおいて終わりがきます。"],
@@ -74,9 +74,9 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index: 6
 [{speaker:"narrator",choices:[
-{choice:["第一節"],label:18},
-{choice:["第二節"],label:65},
-{choice:["第三節"],label:187},
+{choice:["第一節"],barcode:"Verse I",label:18},
+{choice:["第二節"],barcode:"Verse II",label:65},
+{choice:["第三節"],barcode:"Verse III",label:187},
 ],music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[18,65,187]},[
 [["順番","シーケンシャル"],"にしか読むことができない","類","の、これは",["媒体","メディア"],"。"],
 ["昭和横濱物語。スティーブンによる福音書。最終節。"],
@@ -89,8 +89,8 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index: 8
 [{speaker:"narrator",choices:[
-{choice:["人類の滅亡を見守る"],label:9},
-{choice:["少女を犠牲に捧げる"],label:10},
+{choice:["人類の滅亡を見守る"],barcode:"Extinction",label:9},
+{choice:["少女を犠牲に捧げる"],barcode:"Sacrifice",label:10},
 {choice:["択ばない"],label:11},
 ],music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[9,10,11]},[
 ["ボクたちは、択ばれなかった選択肢の側に立つ紐帯だ。"],
@@ -144,7 +144,7 @@ if(ctx.game.visitedVerse2)return 5;
 [{speaker:"narrator",choices:[
 {choice:["ツイッターで質問する"],action:async($,ctx)=>{await ctx.sender.twitter();},barcode:"Twitter",label:16},
 {choice:["マシュマロで質問する"],action:async($,ctx)=>{await ctx.sender.marshmallow();},barcode:"Marshmallow",label:16},
-{choice:["質問はない"],barcode:"THE WRONG GOODBYE",label:17},
+{choice:["質問はない"],label:17},
 ],music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[17]},[
 ["こんなところ。"],
 ["なにか質問ある？"],
@@ -456,9 +456,9 @@ if(ctx.game.visitedVerse2)return 5;
 ]],
 // index: 67
 [{speaker:"danu",choices:[
-{choice:["本牧",["大聖堂","カテドラル"]],barcode:"priest",label:68},
-{choice:["資源循環局"],barcode:"engineer",label:92},
-{choice:["魚人港湾労働組合"],barcode:"activist",label:123},
+{choice:["本牧",["大聖堂","カテドラル"]],barcode:"Priest",label:68},
+{choice:["資源循環局"],barcode:"Engineer",label:92},
+{choice:["魚人港湾労働組合"],barcode:"Activist",label:123},
 ],when:async($,ctx)=>{
 if($.priest && $.engineer && $.activist)return 163;
 },music:"diana19",place:"本牧異人町",background:"モノクローム",adjacencies:[68,92,123,91,122,162]},[

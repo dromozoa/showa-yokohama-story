@@ -513,6 +513,7 @@ demeter-preferences.js:35:33
   - HISTORY
   - チュートリアルで「どうしてバックログっていうんだろうね」
   - 音声はla-bullhornで
+- [ ] SKIPからのpause/restartの動きがおかしい？
 - [ ] 一瞬表示の停止
 - [ ] オフライン用のダウンロード
 
