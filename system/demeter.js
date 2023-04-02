@@ -2417,7 +2417,7 @@ const initializeDatabase = async () => {
 //-------------------------------------------------------------------------
 
 const updateScaleLimit = async () => {
-  await D.onResize();
+  await onResize();
 };
 
 const updateSystemSpeed = () => {
