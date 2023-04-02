@@ -24,7 +24,7 @@ if (D.preferenes) {
 }
 
 const mode = "develop";
-const version = { web: "b10", system: 8, music: 1, voice: 3 };
+const version = { web: "b10", system: 8, music: 1, voice: 4 };
 
 if (mode === "develop") {
   D.preferences = {
