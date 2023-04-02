@@ -13,8 +13,8 @@
 たとえば——昭和が暴走した。
 終わらない昭和に、このままでは人類は轢き殺される。
 選択肢がある。少女を犠牲に、人類を救う。
-@choice{人類の滅亡を見守る}{トロッコ滅亡}
-@choice{少女を犠牲に捧げる}{トロッコ犠牲}
+@choice{人類の滅亡を見守る}{トロッコ滅亡}{Extinction}
+@choice{少女を犠牲に捧げる}{トロッコ犠牲}{Sacrifice}
 @choice{択ばない}{トロッコ択ばない}
 
 @label{トロッコ滅亡}
@@ -64,7 +64,7 @@
 なにか質問ある？
 @choice{ツイッターで質問する}{{await ctx.sender.twitter()}}{質問}{Twitter}
 @choice{マシュマロで質問する}{{await ctx.sender.marshmallow()}}{質問}{Marshmallow}
-@choice{質問はない}{チュートリアル終}{THE WRONG GOODBYE}
+@choice{質問はない}{チュートリアル終}
 
 @label{チュートリアル終}
 #narrator
