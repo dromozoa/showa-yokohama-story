@@ -48,6 +48,17 @@ demeter-preferences.js:35:33
 
 ## 完了タスク
 
+- ビルド
+
+- シナリオ
+
+- システム
+
+- ウェブページ
+
+- デバッグ
+  - [x] iOSでD.onResizeがないというエラー
+    - iOS以外でも発生（そりゃそうだ）
 
 ## タスク
 
@@ -103,8 +114,10 @@ demeter-preferences.js:35:33
     - iOSで表示がおかしくなると、音も出なくなる
     - suspend/resumeでなおらず
   - [ ] iOSでSKIP中のわりこみの反応が遅い
-  - [ ] iOSでD.onResizeがないというエラー
   - [ ] textAnimationsがundefinedになるタイミングがある
     - スキップ中のわりこみで発生した？
       - 単純には発生しなかった
+  - [ ] Edgeでスクロールバーが出る問題
+    - [ ] クレジット画面
+    - [ ] ヒストリ画面
 
