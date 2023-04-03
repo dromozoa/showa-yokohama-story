@@ -1861,6 +1861,7 @@ const systemDefault = {
   musicVolume: 1,
   voiceVolume: 1,
   effectVolume: 1,
+  historySize: 50,
   componentColor: [1, 1, 1],
   componentOpacity: 0.25,
   logging: true,
@@ -1964,6 +1965,7 @@ let waitForCredits;
 let updateChecker;
 
 let mainToHistoryScreenOnce;
+let historyParagraphNodes = [];
 let historyVoiceSprite;
 let historyParagraphIndex;
 
@@ -2585,10 +2587,12 @@ const initializeSystemUi = () => {
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
+  systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ行送り時間 [ms]");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateSystemMasterVolume);
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
   systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateSystemEffectVolume);
+  systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -2954,15 +2958,22 @@ const enterCreditsScreen = async () => {
 
 const enterHistoryScreen = async () => {
   setScreenName("history");
-  let paragraphNode = document.querySelector(".demeter-history-paragraphs").lastElementChild;
-  if (!paragraphNode) {
+
+  // let paragraphNode = document.querySelector(".demeter-history-paragraphs").lastElementChild;
+  let paragraphNode
+  if (historyParagraphNodes.length === 0) {
+  // if (!paragraphNode) {
     const paragraphIndex = D.scenario.labels["空の履歴"];
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const speaker = speakerNames[paragraph[0].speaker];
     const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
     paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-    paragraphNode.classList.add("demeter-history-paragraph-empty");
-    document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+    // paragraphNode.classList.add("demeter-history-paragraph-empty");
+    document.querySelector(".demeter-history-paragraphs").replaceChildren(paragraphNode);
+    // document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+  } else {
+    document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
+    paragraphNode = historyParagraphNodes[historyParagraphNodes.length - 1];
   }
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
@@ -3088,7 +3099,9 @@ const createHistoryParagraph = () => {
   const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
   const paragraphIndex = Number.parseInt(textNode.dataset.pid);
   const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-  document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+  // DOMには反映しない実験
+  // document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+  historyParagraphNodes.push(paragraphNode);
 };
 
 const mainToHistoryScreen = async () => {
