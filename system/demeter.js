@@ -939,6 +939,16 @@ const startTexts = {
   preview: "SHOWA YOKOHAMA STORY '69",
 };
 
+const getMediaErrorMessage = message => {
+  switch (message) {
+    case 1: return "MEDIA_ERR_ABORTED";
+    case 2: return "MEDIA_ERR_NETWORK";
+    case 3: return "MEDIA_ERR_DECODE";
+    case 4: return "MEDIA_ERR_SRC_NOT_SUPPORTED";
+  }
+  return message;
+};
+
 //-------------------------------------------------------------------------
 
 D.Logging = class {
@@ -1077,7 +1087,7 @@ D.MusicPlayer = class {
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       loop: true,
-      onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(message)),
+      onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(getMediaErrorMessage(message))),
       onplayerror: (notUsed, message) => logging.error("音楽再生: 失敗", new Error(message)),
     });
     if (this.unlock) {
@@ -1538,7 +1548,7 @@ D.VoiceSprite = class {
       this.sound.setOnceLoadError((soundId, message) => {
         D.trace("VoiceSprite onceLoadError", soundId, message, this.soundId);
         this.soundId = undefined;
-        reject(new Error(message));
+        reject(new Error(getMediaErrorMessage(message)));
       });
 
       this.sound.once("playerror", (soundId, message) => {
@@ -1692,7 +1702,7 @@ D.SoundEffect = class {
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       sprite: D.effectSprite,
-      onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(message)),
+      onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(getMediaErrorMessage(message))),
       onplayerror: (notUsed, message) => logging.error("効果音再生: 失敗", new Error(message)),
     });
   }
