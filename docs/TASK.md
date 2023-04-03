@@ -112,6 +112,9 @@ demeter-preferences.js:35:33
 - システム
   - [ ] 音声ファイルの通信タイムアウトを決める
     - タイムアウトしたとき、Howler.jsではひろえないっぽい
+    - autoloadを切って、load/onload/onloaderrorを拾う
+    - onloadが成功したら再生する
+    - autoload経由でやると、つながったときにめっちゃ再生された
 
   - [ ] 既読がなんかおかしいような気がする
     - 再現はできなかった
