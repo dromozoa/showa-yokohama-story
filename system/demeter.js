@@ -2065,12 +2065,8 @@ const cancelPlayStateImpl = async skipCanceled => {
 
 // ユーザ操作が行われたらAUTO/SKIPを解除する。
 const cancelPlayState = async () => {
-  D.trace(performance.now(), "cancelPlayState 1", playState)
-
   const skipCanceled = playState === "skip";
   playState = undefined;
-
-  D.trace(performance.now(), "cancelPlayState 2", playState)
 
   // 時間がかかる処理はあとにまわす。
   await cancelPlayStateImpl(skipCanceled);
@@ -2158,9 +2154,6 @@ const setSave = save => {
 
   // メイン画面に戻る前に段落表示をクリアする。
   document.querySelector(".demeter-main-paragraph-text").replaceChildren();
-
-  // ヒストリ画面をクリアする。
-  document.querySelector(".demeter-history-paragraphs").replaceChildren();
 };
 
 const setScreenName = screenNameNext => {
@@ -2811,7 +2804,11 @@ const enterTitleScreen = async () => {
       await updateChecker.dialog();
     }
   }
+
   document.querySelector(".demeter-screen").append(screenNode);
+
+  // ヒストリ画面をクリアする。
+  document.querySelector(".demeter-history-paragraphs").replaceChildren();
 };
 
 const enterStartScreen = () => {
@@ -3081,7 +3078,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   return paragraphNode;
 };
 
-const moveToHistoryScreen = () => {
+const createHistoryParagraph = () => {
   const textNode = document.querySelector(".demeter-main-paragraph-text");
   if (textNode.children.length === 0) {
     return;
@@ -3682,8 +3679,6 @@ const next = async () => {
       silhouette.updateSpeaker(speaker);
     }
 
-    moveToHistoryScreen();
-
     document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
     const textNode = document.querySelector(".demeter-main-paragraph-text");
     textNode.replaceChildren(...textNodes);
@@ -3782,6 +3777,9 @@ const next = async () => {
         await cancelPlayState();
       }
     }
+
+    // 段落の処理が終わったのでヒストリに追加する。
+    createHistoryParagraph();
 
     resetParagraph();
   }
