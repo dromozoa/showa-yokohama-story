@@ -1451,27 +1451,34 @@ D.TextAnimation = class {
 
 D.VoiceSound = class {
   constructor(basename, sprite) {
+    this.basename = basename;
+    this.sprite = sprite;
     this.loadErrorSoundId = undefined;
     this.loadErrorMessage = undefined;
     this.onceLoadError = undefined;
+  }
 
-    this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
-      sprite: sprite,
-      // 再生に先だってロードエラーが発生した場合、サウンドIDは定義されない。
-      onloaderror: (soundId, message) => {
-        D.trace("VoiceSound onLoadError", soundId, message);
-        this.loadErrorSoundId = soundId;
-        this.loadErrorMessage = message;
-        // 再生開始後にロードエラーが発生した場合、イベントを伝播する。
-        if (this.onceLoadError) {
-          this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
-          this.onceLoadError = undefined;
-        }
-      },
-
-      onplayerror: (soundId, message) => D.trace("VoiceSound onPlayError", soundId, message),
-    });
+  // 遅延構築する。
+  getSound() {
+    if (!this.sound) {
+      this.sound = new Howl({
+        src: [ this.basename + ".webm", this.basename + ".mp3" ],
+        sprite: this.sprite,
+        // 再生に先だってロードエラーが発生した場合、サウンドIDは定義されない。
+        onloaderror: (soundId, message) => {
+          D.trace("VoiceSound onLoadError", soundId, message);
+          this.loadErrorSoundId = soundId;
+          this.loadErrorMessage = message;
+          // 再生開始後にロードエラーを伝える。
+          if (this.onceLoadError) {
+            this.onceLoadError(this.loadErrorSoundId, this.loadErrorMessage);
+            this.onceLoadError = undefined;
+          }
+        },
+        onplayerror: (soundId, message) => D.trace("VoiceSound onPlayError", soundId, message),
+      });
+    }
+    return this.sound;
   }
 
   setOnceLoadError(onLoadError) {
@@ -1485,24 +1492,24 @@ D.VoiceSound = class {
       // 有効なサウンドIDを返さない。
       return;
     } else {
-      return this.sound.play(...params);
+      return this.getSound().play(...params);
     }
   }
 
   pause(...params) {
-    return this.sound.pause(...params);
+    return this.getSound().pause(...params);
   }
 
   stop(...params) {
-    return this.sound.stop(...params);
+    return this.getSound().stop(...params);
   }
 
   once(...params) {
-    return this.sound.once(...params);
+    return this.getSound().once(...params);
   }
 
   volume(...params) {
-    return this.sound.volume(...params);
+    return this.getSound().volume(...params);
   }
 };
 
