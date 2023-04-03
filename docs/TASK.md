@@ -46,6 +46,17 @@ demeter.js:3369:3
 demeter-preferences.js:35:33
 ```
 
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
+	（anonymous関数） (demeter.js:3698)
+	asyncFunctionResume
+	（anonymous関数） (demeter.js:3183)
+	asyncFunctionResume
+	（anonymous関数）
+	promiseReactionJobWithoutPromise
+	promiseReactionJob
+```
+
 ## 完了タスク
 
 - ビルド
@@ -112,8 +123,10 @@ demeter-preferences.js:35:33
     - もうちょっとゆっくりやるか
       - タップ処理にすりぬけが発生している
     - 待ち時間を決める。
+    - [ ] 30ms
   - [ ] 音声ファイルの通信タイムアウトを決める
     - タイムアウトしたとき、Howler.jsではひろえないっぽい
+  - [ ] ヒストリのiOSのぼよよんをなくす
 
   - [ ] iOSで表示がおかしくなる問題
     - 背景のtransformがきいていない状態になる

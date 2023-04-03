@@ -1856,6 +1856,7 @@ const systemDefault = {
   speed: 30,
   autoSpeed: 400,
   skipUnread: false,
+  skipSpeed: 100,
   masterVolume: 1,
   musicVolume: 1,
   voiceVolume: 1,
@@ -3284,9 +3285,10 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button4").addEventListener("click", async ev => {
     ev.stopPropagation();
 
+    // SKIP解除と同様に、効果音再生を後回しにする。
     if (playState === "auto") {
-      soundEffectCancel();
       await cancelPlayState();
+      soundEffectCancel();
       return;
     }
 
@@ -3307,9 +3309,10 @@ const initializeMainScreen = () => {
   menuFrameNode.querySelector(".demeter-button5").addEventListener("click", async ev => {
     ev.stopPropagation();
 
+    // SKIP解除の反応をよくするため、効果音再生を後回し。
     if (playState === "skip") {
-      soundEffectCancel();
       await cancelPlayState();
+      soundEffectCancel();
       return;
     }
 
@@ -3793,8 +3796,10 @@ const next = async () => {
     }
     return;
   } else if (playState === "skip") {
-    // requestAnimationFrame(next);
-    setTimeout(next, 100);
+    await D.setTimeout(system.skipSpeed);
+    if (playState === "skip") {
+      requestAnimationFrame(next);
+    }
     return;
   }
 };
