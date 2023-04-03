@@ -2053,15 +2053,26 @@ const putSystemTask = async () => {
   }
 };
 
-// ユーザ操作が行われたらAUTO/SKIPを解除する。
-const cancelPlayState = async () => {
-  // SKIPが解除されたら自動保存する。
-  if (playState === "skip") {
-    await Promise.all([ putReadState(), putAutosave() ]);
-  }
-  playState = undefined;
+const cancelPlayStateImpl = async skipCanceled => {
   document.querySelector(".demeter-main-menu-frame .demeter-button4").classList.remove("demeter-active");
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
+  if (skipCanceled) {
+    // SKIPが解除されたら自動保存する。
+    await Promise.all([ putReadState(), putAutosave() ]);
+  }
+};
+
+// ユーザ操作が行われたらAUTO/SKIPを解除する。
+const cancelPlayState = async () => {
+  D.trace(performance.now(), "cancelPlayState 1", playState)
+
+  const skipCanceled = playState === "skip";
+  playState = undefined;
+
+  D.trace(performance.now(), "cancelPlayState 2", playState)
+
+  // 時間がかかる処理はあとにまわす。
+  await cancelPlayStateImpl(skipCanceled);
 };
 
 const putGameState = async () => {
@@ -3782,7 +3793,8 @@ const next = async () => {
     }
     return;
   } else if (playState === "skip") {
-    requestAnimationFrame(next);
+    // requestAnimationFrame(next);
+    setTimeout(next, 100);
     return;
   }
 };
