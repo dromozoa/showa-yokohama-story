@@ -46,6 +46,7 @@ demeter.js:3369:3
 demeter-preferences.js:35:33
 ```
 
+スキップの連続で流していたら発生。
 ```
 [Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
 	（anonymous関数） (demeter.js:3698)
@@ -102,7 +103,10 @@ demeter-preferences.js:35:33
     - overscroll-behaviorでどうにかならないかな？
   - [x] ヒストリへの追加タイミングをいじったせいで空の段落が見えるように
   - [ ] 既読がなんかおかしいような気がする
+    - 再現はできなかった
+    - 段落追加の可能性があるか？
   - [ ] ヒストリ画面でフォーカスをあてる
+  - [ ] ずっとスキップしているとmacのSafariで30fpsくらいになった
 
   - [ ] スクリーンのトランジションアニメーション
   - [ ] オートセーブ情報から、タイトル画面で流す音楽を決められる？
