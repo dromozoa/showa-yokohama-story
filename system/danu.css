@@ -52,6 +52,10 @@ body.danu {
   font-family: 'BIZ UDPGothic', sans-serif;
 }
 
+.danu table tr td ul:last-child {
+  margin-bottom: 0;
+}
+
 .danu cite:before {
   content: '——';
 }

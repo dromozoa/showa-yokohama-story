@@ -2,5 +2,6 @@
 
 @debug
 
+@include{tutorial.txt}
 @include{append-b10.txt}
 

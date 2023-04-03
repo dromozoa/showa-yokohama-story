@@ -335,6 +335,7 @@ body.demeter {
   scrollbar-width: none;
   color: var(--component-color, #FFF);
   opacity: var(--component-opacity, 0.25);
+  overscroll-behavior: contain;
 }
 
 .demeter-main-logging::-webkit-scrollbar {
@@ -492,6 +493,7 @@ body.demeter {
   transform-origin: left top;
   overflow: auto;
   scrollbar-width: none;
+  overscroll-behavior: contain;
 }
 
 .demeter-main-system-ui::-webkit-scrollbar {
@@ -939,6 +941,10 @@ body.demeter {
   scrollbar-width: none;
 }
 
+.demeter-credits-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .demeter-credits {
   position: absolute;
   width: var(--screen-width);
@@ -1189,6 +1195,11 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   overflow: auto;
   scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+
+.demeter-history-paragraphs::-webkit-scrollbar {
+  display: none;
 }
 
 @media (orientation: portrait) {
