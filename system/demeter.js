@@ -3083,10 +3083,11 @@ const createHistoryParagraph = () => {
   if (textNode.children.length === 0) {
     return;
   }
+  const textNodes = [...textNode.children].map(node => node.cloneNode(true));
 
   const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
   const paragraphIndex = Number.parseInt(textNode.dataset.pid);
-  const paragraphNode = createHistoryParagraphNode(speaker, textNode.children, paragraphIndex);
+  const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
   document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
 };
 
