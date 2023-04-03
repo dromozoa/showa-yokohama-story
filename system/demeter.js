@@ -2601,7 +2601,7 @@ const initializeSystemUi = () => {
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
   systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateSystemEffectVolume);
-  systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]");
+  systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]").onFinishChange(updateHistorySize);
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -2678,6 +2678,7 @@ const initializeSystemUi = () => {
       updateSystemMusicVolume();
       updateSystemVoiceVolume();
       updateSystemEffectVolume();
+      updateHistorySize();
       updateComponentColor();
       updateComponentOpacity();
       updateComponents();
@@ -3086,6 +3087,13 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   return paragraphNode;
 };
 
+const updateHistorySize = () => {
+  const n = historyParagraphNodes.length - system.historySize;
+  if (n > 0) {
+    historyParagraphNodes.splice(0, n);
+  }
+};
+
 const createHistoryParagraph = () => {
   const textNode = document.querySelector(".demeter-main-paragraph-text");
   if (textNode.children.length === 0) {
@@ -3097,10 +3105,7 @@ const createHistoryParagraph = () => {
   const paragraphIndex = Number.parseInt(textNode.dataset.pid);
   historyParagraphNodes.push(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
 
-  const n = historyParagraphNodes.length - system.historySize;
-  if (n > 0) {
-    historyParagraphNodes.splice(0, n);
-  }
+  updateHistorySize();
 };
 
 const mainToHistoryScreen = async () => {
