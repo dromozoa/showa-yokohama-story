@@ -2189,36 +2189,45 @@ const updateTrophies = () => {
   document.querySelector(".demeter-credits-end-trophies-status").textContent = trophiesState.map.size + " / " + D.trophies.length;
 };
 
+const updateTrophyImpl = async trophy => {
+  updateTrophies();;
+
+  logging.notice("実績解除: " + trophy.name);
+  logging.info(trophy.description);
+
+  const T1 = 1000;
+  const T2 = 2000;
+  const T3 = 1000;
+
+  trophyAnimationQueue.push(async () => {
+    soundEffectTrophy();
+    [...document.querySelectorAll(".demeter-notice-trophy-name")].forEach(node => node.textContent = trophy.name);
+    const nodes = [...document.querySelectorAll(".demeter-notice")];
+    nodes.forEach(node => node.style.opacity = "0");
+    await new D.OpacityAnimation(nodes, 0, 1, T1).start();
+    await D.setTimeout(T2);
+    await new D.OpacityAnimation(nodes, 1, 0, T3).start();
+  });
+  if (trophyAnimationQueue.length === 1) {
+    while (trophyAnimationQueue.length > 0) {
+      await trophyAnimationQueue[0]();
+      trophyAnimationQueue.shift();
+    }
+  }
+};
+
 // トロフィーが未獲得であれば獲得する。
-const updateTrophy = async key => {
+const updateTrophy = D.updateTrophy = async key => {
   if (!trophiesState.map.has(key)) {
     trophiesState.map.set(key, Date.now());
     await putTrophiesState();
     const trophy = D.trophies.find(trophy => trophy.key === key);
     if (trophy) {
-      updateTrophies();;
-      logging.notice("実績解除: " + trophy.name);
-      logging.info(trophy.description);
-
-      const T1 = 1000;
-      const T2 = 2000;
-      const T3 = 1000;
-
-      trophyAnimationQueue.push(async () => {
-        soundEffectTrophy();
-        [...document.querySelectorAll(".demeter-notice-trophy-name")].forEach(node => node.textContent = trophy.name);
-        const nodes = [...document.querySelectorAll(".demeter-notice")];
-        nodes.forEach(node => node.style.opacity = "0");
-        await new D.OpacityAnimation(nodes, 0, 1, T1).start();
-        await D.setTimeout(T2);
-        await new D.OpacityAnimation(nodes, 1, 0, T3).start();
+      updateTrophyImpl(trophy).then(() => {
+        D.trace("updateTrophyImpl", trophy);
+      }).catch(e => {
+        D.trace("updateTrophyImpl", trophy, e);
       });
-      if (trophyAnimationQueue.length === 1) {
-        while (trophyAnimationQueue.length > 0) {
-          await trophyAnimationQueue[0]();
-          trophyAnimationQueue.shift();
-        }
-      }
     }
   }
 };
@@ -2810,9 +2819,6 @@ const enterTitleScreen = async () => {
   }
 
   document.querySelector(".demeter-screen").append(screenNode);
-
-  // ヒストリ画面をクリアする。
-  document.querySelector(".demeter-history-paragraphs").replaceChildren();
 };
 
 const enterStartScreen = () => {
@@ -2822,7 +2828,7 @@ const enterStartScreen = () => {
 
 const enterMainScreen = () => {
   setScreenName("main");
-  // ヒストリ画面への遷移フラグを初期化する。
+  // 履歴画面への遷移フラグを初期化する。
   mainToHistoryScreenOnce = undefined;
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
   // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
@@ -2958,30 +2964,24 @@ const enterCreditsScreen = async () => {
 
 const enterHistoryScreen = async () => {
   setScreenName("history");
-
-  // let paragraphNode = document.querySelector(".demeter-history-paragraphs").lastElementChild;
-  let paragraphNode
   if (historyParagraphNodes.length === 0) {
-  // if (!paragraphNode) {
     const paragraphIndex = D.scenario.labels["空の履歴"];
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const speaker = speakerNames[paragraph[0].speaker];
     const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
-    paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-    // paragraphNode.classList.add("demeter-history-paragraph-empty");
+    const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
     document.querySelector(".demeter-history-paragraphs").replaceChildren(paragraphNode);
-    // document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
+    document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   } else {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
-    paragraphNode = historyParagraphNodes[historyParagraphNodes.length - 1];
+    document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+    // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
+    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({
+      behavior: "auto",
+      block: "end",
+      inline: "start",
+    });
   }
-  document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
-  // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-  paragraphNode.scrollIntoView({
-    behavior: "auto",
-    block: "end",
-    inline: "start",
-  });
 };
 
 //-------------------------------------------------------------------------
@@ -3022,10 +3022,7 @@ const backHistoryScreen = () => {
   if (historyVoiceSprite) {
     historyVoiceSprite.finish();
   }
-  const paragraphNode = document.querySelector(".demeter-history-paragraph-empty");
-  if (paragraphNode) {
-    paragraphNode.remove();
-  }
+  document.querySelector(".demeter-history-paragraphs").replaceChildren();
   soundEffectCancel();
   leaveHistoryScreen();
   enterMainScreen();
@@ -3098,10 +3095,12 @@ const createHistoryParagraph = () => {
 
   const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
   const paragraphIndex = Number.parseInt(textNode.dataset.pid);
-  const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-  // DOMには反映しない実験
-  // document.querySelector(".demeter-history-paragraphs").append(paragraphNode);
-  historyParagraphNodes.push(paragraphNode);
+  historyParagraphNodes.push(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
+
+  const n = historyParagraphNodes.length - system.historySize;
+  if (n > 0) {
+    historyParagraphNodes.splice(0, n);
+  }
 };
 
 const mainToHistoryScreen = async () => {
@@ -3792,7 +3791,7 @@ const next = async () => {
       }
     }
 
-    // 段落の処理が終わったのでヒストリに追加する。
+    // 段落の処理が終わった時点で履歴に追加する。
     createHistoryParagraph();
 
     resetParagraph();
