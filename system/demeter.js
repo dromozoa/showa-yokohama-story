@@ -1464,9 +1464,14 @@ D.VoiceSound = class {
       this.sound = new Howl({
         src: [ this.basename + ".webm", this.basename + ".mp3" ],
         sprite: this.sprite,
+
+        onload: () => {
+          D.trace("voiceSound onLoad", this.basename);
+        },
+
         // 再生に先だってロードエラーが発生した場合、サウンドIDは定義されない。
         onloaderror: (soundId, message) => {
-          D.trace("VoiceSound onLoadError", soundId, message);
+          D.trace("VoiceSound onLoadError", this.basename, soundId, message);
           this.loadErrorSoundId = soundId;
           this.loadErrorMessage = message;
           // 再生開始後にロードエラーを伝える。
