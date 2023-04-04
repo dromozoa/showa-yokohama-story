@@ -939,6 +939,16 @@ const startTexts = {
   preview: "SHOWA YOKOHAMA STORY '69",
 };
 
+const getMediaErrorMessage = message => {
+  switch (message) {
+    case 1: return "MEDIA_ERR_ABORTED";
+    case 2: return "MEDIA_ERR_NETWORK";
+    case 3: return "MEDIA_ERR_DECODE";
+    case 4: return "MEDIA_ERR_SRC_NOT_SUPPORTED";
+  }
+  return message;
+};
+
 //-------------------------------------------------------------------------
 
 D.Logging = class {
@@ -1077,7 +1087,7 @@ D.MusicPlayer = class {
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       loop: true,
-      onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(message)),
+      onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(getMediaErrorMessage(message))),
       onplayerror: (notUsed, message) => logging.error("音楽再生: 失敗", new Error(message)),
     });
     if (this.unlock) {
@@ -1464,9 +1474,14 @@ D.VoiceSound = class {
       this.sound = new Howl({
         src: [ this.basename + ".webm", this.basename + ".mp3" ],
         sprite: this.sprite,
+
+        onload: () => {
+          D.trace("voiceSound onLoad", this.basename);
+        },
+
         // 再生に先だってロードエラーが発生した場合、サウンドIDは定義されない。
         onloaderror: (soundId, message) => {
-          D.trace("VoiceSound onLoadError", soundId, message);
+          D.trace("VoiceSound onLoadError", this.basename, soundId, message);
           this.loadErrorSoundId = soundId;
           this.loadErrorMessage = message;
           // 再生開始後にロードエラーを伝える。
@@ -1533,7 +1548,7 @@ D.VoiceSprite = class {
       this.sound.setOnceLoadError((soundId, message) => {
         D.trace("VoiceSprite onceLoadError", soundId, message, this.soundId);
         this.soundId = undefined;
-        reject(new Error(message));
+        reject(new Error(getMediaErrorMessage(message)));
       });
 
       this.sound.once("playerror", (soundId, message) => {
@@ -1687,7 +1702,7 @@ D.SoundEffect = class {
       src: [ basename + ".webm", basename + ".mp3" ],
       volume: this.volume,
       sprite: D.effectSprite,
-      onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(message)),
+      onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(getMediaErrorMessage(message))),
       onplayerror: (notUsed, message) => logging.error("効果音再生: 失敗", new Error(message)),
     });
   }
@@ -2443,31 +2458,31 @@ const updateScaleLimit = async () => {
   await onResize();
 };
 
-const updateSystemSpeed = () => {
+const updateSpeed = () => {
   if (textAnimations) {
     textAnimations.forEach(textAnimation => textAnimation.updateSpeed(system.speed));
   }
 };
 
-const updateSystemMasterVolume = () => {
+const updateMasterVolume = () => {
   if (Howler.masterGain) {
     Howler.volume(system.masterVolume);
   }
 };
 
-const updateSystemMusicVolume = () => {
+const updateMusicVolume = () => {
   if (musicPlayer) {
     musicPlayer.updateVolume(system.musicVolume);
   }
 };
 
-const updateSystemVoiceVolume = () => {
+const updateVoiceVolume = () => {
   if (voiceSprite) {
     voiceSprite.updateVolume(system.voiceVolume);
   }
 };
 
-const updateSystemEffectVolume = () => {
+const updateEffectVolume = () => {
   if (soundEffect) {
     soundEffect.updateVolume(system.effectVolume);
   }
@@ -2593,14 +2608,14 @@ const initializeSystemUi = () => {
   systemUi.onFinishChange(putSystemTask);
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
-  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSystemSpeed);
+  systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSpeed);
   systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
   systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ行送り時間 [ms]");
-  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateSystemMasterVolume);
-  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateSystemMusicVolume);
-  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateSystemVoiceVolume);
-  systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateSystemEffectVolume);
+  systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateMasterVolume);
+  systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateMusicVolume);
+  systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateVoiceVolume);
+  systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateEffectVolume);
   systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]").onFinishChange(updateHistorySize);
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
@@ -2673,11 +2688,11 @@ const initializeSystemUi = () => {
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
       updateScaleLimit();
-      updateSystemSpeed();
-      updateSystemMasterVolume();
-      updateSystemMusicVolume();
-      updateSystemVoiceVolume();
-      updateSystemEffectVolume();
+      updateSpeed();
+      updateMasterVolume();
+      updateMusicVolume();
+      updateVoiceVolume();
+      updateEffectVolume();
       updateHistorySize();
       updateComponentColor();
       updateComponentOpacity();

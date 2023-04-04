@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>昭和横濱物語</title>
+
+  <!-- https://developer.twitter.com/ja/docs/tweets/optimize-with-cards/guides/getting-started -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@vaporoid">
+  <meta name="twitter:creator" content="@vaporoid">
+  <meta property="og:url" content="https://vaporoid.com/sys/">
+  <meta property="og:title" content="昭和横濱物語">
+  <meta property="og:description" content="キミだけの昭和を終わらせよう！　ブラウザで遊べる無料ノベルゲーム！（音声は合成です）">
+  <meta property="og:image" content="https://vaporoid.com/sys/system/./apple-touch-icon.png">
 
   <!-- https://fonts.google.com/ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +22,9 @@
 
   <!-- https://github.com/sindresorhus/github-markdown-css#usage -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown-dark.css" integrity="sha256-sVwvm2LgPvs8KmgAtivJZES8stEW61Mz9Pt/ync4TCc=" crossorigin="anonymous">
+
+  <!-- https://icons8.com/line-awesome/howto -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" integrity="sha256-zmGhjPCE8VADeYNABEZD8ymsX5AEWsstnneDaL15mFQ=" crossorigin="anonymous">
 
   <link href="system/./danu.css" rel="stylesheet">
 
@@ -57,11 +69,16 @@
     <th>詳細</th>
   </tr>
   <tr>
+    <td>b13</td>
+    <td>2023年4月4日</td>
+    <td>音声取得処理にタイムアウトを設定</td>
+  </tr>
+  <tr>
     <td>b12</td>
     <td>2023年4月3日</td>
-    <td>
-      修正をいくつか
-      <ul>
+    <td class="danu-version">
+      <span class="danu-version-title"><span class="las la-angle-right"></span>修正をいくつか</span>
+      <ul class="danu-version-description">
         <li>画面拡大率上限をただしく扱うように修正</li>
         <li>Edgeのダサいスクロールバーを隠蔽</li>
         <li>スキップ処理速度を下方調整</li>
