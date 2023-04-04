@@ -23,6 +23,21 @@ const D = {};
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const onClickVersionTitle = ev => {
+    const rootNode = ev.target.closest(".danu-version");
+    const iconNode = rootNode.querySelector(".las");
+    if (iconNode.classList.contains("la-angle-right")) {
+      iconNode.classList.remove("la-angle-right");
+      iconNode.classList.add("la-angle-down");
+    } else {
+      iconNode.classList.remove("la-angle-down");
+      iconNode.classList.add("la-angle-right");
+    }
+    rootNode.querySelector(".danu-version-description").classList.toggle("danu-opened");
+  };
+
+  document.querySelectorAll(".danu-version-title").forEach(node => node.addEventListener("click", onClickVersionTitle));
+
   const onClickScreenShot = ev => {
     ev.preventDefault();
     const targetNode = ev.target.closest(".danu-screen-shot");

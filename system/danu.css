@@ -74,6 +74,20 @@ body.danu {
 
 /*************************************************************************/
 
+.danu-version-title {
+  cursor: var(--cursor-pointer, auto);
+}
+
+.danu-version-description {
+  display: none;
+}
+
+.danu-version-description.danu-opened {
+  display: block;
+}
+
+/*************************************************************************/
+
 .danu-a-japan {
   display: inline-block;
   position: relative;

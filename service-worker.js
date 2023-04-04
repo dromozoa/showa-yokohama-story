@@ -28,15 +28,15 @@ addEventListener("activate", ev => {
   ev.waitUntil(clients.claim());
 });
 
-const regexPathnameDevelop = /^\/sys\/build\/(?:music|voice)/;
-const regexPathnameRelease = /^\/sys\/[^\/]+\//;
+const regexTimeoutTargetPathname = /^\/sys\/(?:build\/voice|voice\/\d+)\/\d+\.(?:webm|mp3)$/;
+const isTimeoutTarget = url => {
+  return regexTimeoutTargetPathname.test(url.pathname);
+};
+
+// 開発環境ではsystemディレクトリを暗黙にキャッシュしない。
+const regexCacheTargetPathname = /^\/sys\/(?:build\/(?:music|voice)|(?:system|music|voice)\/\d+)\//;
 const isCacheTarget = url => {
-  // 開発環境では暗黙にキャッシュするディレクトリをしぼる。
-  if (url.hostname.toLowerCase() === "localhost") {
-    return regexPathnameDevelop.test(url.pathname);
-  } else {
-    return regexPathnameRelease.test(url.pathname);
-  }
+  return regexCacheTargetPathname.test(url.pathname);
 };
 
 addEventListener("fetch", ev => {
@@ -46,8 +46,29 @@ addEventListener("fetch", ev => {
     if (cachedResponse) {
       return cachedResponse;
     }
-    const response = await fetch(ev.request);
-    if (isCacheTarget(new URL(ev.request.url))) {
+
+    const url = new URL(ev.request.url);
+    let response;
+
+    if (isTimeoutTarget(url)) {
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => abortController.abort(), 2000);
+
+      try {
+        response = await fetch(ev.request, { signal: abortController.signal });
+      } catch (e) {
+        if (e.name === "AbortError") {
+          return new Response("", { status: 408, statusText: "Request Timeout" });
+        }
+        throw e;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } else {
+      response = await fetch(ev.request);
+    }
+
+    if (isCacheTarget(url)) {
       cache.put(ev.request, response.clone());
     }
     return response;
