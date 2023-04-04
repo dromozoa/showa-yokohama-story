@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     rootNode.querySelector(".danu-version-description").classList.toggle("danu-opened");
   };
 
-  document.querySelectorAll(".danu-version-title").forEach(node => node.addEventListener("click", onClickVersionTitle));
+  document.querySelectorAll(".danu-version").forEach(node => node.addEventListener("click", onClickVersionTitle));
 
   const onClickScreenShot = ev => {
     ev.preventDefault();
