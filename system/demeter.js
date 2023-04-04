@@ -4059,7 +4059,11 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
-const dispatchDialog = code => {
+const clickButton = targetNode => {
+  targetNode.dispatchEvent(new MouseEvent("click"));
+};
+
+const clickDialogButton = code => {
   const buttonNodes = [
     document.querySelector(".demeter-dialog-frame .demeter-button1"),
     document.querySelector(".demeter-dialog-frame .demeter-button2"),
@@ -4073,7 +4077,7 @@ const dispatchDialog = code => {
   }
 
   if (targetNode) {
-    targetNode.dispatchEvent(new MouseEvent("click"));
+    clickButton(targetNode);
     return true;
   }
 };
@@ -4093,15 +4097,15 @@ const onKeydown = async ev => {
     }
   } else if (screenName === "load") {
     if (waitForDialog) {
-      dispatchDialog(ev.code);
+      clickDialogButton(ev.code);
     } else if (ev.code === "Escape") {
-      await backLoadScreen();
+      clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     }
   } else if (screenName === "save") {
     if (waitForDialog) {
-      dispatchDialog(ev.code);
+      clickDialogButton(ev.code);
     } else if (ev.code === "Escape") {
-      backSaveScreen();
+      clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     }
   } else if (screenName === "credits") {
     if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
