@@ -1411,7 +1411,7 @@ body.demeter {
   cursor: var(--cursor-pointer, auto);
   fill: var(--color-fill);
   stroke: var(--color-stroke);
-  transition: fill 0.5s, stroke 0.5s;
+  transition: fill 0.1s, stroke 0.5s;
 }
 
 @media (hover: hover) {

@@ -4059,11 +4059,15 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
-const clickButton = targetNode => {
+const clickButton = async targetNode => {
+  targetNode.classList.add("demeter-active");
+  await D.setTimeout(100);
+  targetNode.classList.remove("demeter-active");
   targetNode.dispatchEvent(new MouseEvent("click"));
+  return true;
 };
 
-const clickDialogButton = code => {
+const clickDialogButton = async code => {
   const buttonNodes = [
     document.querySelector(".demeter-dialog-frame .demeter-button1"),
     document.querySelector(".demeter-dialog-frame .demeter-button2"),
@@ -4077,8 +4081,7 @@ const clickDialogButton = code => {
   }
 
   if (targetNode) {
-    clickButton(targetNode);
-    return true;
+    return await clickButton(targetNode);
   }
 };
 
@@ -4097,15 +4100,19 @@ const onKeydown = async ev => {
     }
   } else if (screenName === "load") {
     if (waitForDialog) {
-      clickDialogButton(ev.code);
-    } else if (ev.code === "Escape") {
-      clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
+      await clickDialogButton(ev.code);
+    } else {
+      if (ev.code === "Escape") {
+        await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
+      }
     }
   } else if (screenName === "save") {
     if (waitForDialog) {
-      clickDialogButton(ev.code);
-    } else if (ev.code === "Escape") {
-      clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
+      await clickDialogButton(ev.code);
+    } else
+      if (ev.code === "Escape") {
+        await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
+      }
     }
   } else if (screenName === "credits") {
     if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
