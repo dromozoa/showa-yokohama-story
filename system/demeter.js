@@ -4109,7 +4109,7 @@ const onKeydown = async ev => {
   } else if (screenName === "save") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
-    } else
+    } else {
       if (ev.code === "Escape") {
         await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
       }
