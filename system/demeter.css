@@ -711,8 +711,10 @@ body.demeter {
   transition: opacity 1s;
 }
 
-.demeter-data-back:hover .demeter-data-back-in-the-ussr {
-  opacity: 1;
+@media (hover: hover) {
+  .demeter-data-back:hover .demeter-data-back-in-the-ussr {
+    opacity: 1;
+  }
 }
 
 .demeter-data-title {
@@ -785,8 +787,10 @@ body.demeter {
   transition: filter 0.5s;
 }
 
-.demeter-data-tape:hover {
-  filter: brightness(1) saturate(1) sepia(0.5);
+@media (hover: hover) {
+  .demeter-data-tape:hover {
+    filter: brightness(1) saturate(1) sepia(0.5);
+  }
 }
 
 .demeter-data-tape > img {
@@ -1410,14 +1414,14 @@ body.demeter {
   transition: fill 0.5s, stroke 0.5s;
 }
 
-.demeter-button:active {
-  fill: var(--color-fill-active);
-}
-
 @media (hover: hover) {
   .demeter-button:hover {
     stroke: var(--color-stroke-active);
   }
+}
+
+.demeter-button:active {
+  fill: var(--color-fill-active);
 }
 
 .demeter-button.demeter-active {
