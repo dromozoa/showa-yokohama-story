@@ -3888,12 +3888,18 @@ const dialog = async key => {
   document.querySelector(".demeter-dialog-text").replaceChildren(...textNodes);
 
   const dialog = paragraph[0].dialog
+  const button1Node = document.querySelector(".demeter-dialog-frame .demeter-button1");
+  const button2Node = document.querySelector(".demeter-dialog-frame .demeter-button2");
   if (dialog.length === 1) {
-    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "none";
+    button1Node.dataset.result = dialog[0].result;
+    delete button2Node.dataset.result;
+    button2Node.style.display = "none";
     document.querySelector(".demeter-dialog-item2").textContent = "";
     document.querySelector(".demeter-dialog-item1").textContent = dialog[0].choice;
   } else {
-    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "inline";
+    button1Node.dataset.result = dialog[1].result;
+    button2Node.dataset.result = dialog[0].result;
+    button2Node.style.display = "inline";
     document.querySelector(".demeter-dialog-item2").textContent = dialog[0].choice;
     document.querySelector(".demeter-dialog-item1").textContent = dialog[1].choice;
   }
@@ -4011,6 +4017,8 @@ D.setupErrorHandler = () => {
   addEventListener("unhandledrejection", ev => logging.error("検出: 見過ごされた拒否", ev.reason));
 };
 
+//-------------------------------------------------------------------------
+
 const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -4049,6 +4057,27 @@ const onResize = async () => {
   }
 };
 
+//-------------------------------------------------------------------------
+
+const dispatchDialog = code => {
+  const buttonNodes = [
+    document.querySelector(".demeter-dialog-frame .demeter-button1"),
+    document.querySelector(".demeter-dialog-frame .demeter-button2"),
+  ];
+
+  let targetNode;
+  if (code === "Enter") {
+    targetNode = buttonNodes.find(node => node.dataset.result === "yes" || node.dataset.result === "ok");
+  } else if (code === "Escape") {
+    targetNode = buttonNodes.find(node => node.dataset.result === "no" || node.dataset.result === "ok");
+  }
+
+  if (targetNode) {
+    targetNode.dispatchEvent(new MouseEvent("click"));
+    return true;
+  }
+};
+
 const onKeydown = async ev => {
   if (screenName === "title") {
     await checkKCode(ev.code);
@@ -4063,11 +4092,15 @@ const onKeydown = async ev => {
       await mainToHistoryScreen();
     }
   } else if (screenName === "load") {
-    if (ev.code === "Escape" && !waitForDialog) {
+    if (waitForDialog) {
+      dispatchDialog(ev.code);
+    } else if (ev.code === "Escape") {
       await backLoadScreen();
     }
   } else if (screenName === "save") {
-    if (ev.code === "Escape" && !waitForDialog) {
+    if (waitForDialog) {
+      dispatchDialog(ev.code);
+    } else if (ev.code === "Escape") {
       backSaveScreen();
     }
   } else if (screenName === "credits") {
@@ -4080,6 +4113,8 @@ const onKeydown = async ev => {
     }
   }
 };
+
+//-------------------------------------------------------------------------
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
