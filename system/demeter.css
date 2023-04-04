@@ -781,6 +781,12 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 11);
   height: calc(var(--font-size) * 7);
+  filter: brightness(0.5) saturate(0.5) sepia(0.5);
+  transition: filter 0.5s;
+}
+
+.demeter-data-tape:hover {
+  filter: brightness(1) saturate(1) sepia(0.5);
 }
 
 .demeter-data-tape > img {
