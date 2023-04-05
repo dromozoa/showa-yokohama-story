@@ -1983,6 +1983,8 @@ let historyParagraphNodes = [];
 let historyVoiceSprite;
 let historyParagraphIndex;
 
+let inputMode;
+
 //-------------------------------------------------------------------------
 
 const cacheImpl = async (sourceUrls) => {
@@ -3181,13 +3183,21 @@ const unsetFocus = () => {
   });
 };
 
+const onMouseMove = ev => {
+  inputMode = "mouse";
+};
+
 const onMouseEnter = ev => {
-  unsetFocus();
-  ev.target.classList.add("demeter-focus");
+  if (inputMode === "mouse") {
+    unsetFocus();
+    ev.target.classList.add("demeter-focus");
+  }
 };
 
 const onMouseLeave = ev => {
-  ev.target.classList.remove("demeter-focus");
+  if (inputMode === "mouse") {
+    ev.target.classList.remove("demeter-focus");
+  }
 };
 
 const initializeFocusable = () => {
@@ -4369,11 +4379,16 @@ const focusParagraph = (nodes, code, block) => {
 }
 
 const onKeydown = async ev => {
+  inputMode = "keyboard";
+
   if (screenName === "title") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      await clickButton(unsetFocus());
+      const node = unsetFocus();
+      if (node) {
+        await clickButton(node);
+      }
     } else {
       focusTitleChoice(ev.code);
     }
@@ -4381,29 +4396,36 @@ const onKeydown = async ev => {
   } else if (screenName === "main") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
-    } else if (waitForChoice) {
-      if (isKeyOk(ev.code)) {
-        await clickButton(unsetFocus());
-      } else {
-        focusMainMenuX(ev.code);
-        focusMainChoice(ev.code);
-      }
-    } else if (isKeyOk(ev.code)) {
-      const node = document.querySelector(".demeter-focus");
-      if (node) {
-        await clickButton(node);
-      } else {
-        await cancelPlayState();
-        next();
-      }
-    } else if (isKeyCancel(ev.code)) {
-      await cancelPlayState();
-      unsetFocus();
-      systemUi.openAnimated(false);
-    } else if (ev.code === "PageUp") {
-      await mainToHistoryScreen();
     } else {
-      focusMainMenu(ev.code);
+      if (waitForChoice) {
+        if (isKeyOk(ev.code)) {
+          const node = unsetFocus();
+          if (node) {
+            await clickButton(node);
+          }
+        } else {
+          focusMainMenuX(ev.code);
+          focusMainChoice(ev.code);
+        }
+      } else if (isKeyOk(ev.code)) {
+        const node = document.querySelector(".demeter-focus");
+        if (node) {
+          await clickButton(node);
+        } else {
+          await cancelPlayState();
+          next();
+        }
+      } else {
+        focusMainMenu(ev.code);
+      }
+
+      if (isKeyCancel(ev.code)) {
+        await cancelPlayState();
+        unsetFocus();
+        systemUi.openAnimated(false);
+      } else if (ev.code === "PageUp") {
+        await mainToHistoryScreen();
+      }
     }
   } else if (screenName === "load") {
     if (waitForDialog) {
@@ -4466,6 +4488,7 @@ D.onDOMContentLoaded = async () => {
   initializeFocusable(); // SVGを作り終えた後に実行する。
 
   addEventListener("resize", onResize);
+  addEventListener("mousemove", onMouseMove);
   addEventListener("keydown", onKeydown);
 
   await enterTitleScreen();
