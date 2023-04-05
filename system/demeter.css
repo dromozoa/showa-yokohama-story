@@ -933,7 +933,7 @@ body.demeter {
   --credits-height-graph: calc(var(--font-size) * 25 * var(--graph-ratio));
   --credits-height-paragraph: calc(var(--font-size) * 27);
   --credits-height-paragraphs: calc(var(--credits-height-paragraph) * var(--credits-count));
-  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 2, var(--credits-height-paragraphs) + var(--screen-height) * 2) + var(--font-size) * 2);
+  --credits-height: calc(max(var(--credits-height-graph) + var(--font-size) * 4, var(--credits-height-paragraphs) + var(--screen-height) * 2));
 }
 
 .demeter-credits-screen {
@@ -981,13 +981,14 @@ body.demeter {
   width: calc(var(--font-size) * 23);
   height: var(--credits-height-paragraphs);
   left: calc(var(--font-size) * 2);
-  top: calc(var(--font-size) * 2);
+  top: 0;
 }
 
 .demeter-credits-paragraph {
   position: relative;
+  padding-top: calc(var(--font-size) * 2);
   width: calc(var(--font-size) * 23);
-  height: var(--credits-height-paragraph);
+  height: calc(var(--credits-height-paragraph) - var(--font-size) * 2);
   font-family: var(--font-family-console);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);

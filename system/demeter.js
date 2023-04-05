@@ -2926,7 +2926,7 @@ const enterCreditsScreen = async () => {
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
-  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
+  const height = Math.max(fontSize * (25 * graphRatio + 4), paragraphHeight * paragraphNodes.length + screenHeight * 2);
 
   scrollNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
@@ -4150,13 +4150,17 @@ const clickDialogButton = async code => {
   return await clickButton(targetNode);
 };
 
+const clickElement = node => {
+  node.dispatchEvent(new MouseEvent("click"));
+  return true;
+};
+
 const clickFocusElement = () => {
   const node = document.querySelector(".demeter-focus");
   if (!node) {
     return;
   }
-  node.dispatchEvent(new MouseEvent("click"));
-  return true;
+  return clickElement(node);
 };
 
 const focusDataTape = (tapesNode, code) => {
@@ -4194,6 +4198,34 @@ const focusDataTape = (tapesNode, code) => {
   tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
 };
 
+const focusCreditsParagraph = code => {
+  const delta = getKeyArrowY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [...document.querySelectorAll(".demeter-credits [data-focusable='true']")];
+  let index = -1;
+
+  const focusNode = unsetFocus();
+  if (focusNode) {
+    index = nodes.findIndex(node => node === focusNode);
+  }
+
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  const node = nodes[index];
+  node.classList.add("demeter-focus");
+  node.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
 const focusHistoryParagraph = code => {
   const delta = getKeyArrowY(code);
   if (!delta) {
@@ -4218,7 +4250,7 @@ const focusHistoryParagraph = code => {
   node.classList.add("demeter-focus");
   node.scrollIntoView({
     behavior: "smooth",
-    block: index === 0 ? "start" : index === nodes.length - 1 ? "end" : "center",
+    block: "nearest",
   });
 };
 
@@ -4256,8 +4288,12 @@ const onKeydown = async ev => {
       focusDataTape(document.querySelector(".demeter-save-tapes"), ev.code);
     }
   } else if (screenName === "credits") {
-    if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
-      backCreditsScreen();
+    if (waitForCredits) {
+      if (isKeyOk(ev.code) || isKeyCancel(ev.code)) {
+        clickElement(document.querySelector(".demeter-credits-end"));
+      } else {
+        focusCreditsParagraph(ev.code);
+      }
     }
   } else if (screenName === "history") {
     if (isKeyOk(ev.code)) {
