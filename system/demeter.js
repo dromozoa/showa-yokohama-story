@@ -702,7 +702,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
           <path d="${clipPathData}"/>
         </clipPath>
       </defs>
-      <g class="demeter-button" clip-path="url(#${clipId})">
+      <g class="demeter-button" data-focusable="true" clip-path="url(#${clipId})">
         <path fill="none" stroke-width="${D.numberToString(U4+2)}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
       </g>
@@ -757,7 +757,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
       .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
     buttonsHtml += `
-      <g class="demeter-button demeter-button${i}">
+      <g class="demeter-button demeter-button${i}" data-focusable="true">
         <path fill="none" stroke-width="${D.numberToString(U8)}" d="${buttonBarPathData}"/>
         <path stroke-width="1" d="${buttonPathData}"/>
       </g>
@@ -839,11 +839,11 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <g class="demeter-buttons">
-        <g class="demeter-button demeter-button1"><path d="${button1PathData}"/></g>
-        <g class="demeter-button demeter-button2"><path d="${button2PathData}"/></g>
-        <g class="demeter-button demeter-button3"><path d="${button3PathData}"/></g>
-        <g class="demeter-button demeter-button4"><path d="${button4PathData}"/></g>
-        <g class="demeter-button demeter-button5"><path d="${button5PathData}"/></g>
+        <g class="demeter-button demeter-button1" data-focusable="true"><path d="${button1PathData}"/></g>
+        <g class="demeter-button demeter-button2" data-focusable="true"><path d="${button2PathData}"/></g>
+        <g class="demeter-button demeter-button3" data-focusable="true"><path d="${button3PathData}"/></g>
+        <g class="demeter-button demeter-button4" data-focusable="true"><path d="${button4PathData}"/></g>
+        <g class="demeter-button demeter-button5" data-focusable="true"><path d="${button5PathData}"/></g>
       </g>
     </svg>
   `;
@@ -869,7 +869,7 @@ D.createBackFrame = (width, height, buttonWidth, buttonHeight, strokeWidth) => {
     <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
-      <g class="demeter-button">
+      <g class="demeter-button" data-focusable="true">
         <path stroke="none" d="${fillPathData}"/>
         <path fill="none" stroke-width="${D.numberToString(strokeWidth)}" d="${strokePathData}"/>
       </g>
@@ -3052,14 +3052,15 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   const template = document.createElement("template");
   template.innerHTML = `
     <div class="demeter-history-paragraph-border">
-      <div class="demeter-history-paragraph">
+      <div class="demeter-history-paragraph" data-focusable="true">
         <div class="demeter-history-paragraph-speaker"></div>
         <div class="demeter-history-paragraph-text"></div>
         <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
       </div>
     </div>
   `;
-  const paragraphNode = template.content.firstElementChild;
+  const paragraphBorderNode = template.content.firstElementChild;
+  const paragraphNode = paragraphBorderNode.firstElementChild;
 
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
@@ -3070,7 +3071,9 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   }
   paragraphNode.querySelector(".demeter-history-paragraph-text").append(...textNodes);
 
-  paragraphNode.querySelector(".demeter-history-paragraph").addEventListener("click", async () => {
+  paragraphNode.addEventListener("mouseenter", onMouseEnter);
+  paragraphNode.addEventListener("mouseleave", onMouseLeave);
+  paragraphNode.addEventListener("click", async () => {
     const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
     const voiceSound = new D.VoiceSound(voiceBasename);
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
@@ -3099,7 +3102,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
     paragraphNode.querySelector(".demeter-history-paragraph-voice").classList.remove("demeter-active");
   });
 
-  return paragraphNode;
+  return paragraphBorderNode;
 };
 
 const updateHistorySize = () => {
@@ -4236,7 +4239,7 @@ D.onDOMContentLoaded = async () => {
   await onResize();
   initializeBackground();
   initializeUpdateChecker();
-  initializeFocusable();
+  initializeFocusable(); // SVGを作り終えた後に実行する。
 
   addEventListener("resize", onResize);
   addEventListener("keydown", onKeydown);

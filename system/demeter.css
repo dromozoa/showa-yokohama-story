@@ -711,6 +711,7 @@ body.demeter {
   transition: opacity 1s;
 }
 
+/* このhoverはJavaScriptで制御しない */
 @media (hover: hover) {
   .demeter-data-back:hover .demeter-data-back-in-the-ussr {
     opacity: 1;
@@ -1252,12 +1253,6 @@ body.demeter {
   transition: background-color 0.5s;
 }
 
-@media (hover: hover) {
-  .demeter-history-paragraph:hover {
-    background-color: var(--color-fill-active);
-  }
-}
-
 .demeter-history-paragraph.demeter-focus {
   background-color: var(--color-fill-active);
 }
@@ -1446,10 +1441,8 @@ body.demeter {
   transition: fill 0.1s, stroke 0.5s;
 }
 
-@media (hover: hover) {
-  .demeter-button:hover {
-    stroke: var(--color-stroke-active);
-  }
+.demeter-button.demeter-focus {
+  stroke: var(--color-stroke-active);
 }
 
 .demeter-button:active {
