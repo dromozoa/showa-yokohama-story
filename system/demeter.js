@@ -1746,6 +1746,12 @@ const soundEffectTrophy = () => {
   }
 };
 
+const soundEffectFocus = () => {
+  if (soundEffect) {
+    soundEffect.start("focus");
+  }
+};
+
 //-------------------------------------------------------------------------
 
 D.compareVersion = version => {
@@ -4231,6 +4237,7 @@ const focusTitleChoice = code => {
     row = (row + rows) % rows;
   }
 
+  soundEffectFocus();
   nodes[col + row * cols].classList.add("demeter-focus");
   return true;
 };
@@ -4274,6 +4281,7 @@ const focusMainMenu = code => {
     }
   }
 
+  soundEffectFocus();
   nodes[col + row * cols].classList.add("demeter-focus");
   return true;
 };
@@ -4297,6 +4305,7 @@ const focusMainMenuX = code => {
     index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
   }
 
+  soundEffectFocus();
   nodes[index].classList.add("demeter-focus");
   return true;
 };
@@ -4317,6 +4326,7 @@ const focusMainChoice = code => {
     index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
   }
 
+  soundEffectFocus();
   nodes[index].classList.add("demeter-focus");
   return true;
 };
@@ -4353,6 +4363,7 @@ const focusDataTape = (tapesNode, code) => {
     row = drow > -1 ? 1 : rows;
   }
 
+  soundEffectFocus();
   tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
 };
 
@@ -4370,6 +4381,7 @@ const focusParagraph = (nodes, code, block) => {
     index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
   }
 
+  soundEffectFocus();
   const node = nodes[index];
   node.classList.add("demeter-focus");
   node.scrollIntoView({
