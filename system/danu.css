@@ -52,6 +52,11 @@ body.danu {
   font-family: 'BIZ UDPGothic', sans-serif;
 }
 
+.danu table tr th,
+.danu table tr td {
+  vertical-align: top;
+}
+
 .danu table tr td ul:last-child {
   margin-bottom: 0;
 }
@@ -74,7 +79,7 @@ body.danu {
 
 /*************************************************************************/
 
-.danu-version-title {
+.danu-version {
   cursor: var(--cursor-pointer, auto);
 }
 
