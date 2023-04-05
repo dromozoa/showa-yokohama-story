@@ -1230,13 +1230,29 @@ body.demeter {
   }
 }
 
-.demeter-history-paragraph {
+.demeter-history-paragraph-border {
   position: relative;
   padding: calc(var(--font-size) * 0.125) 0;
 }
 
-.demeter-history-paragraph:not(:first-child) {
+.demeter-history-paragraph-border:not(:first-child) {
   border-top: 1px solid var(--color-stroke);
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph-border {
+    width: calc(var(--font-size) * 25);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-paragraph-border {
+    width: calc(var(--font-size) * 46);
+  }
+}
+
+.demeter-history-paragraph {
+  position: relative;
 }
 
 @media (orientation: portrait) {

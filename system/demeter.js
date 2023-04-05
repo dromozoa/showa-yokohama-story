@@ -3052,10 +3052,12 @@ const backHistoryScreen = () => {
 const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   const template = document.createElement("template");
   template.innerHTML = `
-    <div class="demeter-history-paragraph">
-      <div class="demeter-history-paragraph-speaker"></div>
-      <div class="demeter-history-paragraph-text"></div>
-      <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
+    <div class="demeter-history-paragraph-border">
+      <div class="demeter-history-paragraph">
+        <div class="demeter-history-paragraph-speaker"></div>
+        <div class="demeter-history-paragraph-text"></div>
+        <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
+      </div>
     </div>
   `;
   const paragraphNode = template.content.firstElementChild;
