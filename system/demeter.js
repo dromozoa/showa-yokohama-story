@@ -2987,8 +2987,7 @@ const enterHistoryScreen = async () => {
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const speaker = speakerNames[paragraph[0].speaker];
     const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
-    const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-    document.querySelector(".demeter-history-paragraphs").replaceChildren(paragraphNode);
+    document.querySelector(".demeter-history-paragraphs").replaceChildren(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   } else {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
@@ -3060,7 +3059,8 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
       </div>
     </div>
   `;
-  const paragraphNode = template.content.firstElementChild;
+  const paragraphBorderNode = template.content.firstElementChild;
+  const paragraphNode = paragraphBorderNode.firstElementChild;
 
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
@@ -3074,7 +3074,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   paragraphTextNode.append(...textNodes);
 
   const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
-  paragraphVoiceNode.addEventListener("click", async () => {
+  paragraphNode.addEventListener("click", async () => {
     const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
     const voiceSound = new D.VoiceSound(voiceBasename);
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
@@ -3103,7 +3103,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
     paragraphVoiceNode.classList.remove("demeter-active");
   });
 
-  return paragraphNode;
+  return paragraphBorderNode;
 };
 
 const updateHistorySize = () => {

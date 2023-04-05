@@ -1202,7 +1202,7 @@ body.demeter {
 
 .demeter-history-paragraphs {
   position: absolute;
-  left: var(--font-size);
+  left: calc(var(--font-size) * 0.5);
   top: calc(var(--font-size) * 3);
   font-family: var(--font-family);
   font-size: var(--font-size);
@@ -1218,21 +1218,21 @@ body.demeter {
 
 @media (orientation: portrait) {
   .demeter-history-paragraphs {
-    width: calc(var(--font-size) * 25);
+    width: calc(var(--font-size) * 26);
     height: calc(var(--font-size) * 44);
   }
 }
 
 @media (orientation: landscape) {
   .demeter-history-paragraphs {
-    width: calc(var(--font-size) * 46);
+    width: calc(var(--font-size) * 47);
     height: calc(var(--font-size) * 23);
   }
 }
 
 .demeter-history-paragraph-border {
   position: relative;
-  padding: calc(var(--font-size) * 0.125) 0;
+  padding: calc(var(--font-size) / 6) 0;
 }
 
 .demeter-history-paragraph-border:not(:first-child) {
@@ -1241,34 +1241,47 @@ body.demeter {
 
 @media (orientation: portrait) {
   .demeter-history-paragraph-border {
-    width: calc(var(--font-size) * 25);
+    width: calc(var(--font-size) * 26);
   }
 }
 
 @media (orientation: landscape) {
   .demeter-history-paragraph-border {
-    width: calc(var(--font-size) * 46);
+    width: calc(var(--font-size) * 47);
   }
 }
 
 .demeter-history-paragraph {
   position: relative;
+  cursor: var(--cursor-pointer, auto);
+  background-color: var(--color-fill);
+  transition: background-color 0.5s;
+}
+
+@media (hover: hover) {
+  .demeter-history-paragraph:hover {
+    background-color: var(--color-fill-active);
+  }
+}
+
+.demeter-history-paragraph.demeter-focus {
+  background-color: var(--color-fill-active);
 }
 
 @media (orientation: portrait) {
   .demeter-history-paragraph {
-    width: calc(var(--font-size) * 25);
+    width: calc(var(--font-size) * 26);
   }
 }
 
 @media (orientation: landscape) {
   .demeter-history-paragraph {
-    width: calc(var(--font-size) * 46);
+    width: calc(var(--font-size) * 47);
   }
 }
 
 .demeter-history-paragraph-speaker {
-  pointer-events: none;
+  left: calc(var(--font-size) * 0.5);
 }
 
 @media (orientation: portrait) {
@@ -1295,12 +1308,18 @@ body.demeter {
 .demeter-history-paragraph-text {
   position: relative;
   width: calc(var(--font-size) * 25);
-  pointer-events: none;
+}
+
+@media (orientation: portrait) {
+  .demeter-history-paragraph-text {
+    left: calc(var(--font-size) * 0.5);
+    top: 0;
+  }
 }
 
 @media (orientation: landscape) {
   .demeter-history-paragraph-text {
-    left: calc(var(--font-size) * 6);
+    left: calc(var(--font-size) * 6.5);
     top: 0;
   }
 }
@@ -1309,11 +1328,10 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 4);
   height: calc(var(--font-size) * 2);
-  right: 0;
+  right: calc(var(--font-size) * 0.5);
   top: 0;
   font-family: var(--font-family-console);
   text-align: right;
-  cursor: var(--cursor-pointer, auto);
   transition: color 0.5s;
 }
 
