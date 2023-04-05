@@ -960,7 +960,6 @@ D.Logging = class {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
       behavior: behavior,
       block: "end",
-      inline: "start",
     });
   }
 
@@ -2818,6 +2817,7 @@ const leaveHistoryScreen = () => {
 
 const enterTitleScreen = async () => {
   setScreenName("title");
+  unsetFocus();
   const screenNode = document.querySelector(".demeter-title-screen");
   if (screenNode.classList.contains("demeter-title-unlock-audio")) {
     screenNode.addEventListener("click", unlockAudio);
@@ -2839,11 +2839,13 @@ const enterTitleScreen = async () => {
 
 const enterStartScreen = () => {
   setScreenName("start");
+  unsetFocus();
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
   setScreenName("main");
+  unsetFocus();
   // 履歴画面への遷移フラグを初期化する。
   mainToHistoryScreenOnce = undefined;
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
@@ -2871,12 +2873,12 @@ const enterDataScreen = async screenNode => {
 
 const enterLoadScreen = async () => {
   setScreenName("load");
+  unsetFocus();
   if (trophiesState.map.has("preview")) {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
-  unsetFocus();
   const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
   // セーブされている段落の音声をキャッシュする。
   D.cache(getVoiceUrls(paragraphIndices));
@@ -2890,6 +2892,7 @@ const enterSaveScreen = async () => {
 
 const enterCreditsScreen = async () => {
   setScreenName("credits");
+  unsetFocus();
   musicPlayer.fade("vi05");
 
   D.scenario.paragraphs.forEach((paragraph, i) => {
@@ -2982,6 +2985,7 @@ const enterCreditsScreen = async () => {
 
 const enterHistoryScreen = async () => {
   setScreenName("history");
+  unsetFocus();
   if (historyParagraphNodes.length === 0) {
     const paragraphIndex = D.scenario.labels["空の履歴"];
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
@@ -2996,7 +3000,6 @@ const enterHistoryScreen = async () => {
     historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({
       behavior: "auto",
       block: "end",
-      inline: "start",
     });
   }
 };
@@ -3167,8 +3170,15 @@ const unsetFocus = () => {
   const node = document.querySelector(".demeter-focus");
   if (node) {
     node.classList.remove("demeter-focus");
+    return node;
   }
-  return node;
+
+  return historyParagraphNodes.map(node => node.firstElementChild).find(node => {
+    if (node.classList.contains("demeter-focus")) {
+      node.classList.remove("demeter-focus");
+      return true;
+    }
+  });
 };
 
 const onMouseEnter = ev => {
@@ -4095,7 +4105,15 @@ const isKeyArrowUp    = code => code === "ArrowUp"    || code === "KeyK";
 const isKeyArrowDown  = code => code === "ArrowDown"  || code === "KeyJ";
 const isKeyArrowRight = code => code === "ArrowRight" || code === "KeyL";
 
-const getKeyArrow = code => {
+const getKeyArrowY = code => {
+  if (isKeyArrowUp(code)) {
+    return -1;
+  } else if (isKeyArrowDown(code)) {
+    return +1;
+  }
+};
+
+const getKeyArrowXY = code => {
   if (isKeyArrowLeft(code)) {
     return { x: -1, y: 0 };
   } else if (isKeyArrowUp(code)) {
@@ -4132,17 +4150,17 @@ const clickDialogButton = async code => {
   return await clickButton(targetNode);
 };
 
-const clickDataTape = () => {
+const clickFocusElement = () => {
   const node = document.querySelector(".demeter-focus");
   if (!node) {
     return;
   }
   node.dispatchEvent(new MouseEvent("click"));
   return true;
-}
+};
 
 const focusDataTape = (tapesNode, code) => {
-  const delta = getKeyArrow(code);
+  const delta = getKeyArrowXY(code);
   if (!delta) {
     return;
   }
@@ -4162,10 +4180,10 @@ const focusDataTape = (tapesNode, code) => {
   let col;
   let row;
 
-  const node = unsetFocus();
-  if (node) {
-    col = (Number.parseInt(node.dataset.col) + dcol) % cols;
-    row = (Number.parseInt(node.dataset.row) + drow) % rows;
+  const focusNode = unsetFocus();
+  if (focusNode) {
+    col = (Number.parseInt(focusNode.dataset.col) + dcol) % cols;
+    row = (Number.parseInt(focusNode.dataset.row) + drow) % rows;
     col = col > 0 ? col : cols;
     row = row > 0 ? row : rows;
   } else {
@@ -4174,6 +4192,34 @@ const focusDataTape = (tapesNode, code) => {
   }
 
   tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
+};
+
+const focusHistoryParagraph = code => {
+  const delta = getKeyArrowY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [...document.querySelectorAll(".demeter-history-paragraph")];
+  let index = -1;
+
+  const focusNode = unsetFocus();
+  if (focusNode) {
+    index = nodes.findIndex(node => node === focusNode);
+  }
+
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  const node = nodes[index];
+  node.classList.add("demeter-focus");
+  node.scrollIntoView({
+    behavior: "smooth",
+    block: index === 0 ? "start" : index === nodes.length - 1 ? "end" : "center",
+  });
 };
 
 const onKeydown = async ev => {
@@ -4193,7 +4239,7 @@ const onKeydown = async ev => {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      clickDataTape();
+      clickFocusElement();
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     } else {
@@ -4203,7 +4249,7 @@ const onKeydown = async ev => {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      clickDataTape();
+      clickFocusElement();
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     } else {
@@ -4214,8 +4260,12 @@ const onKeydown = async ev => {
       backCreditsScreen();
     }
   } else if (screenName === "history") {
-    if (ev.code === "Escape") {
-      backHistoryScreen();
+    if (isKeyOk(ev.code)) {
+      clickFocusElement();
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
+    } else {
+      focusHistoryParagraph(ev.code);
     }
   }
 };
