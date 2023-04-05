@@ -787,12 +787,6 @@ body.demeter {
   transition: filter 0.5s;
 }
 
-@media (hover: hover) {
-  .demeter-data-tape:hover {
-    filter: brightness(1) saturate(1) sepia(0.5);
-  }
-}
-
 .demeter-data-tape.demeter-focus {
   filter: brightness(1) saturate(1) sepia(0.5);
 }

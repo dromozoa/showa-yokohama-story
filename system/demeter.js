@@ -2876,7 +2876,7 @@ const enterLoadScreen = async () => {
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
-  document.querySelectorAll(".demeter-load-screen .demeter-focus").forEach(node => node.classList.remove("demeter-focus"));
+  unsetFocus();
   const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
   // セーブされている段落の音声をキャッシュする。
   D.cache(getVoiceUrls(paragraphIndices));
@@ -2884,7 +2884,7 @@ const enterLoadScreen = async () => {
 
 const enterSaveScreen = async () => {
   setScreenName("save");
-  document.querySelectorAll(".demeter-save-screen .demeter-focus").forEach(node => node.classList.remove("demeter-focus"));
+  unsetFocus();
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
@@ -3137,13 +3137,6 @@ const mainToHistoryScreen = async () => {
 
 //-------------------------------------------------------------------------
 
-const initializeBackground = () => {
-  document.querySelector(".demeter-backgrounds").style.display = "block";
-  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
-};
-
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
-
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
     D.requestFullscreen = async node => await node.requestFullscreen();
@@ -3156,6 +3149,39 @@ const initializeFullscreen = () => {
     D.getFullscreenElement = () => document.webkitFullscreenElement;
     document.addEventListener("webkitfullscreenchange", () => updateSystemUiFullscreen());
   }
+};
+
+const initializeBackground = () => {
+  document.querySelector(".demeter-backgrounds").style.display = "block";
+  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
+};
+
+const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+
+//-------------------------------------------------------------------------
+
+const unsetFocus = () => {
+  const node = document.querySelector(".demeter-focus");
+  if (node) {
+    node.classList.remove("demeter-focus");
+  }
+  return node;
+};
+
+const onMouseEnter = ev => {
+  unsetFocus();
+  ev.target.classList.add("demeter-focus");
+};
+
+const onMouseLeave = ev => {
+  ev.target.classList.remove("demeter-focus");
+};
+
+const initializeFocusable = () => {
+  document.querySelectorAll("[data-focusable='true']").forEach(node => {
+    node.addEventListener("mouseenter", onMouseEnter);
+    node.addEventListener("mouseleave", onMouseLeave);
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -4103,12 +4129,12 @@ const clickDialogButton = async code => {
   return await clickButton(targetNode);
 };
 
-const clickDataTape = tapesNode => {
-  const focusNode = tapesNode.querySelector(".demeter-focus");
-  if (!focusNode) {
+const clickDataTape = () => {
+  const node = document.querySelector(".demeter-focus");
+  if (!node) {
     return;
   }
-  focusNode.dispatchEvent(new MouseEvent("click"));
+  node.dispatchEvent(new MouseEvent("click"));
   return true;
 }
 
@@ -4133,11 +4159,10 @@ const focusDataTape = (tapesNode, code) => {
   let col;
   let row;
 
-  const focusNode = tapesNode.querySelector(".demeter-focus");
-  if (focusNode) {
-    focusNode.classList.remove("demeter-focus");
-    col = (Number.parseInt(focusNode.dataset.col) + dcol) % cols;
-    row = (Number.parseInt(focusNode.dataset.row) + drow) % rows;
+  const node = unsetFocus();
+  if (node) {
+    col = (Number.parseInt(node.dataset.col) + dcol) % cols;
+    row = (Number.parseInt(node.dataset.row) + drow) % rows;
     col = col > 0 ? col : cols;
     row = row > 0 ? row : rows;
   } else {
@@ -4165,7 +4190,7 @@ const onKeydown = async ev => {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      clickDataTape(document.querySelector(".demeter-load-tapes"));
+      clickDataTape();
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     } else {
@@ -4175,7 +4200,7 @@ const onKeydown = async ev => {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      clickDataTape(document.querySelector(".demeter-save-tapes"));
+      clickDataTape();
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     } else {
@@ -4211,6 +4236,7 @@ D.onDOMContentLoaded = async () => {
   await onResize();
   initializeBackground();
   initializeUpdateChecker();
+  initializeFocusable();
 
   addEventListener("resize", onResize);
   addEventListener("keydown", onKeydown);
