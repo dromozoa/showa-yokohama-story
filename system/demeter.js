@@ -2876,6 +2876,7 @@ const enterLoadScreen = async () => {
   } else {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "broken: 1969/01/19 17:46";
   }
+  document.querySelectorAll(".demeter-load-screen .demeter-focus").forEach(node => node.classList.remove("demeter-focus"));
   const paragraphIndices = await enterDataScreen(document.querySelector(".demeter-load-screen"));
   // セーブされている段落の音声をキャッシュする。
   D.cache(getVoiceUrls(paragraphIndices));
@@ -2883,6 +2884,7 @@ const enterLoadScreen = async () => {
 
 const enterSaveScreen = async () => {
   setScreenName("save");
+  document.querySelectorAll(".demeter-save-screen .demeter-focus").forEach(node => node.classList.remove("demeter-focus"));
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
@@ -3003,7 +3005,6 @@ const enterHistoryScreen = async () => {
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
-  document.querySelector(".demeter-load-screen .demeter-focus").classList.remove("demeter-focus");
   soundEffectCancel();
   if (screenNamePrev === "title") {
     leaveLoadScreen();
@@ -3016,7 +3017,6 @@ const backLoadScreen = async () => {
 };
 
 const backSaveScreen = () => {
-  document.querySelector(".demeter-save-screen .demeter-focus").classList.remove("demeter-focus");
   soundEffectCancel();
   leaveSaveScreen();
   enterMainScreen();
