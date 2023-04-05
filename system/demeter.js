@@ -3059,8 +3059,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
       </div>
     </div>
   `;
-  const paragraphBorderNode = template.content.firstElementChild;
-  const paragraphNode = paragraphBorderNode.firstElementChild;
+  const paragraphNode = template.content.firstElementChild;
 
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
@@ -3069,12 +3068,9 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   } else {
     paragraphNode.querySelector(".demeter-history-paragraph-speaker").textContent = speaker;
   }
+  paragraphNode.querySelector(".demeter-history-paragraph-text").append(...textNodes);
 
-  const paragraphTextNode = paragraphNode.querySelector(".demeter-history-paragraph-text");
-  paragraphTextNode.append(...textNodes);
-
-  const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
-  paragraphNode.addEventListener("click", async () => {
+  paragraphNode.querySelector(".demeter-history-paragraph").addEventListener("click", async () => {
     const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
     const voiceSound = new D.VoiceSound(voiceBasename);
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
@@ -3085,7 +3081,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
         return;
       }
     }
-    paragraphVoiceNode.classList.add("demeter-active");
+    paragraphNode.querySelector(".demeter-history-paragraph-voice").classList.add("demeter-active");
 
     historyVoiceSprite = voiceSprite;
     historyParagraphIndex = paragraphIndex;
@@ -3100,10 +3096,10 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
       historyParagraphIndex = undefined;
     }
 
-    paragraphVoiceNode.classList.remove("demeter-active");
+    paragraphNode.querySelector(".demeter-history-paragraph-voice").classList.remove("demeter-active");
   });
 
-  return paragraphBorderNode;
+  return paragraphNode;
 };
 
 const updateHistorySize = () => {
