@@ -4182,10 +4182,11 @@ const clickElement = node => {
 
 const clickFocusElement = () => {
   const node = document.querySelector(".demeter-focus");
-  if (!node) {
-    return;
+  if (node) {
+    return clickElement(node);
+  } else {
+    soundEffectBeep();
   }
-  return clickElement(node);
 };
 
 const focusTitleChoice = code => {
@@ -4400,6 +4401,8 @@ const onKeydown = async ev => {
       const node = unsetFocus();
       if (node) {
         await clickButton(node);
+      } else {
+        soundEffectBeep();
       }
     } else {
       focusTitleChoice(ev.code);
@@ -4414,6 +4417,8 @@ const onKeydown = async ev => {
           const node = unsetFocus();
           if (node) {
             await clickButton(node);
+          } else {
+            soundEffectBeep();
           }
         } else {
           focusMainMenuX(ev.code);
@@ -4433,6 +4438,7 @@ const onKeydown = async ev => {
 
       if (isKeyCancel(ev.code)) {
         await cancelPlayState();
+        soundEffectCancel();
         unsetFocus();
         systemUi.openAnimated(false);
       } else if (ev.code === "PageUp") {
