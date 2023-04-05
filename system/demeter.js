@@ -4163,6 +4163,60 @@ const clickFocusElement = () => {
   return clickElement(node);
 };
 
+const focusTitleChoice = code => {
+  const choicesNode = document.querySelector(".demeter-title-choices");
+  if (choicesNode.style.display !== "block") {
+    return;
+  }
+
+  const delta = getKeyArrowXY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-title-choice1 .demeter-button"),
+    document.querySelector(".demeter-title-choice2 .demeter-button"),
+  ];
+
+  const choice3Node = document.querySelector(".demeter-title-choice3");
+  if (choice3Node.style.display === "block") {
+    nodes.push(choice3Node.querySelector(".demeter-button"));
+  }
+
+  const choice4Node = document.querySelector(".demeter-title-choice4");
+  if (choice4Node.style.display === "block") {
+    nodes.push(choice4Node.querySelector(".demeter-button"));
+  }
+
+  if (nodes.length === 2) {
+    nodes.push(nodes[0]);
+    nodes.push(nodes[1]);
+  } else if (nodes.length === 3) {
+    nodes.push(nodes[2]);
+  }
+
+  const cols = 2;
+  const rows = 2;
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(choiceNode => choiceNode === focusNode);
+  if (index === -1) {
+    col = delta.x > -1 ? 0 : cols - 1;
+    row = delta.y > -1 ? 0 : rows - 1;
+  } else {
+    col = index % cols + delta.x;
+    row = Math.floor(index / cols) + delta.y;
+    col = (col + cols) % cols;
+    row = (row + rows) % rows;
+  }
+
+  nodes[col + row * cols].classList.add("demeter-focus");
+  return true;
+};
+
 const focusDataTape = (tapesNode, code) => {
   const delta = getKeyArrowXY(code);
   if (!delta) {
@@ -4198,7 +4252,7 @@ const focusDataTape = (tapesNode, code) => {
   tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
 };
 
-const focusParagraphs = (nodes, code, block) => {
+const focusParagraph = (nodes, code, block) => {
   const delta = getKeyArrowY(code);
   if (!delta) {
     return;
@@ -4222,6 +4276,13 @@ const focusParagraphs = (nodes, code, block) => {
 
 const onKeydown = async ev => {
   if (screenName === "title") {
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      clickFocusElement();
+    } else {
+      focusTitleChoice(ev.code);
+    }
     await checkKCode(ev.code);
   } else if (screenName === "main") {
     if (ev.code === "Enter") {
@@ -4258,7 +4319,7 @@ const onKeydown = async ev => {
       if (isKeyOk(ev.code) || isKeyCancel(ev.code)) {
         clickElement(document.querySelector(".demeter-credits-end"));
       } else {
-        focusParagraphs([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev.code, "start");
+        focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev.code, "start");
       }
     }
   } else if (screenName === "history") {
@@ -4267,7 +4328,7 @@ const onKeydown = async ev => {
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
     } else {
-      focusParagraphs([...document.querySelectorAll(".demeter-history-paragraph")], ev.code, "nearest");
+      focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev.code, "nearest");
     }
   }
 };
