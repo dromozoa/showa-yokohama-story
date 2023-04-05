@@ -3016,6 +3016,7 @@ const backLoadScreen = async () => {
 };
 
 const backSaveScreen = () => {
+  document.querySelector(".demeter-save-screen .demeter-focus").classList.remove("demeter-focus");
   soundEffectCancel();
   leaveSaveScreen();
   enterMainScreen();
@@ -4104,6 +4105,15 @@ const clickDialogButton = async code => {
   return await clickButton(targetNode);
 };
 
+const clickDataTape = tapesNode => {
+  const focusNode = tapesNode.querySelector(".demeter-focus");
+  if (!focusNode) {
+    return;
+  }
+  focusNode.dispatchEvent(new MouseEvent("click"));
+  return true;
+}
+
 const focusDataTape = (tapesNode, code) => {
   const delta = getKeyArrow(code);
   if (!delta) {
@@ -4156,6 +4166,8 @@ const onKeydown = async ev => {
   } else if (screenName === "load") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      clickDataTape(document.querySelector(".demeter-load-tapes"));
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     } else {
@@ -4164,6 +4176,8 @@ const onKeydown = async ev => {
   } else if (screenName === "save") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      clickDataTape(document.querySelector(".demeter-save-tapes"));
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     } else {
