@@ -3003,6 +3003,7 @@ const enterHistoryScreen = async () => {
 //-------------------------------------------------------------------------
 
 const backLoadScreen = async () => {
+  document.querySelector(".demeter-load-screen .demeter-focus").classList.remove("demeter-focus");
   soundEffectCancel();
   if (screenNamePrev === "title") {
     leaveLoadScreen();
@@ -4059,6 +4060,25 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
+const isKeyOk         = code => code === "Enter";
+const isKeyCancel     = code => code === "Escape";
+const isKeyArrowLeft  = code => code === "ArrowLeft"  || code === "KeyH";
+const isKeyArrowUp    = code => code === "ArrowUp"    || code === "KeyK";
+const isKeyArrowDown  = code => code === "ArrowDown"  || code === "KeyJ";
+const isKeyArrowRight = code => code === "ArrowRight" || code === "KeyL";
+
+const getKeyArrow = code => {
+  if (isKeyArrowLeft(code)) {
+    return { x: -1, y: 0 };
+  } else if (isKeyArrowUp(code)) {
+    return { x: 0, y: -1 };
+  } else if (isKeyArrowDown(code)) {
+    return { x: 0, y: +1 };
+  } else if (isKeyArrowRight(code)) {
+    return { x: +1, y: 0 };
+  }
+}
+
 const clickButton = async targetNode => {
   targetNode.classList.add("demeter-active");
   await D.setTimeout(100);
@@ -4074,15 +4094,50 @@ const clickDialogButton = async code => {
   ];
 
   let targetNode;
-  if (code === "Enter") {
+  if (isKeyOk(code)) {
     targetNode = buttonNodes.find(node => node.dataset.result === "yes" || node.dataset.result === "ok");
-  } else if (code === "Escape") {
+  } else if (isKeyCancel(code)) {
     targetNode = buttonNodes.find(node => node.dataset.result === "no" || node.dataset.result === "ok");
+  } else {
+    return;
+  }
+  return await clickButton(targetNode);
+};
+
+const focusDataTape = (tapesNode, code) => {
+  const delta = getKeyArrow(code);
+  if (!delta) {
+    return;
   }
 
-  if (targetNode) {
-    return await clickButton(targetNode);
+  let dcol;
+  let drow;
+  if (screenOrientation === "orientationPortrait") {
+    dcol = delta.y;
+    drow = delta.x;
+  } else {
+    dcol = delta.x;
+    drow = delta.y;
   }
+
+  const cols = Number.parseInt(tapesNode.dataset.cols);
+  const rows = Number.parseInt(tapesNode.dataset.rows);
+  let col;
+  let row;
+
+  const focusNode = tapesNode.querySelector(".demeter-focus");
+  if (focusNode) {
+    focusNode.classList.remove("demeter-focus");
+    col = (Number.parseInt(focusNode.dataset.col) + dcol) % cols;
+    row = (Number.parseInt(focusNode.dataset.row) + drow) % rows;
+    col = col > 0 ? col : cols;
+    row = row > 0 ? row : rows;
+  } else {
+    col = dcol > -1 ? 1 : cols;
+    row = drow > -1 ? 1 : rows;
+  }
+
+  tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
 };
 
 const onKeydown = async ev => {
@@ -4101,18 +4156,18 @@ const onKeydown = async ev => {
   } else if (screenName === "load") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     } else {
-      if (ev.code === "Escape") {
-        await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
-      }
+      focusDataTape(document.querySelector(".demeter-load-tapes"), ev.code);
     }
   } else if (screenName === "save") {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     } else {
-      if (ev.code === "Escape") {
-        await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
-      }
+      focusDataTape(document.querySelector(".demeter-save-tapes"), ev.code);
     }
   } else if (screenName === "credits") {
     if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {

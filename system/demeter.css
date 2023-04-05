@@ -793,6 +793,10 @@ body.demeter {
   }
 }
 
+.demeter-data-tape.demeter-focus {
+  filter: brightness(1) saturate(1) sepia(0.5);
+}
+
 .demeter-data-tape > img {
   position: absolute;
   display: block;
