@@ -9,4 +9,5 @@
 | ビープ音1         | beep       |
 | 警告音1           | alert      |
 | 成功音            | trophy     |
+| カーソル移動1     | focus      |
 

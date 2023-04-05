@@ -20,7 +20,7 @@
 here=`dirname "$0"`
 export LUA_PATH="$here/?.lua;;"
 
-I=30
+I=32
 
 mkdir -p "$1/$I"
 output_dirname=`(cd "$1" && pwd)`

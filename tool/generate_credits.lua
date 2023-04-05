@@ -42,7 +42,7 @@ for line in handle:lines() do
     prev = ""
 
     if state == 1 then
-      handle_html:write '<div class="demeter-credits-paragraph">\n'
+      handle_html:write '<div class="demeter-credits-paragraph" data-focusable="true">\n'
       count = count + 1
       state = 2
     end

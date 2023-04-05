@@ -702,7 +702,7 @@ D.createChoiceFrame = (width, height, fontSize) => {
           <path d="${clipPathData}"/>
         </clipPath>
       </defs>
-      <g class="demeter-button" clip-path="url(#${clipId})">
+      <g class="demeter-button" data-focusable="true" clip-path="url(#${clipId})">
         <path fill="none" stroke-width="${D.numberToString(U4+2)}" d="${barPathData}"/>
         <path stroke-width="2" d="${mainPathData}"/>
       </g>
@@ -757,7 +757,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
       .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
     buttonsHtml += `
-      <g class="demeter-button demeter-button${i}">
+      <g class="demeter-button demeter-button${i}" data-focusable="true">
         <path fill="none" stroke-width="${D.numberToString(U8)}" d="${buttonBarPathData}"/>
         <path stroke-width="1" d="${buttonPathData}"/>
       </g>
@@ -839,11 +839,11 @@ D.createMenuFrame = (titleWidth, buttonWidth, buttonHeight) => {
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
       <g class="demeter-buttons">
-        <g class="demeter-button demeter-button1"><path d="${button1PathData}"/></g>
-        <g class="demeter-button demeter-button2"><path d="${button2PathData}"/></g>
-        <g class="demeter-button demeter-button3"><path d="${button3PathData}"/></g>
-        <g class="demeter-button demeter-button4"><path d="${button4PathData}"/></g>
-        <g class="demeter-button demeter-button5"><path d="${button5PathData}"/></g>
+        <g class="demeter-button demeter-button1" data-focusable="true"><path d="${button1PathData}"/></g>
+        <g class="demeter-button demeter-button2" data-focusable="true"><path d="${button2PathData}"/></g>
+        <g class="demeter-button demeter-button3" data-focusable="true"><path d="${button3PathData}"/></g>
+        <g class="demeter-button demeter-button4" data-focusable="true"><path d="${button4PathData}"/></g>
+        <g class="demeter-button demeter-button5" data-focusable="true"><path d="${button5PathData}"/></g>
       </g>
     </svg>
   `;
@@ -869,7 +869,7 @@ D.createBackFrame = (width, height, buttonWidth, buttonHeight, strokeWidth) => {
     <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
-      <g class="demeter-button">
+      <g class="demeter-button" data-focusable="true">
         <path stroke="none" d="${fillPathData}"/>
         <path fill="none" stroke-width="${D.numberToString(strokeWidth)}" d="${strokePathData}"/>
       </g>
@@ -960,7 +960,6 @@ D.Logging = class {
     document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
       behavior: behavior,
       block: "end",
-      inline: "start",
     });
   }
 
@@ -1747,6 +1746,12 @@ const soundEffectTrophy = () => {
   }
 };
 
+const soundEffectFocus = () => {
+  if (soundEffect) {
+    soundEffect.start("focus");
+  }
+};
+
 //-------------------------------------------------------------------------
 
 D.compareVersion = version => {
@@ -1983,6 +1988,8 @@ let mainToHistoryScreenOnce;
 let historyParagraphNodes = [];
 let historyVoiceSprite;
 let historyParagraphIndex;
+
+let inputMode;
 
 //-------------------------------------------------------------------------
 
@@ -2818,6 +2825,7 @@ const leaveHistoryScreen = () => {
 
 const enterTitleScreen = async () => {
   setScreenName("title");
+  unsetFocus();
   const screenNode = document.querySelector(".demeter-title-screen");
   if (screenNode.classList.contains("demeter-title-unlock-audio")) {
     screenNode.addEventListener("click", unlockAudio);
@@ -2839,11 +2847,13 @@ const enterTitleScreen = async () => {
 
 const enterStartScreen = () => {
   setScreenName("start");
+  unsetFocus();
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-start-screen"));
 };
 
 const enterMainScreen = () => {
   setScreenName("main");
+  unsetFocus();
   // 履歴画面への遷移フラグを初期化する。
   mainToHistoryScreenOnce = undefined;
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-main-screen"));
@@ -2871,6 +2881,7 @@ const enterDataScreen = async screenNode => {
 
 const enterLoadScreen = async () => {
   setScreenName("load");
+  unsetFocus();
   if (trophiesState.map.has("preview")) {
     document.querySelector(".demeter-load-tape-preview-text").textContent = "SHOWA YOKOHAMA STORY '69";
   } else {
@@ -2883,11 +2894,13 @@ const enterLoadScreen = async () => {
 
 const enterSaveScreen = async () => {
   setScreenName("save");
+  unsetFocus();
   await enterDataScreen(document.querySelector(".demeter-save-screen"));
 };
 
 const enterCreditsScreen = async () => {
   setScreenName("credits");
+  unsetFocus();
   musicPlayer.fade("vi05");
 
   D.scenario.paragraphs.forEach((paragraph, i) => {
@@ -2921,7 +2934,7 @@ const enterCreditsScreen = async () => {
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-empty-overlay"));
 
   const paragraphHeight = fontSize * 27;
-  const height = Math.max(fontSize * (25 * graphRatio + 2), paragraphHeight * paragraphNodes.length + screenHeight * 2) + fontSize * 2;
+  const height = Math.max(fontSize * (25 * graphRatio + 4), paragraphHeight * paragraphNodes.length + screenHeight * 2);
 
   scrollNode.scrollTo(0, 0);
   for (let i = 0; i < paragraphNodes.length; ++i) {
@@ -2980,13 +2993,13 @@ const enterCreditsScreen = async () => {
 
 const enterHistoryScreen = async () => {
   setScreenName("history");
+  unsetFocus();
   if (historyParagraphNodes.length === 0) {
     const paragraphIndex = D.scenario.labels["空の履歴"];
     const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
     const speaker = speakerNames[paragraph[0].speaker];
     const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
-    const paragraphNode = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
-    document.querySelector(".demeter-history-paragraphs").replaceChildren(paragraphNode);
+    document.querySelector(".demeter-history-paragraphs").replaceChildren(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   } else {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
@@ -2995,7 +3008,6 @@ const enterHistoryScreen = async () => {
     historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({
       behavior: "auto",
       block: "end",
-      inline: "start",
     });
   }
 };
@@ -3050,13 +3062,16 @@ const backHistoryScreen = () => {
 const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   const template = document.createElement("template");
   template.innerHTML = `
-    <div class="demeter-history-paragraph">
-      <div class="demeter-history-paragraph-speaker"></div>
-      <div class="demeter-history-paragraph-text"></div>
-      <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
+    <div class="demeter-history-paragraph-border">
+      <div class="demeter-history-paragraph" data-focusable="true">
+        <div class="demeter-history-paragraph-speaker"></div>
+        <div class="demeter-history-paragraph-text"></div>
+        <div class="demeter-history-paragraph-voice"><span class="la la-bullhorn"></span> VOICE</div>
+      </div>
     </div>
   `;
-  const paragraphNode = template.content.firstElementChild;
+  const paragraphBorderNode = template.content.firstElementChild;
+  const paragraphNode = paragraphBorderNode.firstElementChild;
 
   if (speaker === "") {
     const paragraphSpeakerBarcodeNode = paragraphNode.querySelector(".demeter-history-paragraph-speaker").appendChild(document.createElement("span"));
@@ -3065,12 +3080,11 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   } else {
     paragraphNode.querySelector(".demeter-history-paragraph-speaker").textContent = speaker;
   }
+  paragraphNode.querySelector(".demeter-history-paragraph-text").append(...textNodes);
 
-  const paragraphTextNode = paragraphNode.querySelector(".demeter-history-paragraph-text");
-  paragraphTextNode.append(...textNodes);
-
-  const paragraphVoiceNode = paragraphNode.querySelector(".demeter-history-paragraph-voice");
-  paragraphVoiceNode.addEventListener("click", async () => {
+  paragraphNode.addEventListener("mouseenter", onMouseEnter);
+  paragraphNode.addEventListener("mouseleave", onMouseLeave);
+  paragraphNode.addEventListener("click", async () => {
     const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
     const voiceSound = new D.VoiceSound(voiceBasename);
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
@@ -3081,7 +3095,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
         return;
       }
     }
-    paragraphVoiceNode.classList.add("demeter-active");
+    paragraphNode.querySelector(".demeter-history-paragraph-voice").classList.add("demeter-active");
 
     historyVoiceSprite = voiceSprite;
     historyParagraphIndex = paragraphIndex;
@@ -3096,10 +3110,10 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
       historyParagraphIndex = undefined;
     }
 
-    paragraphVoiceNode.classList.remove("demeter-active");
+    paragraphNode.querySelector(".demeter-history-paragraph-voice").classList.remove("demeter-active");
   });
 
-  return paragraphNode;
+  return paragraphBorderNode;
 };
 
 const updateHistorySize = () => {
@@ -3137,13 +3151,6 @@ const mainToHistoryScreen = async () => {
 
 //-------------------------------------------------------------------------
 
-const initializeBackground = () => {
-  document.querySelector(".demeter-backgrounds").style.display = "block";
-  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
-};
-
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
-
 const initializeFullscreen = () => {
   if (document.body.requestFullscreen) {
     D.requestFullscreen = async node => await node.requestFullscreen();
@@ -3156,6 +3163,54 @@ const initializeFullscreen = () => {
     D.getFullscreenElement = () => document.webkitFullscreenElement;
     document.addEventListener("webkitfullscreenchange", () => updateSystemUiFullscreen());
   }
+};
+
+const initializeBackground = () => {
+  document.querySelector(".demeter-backgrounds").style.display = "block";
+  backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
+};
+
+const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+
+//-------------------------------------------------------------------------
+
+const unsetFocus = () => {
+  const node = document.querySelector(".demeter-focus");
+  if (node) {
+    node.classList.remove("demeter-focus");
+    return node;
+  }
+
+  return historyParagraphNodes.map(node => node.firstElementChild).find(node => {
+    if (node.classList.contains("demeter-focus")) {
+      node.classList.remove("demeter-focus");
+      return true;
+    }
+  });
+};
+
+const onMouseMove = ev => {
+  inputMode = "mouse";
+};
+
+const onMouseEnter = ev => {
+  if (inputMode === "mouse") {
+    unsetFocus();
+    ev.target.classList.add("demeter-focus");
+  }
+};
+
+const onMouseLeave = ev => {
+  if (inputMode === "mouse") {
+    ev.target.classList.remove("demeter-focus");
+  }
+};
+
+const initializeFocusable = () => {
+  document.querySelectorAll("[data-focusable='true']").forEach(node => {
+    node.addEventListener("mouseenter", onMouseEnter);
+    node.addEventListener("mouseleave", onMouseLeave);
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -3888,12 +3943,18 @@ const dialog = async key => {
   document.querySelector(".demeter-dialog-text").replaceChildren(...textNodes);
 
   const dialog = paragraph[0].dialog
+  const button1Node = document.querySelector(".demeter-dialog-frame .demeter-button1");
+  const button2Node = document.querySelector(".demeter-dialog-frame .demeter-button2");
   if (dialog.length === 1) {
-    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "none";
+    button1Node.dataset.result = dialog[0].result;
+    delete button2Node.dataset.result;
+    button2Node.style.display = "none";
     document.querySelector(".demeter-dialog-item2").textContent = "";
     document.querySelector(".demeter-dialog-item1").textContent = dialog[0].choice;
   } else {
-    document.querySelector(".demeter-dialog-frame .demeter-button2").style.display = "inline";
+    button1Node.dataset.result = dialog[1].result;
+    button2Node.dataset.result = dialog[0].result;
+    button2Node.style.display = "inline";
     document.querySelector(".demeter-dialog-item2").textContent = dialog[0].choice;
     document.querySelector(".demeter-dialog-item1").textContent = dialog[1].choice;
   }
@@ -4011,6 +4072,8 @@ D.setupErrorHandler = () => {
   addEventListener("unhandledrejection", ev => logging.error("検出: 見過ごされた拒否", ev.reason));
 };
 
+//-------------------------------------------------------------------------
+
 const onResize = async () => {
   const W = document.documentElement.clientWidth;
   const H = document.documentElement.clientHeight;
@@ -4049,37 +4112,379 @@ const onResize = async () => {
   }
 };
 
+//-------------------------------------------------------------------------
+
+const isKeyOk         = code => code === "Enter";
+const isKeyCancel     = code => code === "Escape";
+const isKeyArrowLeft  = code => code === "ArrowLeft"  || code === "KeyH";
+const isKeyArrowUp    = code => code === "ArrowUp"    || code === "KeyK";
+const isKeyArrowDown  = code => code === "ArrowDown"  || code === "KeyJ";
+const isKeyArrowRight = code => code === "ArrowRight" || code === "KeyL";
+
+const getKeyArrowX = code => {
+  if (isKeyArrowLeft(code)) {
+    return -1;
+  } else if (isKeyArrowRight(code)) {
+    return +1;
+  }
+};
+
+
+const getKeyArrowY = code => {
+  if (isKeyArrowUp(code)) {
+    return -1;
+  } else if (isKeyArrowDown(code)) {
+    return +1;
+  }
+};
+
+const getKeyArrowXY = code => {
+  if (isKeyArrowLeft(code)) {
+    return { x: -1, y: 0 };
+  } else if (isKeyArrowUp(code)) {
+    return { x: 0, y: -1 };
+  } else if (isKeyArrowDown(code)) {
+    return { x: 0, y: +1 };
+  } else if (isKeyArrowRight(code)) {
+    return { x: +1, y: 0 };
+  }
+}
+
+const clickButton = async targetNode => {
+  targetNode.classList.add("demeter-active");
+  await D.setTimeout(100);
+  targetNode.classList.remove("demeter-active");
+  targetNode.dispatchEvent(new MouseEvent("click"));
+  return true;
+};
+
+const clickDialogButton = async code => {
+  const buttonNodes = [
+    document.querySelector(".demeter-dialog-frame .demeter-button1"),
+    document.querySelector(".demeter-dialog-frame .demeter-button2"),
+  ];
+
+  let targetNode;
+  if (isKeyOk(code)) {
+    targetNode = buttonNodes.find(node => node.dataset.result === "yes" || node.dataset.result === "ok");
+  } else if (isKeyCancel(code)) {
+    targetNode = buttonNodes.find(node => node.dataset.result === "no" || node.dataset.result === "ok");
+  } else {
+    return;
+  }
+  return await clickButton(targetNode);
+};
+
+const clickElement = node => {
+  node.dispatchEvent(new MouseEvent("click"));
+  return true;
+};
+
+const clickFocusElement = () => {
+  const node = document.querySelector(".demeter-focus");
+  if (node) {
+    return clickElement(node);
+  } else {
+    soundEffectBeep();
+  }
+};
+
+const focusTitleChoice = code => {
+  if (document.querySelector(".demeter-title-choices").style.display !== "block") {
+    return;
+  }
+
+  const delta = getKeyArrowXY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-title-choice1 .demeter-button"),
+    document.querySelector(".demeter-title-choice2 .demeter-button"),
+  ];
+
+  const choice3Node = document.querySelector(".demeter-title-choice3");
+  if (choice3Node.style.display === "block") {
+    nodes.push(choice3Node.querySelector(".demeter-button"));
+  }
+
+  const choice4Node = document.querySelector(".demeter-title-choice4");
+  if (choice4Node.style.display === "block") {
+    nodes.push(choice4Node.querySelector(".demeter-button"));
+  }
+
+  if (nodes.length === 2) {
+    nodes.push(nodes[0]);
+    nodes.push(nodes[1]);
+  } else if (nodes.length === 3) {
+    nodes.push(nodes[2]);
+  }
+
+  const cols = 2;
+  const rows = 2;
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    col = delta.x > -1 ? 0 : cols - 1;
+    row = delta.y > -1 ? 0 : rows - 1;
+  } else {
+    col = index % cols + delta.x;
+    row = Math.floor(index / cols) + delta.y;
+    col = (col + cols) % cols;
+    row = (row + rows) % rows;
+  }
+
+  soundEffectFocus();
+  nodes[col + row * cols].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainMenu = code => {
+  const delta = getKeyArrowXY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-main-menu .demeter-button2"), // LOAD
+    document.querySelector(".demeter-main-menu .demeter-button1"), // SYSTEM
+    document.querySelector(".demeter-main-menu .demeter-button3"), // SAVE
+    document.querySelector(".demeter-main-menu .demeter-button4"), // AUTO
+    false,
+    document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
+  ];
+
+  const cols = 3;
+  const rows = 2;
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    col = delta.x > -1 ? 0 : cols - 1;
+    row = delta.y > -1 ? 0 : rows - 1;
+  } else {
+    const x = index % cols;
+    const y = Math.floor(index / cols);
+    col = (x + delta.x + cols) % cols;
+    row = (y + delta.y + rows) % rows;
+    if (col === 1 && row === 1) {
+      switch (x) {
+        case 0: col = 2; break;
+        case 1: row = 0; break;
+        case 2: col = 0; break;
+      }
+    }
+  }
+
+  soundEffectFocus();
+  nodes[col + row * cols].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainMenuX = code => {
+  const delta = getKeyArrowX(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-main-menu .demeter-button2"), // LOAD
+    document.querySelector(".demeter-main-menu .demeter-button3"), // SAVE
+  ];
+
+  const focusNode = unsetFocus();
+  let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  soundEffectFocus();
+  nodes[index].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainChoice = code => {
+  const delta = getKeyArrowY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [...document.querySelectorAll(".demeter-main-choice")].filter(node => node.style.display === "block").map(node => node.querySelector(".demeter-button"));
+
+  const focusNode = unsetFocus();
+  let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  soundEffectFocus();
+  nodes[index].classList.add("demeter-focus");
+  return true;
+};
+
+const focusDataTape = (tapesNode, code) => {
+  const delta = getKeyArrowXY(code);
+  if (!delta) {
+    return;
+  }
+
+  let dcol;
+  let drow;
+  if (screenOrientation === "orientationPortrait") {
+    dcol = delta.y;
+    drow = delta.x;
+  } else {
+    dcol = delta.x;
+    drow = delta.y;
+  }
+
+  const cols = Number.parseInt(tapesNode.dataset.cols);
+  const rows = Number.parseInt(tapesNode.dataset.rows);
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  if (focusNode) {
+    col = (Number.parseInt(focusNode.dataset.col) + dcol) % cols;
+    row = (Number.parseInt(focusNode.dataset.row) + drow) % rows;
+    col = col > 0 ? col : cols;
+    row = row > 0 ? row : rows;
+  } else {
+    col = dcol > -1 ? 1 : cols;
+    row = drow > -1 ? 1 : rows;
+  }
+
+  soundEffectFocus();
+  tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
+};
+
+const focusParagraph = (nodes, code, block) => {
+  const delta = getKeyArrowY(code);
+  if (!delta) {
+    return;
+  }
+
+  const focusNode = unsetFocus();
+  let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  soundEffectFocus();
+  const node = nodes[index];
+  node.classList.add("demeter-focus");
+  node.scrollIntoView({
+    behavior: "smooth",
+    block: block,
+  });
+}
+
 const onKeydown = async ev => {
+  inputMode = "keyboard";
+
   if (screenName === "title") {
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      const node = unsetFocus();
+      if (node) {
+        await clickButton(node);
+      } else {
+        soundEffectBeep();
+      }
+    } else {
+      focusTitleChoice(ev.code);
+    }
     await checkKCode(ev.code);
   } else if (screenName === "main") {
-    if (ev.code === "Enter") {
-      await cancelPlayState();
-      next();
-    } else if (ev.code === "Escape") {
-      await cancelPlayState();
-      systemUi.openAnimated(false);
-    } else if (ev.code === "ArrowUp" || ev.code === "KeyK") {
-      await mainToHistoryScreen();
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else {
+      if (waitForChoice) {
+        if (isKeyOk(ev.code)) {
+          const node = unsetFocus();
+          if (node) {
+            await clickButton(node);
+          } else {
+            soundEffectBeep();
+          }
+        } else {
+          focusMainMenuX(ev.code);
+          focusMainChoice(ev.code);
+        }
+      } else if (isKeyOk(ev.code)) {
+        const node = document.querySelector(".demeter-focus");
+        if (node) {
+          await clickButton(node);
+        } else {
+          await cancelPlayState();
+          next();
+        }
+      } else {
+        focusMainMenu(ev.code);
+      }
+
+      if (isKeyCancel(ev.code)) {
+        await cancelPlayState();
+        soundEffectCancel();
+        unsetFocus();
+        systemUi.openAnimated(false);
+      } else if (ev.code === "PageUp") {
+        await mainToHistoryScreen();
+      }
     }
   } else if (screenName === "load") {
-    if (ev.code === "Escape" && !waitForDialog) {
-      await backLoadScreen();
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      clickFocusElement();
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
+    } else {
+      focusDataTape(document.querySelector(".demeter-load-tapes"), ev.code);
     }
   } else if (screenName === "save") {
-    if (ev.code === "Escape" && !waitForDialog) {
-      backSaveScreen();
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else if (isKeyOk(ev.code)) {
+      clickFocusElement();
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
+    } else {
+      focusDataTape(document.querySelector(".demeter-save-tapes"), ev.code);
     }
   } else if (screenName === "credits") {
-    if ((ev.code === "Enter" || ev.code === "Escape") && waitForCredits) {
-      backCreditsScreen();
+    if (waitForCredits) {
+      if (isKeyOk(ev.code) || isKeyCancel(ev.code)) {
+        clickElement(document.querySelector(".demeter-credits-end"));
+      } else {
+        focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev.code, "start");
+      }
     }
   } else if (screenName === "history") {
-    if (ev.code === "Escape") {
-      backHistoryScreen();
+    if (isKeyOk(ev.code)) {
+      clickFocusElement();
+    } else if (isKeyCancel(ev.code)) {
+      await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
+    } else {
+      focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev.code, "nearest");
     }
   }
 };
+
+//-------------------------------------------------------------------------
 
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
@@ -4098,8 +4503,10 @@ D.onDOMContentLoaded = async () => {
   await onResize();
   initializeBackground();
   initializeUpdateChecker();
+  initializeFocusable(); // SVGを作り終えた後に実行する。
 
   addEventListener("resize", onResize);
+  addEventListener("mousemove", onMouseMove);
   addEventListener("keydown", onKeydown);
 
   await enterTitleScreen();
