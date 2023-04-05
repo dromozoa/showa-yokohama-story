@@ -4198,20 +4198,14 @@ const focusDataTape = (tapesNode, code) => {
   tapesNode.querySelector("[data-col='" + col + "'][data-row='" + row + "']").classList.add("demeter-focus");
 };
 
-const focusCreditsParagraph = code => {
+const focusParagraphs = (nodes, code, block) => {
   const delta = getKeyArrowY(code);
   if (!delta) {
     return;
   }
 
-  const nodes = [...document.querySelectorAll(".demeter-credits [data-focusable='true']")];
-  let index = -1;
-
   const focusNode = unsetFocus();
-  if (focusNode) {
-    index = nodes.findIndex(node => node === focusNode);
-  }
-
+  let index = nodes.findIndex(node => node === focusNode);
   if (index === -1) {
     index = delta > 0 ? 0 : nodes.length - 1;
   } else {
@@ -4222,37 +4216,9 @@ const focusCreditsParagraph = code => {
   node.classList.add("demeter-focus");
   node.scrollIntoView({
     behavior: "smooth",
-    block: "start",
+    block: block,
   });
-};
-
-const focusHistoryParagraph = code => {
-  const delta = getKeyArrowY(code);
-  if (!delta) {
-    return;
-  }
-
-  const nodes = [...document.querySelectorAll(".demeter-history-paragraph")];
-  let index = -1;
-
-  const focusNode = unsetFocus();
-  if (focusNode) {
-    index = nodes.findIndex(node => node === focusNode);
-  }
-
-  if (index === -1) {
-    index = delta > 0 ? 0 : nodes.length - 1;
-  } else {
-    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
-  }
-
-  const node = nodes[index];
-  node.classList.add("demeter-focus");
-  node.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest",
-  });
-};
+}
 
 const onKeydown = async ev => {
   if (screenName === "title") {
@@ -4292,7 +4258,7 @@ const onKeydown = async ev => {
       if (isKeyOk(ev.code) || isKeyCancel(ev.code)) {
         clickElement(document.querySelector(".demeter-credits-end"));
       } else {
-        focusCreditsParagraph(ev.code);
+        focusParagraphs([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev.code, "start");
       }
     }
   } else if (screenName === "history") {
@@ -4301,7 +4267,7 @@ const onKeydown = async ev => {
     } else if (isKeyCancel(ev.code)) {
       await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
     } else {
-      focusHistoryParagraph(ev.code);
+      focusParagraphs([...document.querySelectorAll(".demeter-history-paragraph")], ev.code, "nearest");
     }
   }
 };
