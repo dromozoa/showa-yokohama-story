@@ -4105,6 +4105,15 @@ const isKeyArrowUp    = code => code === "ArrowUp"    || code === "KeyK";
 const isKeyArrowDown  = code => code === "ArrowDown"  || code === "KeyJ";
 const isKeyArrowRight = code => code === "ArrowRight" || code === "KeyL";
 
+const getKeyArrowX = code => {
+  if (isKeyArrowLeft(code)) {
+    return -1;
+  } else if (isKeyArrowRight(code)) {
+    return +1;
+  }
+};
+
+
 const getKeyArrowY = code => {
   if (isKeyArrowUp(code)) {
     return -1;
@@ -4164,8 +4173,7 @@ const clickFocusElement = () => {
 };
 
 const focusTitleChoice = code => {
-  const choicesNode = document.querySelector(".demeter-title-choices");
-  if (choicesNode.style.display !== "block") {
+  if (document.querySelector(".demeter-title-choices").style.display !== "block") {
     return;
   }
 
@@ -4202,7 +4210,7 @@ const focusTitleChoice = code => {
   let row;
 
   const focusNode = unsetFocus();
-  const index = nodes.findIndex(choiceNode => choiceNode === focusNode);
+  const index = nodes.findIndex(node => node === focusNode);
   if (index === -1) {
     col = delta.x > -1 ? 0 : cols - 1;
     row = delta.y > -1 ? 0 : rows - 1;
@@ -4214,6 +4222,92 @@ const focusTitleChoice = code => {
   }
 
   nodes[col + row * cols].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainMenu = code => {
+  const delta = getKeyArrowXY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-main-menu .demeter-button2"), // LOAD
+    document.querySelector(".demeter-main-menu .demeter-button1"), // SYSTEM
+    document.querySelector(".demeter-main-menu .demeter-button3"), // SAVE
+    document.querySelector(".demeter-main-menu .demeter-button4"), // AUTO
+    false,
+    document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
+  ];
+
+  const cols = 3;
+  const rows = 2;
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    col = delta.x > -1 ? 0 : cols - 1;
+    row = delta.y > -1 ? 0 : rows - 1;
+  } else {
+    const x = index % cols;
+    const y = Math.floor(index / cols);
+    col = (x + delta.x + cols) % cols;
+    row = (y + delta.y + rows) % rows;
+    if (col === 1 && row === 1) {
+      switch (x) {
+        case 0: col = 2; break;
+        case 1: row = 0; break;
+        case 2: col = 0; break;
+      }
+    }
+  }
+
+  nodes[col + row * cols].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainMenuX = code => {
+  const delta = getKeyArrowX(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [
+    document.querySelector(".demeter-main-menu .demeter-button2"), // LOAD
+    document.querySelector(".demeter-main-menu .demeter-button3"), // SAVE
+  ];
+
+  const focusNode = unsetFocus();
+  let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  nodes[index].classList.add("demeter-focus");
+  return true;
+};
+
+const focusMainChoice = code => {
+  const delta = getKeyArrowY(code);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = [...document.querySelectorAll(".demeter-main-choice")].filter(node => node.style.display === "block").map(node => node.querySelector(".demeter-button"));
+
+  const focusNode = unsetFocus();
+  let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    index = delta > 0 ? 0 : nodes.length - 1;
+  } else {
+    index = ((index + delta) % nodes.length + nodes.length) % nodes.length;
+  }
+
+  nodes[index].classList.add("demeter-focus");
   return true;
 };
 
@@ -4279,20 +4373,37 @@ const onKeydown = async ev => {
     if (waitForDialog) {
       await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
-      clickFocusElement();
+      await clickButton(unsetFocus());
     } else {
       focusTitleChoice(ev.code);
     }
     await checkKCode(ev.code);
   } else if (screenName === "main") {
-    if (ev.code === "Enter") {
+    if (waitForDialog) {
+      await clickDialogButton(ev.code);
+    } else if (waitForChoice) {
+      if (isKeyOk(ev.code)) {
+        await clickButton(unsetFocus());
+      } else {
+        focusMainMenuX(ev.code);
+        focusMainChoice(ev.code);
+      }
+    } else if (isKeyOk(ev.code)) {
+      const node = document.querySelector(".demeter-focus");
+      if (node) {
+        await clickButton(node);
+      } else {
+        await cancelPlayState();
+        next();
+      }
+    } else if (isKeyCancel(ev.code)) {
       await cancelPlayState();
-      next();
-    } else if (ev.code === "Escape") {
-      await cancelPlayState();
+      unsetFocus();
       systemUi.openAnimated(false);
-    } else if (ev.code === "ArrowUp" || ev.code === "KeyK") {
+    } else if (ev.code === "PageUp") {
       await mainToHistoryScreen();
+    } else {
+      focusMainMenu(ev.code);
     }
   } else if (screenName === "load") {
     if (waitForDialog) {
