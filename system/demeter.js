@@ -757,7 +757,7 @@ D.createDialogFrame = (width, height, fontSize, buttons, buttonWidth, buttonHeig
       .m(-BW+U1*3-U4,0).h(-U1-U4).v(-U2);
 
     buttonsHtml += `
-      <g class="demeter-button demeter-button${i}" data-focusable="true">
+      <g class="demeter-button demeter-button${i} demeter-hover">
         <path fill="none" stroke-width="${D.numberToString(U8)}" d="${buttonBarPathData}"/>
         <path stroke-width="1" d="${buttonPathData}"/>
       </g>
@@ -869,7 +869,7 @@ D.createBackFrame = (width, height, buttonWidth, buttonHeight, strokeWidth) => {
     <svg viewBox="0 0 ${D.numberToString(width)} ${D.numberToString(height)}"
       style="width: ${D.numberToCss(width)}; height: ${D.numberToCss(height)}"
       xmlns="http://www.w3.org/2000/svg">
-      <g class="demeter-button" data-focusable="true">
+      <g class="demeter-button demeter-hover">
         <path stroke="none" d="${fillPathData}"/>
         <path fill="none" stroke-width="${D.numberToString(strokeWidth)}" d="${strokePathData}"/>
       </g>
@@ -4006,8 +4006,13 @@ const dialog = async key => {
     voiceSprite = undefined;
   };
 
+  // const focusNode = document.querySelector(".demeter-focus");
   const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
-  unsetFocus();
+  // unsetFocus();
+  // if (focusNode) {
+  //   focusNode.classList.add("demeter-focus");
+  // }
+
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
