@@ -131,7 +131,7 @@ body.danu {
 }
 
 .danu-screen-shot.danu-active {
-  transform: translate3d(0, 0, 1px) scale(1.594);
+  transform: translate3d(0, 0, 1px) scale(1.59);
 }
 
 .danu-screen-shot img {

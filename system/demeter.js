@@ -2617,9 +2617,9 @@ const initializeSystemUi = () => {
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSpeed);
-  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動再生待ち時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
-  systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ行送り時間 [ms]");
+  systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ待ち時間 [ms]");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateMasterVolume);
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateVoiceVolume);
@@ -4030,16 +4030,16 @@ const dialog = async key => {
 //-------------------------------------------------------------------------
 
 const kCodeSet = [
-  [ "KeyK", "ArrowUp" ],
-  [ "KeyK", "ArrowUp" ],
-  [ "KeyJ", "ArrowDown" ],
-  [ "KeyJ", "ArrowDown" ],
-  [ "KeyH", "ArrowLeft" ],
-  [ "KeyL", "ArrowRight" ],
-  [ "KeyH", "ArrowLeft" ],
-  [ "KeyL", "ArrowRight" ],
-  [ "KeyB", "Escape", "Backspace" ],
-  [ "KeyA", "Enter" ],
+  [ "KeyK", "ArrowUp",    "ButtonUp" ],
+  [ "KeyK", "ArrowUp",    "ButtonUp" ],
+  [ "KeyJ", "ArrowDown",  "ButtonDown" ],
+  [ "KeyJ", "ArrowDown",  "ButtonDown" ],
+  [ "KeyH", "ArrowLeft",  "ButtonLeft" ],
+  [ "KeyL", "ArrowRight", "ButtonRight" ],
+  [ "KeyH", "ArrowLeft",  "ButtonLeft" ],
+  [ "KeyL", "ArrowRight", "ButtonRight" ],
+  [ "KeyB", "Escape", "Backspace", "ButtonB" ],
+  [ "KeyA", "Enter", "ButtonA" ],
 ];
 const kCodeBuffer = [];
 let kCodeStatus = false;
@@ -4141,38 +4141,38 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
-const isKeyOk         = ev => ev.code === "Enter";
-const isKeyCancel     = ev => ev.code === "Escape" || ev.code === "Backspace";
-const isKeyArrowLeft  = ev => ev.code === "KeyH" || ev.code === "ArrowLeft";
-const isKeyArrowUp    = ev => ev.code === "KeyK" || ev.code === "ArrowUp";
-const isKeyArrowDown  = ev => ev.code === "KeyJ" || ev.code === "ArrowDown";
-const isKeyArrowRight = ev => ev.code === "KeyL" || ev.code === "ArrowRight";
+const isInputOk = ev => ev.code === "Enter" || ev.code === "ButtonA";
+const isInputCancel = ev => ev.code === "Escape" || ev.code === "Backspace" || ev.code === "ButtonB";
 
-const getKeyArrowX = ev => {
-  if (isKeyArrowLeft(ev)) {
+const isInputControlLeft  = ev => ev.code === "KeyH" || ev.code === "ArrowLeft"  || ev.code === "ButtonLeft";
+const isInputControlUp    = ev => ev.code === "KeyK" || ev.code === "ArrowUp"    || ev.code === "ButtonUp";
+const isInputControlDown  = ev => ev.code === "KeyJ" || ev.code === "ArrowDown"  || ev.code === "ButtonDown";
+const isInputControlRight = ev => ev.code === "KeyL" || ev.code === "ArrowRight" || ev.code === "ButtonRight";
+
+const getInputControlX = ev => {
+  if (isInputControlLeft(ev)) {
     return -1;
-  } else if (isKeyArrowRight(ev)) {
+  } else if (isInputControlRight(ev)) {
     return +1;
   }
 };
 
-
-const getKeyArrowY = ev => {
-  if (isKeyArrowUp(ev)) {
+const getInputControlY = ev => {
+  if (isInputControlUp(ev)) {
     return -1;
-  } else if (isKeyArrowDown(ev)) {
+  } else if (isInputControlDown(ev)) {
     return +1;
   }
 };
 
-const getKeyArrowXY = ev => {
-  if (isKeyArrowLeft(ev)) {
+const getInputControlXY = ev => {
+  if (isInputControlLeft(ev)) {
     return { x: -1, y: 0 };
-  } else if (isKeyArrowUp(ev)) {
+  } else if (isInputControlUp(ev)) {
     return { x: 0, y: -1 };
-  } else if (isKeyArrowDown(ev)) {
+  } else if (isInputControlDown(ev)) {
     return { x: 0, y: +1 };
-  } else if (isKeyArrowRight(ev)) {
+  } else if (isInputControlRight(ev)) {
     return { x: +1, y: 0 };
   }
 }
@@ -4195,9 +4195,9 @@ const clickDialogButton = async ev => {
     document.querySelector(".demeter-dialog-frame .demeter-button2"),
   ];
 
-  if (isKeyOk(ev)) {
+  if (isInputOk(ev)) {
     return await clickButton(buttonNodes.find(node => node.dataset.result === "yes" || node.dataset.result === "ok"));
-  } else if (isKeyCancel(ev)) {
+  } else if (isInputCancel(ev)) {
     return await clickButton(buttonNodes.find(node => node.dataset.result === "no" || node.dataset.result === "ok"));
   }
 };
@@ -4222,7 +4222,7 @@ const focusTitleChoice = ev => {
     return;
   }
 
-  const delta = getKeyArrowXY(ev);
+  const delta = getInputControlXY(ev);
   if (!delta) {
     return;
   }
@@ -4272,7 +4272,7 @@ const focusTitleChoice = ev => {
 };
 
 const focusMainMenu = ev => {
-  const delta = getKeyArrowXY(ev);
+  const delta = getInputControlXY(ev);
   if (!delta) {
     return;
   }
@@ -4316,7 +4316,7 @@ const focusMainMenu = ev => {
 };
 
 const focusMainMenuX = ev => {
-  const delta = getKeyArrowX(ev);
+  const delta = getInputControlX(ev);
   if (!delta) {
     return;
   }
@@ -4340,7 +4340,7 @@ const focusMainMenuX = ev => {
 };
 
 const focusMainChoice = ev => {
-  const delta = getKeyArrowY(ev);
+  const delta = getInputControlY(ev);
   if (!delta) {
     return;
   }
@@ -4361,7 +4361,7 @@ const focusMainChoice = ev => {
 };
 
 const focusDataTape = (tapesNode, ev) => {
-  const delta = getKeyArrowXY(ev);
+  const delta = getInputControlXY(ev);
   if (!delta) {
     return;
   }
@@ -4398,7 +4398,7 @@ const focusDataTape = (tapesNode, ev) => {
 };
 
 const focusParagraph = (nodes, ev, block) => {
-  const delta = getKeyArrowY(ev);
+  const delta = getInputControlY(ev);
   if (!delta) {
     return;
   }
@@ -4421,16 +4421,15 @@ const focusParagraph = (nodes, ev, block) => {
   return true;
 }
 
-const onKeydown = async ev => {
-  inputDevice = "keyboard";
+const processInputDevice = async ev => {
   let consumed;
 
   if (screenName === "title") {
     if (waitForDialog) {
       consumed = await clickDialogButton(ev);
-    } else if (isKeyOk(ev)) {
+    } else if (isInputOk(ev)) {
       consumed = clickButton(unsetFocus());
-    } else if (isKeyCancel(ev)) {
+    } else if (isInputCancel(ev)) {
       soundEffectCancel();
       unsetFocus();
       consumed = true;
@@ -4444,12 +4443,12 @@ const onKeydown = async ev => {
       consumed = await clickDialogButton(ev);
     } else {
       if (waitForChoice) {
-        if (isKeyOk(ev)) {
+        if (isInputOk(ev)) {
           consumed = clickButton(unsetFocus());
         } else {
           consumed = focusMainMenuX(ev) || focusMainChoice(ev);
         }
-      } else if (isKeyOk(ev)) {
+      } else if (isInputOk(ev)) {
         const node = document.querySelector(".demeter-focus");
         if (node) {
           consumed = await clickButton(node);
@@ -4463,13 +4462,18 @@ const onKeydown = async ev => {
       }
 
       if (!consumed) {
-        if (isKeyCancel(ev)) {
+        if (isInputCancel(ev)) {
           await cancelPlayState();
-          soundEffectCancel();
-          unsetFocus();
-          systemUi.openAnimated(false);
+          // キャンセルするべきものがないときは、OKのようにふるまうと楽しい。
+          if (document.querySelector(".demeter-focus") || !systemUi._hidden) {
+            soundEffectCancel();
+            unsetFocus();
+            systemUi.openAnimated(false);
+          } else {
+            next();
+          }
           consumed = true;
-        } else if (ev.code === "PageUp") {
+        } else if (ev.code === "PageUp" || ev.code === "ButtonX") {
           await mainToHistoryScreen();
           consumed = true;
         }
@@ -4479,9 +4483,9 @@ const onKeydown = async ev => {
   } else if (screenName === "load") {
     if (waitForDialog) {
       consumed = await clickDialogButton(ev);
-    } else if (isKeyOk(ev)) {
+    } else if (isInputOk(ev)) {
       consumed = clickFocusElement();
-    } else if (isKeyCancel(ev)) {
+    } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-load-back-frame .demeter-button"));
     } else {
       consumed = focusDataTape(document.querySelector(".demeter-load-tapes"), ev);
@@ -4490,9 +4494,9 @@ const onKeydown = async ev => {
   } else if (screenName === "save") {
     if (waitForDialog) {
       consumed = await clickDialogButton(ev);
-    } else if (isKeyOk(ev)) {
+    } else if (isInputOk(ev)) {
       consumed = clickFocusElement();
-    } else if (isKeyCancel(ev)) {
+    } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-save-back-frame .demeter-button"));
     } else {
       consumed = focusDataTape(document.querySelector(".demeter-save-tapes"), ev);
@@ -4500,7 +4504,7 @@ const onKeydown = async ev => {
 
   } else if (screenName === "credits") {
     if (waitForCredits) {
-      if (isKeyOk(ev) || isKeyCancel(ev)) {
+      if (isInputOk(ev) || isInputCancel(ev)) {
         consumed = clickElement(document.querySelector(".demeter-credits-end"));
       } else {
         consumed = focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev, "start");
@@ -4508,18 +4512,95 @@ const onKeydown = async ev => {
     }
 
   } else if (screenName === "history") {
-    if (isKeyOk(ev)) {
+    if (isInputOk(ev)) {
       consumed = clickFocusElement();
-    } else if (isKeyCancel(ev)) {
+    } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
     } else {
       consumed = focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev, "nearest");
     }
   }
 
+  return consumed;
+};
+
+const onKeydown = async ev => {
+  inputDevice = "keyboard";
+  const consumed = await processInputDevice(ev);
   if (consumed) {
     ev.preventDefault();
   }
+};
+
+//-------------------------------------------------------------------------
+
+const gamepadConnectedSet = new Set();
+
+const gamepadCodeSet = [
+  "ButtonA",
+  "ButtonB",
+  "ButtonX",
+  "ButtonY",
+  "ButtonL",
+  "ButtonR",
+  "ButtonZL",
+  "ButtonZR",
+  "ButtonMinus",
+  "ButtonPlus",
+  "ButtonLStick",
+  "ButtonRStick",
+  "ButtonUp",
+  "ButtonDown",
+  "ButtonLeft",
+  "ButtonRight",
+  "ButtonHome",
+];
+
+const onGamepadConnected = async ev => {
+  logging.notice("ゲームパッド接続検出");
+  logging.info(ev.gamepad.id);
+  logging.info("マッピング: " + ev.gamepad.mapping);
+
+  const index = ev.gamepad.index;
+  gamepadConnectedSet.add(index);
+
+  let pressed = ev.gamepad.buttons.map(button => button.pressed);
+  while (gamepadConnectedSet.has(index)) {
+    await D.requestAnimationFrame();
+
+    const gamepads = navigator.getGamepads();
+    if (!gamepads) {
+      pressed = undefined;
+      continue;
+    }
+    const gamepad = gamepads[index];
+    if (!gamepad || !gamepad.connected) {
+      pressed = undefined;
+      continue;
+    }
+
+    if (pressed) {
+      gamepad.buttons.forEach((button, i) => {
+        if (button.pressed && !pressed[i]) {
+          inputDevice = "gamepad";
+
+          const code = gamepadCodeSet[i];
+          processInputDevice({ code: code }).then(consumed => {
+            D.trace("gamepad processInputDevice", code, consumed);
+          }).catch(e => {
+            D.trace("gamepad processInputDevice", code, e);
+          });
+        }
+      });
+    }
+    pressed = gamepad.buttons.map(button => button.pressed);
+  }
+};
+
+const onGamepadDisconnected = ev => {
+  logging.notice("ゲームパッド切断検出");
+  logging.info(ev.gamepad.id);
+  gamepadConnectedSet.delete(ev.gamepad.index);
 };
 
 //-------------------------------------------------------------------------
@@ -4543,12 +4624,11 @@ D.onDOMContentLoaded = async () => {
   initializeUpdateChecker();
   initializeFocusable(); // SVGを作り終えた後に実行する。
 
-
-
-
   addEventListener("resize", onResize);
   addEventListener("mousemove", onMouseMove);
   addEventListener("keydown", onKeydown);
+  addEventListener("gamepadconnected", onGamepadConnected);
+  addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
   await enterTitleScreen();
 
