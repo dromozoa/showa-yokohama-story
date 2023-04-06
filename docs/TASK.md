@@ -138,8 +138,11 @@ demeter-preferences.js:35:33
   - [ ] リヴァイアサン戦後の尺をのばす
 
 - システム
-  - [ ] hoverできるかどうかでクリック時の挙動を変える
-    - [ ] mouseenterから無視しちゃう（hoverの代替と考える）
+  - [x] hoverできるかどうかでクリック時の挙動を変える
+    - [x] mouseenterから無視しちゃう（hoverの代替と考える）
+  - [x] Chromeでscrollintoviewがうまく効いていない
+    - keydownでpreventDefault
+
   - [ ] ゲームパッド対応
     - マウスとのコンフリクションを要検討
   - [ ] ヒストリ前後の挙動を確認する
