@@ -711,7 +711,6 @@ body.demeter {
   transition: opacity 1s;
 }
 
-/* このhoverはJavaScriptで制御しない */
 @media (hover: hover) {
   .demeter-data-back:hover .demeter-data-back-in-the-ussr {
     opacity: 1;
@@ -1452,6 +1451,16 @@ body.demeter {
 
 .demeter-button.demeter-active {
   fill: var(--color-fill-active);
+}
+
+/*
+ * プログラム側の独自フォーカス機構で扱いたくない、:hover疑似クラスでトランジシ
+ * ョンする要素。
+ */
+@media (hover: hover) {
+  .demeter-button.demeter-hover:hover {
+    stroke: var(--color-stroke-active);
+  }
 }
 
 /*************************************************************************/
