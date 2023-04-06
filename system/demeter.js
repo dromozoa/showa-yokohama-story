@@ -4036,8 +4036,8 @@ const kCodeSet = [
   [ "ArrowRight", "KeyL" ],
   [ "ArrowLeft",  "KeyH" ],
   [ "ArrowRight", "KeyL" ],
-  [ "Enter",      "KeyB" ],
-  [ "Escape",     "KeyA" ],
+  [ "Escape",     "KeyB" ],
+  [ "Enter",      "KeyA" ],
 ];
 const kCodeBuffer = [];
 let kCodeStatus = false;
@@ -4428,6 +4428,10 @@ const onKeydown = async ev => {
       consumed = await clickDialogButton(ev.code);
     } else if (isKeyOk(ev.code)) {
       consumed = clickButton(unsetFocus());
+    } else if (isKeyCancel(ev.code)) {
+      soundEffectCancel();
+      unsetFocus();
+      consumed = true;
     } else {
       consumed = focusTitleChoice(ev.code);
     }
