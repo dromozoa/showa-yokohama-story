@@ -4464,9 +4464,14 @@ const processInputDevice = async ev => {
       if (!consumed) {
         if (isInputCancel(ev)) {
           await cancelPlayState();
-          soundEffectCancel();
-          unsetFocus();
-          systemUi.openAnimated(false);
+          // キャンセルするべきものがないときは、OKのようにふるまうと楽しい。
+          if (document.querySelector(".demeter-focus") || !systemUi._hidden) {
+            soundEffectCancel();
+            unsetFocus();
+            systemUi.openAnimated(false);
+          } else {
+            next();
+          }
           consumed = true;
         } else if (ev.code === "PageUp" || ev.code === "ButtonX") {
           await mainToHistoryScreen();
