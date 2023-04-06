@@ -4543,9 +4543,6 @@ D.onDOMContentLoaded = async () => {
   initializeUpdateChecker();
   initializeFocusable(); // SVGを作り終えた後に実行する。
 
-
-
-
   addEventListener("resize", onResize);
   addEventListener("mousemove", onMouseMove);
   addEventListener("keydown", onKeydown);
