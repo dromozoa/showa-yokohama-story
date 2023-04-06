@@ -1,5 +1,18 @@
 # タスクリスト
 
+## エラー記録（対応済み）
+
+```
+ Uncaught TypeError: waitForDialog is not a function
+    initializeDialogOverlay http://localhost/sys/system/demeter.js:3591
+    clickButton http://localhost/sys/system/demeter.js:4166
+    onKeydown http://localhost/sys/system/demeter.js:4439
+    onDOMContentLoaded http://localhost/sys/system/demeter.js:4522
+    async* http://localhost/sys/system/demeter-game.js:33
+    <anonymous> http://localhost/sys/system/demeter-game.js:38
+demeter.js:3591:98
+```
+
 ## エラー記録
 
 ```
@@ -56,17 +69,6 @@ demeter-preferences.js:35:33
 	（anonymous関数）
 	promiseReactionJobWithoutPromise
 	promiseReactionJob
-```
-
-```
- Uncaught TypeError: waitForDialog is not a function
-    initializeDialogOverlay http://localhost/sys/system/demeter.js:3591
-    clickButton http://localhost/sys/system/demeter.js:4166
-    onKeydown http://localhost/sys/system/demeter.js:4439
-    onDOMContentLoaded http://localhost/sys/system/demeter.js:4522
-    async* http://localhost/sys/system/demeter-game.js:33
-    <anonymous> http://localhost/sys/system/demeter-game.js:38
-demeter.js:3591:98
 ```
 
 ## 完了タスク
@@ -159,7 +161,10 @@ demeter.js:3591:98
   - [ ] リヴァイアサン戦後の尺をのばす
 
 - システム
+  - [x] マウスでクリックしたら、フォーカスははずれるべき？
+    - キーボード操作をしない限り、mouseleaveではずれるからいいことにする
   - [ ] タイトルにもEscapeをいれる
+  - [ ] Escapeは全画面からの戻りと対応しちゃうから、Ctrl-Cあたりもいれる？
   - [ ] ゲームパッド対応
     - マウスとのコンフリクションを要検討
 
@@ -200,6 +205,9 @@ demeter.js:3591:98
       - waitForDialogが解除されているが、ダイアログのボタンがフォーカスされている
   - [ ] システム設定からダイアログを表示した瞬間にエンター
     - 声が二重になる。
+    - dialogが二回表示されている？
+    - lil.GUIでボタンが2回押された扱い
+    - とりあえず、短いあいだに二重に押されるのがよくない。
 
   - [ ] textAnimationsがundefinedになるタイミングがある
     - スキップ中のわりこみで発生した？
