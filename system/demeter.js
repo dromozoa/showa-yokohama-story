@@ -2658,6 +2658,11 @@ const initializeSystemUi = () => {
   };
 
   commands.backToTitle = async () => {
+    if (waitForDialog) {
+      soundEffectBeep();
+      return;
+    }
+
     soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
@@ -2686,6 +2691,11 @@ const initializeSystemUi = () => {
   };
 
   commands.resetSystem = async () => {
+    if (waitForDialog) {
+      soundEffectBeep();
+      return;
+    }
+
     soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
@@ -2710,6 +2720,11 @@ const initializeSystemUi = () => {
   };
 
   commands.resetSave = async () => {
+    if (waitForDialog) {
+      soundEffectBeep();
+      return;
+    }
+
     soundEffectSelect();
     pause();
     systemUi.openAnimated(false);
