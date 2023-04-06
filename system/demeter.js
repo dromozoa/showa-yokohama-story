@@ -4028,16 +4028,16 @@ const dialog = async key => {
 //-------------------------------------------------------------------------
 
 const kCodeSet = [
-  [ "ArrowUp",    "KeyK" ],
-  [ "ArrowUp",    "KeyK" ],
-  [ "ArrowDown",  "KeyJ" ],
-  [ "ArrowDown",  "KeyJ" ],
-  [ "ArrowLeft",  "KeyH" ],
-  [ "ArrowRight", "KeyL" ],
-  [ "ArrowLeft",  "KeyH" ],
-  [ "ArrowRight", "KeyL" ],
-  [ "Escape",     "KeyB" ],
-  [ "Enter",      "KeyA" ],
+  [ "KeyK", "ArrowUp" ],
+  [ "KeyK", "ArrowUp" ],
+  [ "KeyJ", "ArrowDown" ],
+  [ "KeyJ", "ArrowDown" ],
+  [ "KeyH", "ArrowLeft" ],
+  [ "KeyL", "ArrowRight" ],
+  [ "KeyH", "ArrowLeft" ],
+  [ "KeyL", "ArrowRight" ],
+  [ "KeyB", "Escape", "Backspace" ],
+  [ "KeyA", "Enter" ],
 ];
 const kCodeBuffer = [];
 let kCodeStatus = false;
@@ -4140,11 +4140,11 @@ const onResize = async () => {
 //-------------------------------------------------------------------------
 
 const isKeyOk         = ev => ev.code === "Enter";
-const isKeyCancel     = ev => ev.code === "Escape";
-const isKeyArrowLeft  = ev => ev.code === "ArrowLeft"  || ev.code === "KeyH";
-const isKeyArrowUp    = ev => ev.code === "ArrowUp"    || ev.code === "KeyK";
-const isKeyArrowDown  = ev => ev.code === "ArrowDown"  || ev.code === "KeyJ";
-const isKeyArrowRight = ev => ev.code === "ArrowRight" || ev.code === "KeyL";
+const isKeyCancel     = ev => ev.code === "Escape" || ev.code === "Backspace";
+const isKeyArrowLeft  = ev => ev.code === "KeyH" || ev.code === "ArrowLeft";
+const isKeyArrowUp    = ev => ev.code === "KeyK" || ev.code === "ArrowUp";
+const isKeyArrowDown  = ev => ev.code === "KeyJ" || ev.code === "ArrowDown";
+const isKeyArrowRight = ev => ev.code === "KeyL" || ev.code === "ArrowRight";
 
 const getKeyArrowX = ev => {
   if (isKeyArrowLeft(ev)) {
