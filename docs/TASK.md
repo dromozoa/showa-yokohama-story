@@ -112,6 +112,9 @@ demeter-preferences.js:35:33
     - keydownでpreventDefault
   - [x] ヒストリ画面でフォーカスをあてる
     - キーボード操作を実装したので不要
+  - [x] iOSのホーム画面に登録したときのtwitterの挙動
+    - navigator.standaloneを限定して使う模様
+    - 特になにもやらないことにする。
 
 - ウェブページ
   - [x] ツイッターカード
@@ -145,7 +148,6 @@ demeter-preferences.js:35:33
   - [ ] リヴァイアサン戦後の尺をのばす
 
 - システム
-  - [ ] iOSのホーム画面に登録したときのtwitterの挙動
   - [ ] ゲームパッド対応
     - マウスとのコンフリクションを要検討
 
