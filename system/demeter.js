@@ -3842,6 +3842,8 @@ const next = async () => {
       });
 
       systemUi.openAnimated(false);
+      unsetFocus();
+
       document.querySelector(".demeter-main-choices").style.display = "block";
       while (true) {
         const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
@@ -4006,12 +4008,7 @@ const dialog = async key => {
     voiceSprite = undefined;
   };
 
-  // const focusNode = document.querySelector(".demeter-focus");
   const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
-  // unsetFocus();
-  // if (focusNode) {
-  //   focusNode.classList.add("demeter-focus");
-  // }
 
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
