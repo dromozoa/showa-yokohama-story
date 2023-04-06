@@ -58,6 +58,17 @@ demeter-preferences.js:35:33
 	promiseReactionJob
 ```
 
+```
+ Uncaught TypeError: waitForDialog is not a function
+    initializeDialogOverlay http://localhost/sys/system/demeter.js:3591
+    clickButton http://localhost/sys/system/demeter.js:4166
+    onKeydown http://localhost/sys/system/demeter.js:4439
+    onDOMContentLoaded http://localhost/sys/system/demeter.js:4522
+    async* http://localhost/sys/system/demeter-game.js:33
+    <anonymous> http://localhost/sys/system/demeter-game.js:38
+demeter.js:3591:98
+```
+
 ## 完了タスク
 
 - ビルド
@@ -148,6 +159,7 @@ demeter-preferences.js:35:33
   - [ ] リヴァイアサン戦後の尺をのばす
 
 - システム
+  - [ ] タイトルにもEscapeをいれる
   - [ ] ゲームパッド対応
     - マウスとのコンフリクションを要検討
 
@@ -182,6 +194,13 @@ demeter-preferences.js:35:33
   - [ ] アプリケーションインストール
 
 - デバッグ
+  - [x] システム設定からダイアログを表示した後、エラー
+    - マウスでダイアログのボタンを押す
+    - 直後にエンターを押す
+      - waitForDialogが解除されているが、ダイアログのボタンがフォーカスされている
+  - [ ] システム設定からダイアログを表示した瞬間にエンター
+    - 声が二重になる。
+
   - [ ] textAnimationsがundefinedになるタイミングがある
     - スキップ中のわりこみで発生した？
       - 単純には発生しなかった

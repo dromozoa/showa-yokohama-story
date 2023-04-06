@@ -3992,6 +3992,7 @@ const dialog = async key => {
   };
 
   const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
+  unsetFocus();
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
