@@ -2617,9 +2617,9 @@ const initializeSystemUi = () => {
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSpeed);
-  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動行送り時間 [ms]");
+  systemUi.add(system, "autoSpeed", 0, 1000, 10).name("自動再生待ち時間 [ms]");
   systemUi.add(system, "skipUnread").name("未読スキップ");
-  systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ行送り時間 [ms]");
+  systemUi.add(system, "skipSpeed", 0, 1000, 10).name("スキップ待ち時間 [ms]");
   systemUi.add(system, "masterVolume", 0, 1, 0.01).name("全体の音量 [0-1]").onChange(updateMasterVolume);
   systemUi.add(system, "musicVolume", 0, 1, 0.01).name("音楽の音量 [0-1]").onChange(updateMusicVolume);
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateVoiceVolume);
