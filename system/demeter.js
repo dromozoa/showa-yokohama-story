@@ -4524,6 +4524,69 @@ const onKeydown = async ev => {
 
 //-------------------------------------------------------------------------
 
+const gamepadConnectedSet = new Set();
+
+const gamepadCodeSet = [
+  "A",
+  "B",
+  "X",
+  "Y",
+  "L",
+  "R",
+  "ZL",
+  "ZR",
+  "-",
+  "+",
+  "Left Stick",
+  "Right Stick",
+  "Top",
+  "Bottom",
+  "Left",
+  "Right",
+];
+
+const onGamepadConnected = async ev => {
+  logging.notice("ゲームパッド接続検出");
+  logging.info(ev.gamepad.id);
+  logging.info("ゲームパッドマッピング: " + ev.gamepad.mapping);
+
+  const index = ev.gamepad.index;
+  gamepadConnectedSet.add(index);
+
+  let pressed = ev.gamepad.buttons.map(button => button.pressed);
+  while (gamepadConnectedSet.has(index)) {
+    await D.requestAnimationFrame();
+
+    const gamepads = navigator.getGamepads();
+    if (!gamepads) {
+      pressed = undefined;
+      continue;
+    }
+    const gamepad = gamepads[index];
+    if (!gamepad || !gamepad.connected) {
+      pressed = undefined;
+      continue;
+    }
+
+    if (pressed) {
+      gamepad.buttons.forEach((button, i) => {
+        if (button.pressed && !pressed[i]) {
+          console.log("pressed", i, gamepadCodeSet[i]);
+        }
+      });
+    }
+    pressed = gamepad.buttons.map(button => button.pressed);
+  }
+};
+
+const onGamepadDisconnected = ev => {
+  logging.notice("ゲームパッド切断検出");
+  logging.info(ev.gamepad.id);
+  gamepadConnectedSet.delete(ev.gamepad.index);
+};
+
+//-------------------------------------------------------------------------
+
 D.onDOMContentLoaded = async () => {
   D.initializeInternal();
   await initializeDatabase();
@@ -4546,6 +4609,8 @@ D.onDOMContentLoaded = async () => {
   addEventListener("resize", onResize);
   addEventListener("mousemove", onMouseMove);
   addEventListener("keydown", onKeydown);
+  addEventListener("gamepadconnected", onGamepadConnected);
+  addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
   await enterTitleScreen();
 
