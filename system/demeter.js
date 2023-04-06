@@ -3231,7 +3231,11 @@ const initializeFocusable = () => {
     query.addListener(ev => inputHoverable = ev.matches);
   }
 
-  document.querySelectorAll("[data-focusable='true']").forEach(node => {
+  [
+    ...document.querySelectorAll("[data-focusable='true']"),
+    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .title"),
+    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .controller"),
+  ].forEach(node => {
     node.addEventListener("mouseenter", onMouseEnter);
     node.addEventListener("mouseleave", onMouseLeave);
   });

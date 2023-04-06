@@ -61,9 +61,62 @@
   }
 }
 
-.lil-gui {
+/*************************************************************************/
+
+.demeter-main-system-ui .lil-gui {
   --font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
   --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
+  /*
+  --background-color: rgba(31, 31, 31, 0.5);
+  --title-background-color: rgba(17, 17, 17, 0.5);
+  */
+}
+
+/*
+ * 入力対象のタイトルとコントローラの背景色を変更したいので、marginとpaddingを
+ * 調整する。
+ */
+
+.demeter-main-system-ui .lil-gui .controller {
+  margin: 0;
+  padding: calc(var(--spacing) * 0.5) var(--padding);
+}
+
+.demeter-main-system-ui .lil-gui .children {
+  margin: 0;
+  padding: calc(var(--spacing) * 0.5) 0 0 0;
+}
+
+.demeter-main-system-ui .lil-gui .children .lil-gui {
+  margin: calc(var(--spacing) * 0.5) 0 0 0;
+  padding: 0;
+}
+
+/*
+ * 疑似クラスの効果を打ち消す。
+ */
+
+div.demeter-main-system-ui .lil-gui .title,
+div.demeter-main-system-ui .lil-gui .title:hover,
+div.demeter-main-system-ui .lil-gui .title:active,
+div.demeter-main-system-ui .lil-gui .title:focus {
+  background-color: var(--title-background-color);
+  opacity: 1;
+  text-decoration: none;
+}
+
+/*
+ * 入力対象のタイトルとコントローラの背景色を設定する。
+ */
+
+div.demeter-main-system-ui .lil-gui .title.demeter-focus {
+  /* #111111と#029D93を3:1で混合。*/
+  background-color: #0D3432;
+}
+
+div.demeter-main-system-ui .lil-gui .controller.demeter-focus {
+  /* #1F1F1Fと#029D93を3:1で混合。*/
+  background-color: #183F3C;
 }
 
 /*************************************************************************/
@@ -484,7 +537,9 @@ body.demeter {
   pointer-events: none;
 }
 
-/* 実際のサイズはtransformのscale(1.5)がかかることに注意 */
+/*
+ * 実際のサイズはtransformのscale(1.5)の結果であることに注意。
+ */
 .demeter-main-system-ui {
   position: absolute;
   left: calc((var(--screen-width) - var(--font-size) * 18) * 0.5);
