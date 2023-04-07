@@ -3108,8 +3108,8 @@ const backHistoryScreen = () => {
   if (historyVoiceSprite) {
     historyVoiceSprite.finish();
   }
-  document.querySelector(".demeter-history-paragraphs").replaceChildren();
   soundEffectCancel();
+  document.querySelector(".demeter-history-paragraphs").replaceChildren();
   leaveHistoryScreen();
   enterMainScreen();
   restart();
