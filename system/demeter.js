@@ -4343,8 +4343,8 @@ const focusMainMenu = async ev => {
     let row;
 
     if (index === -1) {
-      col = delta.x > -1 ? 0 : cols - 1;
-      row = delta.y > -1 ? 0 : rows - 1;
+      col = 1 - delta.x;
+      row = 0;
     } else {
       // LOAD SYSTEM SAVE
       // AUTO        SKIP
