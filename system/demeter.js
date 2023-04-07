@@ -1830,6 +1830,7 @@ D.UpdateChecker = class {
       hideTitleChoices();
       if (await dialog("system-update-title") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
       document.querySelector(".demeter-title-text").style.display = "block";
       await showTitleChoices();
@@ -1858,9 +1859,22 @@ D.UpdateChecker = class {
       soundEffectAlert();
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
-    } else {
-      // 次の画面で処理する
+    } else if (screenName === "credits") {
+      // タイトル画面で処理する。
+    } else if (screenName === "history") {
+      soundEffectAlert();
+      if (historyVoiceSprite) {
+        historyVoiceSprite.pause();
+      }
+      if (await dialog("system-update") === "yes") {
+        location.href = "game.html?t=" + Date.now();
+        return;
+      }
+      if (historyVoiceSprite) {
+        historyVoiceSprite.restart();
+      }
     }
   }
 };
@@ -4644,7 +4658,9 @@ const processInputDevice = async ev => {
     }
 
   } else if (screenName === "history") {
-    if (isInputOk(ev)) {
+    if (waitForDialog) {
+      consumed = await clickDialogButton(ev);
+    } else if (isInputOk(ev)) {
       consumed = clickFocusElement();
     } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
