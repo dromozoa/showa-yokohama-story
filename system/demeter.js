@@ -4171,7 +4171,7 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
-const isInputOk = ev => ev.code === "Enter" || ev.code === "ButtonA";
+const isInputOk = ev => ev.code === "Enter" || ev.code === "Space" || ev.code === "ButtonA";
 const isInputCancel = ev => ev.code === "Escape" || ev.code === "Backspace" || ev.code === "ButtonB";
 
 const isInputControlLeft  = ev => ev.code === "KeyH" || ev.code === "ArrowLeft"  || ev.code === "ButtonLeft";
