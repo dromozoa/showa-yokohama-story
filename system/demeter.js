@@ -4316,20 +4316,28 @@ const focusMainMenu = ev => {
     document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
   ];
 
-  const uiNodes = [
-    systemUi.$title,
+  const uiList = [
+    systemUi,
     ...systemUi.children.map(ui => {
       if (ui instanceof lil.GUI) {
         if (ui._closed) {
-          return ui.$title;
+          return ui;
         } else {
-          return [ ui.$title, ...ui.controllers.map(ui => ui.domElement) ];
+          return [ ui, ...ui.controllers ];
         }
       } else {
-        return ui.domElement;
+        return ui;
       }
     }),
   ].flat();
+
+  const uiNodes = uiList.map(ui => {
+    if (ui instanceof lil.GUI) {
+      return ui.$title;
+    } else {
+      return ui.domElement;
+    }
+  });
 
   const focusNode = document.querySelector(".demeter-focus");
   const index = nodes.findIndex(node => node === focusNode);
@@ -4382,9 +4390,8 @@ const focusMainMenu = ev => {
       return true;
     }
   } else {
-    // 左右の処理はしない。
     if (delta.y === 0) {
-      return;
+      return changeMainSystemUi(uiNodes[uiIndex], delta.x);;
     }
     uiIndex += delta.y;
   }
@@ -4402,6 +4409,15 @@ const focusMainMenu = ev => {
   soundEffectFocus();
   nodes[1].classList.add("demeter-focus");
   return true;
+};
+
+const changeMainSystemUi = (node, delta)  => {
+
+
+
+
+
+  console.log(node);
 };
 
 const focusMainMenuX = ev => {
