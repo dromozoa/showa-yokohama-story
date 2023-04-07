@@ -957,10 +957,7 @@ D.Logging = class {
   }
 
   update(behavior) {
-    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
-      behavior: behavior,
-      block: "end",
-    });
+    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({ behavior: behavior, block: "end" });
   }
 
   logImpl(...messages) {
@@ -1845,7 +1842,7 @@ D.UpdateChecker = class {
 
       soundEffectAlert();
       pause();
-      systemUi.openAnimated(false);
+      closeSystemUi();
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
         return;
@@ -2589,6 +2586,17 @@ const initializeComponents = () => {
 
 //-------------------------------------------------------------------------
 
+const openSystemUi = () => {
+  const systemUiNode = document.querySelector(".demeter-main-system-ui");
+  systemUiNode.style.display = "block";
+  systemUi.show();
+  systemUi.openAnimated();
+};
+
+const closeSystemUi = () => {
+  systemUi.openAnimated(false);
+};
+
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
@@ -2614,6 +2622,17 @@ const initializeSystemUi = () => {
     touchStyles: false,
   });
   systemUi.onFinishChange(putSystemTask);
+  systemUi.onOpenClose(ui => {
+    if (ui._closed) {
+      // 配下のフォーカスを外す。
+      [...ui.$children.querySelectorAll(".demeter-focus")].forEach(node => node.classList.remove("demeter-focus"));
+
+      // ルートの場合はタイトルのフォーカスも外す。
+      if (!ui.parent) {
+        ui.$title.classList.remove("demeter-focus");
+      }
+    }
+  });
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSpeed);
@@ -2639,7 +2658,7 @@ const initializeSystemUi = () => {
 
   commands.fullscreen = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (D.getFullscreenElement() === null) {
       try {
         await D.requestFullscreen(document.body);
@@ -2665,7 +2684,7 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-back-to-title") === "yes") {
       if (updateChecker.status === "detected") {
         location.href = "game.html?t=" + Date.now();
@@ -2680,13 +2699,13 @@ const initializeSystemUi = () => {
 
   commands.sendViaTwitter = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     await sender.twitter();
   };
 
   commands.sendViaMarshmallow = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     await sender.marshmallow();
   };
 
@@ -2698,7 +2717,7 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
       await putSystemTask();
@@ -2727,7 +2746,7 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-reset-save") === "yes") {
       await stop();
       gameState = {};
@@ -3021,10 +3040,7 @@ const enterHistoryScreen = async () => {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
     // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({
-      behavior: "auto",
-      block: "end",
-    });
+    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({ behavior: "auto", block: "end" });
   }
 };
 
@@ -3211,14 +3227,16 @@ const onMouseMove = ev => {
 
 const onMouseEnter = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    unsetFocus();
-    ev.target.classList.add("demeter-focus");
+    // debug
+    // unsetFocus();
+    // ev.target.classList.add("demeter-focus");
   }
 };
 
 const onMouseLeave = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    ev.target.classList.remove("demeter-focus");
+    // debug
+    // ev.target.classList.remove("demeter-focus");
   }
 };
 
@@ -3233,8 +3251,7 @@ const initializeFocusable = () => {
 
   [
     ...document.querySelectorAll("[data-focusable='true']"),
-    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .title"),
-    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .controller"),
+    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .title, .demeter-main-system-ui .lil-gui .controller"),
   ].forEach(node => {
     node.addEventListener("mouseenter", onMouseEnter);
     node.addEventListener("mouseleave", onMouseLeave);
@@ -3364,13 +3381,10 @@ const initializeMainScreen = () => {
     await cancelPlayState();
     if (systemUi._hidden) {
       soundEffectSelect();
-      const systemUiNode = document.querySelector(".demeter-main-system-ui");
-      systemUiNode.style.display = "block";
-      systemUi.show();
-      systemUi.openAnimated();
+      openSystemUi();
     } else {
       soundEffectCancel();
-      systemUi.openAnimated(false);
+      closeSystemUi();
     }
   });
 
@@ -3845,7 +3859,7 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
 
-      systemUi.openAnimated(false);
+      closeSystemUi();
       unsetFocus();
 
       document.querySelector(".demeter-main-choices").style.display = "block";
@@ -4290,32 +4304,84 @@ const focusMainMenu = ev => {
     document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
   ];
 
-  const cols = 3;
-  const rows = 2;
-  let col;
-  let row;
+  const uiNodes = [
+    systemUi.$title,
+    ...systemUi.children.map(ui => {
+      if (ui instanceof lil.GUI) {
+        if (ui._closed) {
+          return ui.$title;
+        } else {
+          return [ ui.$title, ...ui.controllers.map(ui => ui.domElement) ];
+        }
+      } else {
+        return ui.domElement;
+      }
+    }),
+  ].flat();
 
   const focusNode = unsetFocus();
   const index = nodes.findIndex(node => node === focusNode);
-  if (index === -1) {
-    col = delta.x > -1 ? 0 : cols - 1;
-    row = delta.y > -1 ? 0 : rows - 1;
-  } else {
-    const x = index % cols;
-    const y = Math.floor(index / cols);
-    col = (x + delta.x + cols) % cols;
-    row = (y + delta.y + rows) % rows;
-    if (col === 1 && row === 1) {
-      switch (x) {
-        case 0: col = 2; break;
-        case 1: row = 0; break;
-        case 2: col = 0; break;
+  let uiIndex = uiNodes.findIndex(node => node === focusNode);
+
+  if (uiIndex === -1) {
+    const cols = 3;
+    const rows = 2;
+    let col;
+    let row;
+
+    if (index === -1) {
+      col = delta.x > -1 ? 0 : cols - 1;
+      row = delta.y > -1 ? 0 : rows - 1;
+    } else {
+      // LOAD SYSTEM SAVE
+      // AUTO        SKIP
+      const x = index % cols;
+      const y = Math.floor(index / cols);
+      col = (x + delta.x + cols) % cols;
+      row = (y + delta.y + rows) % rows;
+      if (col === 1 && row === 1) {
+        if (x === 0) {
+          // AUTOから右に移動→SKIP
+          col = 2;
+        } else if (x === 2) {
+          // SKIPから左に移動→AUTO
+          col = 0;
+        }
       }
+    }
+
+    const node = nodes[col + row * cols];
+    if (node) {
+      soundEffectFocus();
+      node.classList.add("demeter-focus");
+      return true;
+    }
+
+    // 先頭か末尾に移動する
+    uiIndex = delta.y > -1 ? 0 : uiNodes.length - 1;
+
+    if (systemUi._hidden) {
+      openSystemUi();
+    }
+  } else {
+    uiIndex += delta.y;
+  }
+
+  console.log("uiIndex", uiIndex);
+
+  // 左右の処理をする
+  if (0 <= uiIndex && uiIndex < uiNodes.length) {
+    const node = uiNodes[uiIndex];
+    if (node) {
+      soundEffectFocus();
+      node.classList.add("demeter-focus");
+      node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return true;
     }
   }
 
   soundEffectFocus();
-  nodes[col + row * cols].classList.add("demeter-focus");
+  nodes[1].classList.add("demeter-focus");
   return true;
 };
 
@@ -4418,10 +4484,7 @@ const focusParagraph = (nodes, ev, block) => {
   soundEffectFocus();
   const node = nodes[index];
   node.classList.add("demeter-focus");
-  node.scrollIntoView({
-    behavior: "smooth",
-    block: block,
-  });
+  node.scrollIntoView({ behavior: "smooth", block: block });
   return true;
 }
 
@@ -4472,7 +4535,7 @@ const processInputDevice = async ev => {
           if (document.querySelector(".demeter-focus") || !systemUi._hidden) {
             soundEffectCancel();
             unsetFocus();
-            systemUi.openAnimated(false);
+            closeSystemUi();
           } else {
             next();
           }
