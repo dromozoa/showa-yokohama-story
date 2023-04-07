@@ -957,10 +957,7 @@ D.Logging = class {
   }
 
   update(behavior) {
-    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({
-      behavior: behavior,
-      block: "end",
-    });
+    document.querySelector(".demeter-main-logging").lastElementChild.scrollIntoView({ behavior: behavior, block: "end" });
   }
 
   logImpl(...messages) {
@@ -1833,6 +1830,7 @@ D.UpdateChecker = class {
       hideTitleChoices();
       if (await dialog("system-update-title") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
       document.querySelector(".demeter-title-text").style.display = "block";
       await showTitleChoices();
@@ -1845,7 +1843,7 @@ D.UpdateChecker = class {
 
       soundEffectAlert();
       pause();
-      systemUi.openAnimated(false);
+      closeSystemUi();
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
         return;
@@ -1861,9 +1859,22 @@ D.UpdateChecker = class {
       soundEffectAlert();
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
+        return;
       }
-    } else {
-      // 次の画面で処理する
+    } else if (screenName === "credits") {
+      // タイトル画面で処理する。
+    } else if (screenName === "history") {
+      soundEffectAlert();
+      if (historyVoiceSprite) {
+        historyVoiceSprite.pause();
+      }
+      if (await dialog("system-update") === "yes") {
+        location.href = "game.html?t=" + Date.now();
+        return;
+      }
+      if (historyVoiceSprite) {
+        historyVoiceSprite.restart();
+      }
     }
   }
 };
@@ -2070,7 +2081,7 @@ const deleteOldCaches = () => {
 
 //-------------------------------------------------------------------------
 
-const putSystemTask = async () => {
+const putSystem = async () => {
   try {
     await database.put("system", system);
     logging.debug("システム設定書込: 成功");
@@ -2589,6 +2600,17 @@ const initializeComponents = () => {
 
 //-------------------------------------------------------------------------
 
+const openSystemUi = () => {
+  const systemUiNode = document.querySelector(".demeter-main-system-ui");
+  systemUiNode.style.display = "block";
+  systemUi.show();
+  systemUi.openAnimated();
+};
+
+const closeSystemUi = () => {
+  systemUi.openAnimated(false);
+};
+
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
@@ -2613,7 +2635,20 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
-  systemUi.onFinishChange(putSystemTask);
+  systemUi.onFinishChange(putSystem);
+
+  // 開閉のトランジションが始まる前に呼ばれる。
+  systemUi.onOpenClose(ui => {
+    if (ui._closed) {
+      // 配下のフォーカスを外す。
+      [...ui.$children.querySelectorAll(".demeter-focus")].forEach(node => node.classList.remove("demeter-focus"));
+
+      // ルートの場合はタイトルのフォーカスも外す。
+      if (!ui.parent) {
+        ui.$title.classList.remove("demeter-focus");
+      }
+    }
+  });
 
   systemUi.add(system, "scaleLimit").name("画面拡大率上限").onChange(updateScaleLimit);
   systemUi.add(system, "speed", 0, 100, 1).name("文字表示時間 [ms]").onChange(updateSpeed);
@@ -2639,7 +2674,7 @@ const initializeSystemUi = () => {
 
   commands.fullscreen = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (D.getFullscreenElement() === null) {
       try {
         await D.requestFullscreen(document.body);
@@ -2665,7 +2700,7 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-back-to-title") === "yes") {
       if (updateChecker.status === "detected") {
         location.href = "game.html?t=" + Date.now();
@@ -2680,13 +2715,13 @@ const initializeSystemUi = () => {
 
   commands.sendViaTwitter = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     await sender.twitter();
   };
 
   commands.sendViaMarshmallow = async () => {
     soundEffectSelect();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     await sender.marshmallow();
   };
 
@@ -2698,10 +2733,10 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
-      await putSystemTask();
+      await putSystem();
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
@@ -2727,7 +2762,7 @@ const initializeSystemUi = () => {
 
     soundEffectSelect();
     pause();
-    systemUi.openAnimated(false);
+    closeSystemUi();
     if (await dialog("system-reset-save") === "yes") {
       await stop();
       gameState = {};
@@ -2789,16 +2824,26 @@ const initializeSystemUi = () => {
     debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
 
-  // openAnimated(false)のトランジションが終わったらUIを隠す。
-  // ev.propertyNameは安定しないので判定に利用しない。
   let initialized = false;
   systemUiNode.addEventListener("transitionend", ev => {
+    // openAnimated(false)のトランジションが終わったらUIを隠す。
+    // ev.propertyNameは安定しないので判定に利用しない。
     if (systemUi._closed && !systemUi._hidden && ev.target === systemUi.$children) {
       systemUi.hide();
       systemUiNode.style.display = "none";
       if (!initialized) {
         initialized = true;
         logging.info("システム設定初期化: 完了");
+      }
+    }
+
+    // openAnimated()のトランジション完了時に、スクロール待ちの要素があったらス
+    // クロールする。
+    if (!systemUi._closed) {
+      const node = document.querySelector(".demeter-focus.demeter-wait-for-scroll");
+      if (node) {
+        node.classList.remove("demeter-wait-for-scroll");
+        node.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
     }
   });
@@ -3021,10 +3066,7 @@ const enterHistoryScreen = async () => {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
     // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({
-      behavior: "auto",
-      block: "end",
-    });
+    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({ behavior: "auto", block: "end" });
   }
 };
 
@@ -3231,7 +3273,10 @@ const initializeFocusable = () => {
     query.addListener(ev => inputHoverable = ev.matches);
   }
 
-  document.querySelectorAll("[data-focusable='true']").forEach(node => {
+  [
+    ...document.querySelectorAll("[data-focusable='true']"),
+    ...document.querySelectorAll(".demeter-main-system-ui .lil-gui .title, .demeter-main-system-ui .lil-gui .controller"),
+  ].forEach(node => {
     node.addEventListener("mouseenter", onMouseEnter);
     node.addEventListener("mouseleave", onMouseLeave);
   });
@@ -3360,13 +3405,10 @@ const initializeMainScreen = () => {
     await cancelPlayState();
     if (systemUi._hidden) {
       soundEffectSelect();
-      const systemUiNode = document.querySelector(".demeter-main-system-ui");
-      systemUiNode.style.display = "block";
-      systemUi.show();
-      systemUi.openAnimated();
+      openSystemUi();
     } else {
       soundEffectCancel();
-      systemUi.openAnimated(false);
+      closeSystemUi();
     }
   });
 
@@ -3841,7 +3883,7 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
 
-      systemUi.openAnimated(false);
+      closeSystemUi();
       unsetFocus();
 
       document.querySelector(".demeter-main-choices").style.display = "block";
@@ -4141,7 +4183,7 @@ const onResize = async () => {
 
 //-------------------------------------------------------------------------
 
-const isInputOk = ev => ev.code === "Enter" || ev.code === "ButtonA";
+const isInputOk = ev => ev.code === "Enter" || ev.code === "Space" || ev.code === "ButtonA";
 const isInputCancel = ev => ev.code === "Escape" || ev.code === "Backspace" || ev.code === "ButtonB";
 
 const isInputControlLeft  = ev => ev.code === "KeyH" || ev.code === "ArrowLeft"  || ev.code === "ButtonLeft";
@@ -4149,15 +4191,17 @@ const isInputControlUp    = ev => ev.code === "KeyK" || ev.code === "ArrowUp"   
 const isInputControlDown  = ev => ev.code === "KeyJ" || ev.code === "ArrowDown"  || ev.code === "ButtonDown";
 const isInputControlRight = ev => ev.code === "KeyL" || ev.code === "ArrowRight" || ev.code === "ButtonRight";
 
-const getInputControlX = ev => {
+const getInputControlX = (ev, def) => {
   if (isInputControlLeft(ev)) {
     return -1;
   } else if (isInputControlRight(ev)) {
     return +1;
+  } else {
+    return def;
   }
 };
 
-const getInputControlY = ev => {
+const getInputControlY = (ev, def) => {
   if (isInputControlUp(ev)) {
     return -1;
   } else if (isInputControlDown(ev)) {
@@ -4271,6 +4315,13 @@ const focusTitleChoice = ev => {
   return true;
 };
 
+const getUiComponents = () => [
+  systemUi,
+  ...systemUi.children.map(ui => ui instanceof lil.GUI && !ui._closed ? [ ui, ...ui.controllers ] : ui),
+].flat();
+
+const getUiNodes = uiComponents => uiComponents.map(ui => ui instanceof lil.GUI ? ui.$title : ui.domElement);
+
 const focusMainMenu = ev => {
   const delta = getInputControlXY(ev);
   if (!delta) {
@@ -4294,24 +4345,111 @@ const focusMainMenu = ev => {
   const focusNode = unsetFocus();
   const index = nodes.findIndex(node => node === focusNode);
   if (index === -1) {
-    col = delta.x > -1 ? 0 : cols - 1;
-    row = delta.y > -1 ? 0 : rows - 1;
+    col = 1 - delta.x;
+    row = 0;
   } else {
+    // LOAD SYSTEM SAVE
+    // AUTO        SKIP
     const x = index % cols;
     const y = Math.floor(index / cols);
     col = (x + delta.x + cols) % cols;
     row = (y + delta.y + rows) % rows;
     if (col === 1 && row === 1) {
-      switch (x) {
-        case 0: col = 2; break;
-        case 1: row = 0; break;
-        case 2: col = 0; break;
+      if (x === 0) {
+        // AUTOから右に移動→SKIP
+        col = 2;
+      } else if (x === 2) {
+        // SKIPから左に移動→AUTO
+        col = 0;
       }
     }
   }
 
+  const node = nodes[col + row * cols];
+  if (node) {
+    soundEffectFocus();
+    node.classList.add("demeter-focus");
+    return true;
+  }
+
+
+  const uiNodes = getUiNodes(getUiComponents());
+  const uiNode = uiNodes[delta.y > 0 ? 0 : uiNodes.length - 1];
+
   soundEffectFocus();
-  nodes[col + row * cols].classList.add("demeter-focus");
+  uiNode.classList.add("demeter-focus");
+
+  if (systemUi._hidden) {
+    // フォーカスを当てておいて、トランジション終了後にイベントリスナでスクロー
+    // ルする。
+    uiNode.classList.add("demeter-wait-for-scroll");
+    openSystemUi();
+  } else {
+    uiNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  return true;
+};
+
+const focusSystemUi = ev => {
+  const delta = getInputControlY(ev);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = getUiNodes(getUiComponents());
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode) + delta;
+
+  if (0 <= index && index < nodes.length) {
+    const node = nodes[index];
+    soundEffectFocus();
+    node.classList.add("demeter-focus");
+    node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return true;
+  }
+
+  soundEffectFocus();
+  document.querySelector(".demeter-main-menu .demeter-button1").classList.add("demeter-focus");
+  return true;
+};
+
+const processSystemUi = async ev => {
+  const delta = getInputControlX(ev, isInputOk(ev) ? ev.shiftKey ? -1 : 1 : undefined);
+  if (!delta) {
+    return;
+  }
+
+  const components = getUiComponents();
+  const nodes = getUiNodes(components);
+  const ui = components[nodes.findIndex(node => node.classList.contains("demeter-focus"))];
+  const node = ui.domElement;
+
+  let value;
+  if (ui instanceof lil.GUI) {
+    return clickElement(ui.$title);
+  } else if (node.classList.contains("boolean")) {
+    value = !ui.getValue();
+  } else if (node.classList.contains("number")) {
+    value = ui._snap(ui._clamp(ui.getValue() + delta * ui._step));
+  } else if (node.classList.contains("option")) {
+    const index = ui._values.findIndex(value => value === ui.getValue());
+    value = ui._values[(index + (delta >= 0 ? 1 : -1) + ui._values.length) % ui._values.length];
+  } else if (node.classList.contains("function")) {
+    node.querySelector("button").dispatchEvent(new MouseEvent("click"));
+    return true;
+  } else {
+    const inputDeviceType = ev instanceof KeyboardEvent ? "キーボード" : "ゲームパッド";
+    soundEffectBeep();
+    logging.warn(`警告: ${inputDeviceType}入力は色設定に非対応。マウス・タッチパネルの使用を提案。`);
+    return true;
+  }
+
+  if (value !== undefined) {
+    ui.setValue(value);
+    await putSystem();
+  }
   return true;
 };
 
@@ -4414,10 +4552,7 @@ const focusParagraph = (nodes, ev, block) => {
   soundEffectFocus();
   const node = nodes[index];
   node.classList.add("demeter-focus");
-  node.scrollIntoView({
-    behavior: "smooth",
-    block: block,
-  });
+  node.scrollIntoView({ behavior: "smooth", block: block });
   return true;
 }
 
@@ -4448,17 +4583,28 @@ const processInputDevice = async ev => {
         } else {
           consumed = focusMainMenuX(ev) || focusMainChoice(ev);
         }
-      } else if (isInputOk(ev)) {
+      } else {
         const node = document.querySelector(".demeter-focus");
         if (node) {
-          consumed = await clickButton(node);
+          if (node.closest(".demeter-main-system-ui .lil-gui")) {
+            // lil-guiのフォルダかコントローラがフォーカスされている
+            consumed = focusSystemUi(ev) || await processSystemUi(ev);
+          } else {
+            if (isInputOk(ev)) {
+              consumed = await clickButton(node);
+            } else {
+              consumed = focusMainMenu(ev);
+            }
+          }
         } else {
-          await cancelPlayState();
-          next();
-          consumed = true;
+          if (isInputOk(ev)) {
+            await cancelPlayState();
+            next();
+            consumed = true;
+          } else {
+            consumed = focusMainMenu(ev);
+          }
         }
-      } else {
-        consumed = focusMainMenu(ev);
       }
 
       if (!consumed) {
@@ -4468,7 +4614,7 @@ const processInputDevice = async ev => {
           if (document.querySelector(".demeter-focus") || !systemUi._hidden) {
             soundEffectCancel();
             unsetFocus();
-            systemUi.openAnimated(false);
+            closeSystemUi();
           } else {
             next();
           }
@@ -4512,7 +4658,9 @@ const processInputDevice = async ev => {
     }
 
   } else if (screenName === "history") {
-    if (isInputOk(ev)) {
+    if (waitForDialog) {
+      consumed = await clickDialogButton(ev);
+    } else if (isInputOk(ev)) {
       consumed = clickFocusElement();
     } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
