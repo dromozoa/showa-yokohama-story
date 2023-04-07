@@ -2678,14 +2678,12 @@ const initializeSystemUi = () => {
     if (D.getFullscreenElement() === null) {
       try {
         await D.requestFullscreen(document.body);
-        logging.info("全画面表示モード切替: 成功");
       } catch (e) {
         logging.error("全画面表示モード切替: 失敗", e);
       }
     } else {
       try {
         await D.exitFullscreen();
-        logging.info("ウィンドウモード切替: 成功");
       } catch (e) {
         logging.error("ウィンドウモード切替: 失敗", e);
       }
@@ -2802,8 +2800,10 @@ const initializeSystemUi = () => {
     const controller = commandsFolder.add(commands, "fullscreen");
     updateSystemUiFullscreen = () => {
       if (D.getFullscreenElement() === null) {
+        logging.info("ウィンドウモード切替: 完了");
         controller.name("全画面表示モードに切り替える");
       } else {
+        logging.info("全画面表示モード切替: 完了");
         controller.name("ウィンドウモードに切り替える");
       }
     };
@@ -3210,16 +3210,26 @@ const mainToHistoryScreen = async () => {
 //-------------------------------------------------------------------------
 
 const initializeFullscreen = () => {
+  const onFullScreenError = ev => {
+    if (D.getFullscreenElement() === null) {
+      logging.warn("全画面表示モード切替: 失敗");
+    } else {
+      logging.warn("ウィンドウモード切替: 失敗");
+    }
+  };
+
   if (document.body.requestFullscreen) {
     D.requestFullscreen = async node => await node.requestFullscreen();
     D.exitFullscreen = async () => await document.exitFullscreen();
     D.getFullscreenElement = () => document.fullscreenElement;
     document.addEventListener("fullscreenchange", () => updateSystemUiFullscreen());
+    document.addEventListener("fullscreenerror", onFullScreenError);
   } else if (document.body.webkitRequestFullscreen) {
     D.requestFullscreen = async node => await node.webkitRequestFullscreen();
     D.exitFullscreen = async () => await document.webkitExitFullscreen();
     D.getFullscreenElement = () => document.webkitFullscreenElement;
     document.addEventListener("webkitfullscreenchange", () => updateSystemUiFullscreen());
+    document.addEventListener("webkitfullscreenerror", onFullScreenError);
   }
 };
 
