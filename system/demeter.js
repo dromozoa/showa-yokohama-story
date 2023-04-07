@@ -2067,7 +2067,7 @@ const deleteOldCaches = () => {
 
 //-------------------------------------------------------------------------
 
-const putSystemTask = async () => {
+const putSystem = async () => {
   try {
     await database.put("system", system);
     logging.debug("システム設定書込: 成功");
@@ -2621,7 +2621,7 @@ const initializeSystemUi = () => {
     title: "システム設定",
     touchStyles: false,
   });
-  systemUi.onFinishChange(putSystemTask);
+  systemUi.onFinishChange(putSystem);
 
   // 開閉のトランジションが始まる前に呼ばれる。
   systemUi.onOpenClose(ui => {
@@ -2722,7 +2722,7 @@ const initializeSystemUi = () => {
     closeSystemUi();
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
-      await putSystemTask();
+      await putSystem();
 
       [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
 
@@ -4301,7 +4301,7 @@ const focusTitleChoice = ev => {
   return true;
 };
 
-const focusMainMenu = ev => {
+const focusMainMenu = async ev => {
   const delta = getInputControlXY(ev);
   if (!delta) {
     return;
@@ -4316,7 +4316,7 @@ const focusMainMenu = ev => {
     document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
   ];
 
-  const uiList = [
+  const uiComponents = [
     systemUi,
     ...systemUi.children.map(ui => {
       if (ui instanceof lil.GUI) {
@@ -4330,14 +4330,7 @@ const focusMainMenu = ev => {
       }
     }),
   ].flat();
-
-  const uiNodes = uiList.map(ui => {
-    if (ui instanceof lil.GUI) {
-      return ui.$title;
-    } else {
-      return ui.domElement;
-    }
-  });
+  const uiNodes = uiComponents.map(ui => ui instanceof lil.GUI ? ui.$title : ui.domElement);
 
   const focusNode = document.querySelector(".demeter-focus");
   const index = nodes.findIndex(node => node === focusNode);
@@ -4391,7 +4384,7 @@ const focusMainMenu = ev => {
     }
   } else {
     if (delta.y === 0) {
-      return changeMainSystemUi(uiNodes[uiIndex], delta.x);;
+      return await changeMainSystemUi(uiComponents[uiIndex], delta.x);;
     }
     uiIndex += delta.y;
   }
@@ -4411,13 +4404,27 @@ const focusMainMenu = ev => {
   return true;
 };
 
-const changeMainSystemUi = (node, delta)  => {
+const changeMainSystemUi = async (ui, delta)  => {
+  if (ui instanceof lil.GUI) {
+    return clickElement(ui.$title);
+  }
 
-
-
-
-
-  console.log(node);
+  const node = ui.domElement;
+  if (node.classList.contains("boolean")) {
+    ui.setValue(!ui.getValue());
+    await putSystem();
+  } else if (node.classList.contains("number")) {
+    ui.setValue(Math.max(ui._min, Math.min(ui._max, ui.getValue() + delta * ui._step)));
+    await putSystem();
+  } else if (node.classList.contains("function")) {
+    node.querySelector("button").dispatchEvent(new MouseEvent("click"));
+  } else if (node.classList.contains("option")) {
+    const index = ui._values.findIndex(value => value === ui.getValue());
+    ui.setValue(ui._values[(index + delta) % ui._values.length]);
+    await putSystem();
+  } else {
+    console.log(ui)
+  }
 };
 
 const focusMainMenuX = ev => {
@@ -4561,7 +4568,7 @@ const processInputDevice = async ev => {
           consumed = true;
         }
       } else {
-        consumed = focusMainMenu(ev);
+        consumed = await focusMainMenu(ev);
       }
 
       if (!consumed) {
