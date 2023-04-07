@@ -1842,8 +1842,8 @@ D.UpdateChecker = class {
       this.delayed = undefined;
 
       soundEffectAlert();
-      pause();
       closeSystemUi();
+      pause();
       if (await dialog("system-update") === "yes") {
         location.href = "game.html?t=" + Date.now();
         return;
@@ -2697,8 +2697,8 @@ const initializeSystemUi = () => {
     }
 
     soundEffectSelect();
-    pause();
     closeSystemUi();
+    pause();
     if (await dialog("system-back-to-title") === "yes") {
       if (updateChecker.status === "detected") {
         location.href = "game.html?t=" + Date.now();
@@ -2730,8 +2730,8 @@ const initializeSystemUi = () => {
     }
 
     soundEffectSelect();
-    pause();
     closeSystemUi();
+    pause();
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
       await putSystem();
@@ -2759,8 +2759,8 @@ const initializeSystemUi = () => {
     }
 
     soundEffectSelect();
-    pause();
     closeSystemUi();
+    pause();
     if (await dialog("system-reset-save") === "yes") {
       await stop();
       gameState = {};
@@ -3893,8 +3893,8 @@ const next = async () => {
         choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
       });
 
-      closeSystemUi();
       unsetFocus();
+      closeSystemUi();
 
       document.querySelector(".demeter-main-choices").style.display = "block";
       while (true) {
