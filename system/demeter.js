@@ -3239,16 +3239,14 @@ const onMouseMove = ev => {
 
 const onMouseEnter = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    // TODO あとで消す (debug)
-    // unsetFocus();
-    // ev.target.classList.add("demeter-focus");
+    unsetFocus();
+    ev.target.classList.add("demeter-focus");
   }
 };
 
 const onMouseLeave = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    // TODO あとで消す (debug)
-    // ev.target.classList.remove("demeter-focus");
+    ev.target.classList.remove("demeter-focus");
   }
 };
 
@@ -4179,15 +4177,17 @@ const isInputControlUp    = ev => ev.code === "KeyK" || ev.code === "ArrowUp"   
 const isInputControlDown  = ev => ev.code === "KeyJ" || ev.code === "ArrowDown"  || ev.code === "ButtonDown";
 const isInputControlRight = ev => ev.code === "KeyL" || ev.code === "ArrowRight" || ev.code === "ButtonRight";
 
-const getInputControlX = ev => {
+const getInputControlX = (ev, def) => {
   if (isInputControlLeft(ev)) {
     return -1;
   } else if (isInputControlRight(ev)) {
     return +1;
+  } else {
+    return def;
   }
 };
 
-const getInputControlY = ev => {
+const getInputControlY = (ev, def) => {
   if (isInputControlUp(ev)) {
     return -1;
   } else if (isInputControlDown(ev)) {
@@ -4301,7 +4301,14 @@ const focusTitleChoice = ev => {
   return true;
 };
 
-const focusMainMenu = async ev => {
+const getUiComponents = () => [
+  systemUi,
+  ...systemUi.children.map(ui => ui instanceof lil.GUI && !ui._closed ? [ ui, ...ui.controllers ] : ui),
+].flat();
+
+const getUiNodes = uiComponents => uiComponents.map(ui => ui instanceof lil.GUI ? ui.$title : ui.domElement);
+
+const focusMainMenu = ev => {
   const delta = getInputControlXY(ev);
   if (!delta) {
     return;
@@ -4316,115 +4323,120 @@ const focusMainMenu = async ev => {
     document.querySelector(".demeter-main-menu .demeter-button5"), // SKIP
   ];
 
-  const uiComponents = [
-    systemUi,
-    ...systemUi.children.map(ui => {
-      if (ui instanceof lil.GUI) {
-        if (ui._closed) {
-          return ui;
-        } else {
-          return [ ui, ...ui.controllers ];
-        }
-      } else {
-        return ui;
-      }
-    }),
-  ].flat();
-  const uiNodes = uiComponents.map(ui => ui instanceof lil.GUI ? ui.$title : ui.domElement);
+  const cols = 3;
+  const rows = 2;
+  let col;
+  let row;
 
-  const focusNode = document.querySelector(".demeter-focus");
+  const focusNode = unsetFocus();
   const index = nodes.findIndex(node => node === focusNode);
-  let uiIndex = uiNodes.findIndex(node => node === focusNode);
-
-  if (uiIndex === -1) {
-    const cols = 3;
-    const rows = 2;
-    let col;
-    let row;
-
-    if (index === -1) {
-      col = 1 - delta.x;
-      row = 0;
-    } else {
-      // LOAD SYSTEM SAVE
-      // AUTO        SKIP
-      const x = index % cols;
-      const y = Math.floor(index / cols);
-      col = (x + delta.x + cols) % cols;
-      row = (y + delta.y + rows) % rows;
-      if (col === 1 && row === 1) {
-        if (x === 0) {
-          // AUTOから右に移動→SKIP
-          col = 2;
-        } else if (x === 2) {
-          // SKIPから左に移動→AUTO
-          col = 0;
-        }
+  if (index === -1) {
+    col = 1 - delta.x;
+    row = 0;
+  } else {
+    // LOAD SYSTEM SAVE
+    // AUTO        SKIP
+    const x = index % cols;
+    const y = Math.floor(index / cols);
+    col = (x + delta.x + cols) % cols;
+    row = (y + delta.y + rows) % rows;
+    if (col === 1 && row === 1) {
+      if (x === 0) {
+        // AUTOから右に移動→SKIP
+        col = 2;
+      } else if (x === 2) {
+        // SKIPから左に移動→AUTO
+        col = 0;
       }
     }
-
-    const node = nodes[col + row * cols];
-    if (node) {
-      unsetFocus();
-      soundEffectFocus();
-      node.classList.add("demeter-focus");
-      return true;
-    }
-
-    // 先頭か末尾に移動する。
-    uiIndex = delta.y > -1 ? 0 : uiNodes.length - 1;
-
-    if (systemUi._hidden) {
-      unsetFocus();
-      soundEffectFocus();
-      // フォーカスを当てておいて、トランジション終了後にスクロールする。
-      uiNodes[uiIndex].classList.add("demeter-focus", "demeter-wait-for-scroll");
-      openSystemUi();
-      return true;
-    }
-  } else {
-    if (delta.y === 0) {
-      return await changeMainSystemUi(uiComponents[uiIndex], delta.x);;
-    }
-    uiIndex += delta.y;
   }
 
-  if (0 <= uiIndex && uiIndex < uiNodes.length) {
-    const node = uiNodes[uiIndex];
-    unsetFocus();
+  const node = nodes[col + row * cols];
+  if (node) {
+    soundEffectFocus();
+    node.classList.add("demeter-focus");
+    return true;
+  }
+
+
+  const uiNodes = getUiNodes(getUiComponents());
+  const uiNode = uiNodes[delta.y > 0 ? 0 : uiNodes.length - 1];
+
+  soundEffectFocus();
+  uiNode.classList.add("demeter-focus");
+
+  if (systemUi._hidden) {
+    // フォーカスを当てておいて、トランジション終了後にイベントリスナでスクロー
+    // ルする。
+    uiNode.classList.add("demeter-wait-for-scroll");
+    openSystemUi();
+  } else {
+    uiNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  return true;
+};
+
+const focusSystemUi = ev => {
+  const delta = getInputControlY(ev);
+  if (!delta) {
+    return;
+  }
+
+  const nodes = getUiNodes(getUiComponents());
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode) + delta;
+
+  if (0 <= index && index < nodes.length) {
+    const node = nodes[index];
     soundEffectFocus();
     node.classList.add("demeter-focus");
     node.scrollIntoView({ behavior: "smooth", block: "nearest" });
     return true;
   }
 
-  unsetFocus();
   soundEffectFocus();
-  nodes[1].classList.add("demeter-focus");
+  document.querySelector(".demeter-main-menu .demeter-button1").classList.add("demeter-focus");
   return true;
 };
 
-const changeMainSystemUi = async (ui, delta)  => {
-  if (ui instanceof lil.GUI) {
-    return clickElement(ui.$title);
+const processSystemUi = async ev => {
+  const delta = getInputControlX(ev, isInputOk(ev) ? ev.shiftKey ? -1 : 1 : undefined);
+  if (!delta) {
+    return;
   }
 
+  const components = getUiComponents();
+  const nodes = getUiNodes(components);
+  const ui = components[nodes.findIndex(node => node.classList.contains("demeter-focus"))];
   const node = ui.domElement;
-  if (node.classList.contains("boolean")) {
-    ui.setValue(!ui.getValue());
-    await putSystem();
+
+  let value;
+  if (ui instanceof lil.GUI) {
+    return clickElement(ui.$title);
+  } else if (node.classList.contains("boolean")) {
+    value = !ui.getValue();
   } else if (node.classList.contains("number")) {
-    ui.setValue(Math.max(ui._min, Math.min(ui._max, ui.getValue() + delta * ui._step)));
-    await putSystem();
-  } else if (node.classList.contains("function")) {
-    node.querySelector("button").dispatchEvent(new MouseEvent("click"));
+    value = ui._snap(ui._clamp(ui.getValue() + delta * ui._step));
   } else if (node.classList.contains("option")) {
     const index = ui._values.findIndex(value => value === ui.getValue());
-    ui.setValue(ui._values[(index + delta) % ui._values.length]);
-    await putSystem();
+    value = ui._values[(index + (delta >= 0 ? 1 : -1) + ui._values.length) % ui._values.length];
+  } else if (node.classList.contains("function")) {
+    node.querySelector("button").dispatchEvent(new MouseEvent("click"));
+    return true;
   } else {
-    console.log(ui)
+    const inputDeviceType = ev instanceof KeyboardEvent ? "キーボード" : "ゲームパッド";
+    soundEffectBeep();
+    logging.warn(`警告: ${inputDeviceType}入力は色設定に非対応。マウス・タッチパネルの使用を提案。`);
+    return true;
   }
+
+  if (value !== undefined) {
+    ui.setValue(value);
+    await putSystem();
+  }
+  return true;
 };
 
 const focusMainMenuX = ev => {
@@ -4557,18 +4569,28 @@ const processInputDevice = async ev => {
         } else {
           consumed = focusMainMenuX(ev) || focusMainChoice(ev);
         }
-      } else if (isInputOk(ev)) {
+      } else {
         const node = document.querySelector(".demeter-focus");
         if (node) {
-          // TODO lil-guiの分岐をいれるか？
-          consumed = await clickButton(node);
+          if (node.closest(".demeter-main-system-ui .lil-gui")) {
+            // lil-guiのフォルダかコントローラがフォーカスされている
+            consumed = focusSystemUi(ev) || await processSystemUi(ev);
+          } else {
+            if (isInputOk(ev)) {
+              consumed = await clickButton(node);
+            } else {
+              consumed = focusMainMenu(ev);
+            }
+          }
         } else {
-          await cancelPlayState();
-          next();
-          consumed = true;
+          if (isInputOk(ev)) {
+            await cancelPlayState();
+            next();
+            consumed = true;
+          } else {
+            consumed = focusMainMenu(ev);
+          }
         }
-      } else {
-        consumed = await focusMainMenu(ev);
       }
 
       if (!consumed) {
