@@ -2622,6 +2622,8 @@ const initializeSystemUi = () => {
     touchStyles: false,
   });
   systemUi.onFinishChange(putSystemTask);
+
+  // 開閉のトランジションが始まる前に呼ばれる。
   systemUi.onOpenClose(ui => {
     if (ui._closed) {
       // 配下のフォーカスを外す。
@@ -2808,16 +2810,26 @@ const initializeSystemUi = () => {
     debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
 
-  // openAnimated(false)のトランジションが終わったらUIを隠す。
-  // ev.propertyNameは安定しないので判定に利用しない。
   let initialized = false;
   systemUiNode.addEventListener("transitionend", ev => {
+    // openAnimated(false)のトランジションが終わったらUIを隠す。
+    // ev.propertyNameは安定しないので判定に利用しない。
     if (systemUi._closed && !systemUi._hidden && ev.target === systemUi.$children) {
       systemUi.hide();
       systemUiNode.style.display = "none";
       if (!initialized) {
         initialized = true;
         logging.info("システム設定初期化: 完了");
+      }
+    }
+
+    // openAnimated()のトランジション完了時に、スクロール待ちの要素があったらス
+    // クロールする。
+    if (!systemUi._closed) {
+      const node = document.querySelector(".demeter-focus.demeter-wait-for-scroll");
+      if (node) {
+        node.classList.remove("demeter-wait-for-scroll");
+        node.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
     }
   });
@@ -3227,7 +3239,7 @@ const onMouseMove = ev => {
 
 const onMouseEnter = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    // debug
+    // TODO あとで消す (debug)
     // unsetFocus();
     // ev.target.classList.add("demeter-focus");
   }
@@ -3235,7 +3247,7 @@ const onMouseEnter = ev => {
 
 const onMouseLeave = ev => {
   if (inputDevice === "pointer" && inputHoverable) {
-    // debug
+    // TODO あとで消す (debug)
     // ev.target.classList.remove("demeter-focus");
   }
 };
@@ -4319,7 +4331,7 @@ const focusMainMenu = ev => {
     }),
   ].flat();
 
-  const focusNode = unsetFocus();
+  const focusNode = document.querySelector(".demeter-focus");
   const index = nodes.findIndex(node => node === focusNode);
   let uiIndex = uiNodes.findIndex(node => node === focusNode);
 
@@ -4352,34 +4364,41 @@ const focusMainMenu = ev => {
 
     const node = nodes[col + row * cols];
     if (node) {
+      unsetFocus();
       soundEffectFocus();
       node.classList.add("demeter-focus");
       return true;
     }
 
-    // 先頭か末尾に移動する
+    // 先頭か末尾に移動する。
     uiIndex = delta.y > -1 ? 0 : uiNodes.length - 1;
 
     if (systemUi._hidden) {
+      unsetFocus();
+      soundEffectFocus();
+      // フォーカスを当てておいて、トランジション終了後にスクロールする。
+      uiNodes[uiIndex].classList.add("demeter-focus", "demeter-wait-for-scroll");
       openSystemUi();
+      return true;
     }
   } else {
+    // 左右の処理はしない。
+    if (delta.y === 0) {
+      return;
+    }
     uiIndex += delta.y;
   }
 
-  console.log("uiIndex", uiIndex);
-
-  // 左右の処理をする
   if (0 <= uiIndex && uiIndex < uiNodes.length) {
     const node = uiNodes[uiIndex];
-    if (node) {
-      soundEffectFocus();
-      node.classList.add("demeter-focus");
-      node.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      return true;
-    }
+    unsetFocus();
+    soundEffectFocus();
+    node.classList.add("demeter-focus");
+    node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return true;
   }
 
+  unsetFocus();
   soundEffectFocus();
   nodes[1].classList.add("demeter-focus");
   return true;
@@ -4518,6 +4537,7 @@ const processInputDevice = async ev => {
       } else if (isInputOk(ev)) {
         const node = document.querySelector(".demeter-focus");
         if (node) {
+          // TODO lil-guiの分岐をいれるか？
           consumed = await clickButton(node);
         } else {
           await cancelPlayState();
