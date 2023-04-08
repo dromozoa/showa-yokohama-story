@@ -4328,6 +4328,17 @@ const focusTitleChoice = ev => {
     row = Math.floor(index / cols) + delta.y;
     col = (col + cols) % cols;
     row = (row + rows) % rows;
+    if (nodes[2] === nodes[3] && col === 1 && row === 1) {
+      if (delta.x === -1) {
+        // 下行のボタンから左に移動→NEW GAME
+        col = 0;
+        row = 0;
+      } else if (delta.x === 1) {
+        // 下行のボタンから右に移動→LOAD GAME
+        col = 1;
+        row = 0;
+      }
+    }
   }
 
   soundEffectFocus();
