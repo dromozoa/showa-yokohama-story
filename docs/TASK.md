@@ -253,7 +253,7 @@ demeter-preferences.js:35:33
   - [x] 二重入力
   - [x] デバッグモードを隠す
     - INSERT 30 ...を30回。
-  - [ ] user-select, pointer-events, cursorの関係を整理する
+  - [x] user-select, pointer-events, cursorの関係を整理する
     - テキストカーソルになるかどうかはブラウザによる？
     - ログとクレジット以外はuser-select: noneをかける
       - 段落テキストはかけなくてもいいけど、クリック可能なので……
@@ -266,8 +266,9 @@ demeter-preferences.js:35:33
         - Mobile Safariではどちらにせよ、カーソルは表示されない
     - [x] 必須の設定を行う
     - [x] 調整する
-    - [ ] ログを選択可能にする
-    - [ ] クレジットを選択可能にする
+    - [x] ログを選択可能にする
+      - user-selectは子要素を選択不可にするので、bodyでしかけていると、子要素で打ち消せないらしい。
+    - [x] クレジットを選択可能にする
 
   - [ ] 効果音を確認する
   - [ ] 自動再生が有効な場合にunlockをスキップする
