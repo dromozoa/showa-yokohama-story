@@ -132,9 +132,13 @@ body.demeter {
   color: #FFF;
   background-color: #111;
 
-  /* 全域で選択を禁止する */
+  /*
+   * 全域で選択を禁止する。テキストを含む要素のカーソルが変わらないので、明示的
+   * に上書きする
+   */
   -webkit-user-select: none;
   user-select: none;
+  cursor: default;
 }
 
 /*************************************************************************/
