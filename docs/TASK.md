@@ -13,8 +13,6 @@
 demeter.js:3591:98
 ```
 
-## エラー記録
-
 ```
 23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
     next http://localhost/sys/system/demeter.js:3369
@@ -71,6 +69,31 @@ demeter-preferences.js:35:33
 	promiseReactionJob
 ```
 
+選択肢で連打。
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
+	（anonymous関数） (demeter.js:3871)
+	asyncFunctionResume
+```
+
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
+	（anonymous関数） (demeter.js:3875)
+	asyncFunctionResume
+```
+
+## エラー記録
+
+ヒストリだしたりしてたんだっけ？
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'choices.length')
+	（anonymous関数） (demeter.js:3510)
+	asyncFunctionResume
+	（anonymous関数）
+	promiseReactionJobWithoutPromise
+	promiseReactionJob
+```
+
 ## 完了タスク
 
 - ビルド
@@ -80,7 +103,7 @@ demeter-preferences.js:35:33
     - 「一秒に十行」
   - [x] Edgeで「スキップ行送り時間 [ms]」がはみだす（なぜ？）
     - 文言を変えて対応
-  - [ ] ゲームパッド対応
+  - [x] ゲームパッド対応
     - マウスとのコンフリクションを要検討
     - [x] Bのふるまい
     - [x] Howler.jsの開始をゲームパッドにフックできないかな
@@ -165,10 +188,20 @@ demeter-preferences.js:35:33
     - [x] システム設定のうえにいるときのエンターの挙動
     - [x] numberの値のまるめ
     - [x] historyで更新ダイアログが出た場合
+  - [x] フルスクリーンのエラーをひろう
+    - WebKitが特殊？
+  - [x] open/closeSystemUi前後の処理順序を整理する
+    - [x] soundEffectも
+      - やることが決まったら鳴らす。
+      - 再生開始までに時間がかかるかもしれないから。
+  - [x] ゲームパッドの連射
 
 - ウェブページ
   - [x] ツイッターカード
   - [x] 修正の表示トグルのクリックできる場所
+  - [x] スクリーンショット修正または追加
+  - [x] 最後にスラッシュがついてないときの対応
+    - ローカルはいいけど、cloudfront/s3だと、おかしくなるはず
 
 - デバッグ
   - [x] iOSでD.onResizeがないというエラー
@@ -193,6 +226,14 @@ demeter-preferences.js:35:33
     - dialogが二回表示されている？
     - lil.GUIでボタンが2回押された扱い
     - とりあえず、短いあいだに二重に押されるのがよくない。
+  - [x] textAnimationsがundefinedになるタイミングがある
+    - スキップ中のわりこみで発生した？
+      - 単純には発生しなかった
+    - 選択肢が表示されているときに連打かも
+      - 選択肢の二度押し防止を書いてみたけど、そういう問題ではないらしい
+      - 選択肢経由のnextの途中で、もう一発nextがはいるとだめ？
+    - 段落表示で二重入力してたら起こせるようになった
+      - 次の段落との境目で二重入力？
 
 ## タスク
 
@@ -200,6 +241,7 @@ demeter-preferences.js:35:33
   - [ ] ビルド時のチェックツール
     - VOICEPEAKの操作をミスったときに検出したい
   - [ ] デプロイ前のチェックツール
+  - [ ] 依存関係の更新チェックツール
 
 - シナリオ
   - [ ] LOADとロードの統一を検討する
@@ -207,8 +249,16 @@ demeter-preferences.js:35:33
   - [ ] リヴァイアサン戦後の尺をのばす
 
 - システム
-  - [ ] ゲームパッドの連射
-  - [ ] open/closeSystemUi前後の処理順序を整理する
+  - [x] タイトルのボタンが3個の場合の移動を調整する
+  - [x] 二重入力
+  - [x] デバッグモードを隠す
+    - INSERT 30 ...を30回。
+  - [ ] user-select, pointer-events, cursorの関係を整理する
+    - テキストカーソルになるかどうかはブラウザによる？
+  - [ ] 効果音を確認する
+  - [ ] 自動再生が有効な場合にunlockをスキップする
+    - 自動再生って音がちいさいような？
+
   - [ ] ブラウザのヒストリ前後の挙動を確認する
   - [ ] クレジットの速度設定
   - [ ] 一瞬表示の停止
@@ -236,14 +286,12 @@ demeter-preferences.js:35:33
   - [ ] オフライン用のダウンロード
 
 - ウェブページ
-  - [x] スクリーンショット修正または追加
   - [ ] アプリケーションインストール
+  - [ ] ログ解析
 
 - デバッグ
+
   - [ ] Androidで動かしてみる
-  - [ ] textAnimationsがundefinedになるタイミングがある
-    - スキップ中のわりこみで発生した？
-      - 単純には発生しなかった
   - [ ] iOSで表示がおかしくなる問題
     - 背景のtransformがきいていない状態になる
     - canvasもおかしくなる

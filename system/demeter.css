@@ -66,10 +66,6 @@
 .demeter-main-system-ui .lil-gui {
   --font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
   --font-family-mono: 'Share Tech Mono', 'BIZ UDGothic', monospace;
-  /*
-  --background-color: rgba(31, 31, 31, 0.5);
-  --title-background-color: rgba(17, 17, 17, 0.5);
-  */
 }
 
 /*
@@ -125,6 +121,9 @@ body.demeter {
   margin: 0;
   color: #FFF;
   background-color: #111;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /*************************************************************************/
@@ -194,6 +193,7 @@ body.demeter {
   font-size: calc(var(--font-size) * 4);
   line-height: calc(var(--font-size) * 6);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-ja > span {
@@ -212,6 +212,7 @@ body.demeter {
   font-size: var(--font-size);
   line-height: var(--font-size);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-en > span {
@@ -228,6 +229,7 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-icon {
@@ -1509,8 +1511,8 @@ body.demeter {
 }
 
 /*
- * プログラム側の独自フォーカス機構で扱いたくない、:hover疑似クラスでトランジシ
- * ョンする要素。
+ * プログラム側の独自フォーカス機構で扱いたくない要素を:hover疑似クラスでトラン
+ * ジションする。
  */
 @media (hover: hover) {
   .demeter-button.demeter-hover:hover {
