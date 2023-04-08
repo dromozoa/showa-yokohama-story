@@ -58,6 +58,9 @@ build::
 	rm -f -r build/$(version_web)
 	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)
 
+clean_build::
+	rm -f -r build/$(version_web)
+
 #--------------------------------------------------------------------------
 
 convert_voice::

@@ -17,6 +17,8 @@
  * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*************************************************************************/
+
 @media (hover: hover) {
   :root {
     --cursor-pointer: pointer;
@@ -184,3 +186,5 @@ body.danu {
 .danu-footer {
   text-align: right;
 }
+
+/*************************************************************************/
