@@ -1900,6 +1900,16 @@ const systemDefault = {
   frameRateVisualizer: true,
   silhouette: true,
   unionSetting: "ろうそ",
+
+  /*
+   キーリピートの既定値を参考にゲームパッドのリピートを設定する。
+   | Win | AutoRepeatDelay  | 1000ms |     |
+   |     | AutoRepeatRate   |  500ms |     |
+   | Mac | InitialKeyRepeat |  375ms | 25F |
+   |     | KeyRepeat        |   90ms |  6F |
+   */
+  repeatDelay: 417,
+  repeatRate: 100,
 };
 
 const gameStateDefault = {
@@ -4694,7 +4704,7 @@ const onKeydown = async ev => {
 
 const gamepadConnectedSet = new Set();
 
-const gamepadCodeSet = [
+const gamepadButtonCodeSet = [
   "ButtonA",
   "ButtonB",
   "ButtonX",
@@ -4714,6 +4724,17 @@ const gamepadCodeSet = [
   "ButtonHome",
 ];
 
+const onGamepadButtonPress = gamepadButtonIndex => {
+  inputDevice = "gamepad";
+
+  const code = gamepadButtonCodeSet[gamepadButtonIndex];
+  processInputDevice({ code: code }).then(consumed => {
+    D.trace("onGamepadButtonPress processInputDevice", code, consumed);
+  }).catch(e => {
+    D.trace("onGamepadButtonPress processInputDevice", code, e);
+  });
+};
+
 const onGamepadConnected = async ev => {
   logging.notice("ゲームパッド接続検出");
   logging.info(ev.gamepad.id);
@@ -4722,36 +4743,41 @@ const onGamepadConnected = async ev => {
   const index = ev.gamepad.index;
   gamepadConnectedSet.add(index);
 
-  let pressed = ev.gamepad.buttons.map(button => button.pressed);
+  const buttonStates = ev.gamepad.buttons.map(notUsed => false);
+
   while (gamepadConnectedSet.has(index)) {
-    await D.requestAnimationFrame();
+    const now = await D.requestAnimationFrame();
 
     const gamepads = navigator.getGamepads();
     if (!gamepads) {
-      pressed = undefined;
+      buttonStates.fill(false);
       continue;
     }
     const gamepad = gamepads[index];
     if (!gamepad || !gamepad.connected) {
-      pressed = undefined;
+      buttonStates.fill(false);
       continue;
     }
 
-    if (pressed) {
-      gamepad.buttons.forEach((button, i) => {
-        if (button.pressed && !pressed[i]) {
-          inputDevice = "gamepad";
-
-          const code = gamepadCodeSet[i];
-          processInputDevice({ code: code }).then(consumed => {
-            D.trace("gamepad processInputDevice", code, consumed);
-          }).catch(e => {
-            D.trace("gamepad processInputDevice", code, e);
-          });
+    gamepad.buttons.forEach((button, i) => {
+      const buttonState = buttonStates[i];
+      if (button.pressed) {
+        if (!buttonState) {
+          onGamepadButtonPress(i);
+          buttonStates[i] = { pressed: now };
+        } else {
+          const repeated = buttonState.repeated === undefined
+            ? buttonState.pressed + system.repeatDelay
+            : buttonState.repeated + system.repeatRate;
+          if (repeated <= now) {
+            onGamepadButtonPress(i);
+            buttonState.repeated = repeated;
+          }
         }
-      });
-    }
-    pressed = gamepad.buttons.map(button => button.pressed);
+      } else {
+        buttonStates[i] = false;
+      }
+    });
   }
 };
 
