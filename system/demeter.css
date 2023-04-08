@@ -132,6 +132,7 @@ body.demeter {
   color: #FFF;
   background-color: #111;
 
+  /* 全域で選択を禁止する */
   -webkit-user-select: none;
   user-select: none;
 }
@@ -203,7 +204,6 @@ body.demeter {
   font-size: calc(var(--font-size) * 4);
   line-height: calc(var(--font-size) * 6);
   text-align: center;
-  pointer-events: none;
 }
 
 .demeter-title-ja > span {
@@ -222,7 +222,6 @@ body.demeter {
   font-size: var(--font-size);
   line-height: var(--font-size);
   text-align: center;
-  pointer-events: none;
 }
 
 .demeter-title-en > span {
@@ -239,7 +238,6 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
-  pointer-events: none;
 }
 
 .demeter-title-icon {
@@ -252,7 +250,6 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: center;
   transform-origin: center bottom;
-  pointer-events: none;
 }
 
 .demeter-title-choices {
@@ -547,7 +544,6 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
-  pointer-events: none;
 }
 
 /*
@@ -674,7 +670,6 @@ body.demeter {
   position: absolute;
   left: 0;
   top: 0;
-  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -696,7 +691,6 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 25);
   height: calc(var(--font-size) * 8);
-  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -723,7 +717,6 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: right;
   transform-origin: center bottom;
-  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -824,7 +817,6 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
-  pointer-events: none;
 }
 
 @media (orientation: portrait) {
@@ -1253,7 +1245,6 @@ body.demeter {
   left: 0;
   bottom: calc((var(--screen-height) - var(--font-size) * 10) * 0.5);
   transform-origin: center bottom;
-  pointer-events: none;
 }
 
 .demeter-credits-notice {
@@ -1431,7 +1422,6 @@ body.demeter {
   font-family: var(--font-family);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
-  pointer-events: none;
 }
 
 .demeter-dialog-item {
@@ -1496,7 +1486,6 @@ body.demeter {
   font-size: calc(var(--font-size) * 0.75);
   line-height: calc(var(--font-size) * 0.75);
   text-align: right;
-  pointer-events: none;
   opacity: 0;
 }
 
