@@ -13,8 +13,6 @@
 demeter.js:3591:98
 ```
 
-## エラー記録
-
 ```
 23:10:06.510 検出: 見過ごされた拒否 TypeError: textAnimations is undefined
     next http://localhost/sys/system/demeter.js:3369
@@ -71,16 +69,6 @@ demeter-preferences.js:35:33
 	promiseReactionJob
 ```
 
-ヒストリだしたりしてたんだっけ？
-```
-[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'choices.length')
-	（anonymous関数） (demeter.js:3510)
-	asyncFunctionResume
-	（anonymous関数）
-	promiseReactionJobWithoutPromise
-	promiseReactionJob
-```
-
 選択肢で連打。
 ```
 [Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
@@ -94,6 +82,18 @@ demeter-preferences.js:35:33
 	asyncFunctionResume
 ```
 
+## エラー記録
+
+ヒストリだしたりしてたんだっけ？
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'choices.length')
+	（anonymous関数） (demeter.js:3510)
+	asyncFunctionResume
+	（anonymous関数）
+	promiseReactionJobWithoutPromise
+	promiseReactionJob
+```
+
 ## 完了タスク
 
 - ビルド
@@ -103,7 +103,7 @@ demeter-preferences.js:35:33
     - 「一秒に十行」
   - [x] Edgeで「スキップ行送り時間 [ms]」がはみだす（なぜ？）
     - 文言を変えて対応
-  - [ ] ゲームパッド対応
+  - [x] ゲームパッド対応
     - マウスとのコンフリクションを要検討
     - [x] Bのふるまい
     - [x] Howler.jsの開始をゲームパッドにフックできないかな
@@ -226,6 +226,14 @@ demeter-preferences.js:35:33
     - dialogが二回表示されている？
     - lil.GUIでボタンが2回押された扱い
     - とりあえず、短いあいだに二重に押されるのがよくない。
+  - [x] textAnimationsがundefinedになるタイミングがある
+    - スキップ中のわりこみで発生した？
+      - 単純には発生しなかった
+    - 選択肢が表示されているときに連打かも
+      - 選択肢の二度押し防止を書いてみたけど、そういう問題ではないらしい
+      - 選択肢経由のnextの途中で、もう一発nextがはいるとだめ？
+    - 段落表示で二重入力してたら起こせるようになった
+      - 次の段落との境目で二重入力？
 
 ## タスク
 
@@ -245,6 +253,8 @@ demeter-preferences.js:35:33
   - [x] タイトルのボタンが3個の場合の移動を調整する
   - [ ] 自動再生が有効な場合にunlockをスキップする
     - 自動再生って音がちいさいような？
+  - [x] 二重入力
+  - [ ] デバッグモードを隠す
 
   - [ ] ブラウザのヒストリ前後の挙動を確認する
   - [ ] クレジットの速度設定
@@ -277,12 +287,6 @@ demeter-preferences.js:35:33
   - [ ] ログ解析
 
 - デバッグ
-  - [ ] textAnimationsがundefinedになるタイミングがある
-    - スキップ中のわりこみで発生した？
-      - 単純には発生しなかった
-    - 選択肢が表示されているときに連打かも
-      - 選択肢の二度押し防止を書いてみたけど、そういう問題ではないらしい
-      - 選択肢経由のnextの途中で、もう一発nextがはいるとだめ？
 
   - [ ] Androidで動かしてみる
   - [ ] iOSで表示がおかしくなる問題

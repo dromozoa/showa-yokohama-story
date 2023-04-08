@@ -1901,6 +1901,9 @@ const systemDefault = {
   silhouette: true,
   unionSetting: "ろうそ",
 
+  dupKeyboardInput: false,
+  dupGamepadInput: false,
+
   /*
    キーリピートの既定値を参考にゲームパッドのリピートを設定する。
    | Win | AutoRepeatDelay  | 1000ms |     |
@@ -1986,6 +1989,7 @@ let frameRateVisualizer;
 let silhouette;
 let place;
 
+let paragraphLockState;
 let paragraphIndexPrev;
 let paragraphIndexSave;
 let paragraphIndexLast;
@@ -2833,6 +2837,8 @@ const initializeSystemUi = () => {
   if (globalThis.caches) {
     debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
+  debugCommandsFolder.add(system, "dupKeyboardInput").name("キーボード二重入力");
+  debugCommandsFolder.add(system, "dupGamepadInput").name("ゲームパッド二重入力");
 
   let initialized = false;
   systemUiNode.addEventListener("transitionend", ev => {
@@ -3783,89 +3789,99 @@ const next = async () => {
     }
   }
 
-  if (paragraphIndex === undefined) {
-    const paragraphLast = D.scenario.paragraphs[paragraphIndexLast - 1];
-    if (paragraphLast && paragraphLast[0].finish) {
-      paragraphIndexLast = undefined;
-      resetParagraph();
-      await deleteAutosave();
-      leaveMainScreen();
-      if (paragraphLast[0].finish === "title") {
-        await enterTitleScreen();
-      } else {
-        await enterCreditsScreen();
+  if (paragraphLockState) {
+    D.trace("next paragraphLockState", paragraphLockState);
+    return;
+  }
+
+  try {
+    paragraphLockState = "enter";
+    if (paragraphIndex === undefined) {
+      const paragraphLast = D.scenario.paragraphs[paragraphIndexLast - 1];
+      if (paragraphLast && paragraphLast[0].finish) {
+        paragraphIndexLast = undefined;
+        resetParagraph();
+        await deleteAutosave();
+        leaveMainScreen();
+        if (paragraphLast[0].finish === "title") {
+          await enterTitleScreen();
+        } else {
+          await enterCreditsScreen();
+        }
+        return;
       }
-      return;
-    }
 
-    paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexPrev + 1;
-    paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+      paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexPrev + 1;
+      paragraph = D.scenario.paragraphs[paragraphIndex - 1];
 
-    if (paragraph[0].when) {
-      const paragraphIndexWhen = await evaluate(paragraph[0].when);
-      if (paragraphIndexWhen !== undefined) {
-        paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexWhen;
-        paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+      if (paragraph[0].when) {
+        const paragraphIndexWhen = await evaluate(paragraph[0].when);
+        if (paragraphIndexWhen !== undefined) {
+          paragraphIndex = paragraphIndexSave = paragraphIndexLast = paragraphIndexWhen;
+          paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+        }
+      }
+
+      if (playState === "skip" && !system.skipUnread && !readState.map.has(paragraphIndex)) {
+        await cancelPlayState();
+      }
+
+      if (musicPlayer.key !== paragraph[0].music) {
+        musicPlayer.fade(paragraph[0].music);
+      }
+      if (place !== paragraph[0].place) {
+        place = paragraph[0].place;
+        logging.notice("現在地: " + place);
+      }
+      if (backgroundTransition.key !== paragraph[0].background) {
+        backgroundTransition.fade(paragraph[0].background);
+      }
+
+      readState.map.set(paragraphIndex, Date.now());
+      // SKIP中は自動保存しない。
+      if (playState !== "skip") {
+        await Promise.all([ putReadState(), putAutosave() ]);
+      }
+      await checkTrophies();
+
+      if (paragraph[0].start) {
+        waitForStart = paragraph[0].start;
+        await runStartScreen();
+        waitForStart = undefined;
+      }
+
+      if (paragraph[0].enter) {
+        await evaluate(paragraph[0].enter);
+      }
+
+      paragraphLineNumber = 1;
+      textAnimations = [];
+      const textNodes = [];
+      D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
+        const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
+        textNodes.push(textNode);
+        textAnimations.push(new D.TextAnimation(textNode, system.speed));
+      });
+      const speaker = paragraph[0].speaker;
+      if (silhouette) {
+        silhouette.updateSpeaker(speaker);
+      }
+
+      document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
+      const textNode = document.querySelector(".demeter-main-paragraph-text");
+      textNode.replaceChildren(...textNodes);
+      textNode.dataset.pid = D.numberToString(paragraphIndex);
+
+      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
+      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+
+      // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
+      if (playState !== "skip") {
+        D.cache(getVoiceUrls(paragraph[0].adjacencies));
       }
     }
-
-    if (playState === "skip" && !system.skipUnread && !readState.map.has(paragraphIndex)) {
-      await cancelPlayState();
-    }
-
-    if (musicPlayer.key !== paragraph[0].music) {
-      musicPlayer.fade(paragraph[0].music);
-    }
-    if (place !== paragraph[0].place) {
-      place = paragraph[0].place;
-      logging.notice("現在地: " + place);
-    }
-    if (backgroundTransition.key !== paragraph[0].background) {
-      backgroundTransition.fade(paragraph[0].background);
-    }
-
-    readState.map.set(paragraphIndex, Date.now());
-    // SKIP中は自動保存しない。
-    if (playState !== "skip") {
-      await Promise.all([ putReadState(), putAutosave() ]);
-    }
-    await checkTrophies();
-
-    if (paragraph[0].start) {
-      waitForStart = paragraph[0].start;
-      await runStartScreen();
-      waitForStart = undefined;
-    }
-
-    if (paragraph[0].enter) {
-      await evaluate(paragraph[0].enter);
-    }
-
-    paragraphLineNumber = 1;
-    textAnimations = [];
-    const textNodes = [];
-    D.parseParagraph(paragraph[1], fontSize, font).forEach(text => {
-      const textNode = D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2);
-      textNodes.push(textNode);
-      textAnimations.push(new D.TextAnimation(textNode, system.speed));
-    });
-    const speaker = paragraph[0].speaker;
-    if (silhouette) {
-      silhouette.updateSpeaker(speaker);
-    }
-
-    document.querySelector(".demeter-main-paragraph-speaker").textContent = speakerNames[speaker];
-    const textNode = document.querySelector(".demeter-main-paragraph-text");
-    textNode.replaceChildren(...textNodes);
-    textNode.dataset.pid = D.numberToString(paragraphIndex);
-
-    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-    voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
-
-    // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
-    if (playState !== "skip") {
-      D.cache(getVoiceUrls(paragraph[0].adjacencies));
-    }
+  } finally {
+    paragraphLockState = undefined;
   }
 
   textAnimation = textAnimations[paragraphLineNumber - 1];
@@ -3876,89 +3892,95 @@ const next = async () => {
     return waitForStop();
   }
 
-  ++paragraphLineNumber;
-  if (paragraphLineNumber > textAnimations.length) {
-    paragraphIndexPrev = paragraphIndex;
-    if (paragraph[0].jump !== undefined) {
-      paragraphIndexPrev = paragraph[0].jump - 1;
-    }
+  try {
+    paragraphLockState = "leave";
 
-    choices = paragraph[0].choices;
-    if (choices) {
-      // 選択肢の表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
-      await cancelPlayState();
-
-      const choiceNodes = [
-        document.querySelector(".demeter-main-choice1"),
-        document.querySelector(".demeter-main-choice2"),
-        document.querySelector(".demeter-main-choice3"),
-      ];
-      const n = 3 - choices.length;
-      choiceNodes.forEach((choiceNode, i) => choiceNode.style.display = i < n ? "none" : "block");
-      choiceNodes.splice(0, n);
-
-      choices.forEach((choice, i) => {
-        const choiceNode = choiceNodes[i];
-        const textNode = D.layoutText(D.composeText(D.parseText(choice.choice, fontSize, font), fontSize * 21), fontSize, fontSize * 2);
-        choiceNode.querySelector(".demeter-main-choice-text").replaceChildren(textNode);
-        choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
-      });
-
-      unsetFocus();
-      closeSystemUi();
-
-      document.querySelector(".demeter-main-choices").style.display = "block";
-      while (true) {
-        const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
-        waitForChoice = undefined;
-
-        if (waitForStop) {
-          document.querySelector(".demeter-main-choices").style.display = "none";
-          choices = undefined;
-          return waitForStop();
-        }
-        if (choice.action) {
-          await evaluate(choice.action);
-        }
-
-        // ジャンプ先が現在の段落である場合、待ちつづける。
-        if (paragraphIndex !== choice.label) {
-          paragraphIndexPrev = choice.label - 1;
-          break;
-        }
-      }
-      document.querySelector(".demeter-main-choices").style.display = "none";
-      choices = undefined;
-
-      if (updateChecker.delayed) {
-        setTimeout(async () => await updateChecker.dialog(), 1000);
+    ++paragraphLineNumber;
+    if (paragraphLineNumber > textAnimations.length) {
+      paragraphIndexPrev = paragraphIndex;
+      if (paragraph[0].jump !== undefined) {
+        paragraphIndexPrev = paragraph[0].jump - 1;
       }
 
-      cont = true;
-    }
-
-    if (paragraph[0].leave) {
-      await evaluate(paragraph[0].leave);
-    }
-
-    if (playState) {
-      // この段落にfinishが指定されていたら、AUTO/SKIPを解除する。
-      if (paragraph[0].finish) {
+      choices = paragraph[0].choices;
+      if (choices) {
+        // 選択肢の表示時にAUTO/STOPを解除する。選択肢表示中はAUTO/SAVEを受けつけない。
         await cancelPlayState();
+
+        const choiceNodes = [
+          document.querySelector(".demeter-main-choice1"),
+          document.querySelector(".demeter-main-choice2"),
+          document.querySelector(".demeter-main-choice3"),
+        ];
+        const n = 3 - choices.length;
+        choiceNodes.forEach((choiceNode, i) => choiceNode.style.display = i < n ? "none" : "block");
+        choiceNodes.splice(0, n);
+
+        choices.forEach((choice, i) => {
+          const choiceNode = choiceNodes[i];
+          const textNode = D.layoutText(D.composeText(D.parseText(choice.choice, fontSize, font), fontSize * 21), fontSize, fontSize * 2);
+          choiceNode.querySelector(".demeter-main-choice-text").replaceChildren(textNode);
+          choiceNode.querySelector(".demeter-main-choice-barcode").textContent = choice.barcode || "";
+        });
+
+        unsetFocus();
+        closeSystemUi();
+
+        document.querySelector(".demeter-main-choices").style.display = "block";
+        while (true) {
+          const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
+          waitForChoice = undefined;
+
+          if (waitForStop) {
+            document.querySelector(".demeter-main-choices").style.display = "none";
+            choices = undefined;
+            return waitForStop();
+          }
+          if (choice.action) {
+            await evaluate(choice.action);
+          }
+
+          // ジャンプ先が現在の段落である場合、待ちつづける。
+          if (paragraphIndex !== choice.label) {
+            paragraphIndexPrev = choice.label - 1;
+            break;
+          }
+        }
+        document.querySelector(".demeter-main-choices").style.display = "none";
+        choices = undefined;
+
+        if (updateChecker.delayed) {
+          setTimeout(async () => await updateChecker.dialog(), 1000);
+        }
+
+        cont = true;
       }
-      // 次の段落にstartが指定されていたら、AUTO/SKIPを解除する。startとwhenは同
-      // 時に指定できないので評価しなくてよい。
-      const paragraphIndexNext = paragraphIndexPrev + 1;
-      const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
-      if (paragraphNext[0].start) {
-        await cancelPlayState();
+
+      if (paragraph[0].leave) {
+        await evaluate(paragraph[0].leave);
       }
+
+      if (playState) {
+        // この段落にfinishが指定されていたら、AUTO/SKIPを解除する。
+        if (paragraph[0].finish) {
+          await cancelPlayState();
+        }
+        // 次の段落にstartが指定されていたら、AUTO/SKIPを解除する。startとwhenは同
+        // 時に指定できないので評価しなくてよい。
+        const paragraphIndexNext = paragraphIndexPrev + 1;
+        const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
+        if (paragraphNext[0].start) {
+          await cancelPlayState();
+        }
+      }
+
+      // 段落の処理が終わった時点で履歴に追加する。
+      createHistoryParagraph();
+
+      resetParagraph();
     }
-
-    // 段落の処理が終わった時点で履歴に追加する。
-    createHistoryParagraph();
-
-    resetParagraph();
+  } finally {
+    paragraphLockState = undefined;
   }
 
   if (cont) {
@@ -4706,6 +4728,11 @@ const processInputDevice = async ev => {
 
 const onKeydown = async ev => {
   inputDevice = "keyboard";
+
+  if (system.dupKeyboardInput) {
+    requestAnimationFrame(async () => await processInputDevice(ev));
+  }
+
   const consumed = await processInputDevice(ev);
   if (consumed) {
     ev.preventDefault();
@@ -4740,7 +4767,13 @@ const onGamepadButtonPress = gamepadButtonIndex => {
   inputDevice = "gamepad";
 
   const code = gamepadButtonCodeSet[gamepadButtonIndex];
-  processInputDevice({ code: code }).then(consumed => {
+  const ev = { code: code };
+
+  if (system.dupGamepadInput) {
+    requestAnimationFrame(async () => await processInputDevice(ev));
+  }
+
+  processInputDevice(ev).then(consumed => {
     D.trace("onGamepadButtonPress processInputDevice", code, consumed);
   }).catch(e => {
     D.trace("onGamepadButtonPress processInputDevice", code, e);
