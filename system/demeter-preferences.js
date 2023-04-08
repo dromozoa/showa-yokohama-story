@@ -32,7 +32,7 @@ if (mode === "develop") {
     systemDir: "/sys/system",
     musicDir: "/sys/build/music",
     voiceDir: "/sys/build/voice",
-    trace: (...args) => console.log(...args),
+    trace: (...params) => console.log(...params),
   };
 } else {
   D.preferences = {

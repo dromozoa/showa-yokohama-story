@@ -1901,9 +1901,6 @@ const systemDefault = {
   silhouette: true,
   unionSetting: "ろうそ",
 
-  dupKeyboardInput: false,
-  dupGamepadInput: false,
-
   /*
    キーリピートの既定値を参考にゲームパッドのリピートを設定する。
    | Win | AutoRepeatDelay  | 1000ms |     |
@@ -1911,8 +1908,12 @@ const systemDefault = {
    | Mac | InitialKeyRepeat |  375ms | 25F |
    |     | KeyRepeat        |   90ms |  6F |
    */
-  repeatDelay: 417,
-  repeatRate: 100,
+  repeatDelay: 425,
+  repeatRate: 102,
+
+  // 疑似的に二重入力を発生させてデバッグする。
+  dupKeyboardInput: false,
+  dupGamepadInput: false,
 };
 
 const gameStateDefault = {
@@ -1978,6 +1979,7 @@ let screenScale;
 let screenNamePrev;
 let screenName;
 let systemUi;
+let systemUiDebugCommandsFolder;
 
 let backgroundTransition;
 let trophyAnimationQueue = [];
@@ -2265,7 +2267,7 @@ const updateTrophyImpl = async trophy => {
 };
 
 // トロフィーが未獲得であれば獲得する。
-const updateTrophy = D.updateTrophy = async key => {
+const updateTrophy = async key => {
   if (!trophiesState.map.has(key)) {
     trophiesState.map.set(key, Date.now());
     await putTrophiesState();
@@ -2377,6 +2379,7 @@ const unlockAudio = async () => {
 
   const screenNode = document.querySelector(".demeter-title-screen");
   screenNode.removeEventListener("click", unlockAudio);
+  screenNode.addEventListener("click", checkDebugMode);
 
   screenNode.classList.remove("demeter-title-unlock-audio");
   if (iconAnimation) {
@@ -2832,13 +2835,16 @@ const initializeSystemUi = () => {
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
-  const debugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
-  debugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
+  systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
+  systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
   if (globalThis.caches) {
-    debugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
+    systemUiDebugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
-  debugCommandsFolder.add(system, "dupKeyboardInput").name("キーボード二重入力");
-  debugCommandsFolder.add(system, "dupGamepadInput").name("ゲームパッド二重入力");
+  systemUiDebugCommandsFolder.add(system, "repeatDelay", 17, 1700, 17).name("ボタン連射待機 [ms]");
+  systemUiDebugCommandsFolder.add(system, "repeatRate", 17, 1700, 17).name("ボタン連射間隔 [ms]");
+  systemUiDebugCommandsFolder.add(system, "dupKeyboardInput").name("キーボード二重入力");
+  systemUiDebugCommandsFolder.add(system, "dupGamepadInput").name("ゲームパッド二重入力");
+  systemUiDebugCommandsFolder.hide();
 
   let initialized = false;
   systemUiNode.addEventListener("transitionend", ev => {
@@ -2919,6 +2925,7 @@ const enterTitleScreen = async () => {
     }
   }
 
+  debugModeCount = 0;
   document.querySelector(".demeter-screen").append(screenNode);
 };
 
@@ -3318,7 +3325,8 @@ const initializeTitleScreen = () => {
   });
 
   // NEW GAME
-  choiceButtonNodes[0].addEventListener("click", () => {
+  choiceButtonNodes[0].addEventListener("click", ev => {
+    ev.stopPropagation();
     soundEffectSelect();
     setSave(saveNewGame);
     leaveTitleScreen();
@@ -3327,14 +3335,16 @@ const initializeTitleScreen = () => {
   });
 
   // LOAD GAME
-  choiceButtonNodes[1].addEventListener("click", async () => {
+  choiceButtonNodes[1].addEventListener("click", async ev => {
+    ev.stopPropagation();
     soundEffectSelect();
     leaveTitleScreen();
     await enterLoadScreen();
   });
 
   // CONTINUE
-  choiceButtonNodes[2].addEventListener("click", async () => {
+  choiceButtonNodes[2].addEventListener("click", async ev => {
+    ev.stopPropagation();
     soundEffectSelect();
     setSave(await database.get("save", "autosave"));
     leaveTitleScreen();
@@ -3343,7 +3353,8 @@ const initializeTitleScreen = () => {
   });
 
   // CREDITS
-  choiceButtonNodes[3].addEventListener("click", async () => {
+  choiceButtonNodes[3].addEventListener("click", async ev => {
+    ev.stopPropagation();
     soundEffectSelect();
     leaveTitleScreen();
     await enterCreditsScreen();
@@ -4114,6 +4125,30 @@ const dialog = async key => {
 
 //-------------------------------------------------------------------------
 
+let debugModeCount = 0;
+let debugModeStatus = false;
+
+const checkDebugMode = async ev => {
+  ++debugModeCount;
+  if (debugModeCount >= 30) {
+    debugModeCount = 0;
+    debugModeStatus = !debugModeStatus;
+    if (debugModeStatus) {
+      D.trace = (...params) => console.log(...params);
+      systemUiDebugCommandsFolder.show();
+      document.querySelector(".demeter-title-mode").textContent = " [D]";
+      logging.notice("デバッグモード: 有効化");
+    } else {
+      D.trace = (...params) => D.preferences.trace(...params);
+      systemUiDebugCommandsFolder.hide();
+      document.querySelector(".demeter-title-mode").textContent = "";
+      logging.notice("デバッグモード: 無効化");
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 const kCodeSet = [
   [ "KeyK", "ArrowUp",    "ButtonUp" ],
   [ "KeyK", "ArrowUp",    "ButtonUp" ],
@@ -4371,7 +4406,19 @@ const focusTitleChoice = ev => {
 
 const getUiComponents = () => [
   systemUi,
-  ...systemUi.children.map(ui => ui instanceof lil.GUI && !ui._closed ? [ ui, ...ui.controllers ] : ui),
+  ...systemUi.children.map(ui => {
+    if (ui instanceof lil.GUI) {
+      if (ui._hidden) {
+        return [];
+      } else if (ui._closed) {
+        return ui;
+      } else {
+        return [ui, ...ui.controllers ];
+      }
+    } else {
+      return ui;
+    }
+  }),
 ].flat();
 
 const getUiNodes = uiComponents => uiComponents.map(ui => ui instanceof lil.GUI ? ui.$title : ui.domElement);
@@ -4617,7 +4664,11 @@ const processInputDevice = async ev => {
     if (waitForDialog) {
       consumed = await clickDialogButton(ev);
     } else if (isInputOk(ev)) {
-      consumed = clickButton(unsetFocus());
+      const node = unsetFocus();
+      consumed = clickButton(node);
+      if (!node) {
+        checkDebugMode(ev);
+      }
     } else if (isInputCancel(ev)) {
       soundEffectCancel();
       unsetFocus();
