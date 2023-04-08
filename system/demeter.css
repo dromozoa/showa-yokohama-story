@@ -20,7 +20,7 @@
 /*************************************************************************/
 
 @font-face {
-  font-family: 'promptfont';
+  font-family: 'PromptFont';
   font-display: swap;
   src: url(PromptFont.woff2);
   unicode-range: U+219E-21A1,U+21D2-21D3;
@@ -36,7 +36,7 @@
   --font-family-console: 'Share Tech', sans-serif;
   --font-family-logging: 'Share Tech Mono', 'BIZ UDGothic', monospace;
   --font-family-barcode: 'Libre Barcode 128';
-  --font-family-kcode: 'promptfont';
+  --font-family-kcode: 'PromptFont';
 
   --color-title: #C63322;
   --color-console: #029D93;
