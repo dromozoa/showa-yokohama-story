@@ -1914,6 +1914,8 @@ const systemDefault = {
   // 疑似的に二重入力を発生させてデバッグする。
   dupKeyboardInput: false,
   dupGamepadInput: false,
+
+  creditsSpeed: 2000,
 };
 
 const gameStateDefault = {
@@ -2844,6 +2846,7 @@ const initializeSystemUi = () => {
   systemUiDebugCommandsFolder.add(system, "repeatRate", 17, 1700, 17).name("ボタン連射間隔 [ms]");
   systemUiDebugCommandsFolder.add(system, "dupKeyboardInput").name("キーボード二重入力");
   systemUiDebugCommandsFolder.add(system, "dupGamepadInput").name("ゲームパッド二重入力");
+  systemUiDebugCommandsFolder.add(system, "creditsSpeed", 0, 4000, 40).name("クレジット遷移時間 [ms]");
   systemUiDebugCommandsFolder.hide();
 
   let initialized = false;
@@ -3002,9 +3005,9 @@ const enterCreditsScreen = async () => {
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
-  const T1 = 2000;
-  const T2 = 2000;
-  const T3 = 2000;
+  const T1 = system.creditsSpeed;
+  const T2 = system.creditsSpeed;
+  const T3 = system.creditsSpeed;
   const scrollNode = document.querySelector(".demeter-credits-scroll");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
