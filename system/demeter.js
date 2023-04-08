@@ -4638,7 +4638,7 @@ const focusDataTape = (tapesNode, ev) => {
   return true;
 };
 
-const focusParagraph = (nodes, ev, block) => {
+const focusParagraph = (nodes, ev, startsWithTail, block) => {
   const delta = getInputControlY(ev);
   if (!delta) {
     return;
@@ -4646,6 +4646,10 @@ const focusParagraph = (nodes, ev, block) => {
 
   const focusNode = unsetFocus();
   let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1 && startsWithTail) {
+    index = nodes.length - 1;
+  }
+
   if (index === -1) {
     index = delta > 0 ? 0 : nodes.length - 1;
   } else {
@@ -4760,7 +4764,7 @@ const processInputDevice = async ev => {
       if (isInputOk(ev) || isInputCancel(ev)) {
         consumed = clickElement(document.querySelector(".demeter-credits-end"));
       } else {
-        consumed = focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev, "start");
+        consumed = focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev, true, "start");
       }
     }
 
@@ -4772,7 +4776,7 @@ const processInputDevice = async ev => {
     } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
     } else {
-      consumed = focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev, "nearest");
+      consumed = focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev, false, "nearest");
     }
   }
 
