@@ -121,6 +121,9 @@ body.demeter {
   margin: 0;
   color: #FFF;
   background-color: #111;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /*************************************************************************/

@@ -4134,11 +4134,13 @@ const checkDebugMode = async ev => {
     debugModeCount = 0;
     debugModeStatus = !debugModeStatus;
     if (debugModeStatus) {
+      logging.setLevel(7);
       D.trace = (...params) => console.log(...params);
       systemUiDebugCommandsFolder.show();
-      document.querySelector(".demeter-title-mode").textContent = " [D]";
+      document.querySelector(".demeter-title-mode").textContent = " [debug]";
       logging.notice("デバッグモード: 有効化");
     } else {
+      logging.setLevel(6);
       D.trace = (...params) => D.preferences.trace(...params);
       systemUiDebugCommandsFolder.hide();
       document.querySelector(".demeter-title-mode").textContent = "";
