@@ -3735,6 +3735,7 @@ const runStartScreen = async () => {
 };
 
 const resetParagraph = () => {
+  D.trace("resetParagraph", paragraphIndex, choices);
   paragraphIndex = undefined;
   paragraph = undefined;
   paragraphLineNumber = undefined;

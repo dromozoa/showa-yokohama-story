@@ -71,6 +71,29 @@ demeter-preferences.js:35:33
 	promiseReactionJob
 ```
 
+ヒストリだしたりしてたんだっけ？
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'choices.length')
+	（anonymous関数） (demeter.js:3510)
+	asyncFunctionResume
+	（anonymous関数）
+	promiseReactionJobWithoutPromise
+	promiseReactionJob
+```
+
+選択肢で連打。
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
+	（anonymous関数） (demeter.js:3871)
+	asyncFunctionResume
+```
+
+```
+[Error] Unhandled Promise Rejection: TypeError: undefined is not an object (evaluating 'textAnimations[paragraphLineNumber - 1]')
+	（anonymous関数） (demeter.js:3875)
+	asyncFunctionResume
+```
+
 ## 完了タスク
 
 - ビルド
@@ -254,10 +277,14 @@ demeter-preferences.js:35:33
   - [ ] ログ解析
 
 - デバッグ
-  - [ ] Androidで動かしてみる
   - [ ] textAnimationsがundefinedになるタイミングがある
     - スキップ中のわりこみで発生した？
       - 単純には発生しなかった
+    - 選択肢が表示されているときに連打かも
+      - 選択肢の二度押し防止を書いてみたけど、そういう問題ではないらしい
+      - 選択肢経由のnextの途中で、もう一発nextがはいるとだめ？
+
+  - [ ] Androidで動かしてみる
   - [ ] iOSで表示がおかしくなる問題
     - 背景のtransformがきいていない状態になる
     - canvasもおかしくなる
