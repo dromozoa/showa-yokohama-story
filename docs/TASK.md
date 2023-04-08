@@ -290,7 +290,6 @@ demeter-preferences.js:35:33
   - [ ] ログ解析
 
 - デバッグ
-
   - [ ] Androidで動かしてみる
   - [ ] iOSで表示がおかしくなる問題
     - 背景のtransformがきいていない状態になる
