@@ -190,6 +190,7 @@ body.demeter {
   font-size: calc(var(--font-size) * 4);
   line-height: calc(var(--font-size) * 6);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-ja > span {
@@ -208,6 +209,7 @@ body.demeter {
   font-size: var(--font-size);
   line-height: var(--font-size);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-en > span {
@@ -224,6 +226,7 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+  pointer-events: none;
 }
 
 .demeter-title-icon {
