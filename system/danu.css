@@ -138,6 +138,7 @@ body.danu {
 
 .danu-screen-shot img {
   display: block;
+  pointer-events: none;
 }
 
 .danu-screen-shot1,
