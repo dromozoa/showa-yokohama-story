@@ -381,6 +381,7 @@ body.demeter {
   display: block;
   width: calc(var(--font-size) * 15);
   height: calc(var(--font-size) * 12);
+  pointer-events: none;
 }
 
 .demeter-start-notice {
