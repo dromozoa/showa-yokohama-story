@@ -1914,6 +1914,8 @@ const systemDefault = {
   // 疑似的に二重入力を発生させてデバッグする。
   dupKeyboardInput: false,
   dupGamepadInput: false,
+
+  creditsSpeed: 2000,
 };
 
 const gameStateDefault = {
@@ -2399,14 +2401,22 @@ const unlockAudio = async () => {
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     const message = await Promise.any([
       new Promise(resolve => {
+        let started;
+
         const onMessage = ev => {
           navigator.serviceWorker.removeEventListener("message", onMessage);
+
+          const finished = performance.now();
+          D.trace("serviceWorker onMessage", finished, finished - started);
           resolve(ev.data);
         };
         navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
+
+        started = performance.now();
+        D.trace("serviceWorker postMessage", started);
         navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
       }),
-      D.setTimeout(100),
+      D.setTimeout(500),
     ]);
 
     if (message) {
@@ -2844,6 +2854,7 @@ const initializeSystemUi = () => {
   systemUiDebugCommandsFolder.add(system, "repeatRate", 17, 1700, 17).name("ボタン連射間隔 [ms]");
   systemUiDebugCommandsFolder.add(system, "dupKeyboardInput").name("キーボード二重入力");
   systemUiDebugCommandsFolder.add(system, "dupGamepadInput").name("ゲームパッド二重入力");
+  systemUiDebugCommandsFolder.add(system, "creditsSpeed", 0, 4000, 40).name("クレジット遷移時間 [ms]");
   systemUiDebugCommandsFolder.hide();
 
   let initialized = false;
@@ -3002,9 +3013,9 @@ const enterCreditsScreen = async () => {
   const scenarioStatus = readState.map.size / D.scenario.total * 100;
   document.querySelector(".demeter-credits-end-scenario-status").textContent = scenarioStatus.toFixed(2).replace(/\.?0*$/, "") + "%";
 
-  const T1 = 2000;
-  const T2 = 2000;
-  const T3 = 2000;
+  const T1 = system.creditsSpeed;
+  const T2 = system.creditsSpeed;
+  const T3 = system.creditsSpeed;
   const scrollNode = document.querySelector(".demeter-credits-scroll");
   const graphNode = document.querySelector(".demeter-credits-graph");
   const paragraphNodes = [...document.querySelectorAll(".demeter-credits-paragraph")];
@@ -4638,7 +4649,7 @@ const focusDataTape = (tapesNode, ev) => {
   return true;
 };
 
-const focusParagraph = (nodes, ev, block) => {
+const focusParagraph = (nodes, ev, startsWithTail, block) => {
   const delta = getInputControlY(ev);
   if (!delta) {
     return;
@@ -4646,6 +4657,10 @@ const focusParagraph = (nodes, ev, block) => {
 
   const focusNode = unsetFocus();
   let index = nodes.findIndex(node => node === focusNode);
+  if (index === -1 && startsWithTail) {
+    index = nodes.length - 1;
+  }
+
   if (index === -1) {
     index = delta > 0 ? 0 : nodes.length - 1;
   } else {
@@ -4760,7 +4775,7 @@ const processInputDevice = async ev => {
       if (isInputOk(ev) || isInputCancel(ev)) {
         consumed = clickElement(document.querySelector(".demeter-credits-end"));
       } else {
-        consumed = focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev, "start");
+        consumed = focusParagraph([...document.querySelectorAll(".demeter-credits [data-focusable='true']")], ev, true, "start");
       }
     }
 
@@ -4772,7 +4787,7 @@ const processInputDevice = async ev => {
     } else if (isInputCancel(ev)) {
       consumed = await clickButton(document.querySelector(".demeter-history-back-frame .demeter-button"));
     } else {
-      consumed = focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev, "nearest");
+      consumed = focusParagraph([...document.querySelectorAll(".demeter-history-paragraph")], ev, false, "nearest");
     }
   }
 

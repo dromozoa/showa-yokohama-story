@@ -12,32 +12,29 @@ Libraries	[howler.js](https://howlerjs.com/)
 	[lil-gui](https://lil-gui.georgealways.com/)
 	[idb](https://github.com/jakearchibald/idb)
 
-Western Fonts\
- licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
+Fonts licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
 [Averia Serif Libre](https://fonts.google.com/specimen/Averia+Serif+Libre)\
-	Copyright &copy; 2011 Dan Sayers
-[Libre Barcode 128](https://fonts.google.com/specimen/Libre+Barcode+128)\
-	Copyright &copy; 2017-2020<br>The Libre Barcode Project Authors
-[Share Tech](https://fonts.google.com/specimen/Share+Tech)\
-	Copyright &copy; 2012<br>The Share Tech Project Authors
-[Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono)\
-	Copyright &copy; 2012<br>The Share Tech Project Authors
-[Source Serif Pro](https://fonts.google.com/specimen/Source+Serif+Pro)\
-	Copyright &copy; 2014-2016<br>Adobe Systems Incorporated
-
-Japanese Fonts\
- licensed under [SIL Open Font License 1.1](https://scripts.sil.org/OFL)
+	Copyright 2011 Dan Sayers
 [BIZ UDGothic](https://fonts.google.com/specimen/BIZ+UDGothic)\
-	Copyright &copy; 2022<br>The BIZ UDGothic Project Authors
+	Copyright 2022<br>The BIZ UDGothic Project Authors
 [BIZ UDPGothic](https://fonts.google.com/specimen/BIZ+UDPGothic)\
-	Copyright &copy; 2022<br>The BIZ UDGothic Project Authors
+	Copyright 2022<br>The BIZ UDGothic Project Authors
 [BIZ UDPMincho](https://fonts.google.com/specimen/BIZ+UDPMincho)\
-	Copyright &copy; 2022<br>The BIZ UDMincho Project Authors
+	Copyright 2022<br>The BIZ UDMincho Project Authors
+[Libre Barcode 128](https://fonts.google.com/specimen/Libre+Barcode+128)\
+	Copyright 2017-2020<br>The Libre Barcode Project Authors
+
+[PromptFont](https://shinmera.github.io/promptfont/)\
+	Copyright 2018 Nicolas Hafner<br>Copyright 2011-2016 Severin Meyer
+[Share Tech](https://fonts.google.com/specimen/Share+Tech)\
+	Copyright 2012<br>The Share Tech Project Authors
+[Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono)\
+	Copyright 2012<br>The Share Tech Project Authors
+[Source Serif Pro](https://fonts.google.com/specimen/Source+Serif+Pro)\
+	Copyright 2014-2016<br>Adobe Systems Incorporated
 [Yuji Syuku](https://fonts.google.com/specimen/Yuji+Syuku)\
-	Copyright &copy; 2021<br>The Yuji Project Authors
-\\
-[Line Awesome](https://icons8.com/line-awesome)\
- licensed under MIT or [Good Boy Licensed](https://icons8.com/good-boy-license)
+	Copyright 2021<br>The Yuji Project Authors
+[Line Awesome](https://icons8.com/line-awesome) licensed under MIT or [Good Boy Licensed](https://icons8.com/good-boy-license)
 
 Visuals	[shutterstock](https://www.shutterstock.com/)
 Sound Effects	[Sound Effect Lab](https://soundeffect-lab.info/)
