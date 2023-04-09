@@ -38,6 +38,7 @@ body.danu {
   padding: 45px;
 
   font-family: 'BIZ UDPMincho', 'Source Serif Pro', serif;
+  line-height: 1.75;
 }
 
 @media (max-width: 767px) {
@@ -61,6 +62,10 @@ body.danu {
 
 .danu table tr td ul:last-child {
   margin-bottom: 0;
+}
+
+.danu ul li+li {
+  margin-top: 0;
 }
 
 .danu cite:before {
