@@ -1047,15 +1047,13 @@ body.demeter {
 
 .demeter-credits-paragraphs {
   position: absolute;
-  width: calc(var(--font-size) * 23);
+  width: var(--screen-width);
   height: var(--credits-height-paragraphs);
-  left: calc(var(--font-size) * 2);
-  top: 0;
 }
 
 .demeter-credits-paragraph {
   position: relative;
-  padding-top: calc(var(--font-size) * 2);
+  padding: calc(var(--font-size) * 2) calc(var(--screen-width) - var(--font-size) * 25) 0 calc(var(--font-size) * 2);
   width: calc(var(--font-size) * 23);
   height: calc(var(--credits-height-paragraph) - var(--font-size) * 2);
   font-family: var(--font-family-console);
