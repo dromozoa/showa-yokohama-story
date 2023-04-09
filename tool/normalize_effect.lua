@@ -27,6 +27,12 @@ local function execute(command)
   assert(os.execute(command))
 end
 
+-- ラウドネスを正規化しない
+if not tonumber(integrated_loudness_target) then
+  execute(("ffmpeg -y -i %s %s.wav"):format(quote_shell(source_pathname), quote_shell(result_name)))
+  return
+end
+
 -- ラウドネスを調べる
 local audio_filter = "loudnorm"
   .."=I="..integrated_loudness_target
