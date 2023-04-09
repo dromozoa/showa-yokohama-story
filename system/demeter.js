@@ -2401,14 +2401,22 @@ const unlockAudio = async () => {
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     const message = await Promise.any([
       new Promise(resolve => {
+        let started;
+
         const onMessage = ev => {
           navigator.serviceWorker.removeEventListener("message", onMessage);
+
+          const finished = performance.now();
+          D.trace("serviceWorker onMessage", finished, finished - started);
           resolve(ev.data);
         };
         navigator.serviceWorker.addEventListener("message", onMessage, { once: true });
+
+        started = performance.now();
+        D.trace("serviceWorker postMessage", started);
         navigator.serviceWorker.controller.postMessage({ method: "getClients", messageId: "" });
       }),
-      D.setTimeout(100),
+      D.setTimeout(500),
     ]);
 
     if (message) {
