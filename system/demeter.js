@@ -2007,7 +2007,7 @@ let voiceSprite;
 let choices;
 let waitForChoice;
 let waitForStart;
-let waitForStartTransition;
+let waitForStartScreen;
 let waitForStop;
 let waitForDialog;
 let waitForCredits;
@@ -3376,8 +3376,8 @@ const initializeTitleScreen = () => {
 const initializeStartScreen = () => {
   // 次の画面に進む。
   document.querySelector(".demeter-start-screen").addEventListener("click", async ev => {
-    if (waitForStartTransition) {
-      waitForStartTransition();
+    if (waitForStartScreen) {
+      waitForStartScreen();
     }
   });
 };
@@ -3753,7 +3753,7 @@ const runStartScreen = async () => {
   document.querySelector(".demeter-start-display").append(imageNode);
 
   const T1 = 30;
-  const T2 = 2000;
+  const T2 = 3000;
 
   const textNode = D.layoutText(D.composeText(D.parseText([startTexts[waitForStart]], fontSize, consoleFont)), fontSize, fontSize * 2);
   document.querySelector(".demeter-start-text").replaceChildren(textNode);
@@ -3762,17 +3762,17 @@ const runStartScreen = async () => {
   leaveMainScreen();
   enterStartScreen();
 
-  waitForStartTransition = () => {
+  waitForStartScreen = () => {
     textAnimation.finish();
   };
   await textAnimation.start();
   if (!textAnimation.finished) {
     await Promise.any([
-      new Promise(resolve => waitForStartTransition = () => resolve()),
+      new Promise(resolve => waitForStartScreen = () => resolve()),
       D.setTimeout(T2),
     ]);
   }
-  waitForStartTransition = undefined;
+  waitForStartScreen = undefined;
 
   // メイン画面に戻る前に段落表示をクリアする。
   document.querySelector(".demeter-main-paragraph-text").replaceChildren();
@@ -4717,6 +4717,13 @@ const processInputDevice = async ev => {
       consumed = focusTitleChoice(ev);
     }
     await checkKCode(ev);
+
+  } else if (screenName === "start") {
+    if (waitForStartScreen) {
+      if (isInputOk(ev) || isInputCancel(ev)) {
+        consumed = clickElement(document.querySelector(".demeter-start-screen"));
+      }
+    }
 
   } else if (screenName === "main") {
     if (waitForDialog) {
