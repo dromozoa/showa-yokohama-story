@@ -133,6 +133,11 @@ body.demeter {
   background-color: #111;
 
   /*
+   * 画面端でぽよぽよするのを止める。
+   */
+  overflow: hidden;
+
+  /*
    * 全域で選択を禁止する。テキストを含む要素のカーソルが変わらないので、明示的
    * に上書きする
    */
@@ -398,10 +403,10 @@ body.demeter {
   font-family: var(--font-family-logging);
   font-size: calc(var(--font-size) * 0.5);
   line-height: var(--font-size);
-  overflow: auto;
-  scrollbar-width: none;
   color: var(--component-color, #FFF);
   opacity: var(--component-opacity, 0.25);
+  overflow: auto;
+  scrollbar-width: none;
   overscroll-behavior: contain;
 }
 
@@ -1011,6 +1016,7 @@ body.demeter {
   height: var(--screen-height);
   overflow: auto;
   scrollbar-width: none;
+  overscroll-behavior: contain;
 }
 
 .demeter-credits-scroll::-webkit-scrollbar {
