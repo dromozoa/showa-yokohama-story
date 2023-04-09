@@ -2007,6 +2007,7 @@ let voiceSprite;
 let choices;
 let waitForChoice;
 let waitForStart;
+let waitForStartTransition;
 let waitForStop;
 let waitForDialog;
 let waitForCredits;
@@ -3372,7 +3373,14 @@ const initializeTitleScreen = () => {
   });
 };
 
-const initializeStartScreen = () => {};
+const initializeStartScreen = () => {
+  // 次の画面に進む。
+  document.querySelector(".demeter-start-screen").addEventListener("click", async ev => {
+    if (waitForStartTransition) {
+      waitForStartTransition();
+    }
+  });
+};
 
 const initializeMainScreen = () => {
   initializeSystemUi();
@@ -3744,18 +3752,33 @@ const runStartScreen = async () => {
   const imageNode = document.querySelector(".demeter-start-image-" + waitForStart);
   document.querySelector(".demeter-start-display").append(imageNode);
 
+  const T1 = 30;
+  const T2 = 2000;
+
   const textNode = D.layoutText(D.composeText(D.parseText([startTexts[waitForStart]], fontSize, consoleFont)), fontSize, fontSize * 2);
   document.querySelector(".demeter-start-text").replaceChildren(textNode);
-  const textAnimation = new D.TextAnimation(textNode, 30);
+  const textAnimation = new D.TextAnimation(textNode, T1);
 
   leaveMainScreen();
   enterStartScreen();
 
+  waitForStartTransition = () => {
+    textAnimation.finish();
+  };
   await textAnimation.start();
-  await D.setTimeout(2000);
+  if (!textAnimation.finished) {
+    await Promise.any([
+      new Promise(resolve => waitForStartTransition = () => resolve()),
+      D.setTimeout(T2),
+    ]);
+  }
+  waitForStartTransition = undefined;
 
   // メイン画面に戻る前に段落表示をクリアする。
   document.querySelector(".demeter-main-paragraph-text").replaceChildren();
+  // メイン画面に戻る前にAUTO/STOPを解除する。
+  await cancelPlayState();
+
   leaveStartScreen();
   enterMainScreen();
 
