@@ -86,6 +86,20 @@ body.danu {
 
 /*************************************************************************/
 
+.danu .danu-versions-title {
+  cursor: var(--cursor-pointer, auto);
+}
+
+.danu .danu-versions {
+  display: none;
+}
+
+.danu .danu-versions.danu-opened {
+  display: block;
+}
+
+/*************************************************************************/
+
 .danu-version {
   cursor: var(--cursor-pointer, auto);
 }
