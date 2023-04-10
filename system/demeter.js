@@ -4773,6 +4773,11 @@ const focusParagraph = (nodes, ev, startsWithTail, block) => {
     return;
   }
 
+  if (nodes.length === 0) {
+    soundEffectBeep();
+    return;
+  }
+
   const focusNode = unsetFocus();
   let index = nodes.findIndex(node => node === focusNode);
   if (index === -1 && startsWithTail) {
