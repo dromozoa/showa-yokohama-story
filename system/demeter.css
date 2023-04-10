@@ -1263,6 +1263,33 @@ body.demeter {
 
 /*************************************************************************/
 
+.demeter-history-building {
+  position: absolute;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: calc(var(--font-size) * 2);
+  text-align: center;
+  display: none;
+}
+
+@media (orientation: portrait) {
+  .demeter-history-building {
+    width: calc(var(--font-size) * 27);
+    height: calc(var(--font-size) * 2);
+    left: 0;
+    top: calc(var(--font-size) * 24);
+  }
+}
+
+@media (orientation: landscape) {
+  .demeter-history-building {
+    width: calc(var(--font-size) * 48);
+    height: calc(var(--font-size) * 2);
+    left: 0;
+    top: calc(var(--font-size) * 13.5);
+  }
+}
+
 .demeter-history-paragraphs {
   position: absolute;
   left: calc(var(--font-size) * 0.5);

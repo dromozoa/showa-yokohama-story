@@ -1932,6 +1932,11 @@ const trophiesStateDefault = {
   map: new Map(),
 };
 
+const historyStateDefault = {
+  id: "history",
+  paragraphs: [],
+};
+
 const saveNewGame = {
   paragraphIndex: D.scenario.labels["ニューゲーム"],
   state: {},
@@ -2015,7 +2020,10 @@ let waitForCredits;
 let updateChecker;
 
 let mainToHistoryScreenOnce;
-let historyParagraphNodes = [];
+let historyState;
+let historyBuilding;
+let historyBuildingStop;
+let historyParagraphNodes;
 let historyVoiceSprite;
 let historyParagraphIndex;
 
@@ -2114,7 +2122,7 @@ const cancelPlayStateImpl = async skipCanceled => {
   document.querySelector(".demeter-main-menu-frame .demeter-button5").classList.remove("demeter-active");
   if (skipCanceled) {
     // SKIPが解除されたら自動保存する。
-    await Promise.all([ putReadState(), putAutosave() ]);
+    await Promise.all([ putReadState(), putAutosave(), putHistoryState() ]);
   }
 };
 
@@ -2214,6 +2222,15 @@ const setSave = save => {
 const setScreenName = screenNameNext => {
   screenNamePrev = screenName;
   screenName = screenNameNext;
+};
+
+const putHistoryState = async () => {
+  try {
+    await database.put("history", historyState);
+    logging.debug("履歴データ書込: 成功");
+  } catch (e) {
+    logging.error("履歴データ書込: 失敗", e);
+  }
 };
 
 const evaluate = async action => {
@@ -2460,6 +2477,9 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
       case 4:
         db.createObjectStore("trophies", { keyPath: "id" });
         break;
+      case 5:
+        db.createObjectStore("history", { keyPath: "id" });
+        break;
     }
   }
 };
@@ -2474,7 +2494,7 @@ const setItemDefault = (item, itemDefault) => {
 
 const initializeDatabase = async () => {
   try {
-    database = await idb.openDB("昭和横濱物語", 4, { upgrade: upgradeDatabase });
+    database = await idb.openDB("昭和横濱物語", 5, { upgrade: upgradeDatabase });
 
     system = await database.get("system", "system") || {};
     setItemDefault(system, systemDefault);
@@ -2492,6 +2512,11 @@ const initializeDatabase = async () => {
     setItemDefault(trophiesState, trophiesStateDefault);
     await database.put("trophies", trophiesState);
     updateTrophies();
+
+    historyState = await database.get("history", "history") || {};
+    setItemDefault(historyState, historyStateDefault);
+    await database.put("history", historyState);
+    initializeHistory();
 
     logging.info("ローカルデータベース接続: 成功");
   } catch (e) {
@@ -2780,6 +2805,24 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.resetHistory = async () => {
+    if (waitForDialog) {
+      soundEffectBeep();
+      return;
+    }
+
+    soundEffectSelect();
+    closeSystemUi();
+    pause();
+    if (await dialog("system-reset-history") === "yes") {
+      historyState = {};
+      setItemDefault(historyState, historyStateDefault);
+      await putHistoryState();
+      initializeHistory();
+    }
+    restart();
+  };
+
   commands.resetSave = async () => {
     if (waitForDialog) {
       soundEffectBeep();
@@ -2844,6 +2887,7 @@ const initializeSystemUi = () => {
 
   const systemCommandsFolder = addSystemUiFolder(systemUi, "システムコマンド");
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
+  systemCommandsFolder.add(commands, "resetHistory").name("履歴データを消去する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
@@ -3098,10 +3142,40 @@ const enterHistoryScreen = async () => {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   } else {
-    document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
-    document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
-    // 隠れている間はスクロールされないので、表示してから明示的にスクロールする。
-    historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({ behavior: "auto", block: "end" });
+    if (historyParagraphNodes.find(node => typeof node === "number")) {
+      try {
+        historyBuilding = true;
+        historyBuildingStop = undefined;
+
+        document.querySelector(".demeter-history-building").style.display = "block";
+        document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+
+        for (let i = 0; i < historyParagraphNodes.length; ++i) {
+          const paragraphIndex = historyParagraphNodes[i];
+          if (typeof paragraphIndex === "number") {
+            const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
+            const speaker = speakerNames[paragraph[0].speaker];
+            const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
+            historyParagraphNodes[i] = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
+            await D.requestAnimationFrame();
+            if (historyBuildingStop) {
+              return;
+            }
+          }
+        };
+
+        document.querySelector(".demeter-history-building").style.display = "none";
+        document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
+        historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({ behavior: "auto", block: "end" });
+      } finally {
+        historyBuilding = undefined;
+        historyBuildingStop = undefined;
+      }
+    } else {
+      document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
+      document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
+      historyParagraphNodes[historyParagraphNodes.length - 1].scrollIntoView({ behavior: "auto", block: "end" });
+    }
   }
 };
 
@@ -3144,7 +3218,12 @@ const backHistoryScreen = () => {
     historyVoiceSprite.finish();
   }
   soundEffectCancel();
+
+  if (historyBuilding) {
+    historyBuildingStop = true;
+  }
   document.querySelector(".demeter-history-paragraphs").replaceChildren();
+
   leaveHistoryScreen();
   enterMainScreen();
   restart();
@@ -3209,10 +3288,20 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   return paragraphBorderNode;
 };
 
+const initializeHistory = () => {
+  // 初期化時は要素を構築しない。
+  historyParagraphNodes = [...historyState.paragraphs];
+};
+
 const updateHistorySize = () => {
-  const n = historyParagraphNodes.length - system.historySize;
+  const m = historyParagraphNodes.length - system.historySize;
+  if (m > 0) {
+    historyParagraphNodes.splice(0, m);
+  }
+
+  const n = historyState.paragraphs.length - system.historySize;
   if (n > 0) {
-    historyParagraphNodes.splice(0, n);
+    historyState.paragraphs.splice(0, n);
   }
 };
 
@@ -3221,11 +3310,18 @@ const createHistoryParagraph = () => {
   if (textNode.children.length === 0) {
     return;
   }
-  const textNodes = [...textNode.children].map(node => node.cloneNode(true));
+
+  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
+
+  // 重複する場合は追加しない。
+  if (paragraphIndex === historyState.paragraphs[historyState.paragraphs.length - 1]) {
+    return;
+  }
 
   const speaker = document.querySelector(".demeter-main-paragraph-speaker").textContent;
-  const paragraphIndex = Number.parseInt(textNode.dataset.pid);
+  const textNodes = [...textNode.children].map(node => node.cloneNode(true));
   historyParagraphNodes.push(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
+  historyState.paragraphs.push(paragraphIndex);
 
   updateHistorySize();
 };
@@ -3284,12 +3380,7 @@ const unsetFocus = () => {
     return node;
   }
 
-  return historyParagraphNodes.map(node => node.firstElementChild).find(node => {
-    if (node.classList.contains("demeter-focus")) {
-      node.classList.remove("demeter-focus");
-      return true;
-    }
-  });
+  historyParagraphNodes.filter(node => typeof node !== "number").map(node => node.firstElementChild).forEach(node => node.classList.remove("demeter-focus"));
 };
 
 const onMouseMove = ev => {
@@ -4021,6 +4112,10 @@ const next = async () => {
 
       // 段落の処理が終わった時点で履歴に追加する。
       createHistoryParagraph();
+      // SKIP中は履歴を保存しない。
+      if (playState !== "skip") {
+        await putHistoryState();
+      }
 
       resetParagraph();
     }
