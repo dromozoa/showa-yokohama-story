@@ -90,9 +90,15 @@ paragraphs:[
 ["そういえば、バックログって呼ぶ文化、あれ、なんだろうね。"],
 ["もしかしたら、背中の","バック","だったりして。"],
 ]],
+// index: 14
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+[["履歴","ヒストリ"],"データを消去する。"],
+["それ以外のデータにはさわらない。"],
+["過去を消しさっていい？"],
+]],
 ],
 total:12,
-starts:[12],
+starts:[12,14],
 labels:{
 "チュートリアル":1,
 "トロッコ滅亡":3,
@@ -105,6 +111,7 @@ labels:{
 "チュートリアル:ヒストリー":13,
 },
 dialogs:{
+"system-reset-history":14,
 },
 };
 
