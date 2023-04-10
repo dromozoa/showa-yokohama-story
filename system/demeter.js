@@ -3142,10 +3142,15 @@ const enterHistoryScreen = async () => {
     document.querySelector(".demeter-history-paragraphs").replaceChildren(createHistoryParagraphNode(speaker, textNodes, paragraphIndex));
     document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
   } else {
-    if (historyParagraphNodes.find(node => typeof node === "number")) {
+    const m = historyParagraphNodes.reduce((acc, u) => typeof u === "number" ? acc + 1 : acc, 0);
+    if (m > 0) {
       try {
         historyBuilding = true;
         historyBuildingStop = undefined;
+
+        const statusNode = document.querySelector(".demeter-history-building-status");
+        let n = 0;
+        statusNode.textContent = "(" + n + "/" + m + ")";
 
         document.querySelector(".demeter-history-building").style.display = "block";
         document.querySelector(".demeter-screen").append(document.querySelector(".demeter-history-screen"));
@@ -3153,10 +3158,14 @@ const enterHistoryScreen = async () => {
         for (let i = 0; i < historyParagraphNodes.length; ++i) {
           const paragraphIndex = historyParagraphNodes[i];
           if (typeof paragraphIndex === "number") {
+            ++n;
+            statusNode.textContent = "(" + n + "/" + m + ")";
+
             const paragraph = D.scenario.paragraphs[paragraphIndex - 1];
             const speaker = speakerNames[paragraph[0].speaker];
             const textNodes = D.parseParagraph(paragraph[1], fontSize, font).map(text => D.layoutText(D.composeText(text, fontSize * 25), fontSize, fontSize * 2));
             historyParagraphNodes[i] = createHistoryParagraphNode(speaker, textNodes, paragraphIndex);
+
             await D.requestAnimationFrame();
             if (historyBuildingStop) {
               return;
