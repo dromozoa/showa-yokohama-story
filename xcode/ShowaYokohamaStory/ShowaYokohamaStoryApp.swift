@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    print("\(#function)")
     GADMobileAds.sharedInstance().start(completionHandler: nil)
     return true
   }

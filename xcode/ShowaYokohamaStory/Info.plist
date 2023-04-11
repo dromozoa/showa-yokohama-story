@@ -4,6 +4,8 @@
 <dict>
 	<key>GADApplicationIdentifier</key>
 	<string>$(GADApplicationIdentifier)</string>
+	<key>GADBannerAdUnitIdentifier</key>
+	<string>$(GADBannerAdUnitIdentifier)</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

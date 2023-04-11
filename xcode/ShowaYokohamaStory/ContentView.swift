@@ -54,15 +54,53 @@ class BannerViewController: UIViewController {
   }
 }
 
+struct BannerView: UIViewControllerRepresentable {
+  @State private var viewWidth: CGFloat = .zero
+  private let bannerView = GADBannerView()
+
+  func makeUIViewController(context: Context) -> some UIViewController {
+    if let adUnitId = Bundle.main.infoDictionary?["GADBannerAdUnitIdentifier"] as? String {
+      bannerView.adUnitID = adUnitId
+    }
+
+    let bannerViewController = BannerViewController()
+    bannerView.rootViewController = bannerViewController
+    bannerViewController.view.addSubview(bannerView)
+    bannerViewController.delegate = context.coordinator
+    return bannerViewController
+  }
+
+  func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+    guard viewWidth != .zero else { return }
+    bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+    bannerView.load(GADRequest())
+  }
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+
+  class Coordinator: NSObject, BannerViewControllerWidthDelegate {
+    let parent: BannerView
+
+    init(_ parent: BannerView) {
+      self.parent = parent
+    }
+
+    func bannerViewController(
+      _ bannerViewController: BannerViewController, didUpdate width: CGFloat
+    ) {
+      parent.viewWidth = width
+    }
+  }
+}
+
 struct ContentView: View {
   var body: some View {
     VStack {
-      Image(systemName: "globe")
-        .imageScale(.large)
-        .foregroundColor(.accentColor)
-      Text("Hello, world!")
+      WebView()
+      BannerView().frame(maxWidth: .infinity, maxHeight: 50)
     }
-    .padding()
   }
 }
 

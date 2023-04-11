@@ -280,6 +280,7 @@
 				DEVELOPMENT_TEAM = TM32UNGP3P;
 				ENABLE_PREVIEWS = YES;
 				GADApplicationIdentifier = "ca-app-pub-3940256099942544~1458002511";
+				GADBannerAdUnitIdentifier = "ca-app-pub-3940256099942544/2934735716";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowaYokohamaStory/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -322,6 +323,7 @@
 				DEVELOPMENT_TEAM = TM32UNGP3P;
 				ENABLE_PREVIEWS = YES;
 				GADApplicationIdentifier = "ca-app-pub-5304779376991561~3376181148";
+				GADBannerAdUnitIdentifier = "ca-app-pub-5304779376991561/5467992010";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowaYokohamaStory/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
