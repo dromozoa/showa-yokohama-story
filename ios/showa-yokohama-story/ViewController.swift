@@ -19,38 +19,32 @@ import GoogleMobileAds
 import UIKit
 
 class ViewController: UIViewController {
-  // let bannerView = GADBannerView()
+  @IBOutlet weak var webView: WKWebView!
+  @IBOutlet weak var bannerView: GADBannerView!
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    // if let adUnitId = Bundle.main.infoDictionary?["GADBannerUnitIdentifier"] as? String {
-    //   bannerView.adUnitID = adUnitId
-    // }
-    // bannerView.rootViewController = self
+    if let adUnitId = Bundle.main.infoDictionary?["GADBannerUnitIdentifier"] as? String {
+      bannerView.adUnitID = adUnitId
+    }
+    bannerView.rootViewController = self
 
-    // let request = URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!)
-    // webView.load(request)
-    print("\(#function) \(view.safeAreaInsets)")
-  }
-
-  override func viewWillLayoutSubviews() {
-    print("\(#function) \(view.safeAreaInsets)")
-    // loadBanner()
-  }
-
-  override func viewDidLayoutSubviews() {
-    print("\(#function) \(view.safeAreaInsets)")
+    let request = URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!)
+    webView.load(request)
   }
 
   override func viewDidAppear(_ animated: Bool) {
-    print("\(#function) \(view.safeAreaInsets)")
+    loadBanner()
   }
 
   func loadBanner() {
-    // let frame = view.frame.inset(by: view.safeAreaInsets)
-    // let width = frame.width
-    // bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width)
-    // print("\(#function) \(bannerView.adSize)")
+    let frame = view.frame.inset(by: view.safeAreaInsets)
+    let viewWidth = frame.width
+    bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+
+    let request = GADRequest()
+    request.scene = bannerView.window?.windowScene
+    bannerView.load(request)
   }
 }
