@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+import GoogleMobileAds
 import SwiftUI
 import WebKit
 
@@ -26,6 +27,30 @@ struct WebView: UIViewRepresentable {
   func updateUIView(_ uiView: WKWebView, context: Context) {
     let request = URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!)
     uiView.load(request)
+  }
+}
+
+protocol BannerViewControllerWidthDelegate: AnyObject {
+  func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat)
+}
+
+class BannerViewController: UIViewController {
+  weak var delegate: BannerViewControllerWidthDelegate?
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    delegate?.bannerViewController(
+      self, didUpdate: view.frame.inset(by: view.safeAreaInsets).size.width)
+  }
+
+  override func viewWillTransition(
+    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    coordinator.animate { _ in
+    } completion: { _ in
+      self.delegate?.bannerViewController(
+        self, didUpdate: self.view.frame.inset(by: self.view.safeAreaInsets).size.width)
+    }
   }
 }
 
