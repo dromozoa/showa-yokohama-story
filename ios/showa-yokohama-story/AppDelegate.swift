@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+import GoogleMobileAds
 import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Override point for customization after application launch.
+    GADMobileAds.sharedInstance().start(completionHandler: nil)
     return true
   }
 
