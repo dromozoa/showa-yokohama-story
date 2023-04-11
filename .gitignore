@@ -1,2 +1,5 @@
 .*.swp
 /build
+/xcode/ShowaYokohamaStory.xcodeproj/project.xcworkspace/xcshareddata
+/xcode/ShowaYokohamaStory.xcodeproj/project.xcworkspace/xcuserdata
+/xcode/ShowaYokohamaStory.xcodeproj/xcuserdata
