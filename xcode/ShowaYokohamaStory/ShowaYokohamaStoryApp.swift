@@ -19,9 +19,9 @@ import SwiftUI
 
 @main
 struct ShowaYokohamaStoryApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
     }
+  }
 }
