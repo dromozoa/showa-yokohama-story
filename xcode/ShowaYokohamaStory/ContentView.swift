@@ -73,6 +73,8 @@ struct BannerView: UIViewControllerRepresentable {
   func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
     guard viewWidth != .zero else { return }
     bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+    print("\(#function) \(viewWidth) \(bannerView.adSize)")
+
     let request = GADRequest()
     request.scene = bannerView.window?.windowScene
     bannerView.load(request)
@@ -101,7 +103,7 @@ struct ContentView: View {
   var body: some View {
     VStack {
       WebView()
-      BannerView().frame(maxWidth: .infinity, maxHeight: 100)
+      BannerView().frame(maxHeight: 70)
     }.background(Color(red: 17 / 255, green: 17 / 255, blue: 17 / 255))
   }
 }
