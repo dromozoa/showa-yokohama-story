@@ -10,5 +10,9 @@ AdMobが対応していない気がするのでMac対応は一旦はずす。
 
 ## Google AdMob
 
+テスト用のIDを使う。
+
 - 参考: https://developers.google.com/admob/ios/quick-start
+- 参考: https://developers.google.com/admob/ios/swiftui
+
 
