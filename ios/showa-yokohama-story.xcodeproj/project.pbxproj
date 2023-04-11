@@ -296,6 +296,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TM32UNGP3P;
+				GADApplicationIdentifier = "ca-app-pub-3940256099942544~1458002511";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -324,6 +325,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TM32UNGP3P;
+				GADApplicationIdentifier = "ca-app-pub-5304779376991561~3376181148";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
