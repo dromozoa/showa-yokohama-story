@@ -18,38 +18,14 @@
 import SwiftUI
 import WebKit
 
-#if os(iOS)
-  typealias WebViewRepresentable = UIViewRepresentable
-#elseif os(macOS)
-  typealias WebViewRepresentable = NSViewRepresentable
-#endif
-
-struct WebView: WebViewRepresentable {
-  #if os(iOS)
-    func makeUIView(context: Context) -> WKWebView {
-      return makeView(context: context)
-    }
-
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-      return updateView(uiView, context: context)
-    }
-  #elseif os(macOS)
-    func makeNSView(context: Context) -> WKWebView {
-      return makeView(context: context)
-    }
-
-    func updateNSView(_ uiView: WKWebView, context: Context) {
-      return updateView(uiView, context: context)
-    }
-  #endif
-}
-
-extension WebView {
-  func makeView(context: Context) -> WKWebView {
+struct WebView: UIViewRepresentable {
+  func makeUIView(context: Context) -> WKWebView {
     return WKWebView()
   }
 
-  func updateView(_ uiView: WKWebView, context: Context) {
+  func updateUIView(_ uiView: WKWebView, context: Context) {
+    let request = URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!)
+    uiView.load(request)
   }
 }
 
