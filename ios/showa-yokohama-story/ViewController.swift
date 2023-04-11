@@ -38,10 +38,20 @@ class ViewController: UIViewController {
     loadBanner()
   }
 
+  override func viewWillTransition(
+    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    super.viewWillTransition(to: size, with: coordinator)
+    coordinator.animate { _ in
+      self.loadBanner()
+    }
+  }
+
   func loadBanner() {
     let frame = view.frame.inset(by: view.safeAreaInsets)
     let viewWidth = frame.width
     bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+    print("\(#function) \(bannerView.adSize)")
 
     let request = GADRequest()
     request.scene = bannerView.window?.windowScene
