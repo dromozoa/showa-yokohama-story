@@ -63,6 +63,15 @@ clean_build::
 
 #--------------------------------------------------------------------------
 
+build_ios::
+	rm -f -r build/ios
+	./tool/build.sh . build/ios $(version_system) $(version_web)
+
+clean_ios::
+	rm -f -r build/ios
+
+#--------------------------------------------------------------------------
+
 convert_voice::
 	mkdir -p build/voice
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
