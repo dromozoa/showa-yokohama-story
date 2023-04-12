@@ -69,6 +69,8 @@ build_ios::
 	rm -f -r build/ios
 	./tool/build.sh . build/ios $(version_system) $(version_web)
 	./tool/build_music.sh assets/music.txt .mp3 build/music build/ios/music/$(version_music)
+	mkdir -p build/ios/voice/$(version_voice)
+	cp build/voice/*.mp3 build/ios/voice/$(version_voice)
 
 clean_ios::
 	rm -f -r build/ios
