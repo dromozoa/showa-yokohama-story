@@ -16,27 +16,28 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse_json = require "parse_json"
+local quote_shell = require "quote_shell"
 local read_all = require "read_all"
 
-local template_pathname, loader_pathname, graph_pathname, credits_pathname, trophies_pathname, version_pathname, result_pathname = ...
+local function execute(command)
+  print(command)
+  assert(os.execute(command))
+end
 
-local template = read_all(template_pathname)
-local loader = read_all(loader_pathname)
-local graph = read_all(graph_pathname)
-local credits = read_all(credits_pathname)
-local trophies = read_all(trophies_pathname)
-local version = parse_json(read_all(version_pathname))
+local function fetch(url, output)
+  local command = ("curl -L -f -s -# %s -o %s"):format(quote_shell(url), quote_shell(output))
+  execute(command)
+end
 
-local date = os.date "*t"
-local updated = ("%d年%d月%d日"):format(date.year, date.month, date.day)
+local commands = {}
 
-local handle = assert(io.open(result_pathname, "w"))
-local result = template
-  :gsub("$loader\n", loader)
-  :gsub("$graph\n", graph)
-  :gsub("$credits\n", credits)
-  :gsub("$trophies\n", trophies)
-  :gsub("$version", version.web)
-  :gsub("$updated", updated)
-handle:write(result)
-handle:close()
+function commands.fetch(config_pathname)
+  local config = parse_json(read_all(config_pathname))
+
+  execute "mkdir -p npm"
+  for k, v in pairs(config.npm) do
+    fetch("https://registry.npmjs.org/"..k, "npm/"..k..".json")
+  end
+end
+
+assert(commands[...])(select(2, ...))
