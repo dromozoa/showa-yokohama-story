@@ -25,7 +25,7 @@ local function execute(command)
 end
 
 local function fetch(url, output)
-  local command = ("curl -L -f -s -# %s -o %s"):format(quote_shell(url), quote_shell(output))
+  local command = ("curl -L -f -# %s -o %s"):format(quote_shell(url), quote_shell(output))
   execute(command)
 end
 
