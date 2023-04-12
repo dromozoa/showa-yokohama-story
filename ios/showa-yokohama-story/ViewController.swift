@@ -30,7 +30,12 @@ class ViewController: UIViewController {
     }
     bannerView.rootViewController = self
 
+    // let  configuration = webView.configuration
+    // これは使っちゃいけないAPI
+    // configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+
     webView.uiDelegate = self
+
     loadGame()
   }
 

@@ -30,18 +30,18 @@ const audioExtensions = [ "webm", "mp3" ];
 if (mode === "develop") {
   D.preferences = {
     version: version,
-    systemDir: "/sys/system",
-    musicDir: "/sys/build/music",
-    voiceDir: "/sys/build/voice",
+    systemDir: "system",
+    musicDir: "build/music",
+    voiceDir: "build/voice",
     trace: (...params) => console.log(...params),
     audioExtensions: audioExtensions,
   };
 } else {
   D.preferences = {
     version: version,
-    systemDir: "/sys/system/" + version.system,
-    musicDir: "/sys/music/" + version.music,
-    voiceDir: "/sys/voice/" + version.voice,
+    systemDir: "system/" + version.system,
+    musicDir: "music/" + version.music,
+    voiceDir: "voice/" + version.voice,
     trace: () => {},
     audioExtensions: audioExtensions,
   };
