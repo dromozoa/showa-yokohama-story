@@ -19,26 +19,32 @@ import GoogleMobileAds
 import UIKit
 
 class ViewController: UIViewController {
-  @IBOutlet weak var webView: WKWebView!
+  @IBOutlet weak var mainView: UIView!
   @IBOutlet weak var bannerView: GADBannerView!
+  var webView: WKWebView!
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let configuration = WKWebViewConfiguration()
+    configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
+
+    webView = WKWebView(frame: .zero, configuration: configuration)
+    mainView.addSubview(webView)
+    webView.translatesAutoresizingMaskIntoConstraints = false
+    webView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 0).isActive = true
+    webView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 0).isActive = true
+    webView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: 0).isActive = true
+    webView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 0).isActive = true
+
+    webView.uiDelegate = self
+
+    loadGame()
 
     if let adUnitId = Bundle.main.infoDictionary?["GADBannerUnitIdentifier"] as? String {
       bannerView.adUnitID = adUnitId
     }
     bannerView.rootViewController = self
-
-    webView.configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
-
-    // let  configuration = webView.configuration
-    // これは使っちゃいけないAPI
-    // configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-
-    webView.uiDelegate = self
-
-    loadGame()
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -91,7 +97,8 @@ extension ViewController: WKURLSchemeHandler {
       print("\(url)")
 
       if let response = HTTPURLResponse(
-        url: url, statusCode: 404, httpVersion: nil, headerFields: nil)
+        url: url, statusCode: 404, httpVersion: nil,
+        headerFields: ["Access-Control-Allow-Origin": "*"])
       {
         urlSchemeTask.didReceive(response)
       }
