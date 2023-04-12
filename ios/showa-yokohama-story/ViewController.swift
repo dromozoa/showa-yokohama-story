@@ -48,7 +48,8 @@ class ViewController: UIViewController {
 
 extension ViewController {
   func loadGame() {
-    webView.load(URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!))
+    guard let url = Bundle.main.url(forResource: "sys/game", withExtension: "html") else { return }
+    webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
   }
 
   func loadBanner() {
