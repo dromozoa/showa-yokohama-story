@@ -19,7 +19,7 @@ iOSから作る。
 - srclib, include, library, dependあたり、他になんかあったかな
 - package, module
 - assets
-- runtime, resource
+- runtime, resource, mirror
 
 ## WKWebView
 
