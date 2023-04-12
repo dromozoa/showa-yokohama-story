@@ -30,8 +30,8 @@ class ViewController: UIViewController {
     }
     bannerView.rootViewController = self
 
-    let request = URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!)
-    webView.load(request)
+    webView.uiDelegate = self
+    loadGame()
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -44,6 +44,12 @@ class ViewController: UIViewController {
     super.viewWillTransition(to: size, with: coordinator)
     coordinator.animate { _ in self.loadBanner() }
   }
+}
+
+extension ViewController {
+  func loadGame() {
+    webView.load(URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!))
+  }
 
   func loadBanner() {
     let frame = view.frame.inset(by: view.safeAreaInsets)
@@ -52,5 +58,19 @@ class ViewController: UIViewController {
     let request = GADRequest()
     request.scene = bannerView.window?.windowScene
     bannerView.load(request)
+  }
+}
+
+extension ViewController: WKUIDelegate {
+  func webView(
+    _ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+    for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures
+  ) -> WKWebView? {
+    if navigationAction.targetFrame == nil,
+      let url = navigationAction.request.url
+    {
+      UIApplication.shared.open(url)
+    }
+    return nil
   }
 }
