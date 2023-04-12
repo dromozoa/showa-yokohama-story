@@ -54,11 +54,13 @@ clean::
 check:: all
 	./test.sh lua
 
-build::
+#--------------------------------------------------------------------------
+
+build_web::
 	rm -f -r build/$(version_web)
 	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)
 
-clean_build::
+clean_web::
 	rm -f -r build/$(version_web)
 
 #--------------------------------------------------------------------------
@@ -66,6 +68,7 @@ clean_build::
 build_ios::
 	rm -f -r build/ios
 	./tool/build.sh . build/ios $(version_system) $(version_web)
+	./tool/build_music.sh assets/music.txt .mp3 build/music build/ios/music/$(version_music)
 
 clean_ios::
 	rm -f -r build/ios
