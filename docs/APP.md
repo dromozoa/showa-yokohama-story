@@ -15,6 +15,12 @@ iOSから作る。
 - `build/ios/sys`にするか、`build/ios/game`にするか
 - `build/ios/sys`にしよう。
 
+- 依存フォルダ
+- srclib, include, library, dependあたり、他になんかあったかな
+- package, module
+- assets
+- runtime, resource
+
 ## WKWebView
 
 AdMobが対応していない気がするのでMac対応ははずす。
