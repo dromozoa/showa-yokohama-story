@@ -12,6 +12,9 @@ iOSから作る。
 - アプリ分岐用のスクリプト
   - 音声ファイルの拡張子分岐
 
+- `build/ios/sys`にするか、`build/ios/game`にするか
+- `build/ios/sys`にしよう。
+
 ## WKWebView
 
 AdMobが対応していない気がするのでMac対応ははずす。
