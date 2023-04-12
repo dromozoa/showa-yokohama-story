@@ -4,7 +4,7 @@ iOSから作る。
 
 ## WKWebView
 
-AdMobが対応していない気がするのでMac対応は一旦はずす。
+AdMobが対応していない気がするのでMac対応ははずす。
 
 - 参考: https://qiita.com/SNQ-2001/items/d86685481b4697e81e38
 
@@ -15,4 +15,11 @@ AdMobが対応していない気がするのでMac対応は一旦はずす。
 - 参考: https://developers.google.com/admob/ios/quick-start
 - 参考: https://developers.google.com/admob/ios/swiftui
 
+- なんかサイトにテキストをおいとく必要があるらしい。
+- ATTってなに
+
+## タスク
+
+- [ ] アイコン
+- [ ] LaunchScreen
 
