@@ -15,33 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
-(() => {
-"use strict";
+import UIKit
 
-const D = globalThis.demeter ||= {};
-if (D.preferenes) {
-  return;
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+  var window: UIWindow?
+
+  func scene(
+    _ scene: UIScene, willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let _ = (scene as? UIWindowScene) else { return }
+  }
+
+  func sceneDidDisconnect(_ scene: UIScene) {
+  }
+
+  func sceneDidBecomeActive(_ scene: UIScene) {
+  }
+
+  func sceneWillResignActive(_ scene: UIScene) {
+  }
+
+  func sceneWillEnterForeground(_ scene: UIScene) {
+  }
+
+  func sceneDidEnterBackground(_ scene: UIScene) {
+  }
 }
-
-const mode = "develop";
-const version = { web: "b22", system: 20, music: 1, voice: 6 };
-
-if (mode === "develop") {
-  D.preferences = {
-    version: version,
-    systemDir: "/sys/system",
-    musicDir: "/sys/build/music",
-    voiceDir: "/sys/build/voice",
-    trace: (...params) => console.log(...params),
-  };
-} else {
-  D.preferences = {
-    version: version,
-    systemDir: "/sys/system/" + version.system,
-    musicDir: "/sys/music/" + version.music,
-    voiceDir: "/sys/voice/" + version.voice,
-    trace: () => {},
-  };
-}
-
-})();
