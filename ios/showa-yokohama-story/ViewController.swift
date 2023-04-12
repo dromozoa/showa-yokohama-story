@@ -30,6 +30,8 @@ class ViewController: UIViewController {
     }
     bannerView.rootViewController = self
 
+    webView.configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
+
     // let  configuration = webView.configuration
     // これは使っちゃいけないAPI
     // configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
@@ -79,5 +81,26 @@ extension ViewController: WKUIDelegate {
       UIApplication.shared.open(url)
     }
     return nil
+  }
+}
+
+extension ViewController: WKURLSchemeHandler {
+  func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+    // demeter:///sys/voice/X/ABCD.mp3
+    if let url = urlSchemeTask.request.url {
+      print("\(url)")
+
+      if let response = HTTPURLResponse(
+        url: url, statusCode: 404, httpVersion: nil, headerFields: nil)
+      {
+        urlSchemeTask.didReceive(response)
+      }
+    }
+    urlSchemeTask.didFinish()
+  }
+
+  func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
+    // https://developer.apple.com/documentation/webkit/wkurlschemehandler/2890835-webview
+    // Don’t call any methods of the provided urlSchemeTask object to report your progress back to WebKit.
   }
 }
