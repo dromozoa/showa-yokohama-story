@@ -27,6 +27,14 @@ class ViewController: UIViewController {
     super.viewDidLoad()
 
     let configuration = WKWebViewConfiguration()
+
+    if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+      as? String
+    {
+      configuration.applicationNameForUserAgent = "showa-yokohama-story-ios/" + version
+    } else {
+      configuration.applicationNameForUserAgent = "showa-yokohama-story-ios"
+    }
     configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
 
     webView = WKWebView(frame: .zero, configuration: configuration)
@@ -41,7 +49,8 @@ class ViewController: UIViewController {
 
     loadGame()
 
-    if let adUnitId = Bundle.main.infoDictionary?["GADBannerUnitIdentifier"] as? String {
+    if let adUnitId = Bundle.main.object(forInfoDictionaryKey: "GADBannerUnitIdentifier") as? String
+    {
       bannerView.adUnitID = adUnitId
     }
     bannerView.rootViewController = self
