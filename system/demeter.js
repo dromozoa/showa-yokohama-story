@@ -2063,7 +2063,13 @@ const getBackgroundImageUrls = () => {
 };
 
 const getAudioExtension = () => D.preferences.audioExtensions.find(extension => Howler.codecs(extension));
-const getAudioSource = basename => basename + "." + getAudioExtension();
+const getAudioSource = basename => {
+  if (D.isApp() === "ios") {
+    return "demeter:///" + basename + "." + getAudioExtension();
+  } else {
+    return basename + "." + getAudioExtension();
+  }
+}
 
 const getMusicUrls = () => {
   return Object.keys(musicNames).map(key => getAudioSource(D.preferences.musicDir + "/sessions_" + key));

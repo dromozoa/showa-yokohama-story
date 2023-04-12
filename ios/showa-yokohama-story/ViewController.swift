@@ -101,16 +101,45 @@ extension ViewController: WKUIDelegate {
 
 extension ViewController: WKURLSchemeHandler {
   func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-    // demeter:///sys/voice/X/ABCD.mp3
-    if let url = urlSchemeTask.request.url {
-      print("\(url)")
+    if let requestUrl = urlSchemeTask.request.url {
+      let requestPath = requestUrl.path as NSString
+      let resource = "sys" + requestPath.deletingPathExtension
+      let resourceExtension = requestPath.pathExtension
 
-      if let response = HTTPURLResponse(
-        url: url, statusCode: 404, httpVersion: nil,
-        headerFields: ["Access-Control-Allow-Origin": "*"])
+      if let url = Bundle.main.url(forResource: resource, withExtension: resourceExtension),
+        let data = try? Data(contentsOf: url)
       {
-        urlSchemeTask.didReceive(response)
+        var headerFields = [
+          "Access-Control-Allow-Origin": "*",
+          "Content-Length": String(data.count),
+        ]
+
+        switch resourceExtension {
+        case "mp3":
+          headerFields["Content-Type"] = "audio/mpeg"
+        case "webm":
+          headerFields["Content-Type"] = "video/webm"
+        default:
+          headerFields["Content-Type"] = "application/octet-stream"
+        }
+
+        if let response = HTTPURLResponse(
+          url: requestUrl, statusCode: 200, httpVersion: nil, headerFields: headerFields)
+        {
+          urlSchemeTask.didReceive(response)
+          urlSchemeTask.didReceive(data)
+          urlSchemeTask.didFinish()
+          return
+        }
       }
+    }
+
+    if let requestUrl = urlSchemeTask.request.url,
+      let response = HTTPURLResponse(
+        url: requestUrl, statusCode: 404, httpVersion: nil,
+        headerFields: ["Access-Control-Allow-Origin": "*"])
+    {
+      urlSchemeTask.didReceive(response)
     }
     urlSchemeTask.didFinish()
   }
