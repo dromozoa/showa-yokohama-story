@@ -25,6 +25,7 @@ if (D.preferenes) {
 
 const mode = "develop";
 const version = { web: "b22", system: 20, music: 1, voice: 6 };
+const audioExtensions = [ "webm", "mp3" ];
 
 if (mode === "develop") {
   D.preferences = {
@@ -33,6 +34,7 @@ if (mode === "develop") {
     musicDir: "/sys/build/music",
     voiceDir: "/sys/build/voice",
     trace: (...params) => console.log(...params),
+    audioExtensions: audioExtensions,
   };
 } else {
   D.preferences = {
@@ -41,6 +43,7 @@ if (mode === "develop") {
     musicDir: "/sys/music/" + version.music,
     voiceDir: "/sys/voice/" + version.voice,
     trace: () => {},
+    audioExtensions: audioExtensions,
   };
 }
 

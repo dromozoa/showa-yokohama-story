@@ -1078,9 +1078,8 @@ D.MusicPlayer = class {
   start(key) {
     this.key = key;
 
-    const basename = D.preferences.musicDir + "/sessions_" + this.key;
     this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
+      src: getAudioSource(D.preferences.musicDir + "/sessions_" + this.key),
       volume: this.volume,
       loop: true,
       onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(getMediaErrorMessage(message))),
@@ -1468,7 +1467,7 @@ D.VoiceSound = class {
   getSound() {
     if (!this.sound) {
       this.sound = new Howl({
-        src: [ this.basename + ".webm", this.basename + ".mp3" ],
+        src: getAudioSource(this.basename),
         sprite: this.sprite,
 
         onload: () => {
@@ -1692,10 +1691,9 @@ D.BackgroundTransition = class {
 
 D.SoundEffect = class {
   constructor(volume) {
-    const basename = D.preferences.systemDir + "/effect";
     this.volume = volume;
     this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
+      src: getAudioSource(D.preferences.systemDir + "/effect"),
       volume: this.volume,
       sprite: D.effectSprite,
       onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(getMediaErrorMessage(message))),
@@ -2063,14 +2061,15 @@ const getBackgroundImageUrls = () => {
   return [ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg");
 };
 
+const getAudioExtension = () => D.preferences.audioExtensions.find(extension => Howler.codecs(extension));
+const getAudioSource = basename => basename + "." + getAudioExtension();
+
 const getMusicUrls = () => {
-  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-  return Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext);
+  return Object.keys(musicNames).map(key => getAudioSource(D.preferences.musicDir + "/sessions_" + key));
 };
 
 const getVoiceUrls = paragraphIndices => {
-  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-  return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
+  return paragraphIndices.map(paragraphIndex => getAudioSource(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4)));
 };
 
 const isDeleteOldCacheTarget = url => (
@@ -3266,8 +3265,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   paragraphNode.addEventListener("mouseenter", onMouseEnter);
   paragraphNode.addEventListener("mouseleave", onMouseLeave);
   paragraphNode.addEventListener("click", async () => {
-    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-    const voiceSound = new D.VoiceSound(voiceBasename);
+    const voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4));
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
     if (historyVoiceSprite) {
@@ -4017,8 +4015,7 @@ const next = async () => {
       textNode.replaceChildren(...textNodes);
       textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1]);
 
       // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
       if (playState !== "skip") {
@@ -4220,8 +4217,7 @@ const dialog = async key => {
   }
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
-  const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new D.VoiceSound(voiceBasename);
+  const voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4));
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
