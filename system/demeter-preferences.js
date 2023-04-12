@@ -23,9 +23,29 @@ if (D.preferenes) {
   return;
 }
 
+const regexApp = /showa-yokohama-story-(\w+)/;
+
+const isApp = () => {
+  const result = navigator.userAgent.match(regexApp);
+  if (result) {
+    return result[1];
+  }
+};
+
+const getAudioExtensions = () => {
+  switch (isApp()) {
+    case "ios":
+      return [ "mp3" ];
+    case "android":
+      return [ "webm" ];
+    default:
+      return [ "webm", "mp3" ];
+  }
+};
+
 const mode = "develop";
 const version = { web: "b22", system: 20, music: 1, voice: 6 };
-const audioExtensions = [ "webm", "mp3" ];
+const audioExtensions = getAudioExtensions();
 
 if (mode === "develop") {
   D.preferences = {
@@ -35,6 +55,7 @@ if (mode === "develop") {
     voiceDir: "build/voice",
     trace: (...params) => console.log(...params),
     audioExtensions: audioExtensions,
+    isApp: isApp,
   };
 } else {
   D.preferences = {
@@ -44,6 +65,7 @@ if (mode === "develop") {
     voiceDir: "voice/" + version.voice,
     trace: () => {},
     audioExtensions: audioExtensions,
+    isApp: isApp,
   };
 }
 
