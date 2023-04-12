@@ -48,8 +48,9 @@ class ViewController: UIViewController {
 
 extension ViewController {
   func loadGame() {
-    guard let url = Bundle.main.url(forResource: "sys/game", withExtension: "html") else { return }
-    webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+    if let url = Bundle.main.url(forResource: "sys/game", withExtension: "html") {
+      webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+    }
   }
 
   func loadBanner() {
