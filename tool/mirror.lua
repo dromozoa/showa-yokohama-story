@@ -25,13 +25,22 @@ local function execute(command)
   assert(os.execute(command))
 end
 
-local function fetch(url, output)
-  execute(("curl -L -f -# %s -o %s"):format(quote_shell(url), quote_shell(output)))
+local function fetch(url, output, ua)
+  if ua then
+    execute(("curl -L -f -# -A %s %s -o %s"):format(quote_shell(ua), quote_shell(url), quote_shell(output)))
+  else
+    execute(("curl -L -f -# %s -o %s"):format(quote_shell(url), quote_shell(output)))
+  end
 end
 
 local commands = {}
 
 function commands.fetch(config_pathname)
+  commands.fetch_npm(config_pathname)
+  commands.fetch_googlefonts(config_pathname)
+end
+
+function commands.fetch_npm(config_pathname)
   local config = parse_json(read_all(config_pathname))
 
   execute "mkdir -p npm"
@@ -45,6 +54,30 @@ function commands.fetch(config_pathname)
     end
     local tarball = package.versions[v].dist.tarball
     fetch(tarball, "npm/"..basename(tarball))
+  end
+end
+
+local function encode_uri(s)
+  return (s:gsub("[^%*%-%.0-9A-Z_a-z]", function (c)
+    if c == " " then
+      return "+"
+    else
+      return ("%%%02X"):format(c:byte())
+    end
+  end))
+end
+
+function commands.fetch_googlefonts(config_pathname)
+  local config = parse_json(read_all(config_pathname))
+
+  execute "mkdir -p googlefonts"
+  for k, v in pairs(config.googlefonts) do
+    local url = "https://fonts.googleapis.com/css2?family="..encode_uri(k)
+    if v.text then
+      url = url.."&text="..encode_uri(v.text)
+    end
+    url = url.."&display=swap"
+    fetch(url, "googlefonts/"..k..".css", config.ua)
   end
 end
 
