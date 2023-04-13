@@ -125,6 +125,10 @@ function commands.build(config_pathname, output_pathname)
       execute(("rm -f -r %s"):format(output_pathname.."/npm/"..k.."@"..v.."/svg"))
     end
   end
+
+  execute(("rm -f -r %s"):format(quote_shell(output_pathname.."/googlefonts")))
+  execute(("mkdir -p %s"):format(quote_shell(output_pathname.."/googlefonts")))
+  execute(("cp googlefonts/googlefonts.css googlefonts/*.woff2 %s"):format(quote_shell(output_pathname.."/googlefonts")))
 end
 
 assert(commands[...])(select(2, ...))
