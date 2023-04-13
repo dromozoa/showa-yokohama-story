@@ -304,6 +304,8 @@
 				GADBannerUnitIdentifier = "ca-app-pub-3940256099942544/2934735716";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -337,6 +339,8 @@
 				GADBannerUnitIdentifier = "ca-app-pub-5304779376991561/5467992010";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
