@@ -2406,18 +2406,25 @@ const resetAudioContext = async quiet => {
   await resumeAudioContext(quiet);
 };
 
+const onVisibilityChange = async () => {
+  D.trace("onVisibilityChange", document.visibilityState);
+  if (document.visibilityState === "visible") {
+    await D.setTimeout(100);
+    await resetAudioContext(true);
+  } else {
+    await suspendAudioContext(true);
+  }
+};
+
 const setupAudioContextHandler = () => {
-  const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
-  if (isSafari && document.ontouchend !== undefined) {
-    document.addEventListener("visibilitychange", async () => {
-      D.trace("onVisibilityChange", document.visibilityState);
-      if (document.visibilityState === "visible") {
-        await D.setTimeout(100);
-        await resetAudioContext(true);
-      } else {
-        await suspendAudioContext(true);
-      }
-    });
+  if (D.isApp()) {
+    document.addEventListener("visibilitychange", onVisibilityChange);
+  } else {
+    // Mobile Safari
+    const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
+    if (isSafari && document.ontouchend !== undefined) {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    }
   }
 };
 

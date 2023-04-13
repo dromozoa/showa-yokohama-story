@@ -18,7 +18,6 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
   var window: UIWindow?
 
   func scene(
@@ -29,17 +28,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {
+    print("\(#function)")
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
+    print("\(#function)")
   }
 
   func sceneWillResignActive(_ scene: UIScene) {
+    print("\(#function)")
   }
 
   func sceneWillEnterForeground(_ scene: UIScene) {
+    print("\(#function)")
   }
 
   func sceneDidEnterBackground(_ scene: UIScene) {
+    print("\(#function)")
   }
 }
