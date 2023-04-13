@@ -2370,7 +2370,7 @@ const hideTitleChoices = () => {
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
-const resetAudioContext = async quiet => {
+const suspendAudioContext = async quiet => {
   try {
     await Howler.ctx.suspend();
     if (!quiet) {
@@ -2383,7 +2383,9 @@ const resetAudioContext = async quiet => {
       D.trace("Howler.ctx.suspend", e);
     }
   }
-  await D.setTimeout(100);
+};
+
+const resumeAudioContext = async quiet => {
   try {
     await Howler.ctx.resume();
     if (!quiet) {
@@ -2398,6 +2400,12 @@ const resetAudioContext = async quiet => {
   }
 };
 
+const resetAudioContext = async quiet => {
+  await suspendAudioContext(quiet);
+  await D.setTimeout(100);
+  await resumeAudioContext(quiet);
+};
+
 const setupAudioContextHandler = () => {
   const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
   if (isSafari && document.ontouchend !== undefined) {
@@ -2406,6 +2414,8 @@ const setupAudioContextHandler = () => {
       if (document.visibilityState === "visible") {
         await D.setTimeout(100);
         await resetAudioContext(true);
+      } else {
+        await suspendAudioContext(true);
       }
     });
   }

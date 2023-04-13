@@ -21,6 +21,14 @@ iOSから作る。
 - assets
 - runtime, resource, mirror
 
+## Audio
+
+- Howler.js
+  - autoSuspendが無効なら、ctx.suspendしない
+  - 再生開始時にctx.resumeするかもしれない
+- 出入りで自分でsuspend/resumeするのはあり
+- ブラウザの場合、外側で勝手にsuspendされるかも。
+
 ## WKWebView
 
 AdMobが対応していない気がするのでMac対応ははずす。
