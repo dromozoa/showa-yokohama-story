@@ -29,6 +29,9 @@ D.includeGuard = true;
 D.trace = (...params) => D.preferences.trace(...params);
 D.isApp = (...params) => D.preferences.isApp(...params);
 
+D.useServiceWorker = () => !D.isApp() && navigator.serviceWorker;
+D.useCacheStorage = () => !D.isApp() && globalThis.caches;
+
 //-------------------------------------------------------------------------
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
@@ -1787,6 +1790,15 @@ D.UpdateChecker = class {
       return;
     }
 
+    // アプリの場合はアップデートをチェックしない。
+    if (D.isApp()) {
+      return;
+    }
+
+    this.checkWeb();
+  }
+
+  checkWeb() {
     this.status = "checking";
     requestAnimationFrame(async () => {
       let status;
@@ -2047,10 +2059,11 @@ const cacheImpl = async (sourceUrls) => {
 };
 
 D.cache = sourceUrls => {
-  if (!globalThis.caches) {
-    D.trace("cache not supported", sourceUrls);
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no", sourceUrls);
     return;
   }
+
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -2086,10 +2099,11 @@ const isDeleteOldCacheTarget = url => (
 );
 
 const deleteOldCachesImpl = async () => {
-  if (!globalThis.caches) {
-    D.trace("cache not supported");
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no", sourceUrls);
     return;
   }
+
   const cache = await caches.open("昭和横濱物語");
   const keys = await cache.keys();
   const deletedUrls = [];
@@ -2898,7 +2912,7 @@ const initializeSystemUi = () => {
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
-  if (globalThis.caches) {
+  if (D.useCacheStorage()) {
     systemUiDebugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
   systemUiDebugCommandsFolder.add(system, "repeatDelay", 17, 1700, 17).name("ボタン連射待機 [ms]");
@@ -5071,7 +5085,7 @@ D.onDOMContentLoaded = async () => {
 
   await enterTitleScreen();
 
-  if (navigator.serviceWorker) {
+  if (D.useServiceWorker()) {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
       logging.info("サービスワーカ変更: 検出");
     });
@@ -5117,6 +5131,7 @@ D.onDOMContentLoaded = async () => {
     if (silhouette) {
       silhouette.draw();
     }
+
     if (updateChecker) {
       updateChecker.check();
     }
