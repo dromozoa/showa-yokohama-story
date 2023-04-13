@@ -48,7 +48,9 @@ AdMobが対応していない気がするのでMac対応ははずす。
 ## タスク
 
 - [x] アイコン
-- [ ] LaunchScreen
+- [x] LaunchScreen
+  - 実装しない
 - [x] アプリの場合の更新チェック
   - 実装しない
+- [x] WKWebViewの背景色
 
