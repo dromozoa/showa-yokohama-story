@@ -15,6 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+local basename = require "basename"
 local parse_json = require "parse_json"
 local quote_shell = require "quote_shell"
 local read_all = require "read_all"
@@ -25,8 +26,7 @@ local function execute(command)
 end
 
 local function fetch(url, output)
-  local command = ("curl -L -f -# %s -o %s"):format(quote_shell(url), quote_shell(output))
-  execute(command)
+  execute(("curl -L -f -# %s -o %s"):format(quote_shell(url), quote_shell(output)))
 end
 
 local commands = {}
@@ -36,7 +36,15 @@ function commands.fetch(config_pathname)
 
   execute "mkdir -p npm"
   for k, v in pairs(config.npm) do
-    fetch("https://registry.npmjs.org/"..k, "npm/"..k..".json")
+    local package_pathname = "npm/"..k..".json"
+    fetch("https://registry.npmjs.org/"..k, package_pathname)
+    local package = parse_json(read_all(package_pathname))
+    local latest = package["dist-tags"].latest
+    if v ~= latest then
+      io.write("[INFO] newer version found: ", k, "-", v, " => ", k, "-", latest, "\n")
+    end
+    local tarball = package.versions[v].dist.tarball
+    fetch(tarball, "npm/"..basename(tarball))
   end
 end
 
