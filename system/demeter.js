@@ -28,6 +28,7 @@ D.includeGuard = true;
 
 D.trace = (...params) => D.preferences.trace(...params);
 D.isApp = (...params) => D.preferences.isApp(...params);
+D.getAppVersion = (...params) => D.preferences.getAppVersion(...params);
 
 D.useServiceWorker = () => !D.isApp() && navigator.serviceWorker;
 D.useCacheStorage = () => !D.isApp() && globalThis.caches;
@@ -3473,6 +3474,11 @@ const initializeTitleScreen = () => {
     choiceNode.append(choiceFrameNode);
     return choiceFrameNode.querySelector(".demeter-button");
   });
+
+  const appVersion = D.getAppVersion();
+  if (appVersion) {
+    document.querySelector(".demeter-title-version-string").textContent = appVersion;
+  }
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", ev => {

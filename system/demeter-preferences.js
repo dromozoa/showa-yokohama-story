@@ -32,6 +32,15 @@ const isApp = () => {
   }
 };
 
+const regexAppVersion = /showa-yokohama-story-\w+\/([\w\.]+)/;
+
+const getAppVersion = () => {
+  const result = navigator.userAgent.match(regexAppVersion);
+  if (result) {
+    return result[1];
+  }
+}
+
 const getAudioExtensions = () => {
   switch (isApp()) {
     case "ios":
@@ -56,6 +65,7 @@ if (mode === "develop") {
     trace: (...params) => console.log(...params),
     audioExtensions: audioExtensions,
     isApp: isApp,
+    getAppVersion: getAppVersion,
   };
 } else {
   D.preferences = {
@@ -66,6 +76,7 @@ if (mode === "develop") {
     trace: () => {},
     audioExtensions: audioExtensions,
     isApp: isApp,
+    getAppVersion: getAppVersion,
   };
 }
 
