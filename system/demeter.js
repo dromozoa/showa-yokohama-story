@@ -2402,7 +2402,6 @@ const resumeAudioContext = async quiet => {
 };
 
 const resetAudioContext = async quiet => {
-  Howler._autoResume();
   await D.setTimeout(100);
   await suspendAudioContext(quiet);
   await D.setTimeout(100);

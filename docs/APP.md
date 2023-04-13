@@ -55,6 +55,12 @@ AdMobが対応していない気がするのでMac対応ははずす。
 - [x] WKWebViewの背景色
 - [x] バージョン文字列
 
-- [ ] autoResumeをたたいてみる？
+- [x] autoResumeをたたいてみる？
+  - Failed to start the audio deviceが出た
+  - 廃棄
+- [ ] AUTO+ロック解除時に声が二重になる？
+  - AUTO/SKIPは解除してよいのでは？
+  - そうじゃないらしい。
+
 - [ ] ATT
 
