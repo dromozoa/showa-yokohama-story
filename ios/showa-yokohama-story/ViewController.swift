@@ -44,6 +44,7 @@ class ViewController: UIViewController {
     webView = WKWebView(frame: .zero, configuration: configuration)
     webView.isOpaque = false
     webView.backgroundColor = UIColor(red: 17 / 255, green: 17 / 255, blue: 17 / 255, alpha: 1)
+
     mainView.addSubview(webView)
     webView.translatesAutoresizingMaskIntoConstraints = false
     webView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 0).isActive = true
