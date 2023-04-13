@@ -5142,7 +5142,6 @@ D.onDOMContentLoaded = async () => {
     if (silhouette) {
       silhouette.draw();
     }
-
     if (updateChecker) {
       updateChecker.check();
     }
