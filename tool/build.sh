@@ -24,6 +24,7 @@ source_root=$1
 output_root=$2
 version_system=$3
 version_web=$4
+mode=$5
 
 mkdir -p "$output_root/system/$version_system"
 
@@ -35,6 +36,15 @@ do
   lua -e "io.write((io.read [[a]]:gsub([[system/%./]], [[system/$version_system/]])))" \
     <"$source_root/$i" \
     >"$output_root/$i"
+
+  case X$mode in
+    Xmirror)
+      lua -e "io.write((io.read [[a]]:gsub([[https://cdn.jsdelivr.net/npm/]], [[mirror/npm/]])))" \
+        <"$output_root/$i" \
+        >"$output_root/$i.new"
+      mv "$output_root/$i.new" "$output_root/$i"
+      ;;
+  esac
 done
 cp "$output_root/game.html" "$output_root/game-$version_web.html"
 
