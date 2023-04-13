@@ -3889,8 +3889,9 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   try {
-    await voiceSprite.start(pauseState);
     logging.debug("音声再生: 開始");
+    await voiceSprite.start(pauseState);
+    logging.debug("音声再生: 終了");
   } catch (e) {
     logging.error("音声再生: 失敗", e);
   }
