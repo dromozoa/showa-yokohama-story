@@ -28,6 +28,10 @@ class ViewController: UIViewController {
 
     let configuration = WKWebViewConfiguration()
 
+    // オーディオの自動再生を許可する。
+    configuration.allowsInlineMediaPlayback = true
+    configuration.mediaTypesRequiringUserActionForPlayback = [.video]
+
     if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
       as? String
     {
