@@ -71,9 +71,12 @@ build_ios::
 	./tool/build_music.sh assets/music.txt .mp3 build/music build/ios/sys/music/$(version_music)
 	mkdir -p build/ios/sys/voice/$(version_voice)
 	cp build/voice/*.mp3 build/ios/sys/voice/$(version_voice)
+	$(MAKE) -C mirror build
+	cp -R build/mirror build/ios/sys/mirror
 
 clean_ios::
 	rm -f -r build/ios
+	$(MAKE) -C mirror clean
 
 #--------------------------------------------------------------------------
 
