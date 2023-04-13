@@ -2411,9 +2411,7 @@ const setupAudioContextHandler = () => {
   }
 };
 
-const unlockAudio = async () => {
-  musicPlayer.resetUnlock();
-
+const unlockAudioCore = async () => {
   soundEffect = new D.SoundEffect(system.effectVolume);
   setupAudioContextHandler();
 
@@ -2433,10 +2431,14 @@ const unlockAudio = async () => {
   audioVisualizer.canvas.style.display = "block";
   audioVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+};
 
+const unlockAudio = async () => {
+  musicPlayer.resetUnlock();
+  unlockAudioCore();
   logging.info("オーディオロック: 解除");
 
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+  if (D.useServiceWorker() && navigator.serviceWorker.controller) {
     const message = await Promise.any([
       new Promise(resolve => {
         let started;
@@ -3827,11 +3829,20 @@ const initializeEmptyOverlay = () => {};
 
 //-------------------------------------------------------------------------
 
-const initializeAudio = () => {
+const initializeAudio = async () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
-  musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
-  musicPlayer.start("vi03");
+
+  // アプリの場合は自動再生できる。
+  if (D.isApp()) {
+    Howler.autoUnlock = false;
+    musicPlayer = new D.MusicPlayer(system.musicVolume);
+    musicPlayer.start("vi03");
+    await unlockAudioCore();
+  } else {
+    musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
+    musicPlayer.start("vi03");
+  }
   logging.info("オーディオ初期化: 完了");
 };
 
@@ -5071,7 +5082,7 @@ D.onDOMContentLoaded = async () => {
   initializeHistoryScreen();
   initializeDialogOverlay();
   initializeEmptyOverlay();
-  initializeAudio();
+  await initializeAudio(); // initializeTitleScreenより後、enterTitleScreenより前に実行する。
   await onResize();
   initializeBackground();
   initializeUpdateChecker();
