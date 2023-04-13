@@ -70,15 +70,33 @@ end
 function commands.fetch_googlefonts(config_pathname)
   local config = parse_json(read_all(config_pathname))
 
-  execute "mkdir -p googlefonts"
+  local names = {}
   for k, v in pairs(config.googlefonts) do
-    local url = "https://fonts.googleapis.com/css2?family="..encode_uri(k)
-    if v.text then
-      url = url.."&text="..encode_uri(v.text)
+    names[#names + 1] = k
+  end
+  table.sort(names)
+
+  execute "mkdir -p googlefonts"
+  local handle = assert(io.open("googlefonts/googlefonts.css", "w"))
+
+  for i in ipairs(names) do
+    local name = names[i]
+    local key = name:gsub(" ", "_")
+    local font = config.googlefonts[name]
+
+    local url = "https://fonts.googleapis.com/css2?family="..encode_uri(name)
+    if font.text then
+      url = url.."&text="..encode_uri(font.text)
     end
     url = url.."&display=swap"
-    fetch(url, "googlefonts/"..k..".css", config.ua)
+    fetch(url, "googlefonts/"..key..".css", config.ua)
+
+    for line in io.lines("googlefonts/"..key..".css") do
+      handle:write(line, "\n")
+    end
   end
+
+  handle:close()
 end
 
 function commands.build(config_pathname, output_pathname)
