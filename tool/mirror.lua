@@ -91,8 +91,17 @@ function commands.fetch_googlefonts(config_pathname)
     url = url.."&display=swap"
     fetch(url, "googlefonts/"..key..".css", config.ua)
 
+    local index = 0
     for line in io.lines("googlefonts/"..key..".css") do
-      handle:write(line, "\n")
+      local head, url, tail = line:match [[^(%s*src: url%()(.-)(%) format%('woff2'%);)$]]
+      if url then
+        index = index + 1
+        local filename = ("%s.%04d.woff2"):format(key, index)
+        fetch(url, "googlefonts/"..filename, config.ua)
+        handle:write(head, filename, tail, "\n")
+      else
+        handle:write(line, "\n")
+      end
     end
   end
 
