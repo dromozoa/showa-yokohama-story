@@ -48,4 +48,24 @@ function commands.fetch(config_pathname)
   end
 end
 
+function commands.build(config_pathname, output_pathname)
+  local config = parse_json(read_all(config_pathname))
+
+  execute(("rm -f -r %s"):format(quote_shell(output_pathname.."/npm")))
+  execute(("mkdir -p %s"):format(quote_shell(output_pathname.."/npm")))
+  for k, v in pairs(config.npm) do
+    local package_pathname = "npm/"..k..".json"
+    local package = parse_json(read_all(package_pathname))
+    local tarball = package.versions[v].dist.tarball
+    execute(("tar -x -C %s -f %s"):format(quote_shell(output_pathname.."/npm"), quote_shell("npm/"..basename(tarball))))
+    execute(("mv %s %s"):format(quote_shell(output_pathname.."/npm/package"), quote_shell(output_pathname.."/npm/"..k.."@"..v)))
+
+    -- line-awesomeのsvgは6.4MiBあるので削除する。
+    if k == "line-awesome" then
+      execute(("rm -f -r %s"):format(output_pathname.."/npm/"..k.."@"..v.."/svg"))
+    end
+  end
+end
+
 assert(commands[...])(select(2, ...))
+
