@@ -39,7 +39,12 @@ do
 
   case X$mode in
     Xmirror)
-      lua -e "io.write((io.read [[a]]:gsub([[https://cdn.jsdelivr.net/npm/]], [[mirror/npm/]])))" \
+      lua -e 'io.write((io.read [[a]]:gsub([[https://cdn.jsdelivr.net/npm/]], [[mirror/npm/]])))' \
+        <"$output_root/$i" \
+        >"$output_root/$i.new"
+      mv "$output_root/$i.new" "$output_root/$i"
+
+      lua -e 'io.write((io.read [[a]]:gsub([[<!%-%- https://fonts.google.com/ %-%->.-<!%-%- end %-%->]], [[<link href="mirror/googlefonts/googlefonts.css" rel="stylesheet">]])))' \
         <"$output_root/$i" \
         >"$output_root/$i.new"
       mv "$output_root/$i.new" "$output_root/$i"
