@@ -913,7 +913,7 @@ D.createTitleFrame = (width, height, titleWidth, titleHeight) => {
 
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const consoleFont = "'Share Tech', sans-serif";
+const consoleFont = "'Share Tech', 'BIZ UDPGothic', sans-serif";
 
 const musicNames = {
   vi03: "Hollow",
@@ -2094,18 +2094,16 @@ const getVoiceUrls = paragraphIndices => {
   return paragraphIndices.map(paragraphIndex => getAudioSource(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4)));
 };
 
-const isDeleteOldCacheTarget = url => (
-  !url.pathname.startsWith(D.preferences.systemDir) &&
-  !url.pathname.startsWith(D.preferences.musicDir) &&
-  !url.pathname.startsWith(D.preferences.voiceDir)
-);
+const isDeleteOldCacheTarget = url => {
+  // 絶対パスを計算する。
+  const systemUrl = new URL(D.preferences.systemDir, location.href);
+  const musicUrl = new URL(D.preferences.musicDir, location.href);
+  const voiceUrl = new URL(D.preferences.voiceDir, location.href);
+  const pathname = url.pathname;
+  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname)
+};
 
 const deleteOldCachesImpl = async () => {
-  if (!D.useCacheStorage()) {
-    D.trace("useCacheStorage = no", sourceUrls);
-    return;
-  }
-
   const cache = await caches.open("昭和横濱物語");
   const keys = await cache.keys();
   const deletedUrls = [];
@@ -2121,6 +2119,11 @@ const deleteOldCachesImpl = async () => {
 };
 
 const deleteOldCaches = () => {
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no", sourceUrls);
+    return;
+  }
+
   deleteOldCachesImpl().then(deletedUrls => {
     D.trace("deleteOldCaches", deletedUrls);
   }).catch(e => {
