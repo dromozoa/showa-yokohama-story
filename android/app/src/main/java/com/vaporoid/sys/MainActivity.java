@@ -53,11 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
         String ua = settings.getUserAgentString() + " showa-yokohama-story-android";
         String versionName = getVersionName();
         if (versionName != null) {
             ua += "/" + versionName;
         }
+        settings.setUserAgentString(ua);
 
         WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder().addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
         webView.setWebViewClient(new WebViewClientCompat() {
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        settings.setUserAgentString(ua);
         loadGame();
 
         MobileAds.initialize(this, initializationStatus -> {
