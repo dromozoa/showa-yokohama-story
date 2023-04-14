@@ -18,15 +18,24 @@
 package com.vaporoid.sys;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 public class MainActivity extends AppCompatActivity {
+    private AdView adView;
+    private FrameLayout frameLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,5 +46,22 @@ public class MainActivity extends AppCompatActivity {
             public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
             }
         });
+
+        adView = new AdView(this);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        frameLayout = findViewById(R.id.frameLayout);
+        frameLayout.addView(adView);
+        loadBanner();
+    }
+
+    private void loadBanner() {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = (int) (metrics.widthPixels / metrics.density);
+        adView.setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, width));
+
+        AdRequest request = new AdRequest.Builder().build();
+        adView.loadAd(request);
     }
 }
