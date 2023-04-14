@@ -32,6 +32,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewClientCompat;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
                 Uri url = request.getUrl();
                 Log.d(TAG, "shouldOverrideUrlLoading " + url);
                 if (url.getHost().equals("appassets.androidplatform.net")) {
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         adView = new AdView(this);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId(getString(R.string.GADBannerUnitIdentifier));
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
         frameLayout.addView(adView);
         loadBanner();
