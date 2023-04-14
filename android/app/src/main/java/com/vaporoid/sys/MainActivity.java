@@ -23,11 +23,15 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewClientCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         webView = findViewById(R.id.webView);
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         String ua = settings.getUserAgentString() + " showa-yokohama-story-android";
@@ -53,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
         if (versionName != null) {
             ua += "/" + versionName;
         }
+
+        WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder().addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
+        webView.setWebViewClient(new WebViewClientCompat() {
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return assetLoader.shouldInterceptRequest(request.getUrl());
+            }
+        });
+
         settings.setUserAgentString(ua);
         loadGame();
 
@@ -78,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadGame() {
-        webView.loadUrl("https://vaporoid.com/sys/game.html");
+        webView.loadUrl("https://appassets.androidplatform.net/assets/sys/game.html");
     }
 
     private void loadBanner() {
