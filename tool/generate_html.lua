@@ -16,15 +16,9 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse_json = require "parse_json"
+local read_all = require "read_all"
 
 local template_pathname, loader_pathname, graph_pathname, credits_pathname, trophies_pathname, version_pathname, result_pathname = ...
-
-local function read_all(pathname)
-  local handle = assert(io.open(pathname))
-  local result = handle:read "a"
-  handle:close()
-  return result
-end
 
 local template = read_all(template_pathname)
 local loader = read_all(loader_pathname)

@@ -27,6 +27,11 @@ D.includeGuard = true;
 //-------------------------------------------------------------------------
 
 D.trace = (...params) => D.preferences.trace(...params);
+D.isApp = (...params) => D.preferences.isApp(...params);
+D.getAppVersion = (...params) => D.preferences.getAppVersion(...params);
+
+D.useServiceWorker = () => !D.isApp() && navigator.serviceWorker;
+D.useCacheStorage = () => !D.isApp() && globalThis.caches;
 
 //-------------------------------------------------------------------------
 
@@ -1078,9 +1083,8 @@ D.MusicPlayer = class {
   start(key) {
     this.key = key;
 
-    const basename = D.preferences.musicDir + "/sessions_" + this.key;
     this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
+      src: getAudioSource(D.preferences.musicDir + "/sessions_" + this.key),
       volume: this.volume,
       loop: true,
       onloaderror: (notUsed, message) => logging.error("音楽読出: 失敗", new Error(getMediaErrorMessage(message))),
@@ -1468,7 +1472,7 @@ D.VoiceSound = class {
   getSound() {
     if (!this.sound) {
       this.sound = new Howl({
-        src: [ this.basename + ".webm", this.basename + ".mp3" ],
+        src: getAudioSource(this.basename),
         sprite: this.sprite,
 
         onload: () => {
@@ -1692,10 +1696,9 @@ D.BackgroundTransition = class {
 
 D.SoundEffect = class {
   constructor(volume) {
-    const basename = D.preferences.systemDir + "/effect";
     this.volume = volume;
     this.sound = new Howl({
-      src: [ basename + ".webm", basename + ".mp3" ],
+      src: getAudioSource(D.preferences.systemDir + "/effect"),
       volume: this.volume,
       sprite: D.effectSprite,
       onloaderror: (notUsed, message) => logging.error("効果音読出: 失敗", new Error(getMediaErrorMessage(message))),
@@ -1788,6 +1791,15 @@ D.UpdateChecker = class {
       return;
     }
 
+    // アプリの場合はアップデートをチェックしない。
+    if (D.isApp()) {
+      return;
+    }
+
+    this.checkWeb();
+  }
+
+  checkWeb() {
     this.status = "checking";
     requestAnimationFrame(async () => {
       let status;
@@ -2048,10 +2060,11 @@ const cacheImpl = async (sourceUrls) => {
 };
 
 D.cache = sourceUrls => {
-  if (!globalThis.caches) {
-    D.trace("cache not supported", sourceUrls);
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no", sourceUrls);
     return;
   }
+
   cacheImpl(sourceUrls).then(targetUrls => {
     D.trace("addCache", sourceUrls, targetUrls);
   }).catch(e => {
@@ -2063,14 +2076,21 @@ const getBackgroundImageUrls = () => {
   return [ "portrait", "landscape", "portrait-kcode", "landscape-kcode" ].map(name => D.preferences.systemDir + "/bg-" + name + ".jpg");
 };
 
+const getAudioExtension = () => D.preferences.audioExtensions.find(extension => Howler.codecs(extension));
+const getAudioSource = basename => {
+  if (D.isApp() === "ios") {
+    return "demeter:///" + basename + "." + getAudioExtension();
+  } else {
+    return basename + "." + getAudioExtension();
+  }
+}
+
 const getMusicUrls = () => {
-  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-  return Object.keys(musicNames).map(key => D.preferences.musicDir + "/sessions_" + key + ext);
+  return Object.keys(musicNames).map(key => getAudioSource(D.preferences.musicDir + "/sessions_" + key));
 };
 
 const getVoiceUrls = paragraphIndices => {
-  const ext = Howler.codecs("webm") ? ".webm" : ".mp3";
-  return paragraphIndices.map(paragraphIndex => D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4) + ext);
+  return paragraphIndices.map(paragraphIndex => getAudioSource(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4)));
 };
 
 const isDeleteOldCacheTarget = url => (
@@ -2080,10 +2100,11 @@ const isDeleteOldCacheTarget = url => (
 );
 
 const deleteOldCachesImpl = async () => {
-  if (!globalThis.caches) {
-    D.trace("cache not supported");
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no", sourceUrls);
     return;
   }
+
   const cache = await caches.open("昭和横濱物語");
   const keys = await cache.keys();
   const deletedUrls = [];
@@ -2350,7 +2371,7 @@ const hideTitleChoices = () => {
   document.querySelector(".demeter-title-choices").style.display = "none";
 };
 
-const resetAudioContext = async quiet => {
+const suspendAudioContext = async quiet => {
   try {
     await Howler.ctx.suspend();
     if (!quiet) {
@@ -2363,7 +2384,9 @@ const resetAudioContext = async quiet => {
       D.trace("Howler.ctx.suspend", e);
     }
   }
-  await D.setTimeout(100);
+};
+
+const resumeAudioContext = async quiet => {
   try {
     await Howler.ctx.resume();
     if (!quiet) {
@@ -2378,22 +2401,36 @@ const resetAudioContext = async quiet => {
   }
 };
 
-const setupAudioContextHandler = () => {
-  const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
-  if (isSafari && document.ontouchend !== undefined) {
-    document.addEventListener("visibilitychange", async () => {
-      D.trace("onVisibilityChange", document.visibilityState);
-      if (document.visibilityState === "visible") {
-        await D.setTimeout(100);
-        await resetAudioContext(true);
-      }
-    });
+const resetAudioContext = async quiet => {
+  await D.setTimeout(100);
+  await suspendAudioContext(quiet);
+  await D.setTimeout(100);
+  await resumeAudioContext(quiet);
+};
+
+const onVisibilityChange = async () => {
+  D.trace("onVisibilityChange", document.visibilityState);
+  if (document.visibilityState === "visible") {
+    await D.setTimeout(100);
+    await resetAudioContext(true);
+  } else {
+    await suspendAudioContext(true);
   }
 };
 
-const unlockAudio = async () => {
-  musicPlayer.resetUnlock();
+const setupAudioContextHandler = () => {
+  if (D.isApp()) {
+    document.addEventListener("visibilitychange", onVisibilityChange);
+  } else {
+    // Mobile Safari
+    const isSafari = navigator.userAgent.indexOf("Safari") !== -1 && navigator.userAgent.indexOf("Chrome") === -1;
+    if (isSafari && document.ontouchend !== undefined) {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    }
+  }
+};
 
+const unlockAudioCore = async () => {
   soundEffect = new D.SoundEffect(system.effectVolume);
   setupAudioContextHandler();
 
@@ -2413,10 +2450,14 @@ const unlockAudio = async () => {
   audioVisualizer.canvas.style.display = "block";
   audioVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-audio-visualizer").append(audioVisualizer.canvas);
+};
 
+const unlockAudio = async () => {
+  musicPlayer.resetUnlock();
+  unlockAudioCore();
   logging.info("オーディオロック: 解除");
 
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+  if (D.useServiceWorker() && navigator.serviceWorker.controller) {
     const message = await Promise.any([
       new Promise(resolve => {
         let started;
@@ -2892,7 +2933,7 @@ const initializeSystemUi = () => {
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
-  if (globalThis.caches) {
+  if (D.useCacheStorage()) {
     systemUiDebugCommandsFolder.add(commands, "resetCache").name("全キャッシュを削除する");
   }
   systemUiDebugCommandsFolder.add(system, "repeatDelay", 17, 1700, 17).name("ボタン連射待機 [ms]");
@@ -3266,8 +3307,7 @@ const createHistoryParagraphNode = (speaker, textNodes, paragraphIndex) => {
   paragraphNode.addEventListener("mouseenter", onMouseEnter);
   paragraphNode.addEventListener("mouseleave", onMouseLeave);
   paragraphNode.addEventListener("click", async () => {
-    const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-    const voiceSound = new D.VoiceSound(voiceBasename);
+    const voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4));
     const voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
     if (historyVoiceSprite) {
@@ -3435,6 +3475,11 @@ const initializeTitleScreen = () => {
     choiceNode.append(choiceFrameNode);
     return choiceFrameNode.querySelector(".demeter-button");
   });
+
+  const appVersion = D.getAppVersion();
+  if (appVersion) {
+    document.querySelector(".demeter-title-version-string").textContent = appVersion;
+  }
 
   // NEW GAME
   choiceButtonNodes[0].addEventListener("click", ev => {
@@ -3808,11 +3853,20 @@ const initializeEmptyOverlay = () => {};
 
 //-------------------------------------------------------------------------
 
-const initializeAudio = () => {
+const initializeAudio = async () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
-  musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
-  musicPlayer.start("vi03");
+
+  // アプリの場合は自動再生できる。
+  if (D.isApp()) {
+    Howler.autoUnlock = false;
+    musicPlayer = new D.MusicPlayer(system.musicVolume);
+    musicPlayer.start("vi03");
+    await unlockAudioCore();
+  } else {
+    musicPlayer = new D.MusicPlayer(system.musicVolume, unlockAudio);
+    musicPlayer.start("vi03");
+  }
   logging.info("オーディオ初期化: 完了");
 };
 
@@ -3835,8 +3889,9 @@ const runTextAnimation = async () => {
 
 const runVoiceSprite = async () => {
   try {
-    await voiceSprite.start(pauseState);
     logging.debug("音声再生: 開始");
+    await voiceSprite.start(pauseState);
+    logging.debug("音声再生: 終了");
   } catch (e) {
     logging.error("音声再生: 失敗", e);
   }
@@ -4017,8 +4072,7 @@ const next = async () => {
       textNode.replaceChildren(...textNodes);
       textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-      const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-      voiceSound = new D.VoiceSound(voiceBasename, D.voiceSprites[paragraphIndex - 1]);
+      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1]);
 
       // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
       if (playState !== "skip") {
@@ -4220,8 +4274,7 @@ const dialog = async key => {
   }
 
   // 物理行ごとのスプライトに分割せず、音声を一括で再生する。
-  const voiceBasename = D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4);
-  const voiceSound = new D.VoiceSound(voiceBasename);
+  const voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4));
   let voiceSprite = new D.VoiceSprite(voiceSound, undefined, system.voiceVolume);
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
@@ -5054,7 +5107,7 @@ D.onDOMContentLoaded = async () => {
   initializeHistoryScreen();
   initializeDialogOverlay();
   initializeEmptyOverlay();
-  initializeAudio();
+  await initializeAudio(); // initializeTitleScreenより後、enterTitleScreenより前に実行する。
   await onResize();
   initializeBackground();
   initializeUpdateChecker();
@@ -5068,7 +5121,7 @@ D.onDOMContentLoaded = async () => {
 
   await enterTitleScreen();
 
-  if (navigator.serviceWorker) {
+  if (D.useServiceWorker()) {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
       logging.info("サービスワーカ変更: 検出");
     });

@@ -15,23 +15,57 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+import AppTrackingTransparency
 import GoogleMobileAds
 import UIKit
 
 class ViewController: UIViewController {
-  @IBOutlet weak var webView: WKWebView!
+  @IBOutlet weak var mainView: UIView!
   @IBOutlet weak var bannerView: GADBannerView!
+  var webView: WKWebView!
+  var waitForTrackingAuthorization: Bool = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(authorizationTrackingDetermined),
+      name: .demeterAuthorizationTrackingDetermined, object: nil)
 
-    if let adUnitId = Bundle.main.infoDictionary?["GADBannerUnitIdentifier"] as? String {
+    let configuration = WKWebViewConfiguration()
+
+    // オーディオの自動再生を許可する。
+    configuration.allowsInlineMediaPlayback = true
+    configuration.mediaTypesRequiringUserActionForPlayback = [.video]
+
+    if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+      as? String
+    {
+      configuration.applicationNameForUserAgent = "showa-yokohama-story-ios/" + version
+    } else {
+      configuration.applicationNameForUserAgent = "showa-yokohama-story-ios"
+    }
+    configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
+
+    webView = WKWebView(frame: .zero, configuration: configuration)
+    webView.isOpaque = false
+    webView.backgroundColor = UIColor(red: 17 / 255, green: 17 / 255, blue: 17 / 255, alpha: 1)
+
+    mainView.addSubview(webView)
+    webView.translatesAutoresizingMaskIntoConstraints = false
+    webView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 0).isActive = true
+    webView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 0).isActive = true
+    webView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: 0).isActive = true
+    webView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 0).isActive = true
+
+    webView.uiDelegate = self
+
+    loadGame()
+
+    if let adUnitId = Bundle.main.object(forInfoDictionaryKey: "GADBannerUnitIdentifier") as? String
+    {
       bannerView.adUnitID = adUnitId
     }
     bannerView.rootViewController = self
-
-    webView.uiDelegate = self
-    loadGame()
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -48,10 +82,27 @@ class ViewController: UIViewController {
 
 extension ViewController {
   func loadGame() {
-    webView.load(URLRequest(url: URL(string: "https://vaporoid.com/sys/game.html")!))
+    if let url = Bundle.main.url(forResource: "sys/game", withExtension: "html") {
+      webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
+    }
+  }
+
+  @objc func authorizationTrackingDetermined() {
+    print("\(#function) \(ATTrackingManager.trackingAuthorizationStatus)")
+    if waitForTrackingAuthorization {
+      waitForTrackingAuthorization = false
+      DispatchQueue.main.async {
+        self.loadBanner()
+      }
+    }
   }
 
   func loadBanner() {
+    if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
+      waitForTrackingAuthorization = true
+      return
+    }
+
     let frame = view.frame.inset(by: view.safeAreaInsets)
     bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(frame.width)
 
@@ -72,5 +123,56 @@ extension ViewController: WKUIDelegate {
       UIApplication.shared.open(url)
     }
     return nil
+  }
+}
+
+extension ViewController: WKURLSchemeHandler {
+  func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+    if let requestUrl = urlSchemeTask.request.url {
+      let requestPath = requestUrl.path as NSString
+      let resource = "sys" + requestPath.deletingPathExtension
+      let resourceExtension = requestPath.pathExtension
+
+      if let url = Bundle.main.url(forResource: resource, withExtension: resourceExtension),
+        let data = try? Data(contentsOf: url)
+      {
+        var headerFields = [
+          "Access-Control-Allow-Origin": "*",
+          "Content-Length": String(data.count),
+        ]
+
+        switch resourceExtension {
+        case "mp3":
+          headerFields["Content-Type"] = "audio/mpeg"
+        case "webm":
+          headerFields["Content-Type"] = "video/webm"
+        default:
+          headerFields["Content-Type"] = "application/octet-stream"
+        }
+
+        if let response = HTTPURLResponse(
+          url: requestUrl, statusCode: 200, httpVersion: nil, headerFields: headerFields)
+        {
+          urlSchemeTask.didReceive(response)
+          urlSchemeTask.didReceive(data)
+          urlSchemeTask.didFinish()
+          return
+        }
+      }
+    }
+
+    if let requestUrl = urlSchemeTask.request.url,
+      let response = HTTPURLResponse(
+        url: requestUrl, statusCode: 404, httpVersion: nil,
+        headerFields: ["Access-Control-Allow-Origin": "*"])
+    {
+      urlSchemeTask.didReceive(response)
+    }
+    urlSchemeTask.didFinish()
+  }
+
+  func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
+    // https://developer.apple.com/documentation/webkit/wkurlschemehandler/2890835-webview
+    // Don’t call any methods of the provided urlSchemeTask object to report your progress back to WebKit.
   }
 }

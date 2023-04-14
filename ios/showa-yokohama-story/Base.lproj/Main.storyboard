@@ -16,34 +16,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lV0-Dn-Ddl">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x1p-vy-VeV">
                                 <rect key="frame" x="0.0" y="59" width="393" height="659"/>
-                                <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
+                                <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="infinite" placeholderIntrinsicHeight="92" translatesAutoresizingMaskIntoConstraints="NO" id="nmQ-zJ-0wY" customClass="GADBannerView">
                                 <rect key="frame" x="0.0" y="726" width="393" height="92"/>
                                 <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.066666666666666666" green="0.066666666666666666" blue="0.066666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="nmQ-zJ-0wY" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="2qo-vY-hrJ"/>
-                            <constraint firstItem="nmQ-zJ-0wY" firstAttribute="top" secondItem="lV0-Dn-Ddl" secondAttribute="bottom" constant="8" symbolic="YES" id="8WK-Xt-fsA"/>
-                            <constraint firstItem="lV0-Dn-Ddl" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Fcd-nD-7W3"/>
+                            <constraint firstItem="x1p-vy-VeV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="3BD-6d-yAO"/>
                             <constraint firstItem="nmQ-zJ-0wY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Hkk-LD-JqQ"/>
+                            <constraint firstItem="x1p-vy-VeV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="IhG-RU-S1o"/>
                             <constraint firstItem="nmQ-zJ-0wY" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="QEa-gB-Ggu"/>
-                            <constraint firstItem="lV0-Dn-Ddl" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="VXf-mq-Ty2"/>
-                            <constraint firstItem="lV0-Dn-Ddl" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="lxz-vf-JRn"/>
+                            <constraint firstItem="nmQ-zJ-0wY" firstAttribute="top" secondItem="x1p-vy-VeV" secondAttribute="bottom" constant="8" symbolic="YES" id="hUS-WE-CW0"/>
+                            <constraint firstItem="x1p-vy-VeV" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="kPz-gX-xoB"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="bannerView" destination="nmQ-zJ-0wY" id="gEu-PB-gJX"/>
-                        <outlet property="webView" destination="lV0-Dn-Ddl" id="BeQ-2s-ulb"/>
+                        <outlet property="mainView" destination="x1p-vy-VeV" id="FOa-F2-cQx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
