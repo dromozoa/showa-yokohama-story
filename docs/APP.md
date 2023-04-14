@@ -45,6 +45,10 @@ AdMobが対応していない気がするのでMac対応ははずす。
 - なんかサイトにテキストをおいとく必要があるらしい。
 - ATTってなに
 
+## バージョン
+
+- https://developer.apple.com/support/app-store/
+
 ## タスク
 
 - [x] アイコン
