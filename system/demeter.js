@@ -32,6 +32,7 @@ D.getAppVersion = (...params) => D.preferences.getAppVersion(...params);
 
 D.useServiceWorker = () => !D.isApp() && navigator.serviceWorker;
 D.useCacheStorage = () => !D.isApp() && globalThis.caches;
+D.useFullscreen = () => !D.isApp() && D.getFullscreenElement;
 
 //-------------------------------------------------------------------------
 
@@ -2918,7 +2919,7 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
-  if (D.getFullscreenElement) {
+  if (D.useFullscreen()) {
     const controller = commandsFolder.add(commands, "fullscreen");
     updateSystemUiFullscreen = () => {
       if (D.getFullscreenElement() === null) {
