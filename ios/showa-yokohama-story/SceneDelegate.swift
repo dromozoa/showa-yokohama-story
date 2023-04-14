@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+import AppTrackingTransparency
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -33,6 +34,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func sceneDidBecomeActive(_ scene: UIScene) {
     print("\(#function)")
+    requestTrackingAuthorization()
   }
 
   func sceneWillResignActive(_ scene: UIScene) {
@@ -46,4 +48,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func sceneDidEnterBackground(_ scene: UIScene) {
     print("\(#function)")
   }
+}
+
+extension SceneDelegate {
+  func requestTrackingAuthorization() {
+    guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+      ATTrackingManager.requestTrackingAuthorization { status in
+        print("\(#function) \(ATTrackingManager.trackingAuthorizationStatus) \(status)")
+        guard status != .notDetermined else { return }
+        NotificationCenter.default.post(name: .demeterAuthorizationTrackingDetermined, object: nil)
+      }
+    }
+  }
+}
+
+extension Notification.Name {
+  static let demeterAuthorizationTrackingDetermined = Notification.Name(
+    "demeterAuthorizationTrackingDetermined")
 }

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+import AppTrackingTransparency
 import GoogleMobileAds
 import UIKit
 
@@ -22,9 +23,13 @@ class ViewController: UIViewController {
   @IBOutlet weak var mainView: UIView!
   @IBOutlet weak var bannerView: GADBannerView!
   var webView: WKWebView!
+  var waitForTrackingAuthorization: Bool = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(authorizationTrackingDetermined),
+      name: .demeterAuthorizationTrackingDetermined, object: nil)
 
     let configuration = WKWebViewConfiguration()
 
@@ -82,7 +87,22 @@ extension ViewController {
     }
   }
 
+  @objc func authorizationTrackingDetermined() {
+    print("\(#function) \(ATTrackingManager.trackingAuthorizationStatus)")
+    if waitForTrackingAuthorization {
+      waitForTrackingAuthorization = false
+      DispatchQueue.main.async {
+        self.loadBanner()
+      }
+    }
+  }
+
   func loadBanner() {
+    if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
+      waitForTrackingAuthorization = true
+      return
+    }
+
     let frame = view.frame.inset(by: view.safeAreaInsets)
     bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(frame.width)
 
