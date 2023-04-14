@@ -1,5 +1,7 @@
 # vim: set noet ts=8 tw=0 sts=-1 sw=0:
-web	system	music	voice
+@url{ios}{}
+@url{android}{}
+web	system	music	voice	ios	android
 b3	1	1	1
 b4	2	1	1
 b5	3	1	2
@@ -20,4 +22,4 @@ b19	17	1	5
 b20	18	1	5
 b21	19	1	6
 b22	20	1	6
-b23	21	1	6
+b23	21	1	6	1.0	1.0

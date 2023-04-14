@@ -1,1 +1,14 @@
-{"web":"b23","system":21,"music":1,"voice":6}
+{
+  "web": "b23",
+  "system": 21,
+  "music": 1,
+  "voice": 6,
+  "ios": {
+    "version": "1.0",
+    "url": ""
+  },
+  "android": {
+    "version": "1.0",
+    "url": ""
+  }
+}

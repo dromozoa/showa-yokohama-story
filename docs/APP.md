@@ -44,7 +44,7 @@ AdMobが対応していない気がするのでMac対応ははずす。
 
 - なんかサイトにテキストをおいとく必要があるらしい。
 
-## バージョン
+## OSバージョン
 
 - iOS
   - https://developer.apple.com/support/app-store/
@@ -56,6 +56,10 @@ AdMobが対応していない気がするのでMac対応ははずす。
 ## Android
 
 - Empty Views Activity
+
+## バージョンチェック
+
+
 
 ## タスク
 
@@ -78,4 +82,5 @@ AdMobが対応していない気がするのでMac対応ははずす。
 - [x] window open
 - [x] 変数の切り出し
   - テストはどうする？
+- [ ] バージョンチェック
 
