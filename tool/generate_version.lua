@@ -19,7 +19,6 @@ local quote_js = require "quote_js"
 
 local versions_pathname, version_pathname, preferences_pathname, makefile_pathname = ...
 
-local urls = {}
 local header
 local versions = {}
 for line in io.lines(versions_pathname) do
@@ -28,22 +27,17 @@ for line in io.lines(versions_pathname) do
   elseif line == "" then
     -- 空行
   else
-    local name, url = line:match "^@url{([^}]*)}{([^}]*)}"
-    if name then
-      urls[name] = url
+    local items = {}
+    for item in (line.."\t"):gmatch "(.-)\t" do
+      items[#items + 1] = item
+    end
+    if not header then
+      header = items
     else
-      local items = {}
-      for item in (line.."\t"):gmatch "(.-)\t" do
-        items[#items + 1] = item
+      for i, v in ipairs(items) do
+        items[header[i]] = v
       end
-      if not header then
-        header = items
-      else
-        for i, v in ipairs(items) do
-          items[header[i]] = v
-        end
-        versions[#versions + 1] = items
-      end
+      versions[#versions + 1] = items
     end
   end
 end
@@ -51,29 +45,8 @@ local version = versions[#versions]
 
 local handle = assert(io.open(version_pathname, "w"))
 handle:write(([[
-{
-  "web": %s,
-  "system": %d,
-  "music": %d,
-  "voice": %d,
-  "ios": {
-    "version": %s,
-    "url": %s
-  },
-  "android": {
-    "version": %s,
-    "url": %s
-  }
-}
-]]):format(
-  quote_js(version.web),
-  version.system,
-  version.music,
-  version.voice,
-  quote_js(version.ios),
-  quote_js(urls.ios),
-  quote_js(version.android),
-  quote_js(urls.android)))
+{"web":%s,"system":%d,"music":%d,"voice":%d}
+]]):format(quote_js(version.web), version.system, version.music, version.voice))
 handle:close()
 
 local handle = assert(io.open(preferences_pathname))
