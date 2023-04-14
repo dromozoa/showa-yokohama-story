@@ -43,11 +43,19 @@ AdMobが対応していない気がするのでMac対応ははずす。
 - 参考: https://developers.google.com/admob/ios/swiftui
 
 - なんかサイトにテキストをおいとく必要があるらしい。
-- ATTってなに
 
 ## バージョン
 
-- https://developer.apple.com/support/app-store/
+- iOS
+  - https://developer.apple.com/support/app-store/
+  - 現在はATTの場合分けをしたくないから、14より後=15.0にしている
+- Android
+  - 手元の端末が9だからそれ以降ならなんでもいい
+  - Defaultが7だったからそれでいいや
+
+## Android
+
+- Empty Views Activity
 
 ## タスク
 
