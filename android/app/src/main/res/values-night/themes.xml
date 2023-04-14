@@ -1,4 +1,0 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.昭和横濱物語" parent="Theme.Material3.DayNight.NoActionBar">
-    </style>
-</resources>
