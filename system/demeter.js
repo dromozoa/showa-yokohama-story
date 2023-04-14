@@ -2528,7 +2528,17 @@ const upgradeDatabase = (db, oldVersion, newVersion) => {
 const setItemDefault = (item, itemDefault) => {
   Object.entries(itemDefault).forEach(([k, v]) => {
     if (item[k] === undefined) {
-      item[k] = v;
+      if (typeof v === "object") {
+        if (v instanceof Array) {
+          item[k] = [...v];
+        } else if (v instanceof Map) {
+          item[k] = new Map(v);
+        } else {
+          item[k] = v;
+        }
+      } else {
+        item[k] = v;
+      }
     }
   });
 };
