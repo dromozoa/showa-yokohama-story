@@ -17,8 +17,11 @@
 
 package com.vaporoid.sys;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -32,6 +35,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private WebView webView;
     private AdView adView;
 
@@ -43,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        String ua = settings.getUserAgentString() + " showa-yokohama-story-android";
+        String versionName = getVersionName();
+        if (versionName != null) {
+            ua += "/" + versionName;
+        }
+        settings.setUserAgentString(ua);
         loadGame();
 
         MobileAds.initialize(this, initializationStatus -> {
@@ -53,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
         frameLayout.addView(adView);
         loadBanner();
+    }
+
+    private String getVersionName() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (Exception e) {
+            Log.e(TAG, "cannot getVersionName", e);
+        }
+        return null;
     }
 
     private void loadGame() {
