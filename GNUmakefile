@@ -80,6 +80,21 @@ clean_ios::
 
 #--------------------------------------------------------------------------
 
+build_android::
+	rm -f -r build/android
+	./tool/build.sh . build/android/sys $(version_system) $(version_web) mirror
+	./tool/build_music.sh assets/music.txt .webm build/music build/android/sys/music/$(version_music)
+	mkdir -p build/android/sys/voice/$(version_voice)
+	cp build/voice/*.webm build/android/sys/voice/$(version_voice)
+	$(MAKE) -C mirror build
+	cp -R build/mirror build/android/sys/mirror
+
+clean_android::
+	rm -f -r build/android
+	$(MAKE) -C mirror clean
+
+#--------------------------------------------------------------------------
+
 convert_voice::
 	mkdir -p build/voice
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
