@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.sys'
+    namespace 'com.vaporoid.sys'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.sys"
+        applicationId "com.vaporoid.sys"
         minSdk 24
         targetSdk 33
         versionCode 1

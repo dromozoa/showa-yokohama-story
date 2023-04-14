@@ -1,4 +1,4 @@
-package com.example.sys;
+package com.vaporoid.sys;
 
 import org.junit.Test;
 
