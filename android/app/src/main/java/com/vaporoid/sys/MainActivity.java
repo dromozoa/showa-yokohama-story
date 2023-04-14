@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         webView = findViewById(R.id.webView);
+        webView.setBackgroundColor(getColor(R.color.windowBackground));
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
