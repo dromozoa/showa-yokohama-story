@@ -1755,7 +1755,7 @@ const soundEffectFocus = () => {
 
 //-------------------------------------------------------------------------
 
-D.compareVersion = version => {
+D.compareVersionWeb = version => {
   if (typeof version !== "object" || typeof version.web !== "string") {
     throw new Error("invalid version object");
   }
@@ -1779,11 +1779,30 @@ D.compareVersion = version => {
   return version.web;
 };
 
+D.compareVersionApp = version => {
+  const thisVersion = getAppVersion().split(/\./).map(Number.parseInt);
+  const thatVersion = version.version.split(/\./).map(Number.parseInt);
+  for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
+    const u = thisVersion[i] || 0;
+    const v = thatVersion[i] || 0;
+    if (u < v) {
+      return version.version;
+    } else if (u > v) {
+      return;
+    }
+  }
+};
+
 D.UpdateChecker = class {
   constructor(timeout) {
     this.timeout = timeout;
-    this.untilTime = Date.now() + this.timeout;
+    this.untilTime = Date.now();
+    // アプリの場合は起動直後にチェックする。
+    if (!D.isApp()) {
+      this.untilTime += this.timeout;
+    }
     this.status = undefined; // undefined, "checking" or "detected"
+    this.version = undefined;
     this.delayed = undefined;
   }
 
@@ -1792,31 +1811,13 @@ D.UpdateChecker = class {
       return;
     }
 
-    // アプリの場合はアップデートをチェックしない。
-    if (D.isApp()) {
-      return;
-    }
-
-    this.checkWeb();
-  }
-
-  checkWeb() {
     this.status = "checking";
     requestAnimationFrame(async () => {
-      let status;
-      try {
-        const response = await fetch("version.json", { cache: "no-store" });
-        const version = await response.json();
-        const result = D.compareVersion(version);
-        logging.debug("更新チェック: 成功");
-        if (result) {
-          logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
-          status = "detected";
-        }
-      } catch (e) {
-        logging.error("更新チェック: 失敗", e);
+      if (D.isApp()) {
+        this.status = await this.checkApp();
+      } else {
+        this.status = await this.checkWeb();
       }
-      this.status = status;
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
@@ -1824,6 +1825,36 @@ D.UpdateChecker = class {
         await this.dialog();
       }
     });
+  }
+
+  async checkWeb() {
+    try {
+      const response = await fetch("version.json", { cache: "no-store" });
+      this.version = await response.json();
+      const result = D.compareVersionWeb(this.version);
+      logging.debug("更新チェック: 成功");
+      if (result) {
+        logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
+  }
+
+  async checkApp() {
+    try {
+      const response = await fetch("https://dromozoa.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
+      this.version = await response.json();
+      const result = D.compareVersionApp(this.version);
+      logging.debug("更新チェック: 成功");
+      if (result) {
+        logging.notice("更新検出: " + D.getAppVersion() + "→" + result);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
   }
 
   async dialog() {
@@ -3432,7 +3463,7 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+const initializeUpdateChecker = () => updateChecker = D.updateChecker = new D.UpdateChecker(600000);
 
 //-------------------------------------------------------------------------
 
