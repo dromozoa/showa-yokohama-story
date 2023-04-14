@@ -3871,7 +3871,7 @@ const initializeAudio = async () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
 
-  // アプリの場合は自動再生できる。
+  // アプリの場合は自動再生可能である。
   if (D.isApp()) {
     Howler.autoUnlock = false;
     musicPlayer = new D.MusicPlayer(system.musicVolume);
