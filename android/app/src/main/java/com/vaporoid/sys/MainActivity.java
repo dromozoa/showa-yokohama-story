@@ -20,6 +20,8 @@ package com.vaporoid.sys;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,12 +32,18 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends AppCompatActivity {
+    private WebView webView;
     private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        webView = findViewById(R.id.webView);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        loadGame();
 
         MobileAds.initialize(this, initializationStatus -> {
         });
@@ -45,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
         frameLayout.addView(adView);
         loadBanner();
+    }
+
+    private void loadGame() {
+        webView.loadUrl("https://vaporoid.com/sys/game.html");
     }
 
     private void loadBanner() {
