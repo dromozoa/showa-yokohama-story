@@ -2387,8 +2387,8 @@ dialogs:{
 "system-update":391,
 "system-multiple":392,
 "system-reset-history":395,
-"system-udpate-ios":396,
-"system-udpate-android":397,
+"system-update-ios":396,
+"system-update-android":397,
 },
 };
 

@@ -1,13 +1,13 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
-@dialog{system-udpate-ios}
+@dialog{system-update-ios}
 #narrator
 物語の新しい@r{版}{バージョン}が、公開されたみたい。
 更新するために、@v{App Store}{アップストア}を開く？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
-@dialog{system-udpate-android}
+@dialog{system-update-android}
 #narrator
 物語の新しい@r{版}{バージョン}が、公開されたみたい。
 更新するために、@v{Playストア}{プレイストア}を開く？

@@ -1780,7 +1780,7 @@ D.compareVersionWeb = version => {
 };
 
 D.compareVersionApp = version => {
-  const thisVersion = getAppVersion().split(/\./).map(Number.parseInt);
+  const thisVersion = D.getAppVersion().split(/\./).map(Number.parseInt);
   const thatVersion = version.version.split(/\./).map(Number.parseInt);
   for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
     const u = thisVersion[i] || 0;
@@ -1844,7 +1844,7 @@ D.UpdateChecker = class {
 
   async checkApp() {
     try {
-      const response = await fetch("https://dromozoa.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
+      const response = await fetch("https://vaporoid.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
       this.version = await response.json();
       const result = D.compareVersionApp(this.version);
       logging.debug("更新チェック: 成功");

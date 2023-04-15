@@ -83,7 +83,27 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(url);
-                    startActivity(intent);
+                    if (url.getHost().equals("play.google.com")) {
+                        intent.setPackage("com.android.vending");
+                    }
+
+                    try {
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        // Playストアのアプリが存在しない。
+                        Log.w(TAG, e);
+                    }
+
+                    try {
+                        if (intent.getPackage() != null) {
+                            intent.setPackage(null);
+                            startActivity(intent);
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG, e);
+                    }
+
                     return true;
                 }
             }
@@ -107,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
             return packageInfo.versionName;
         } catch (Exception e) {
-            Log.e(TAG, "cannot getVersionName", e);
+            Log.w(TAG, e);
         }
         return null;
     }

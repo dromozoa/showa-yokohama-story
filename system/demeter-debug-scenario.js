@@ -122,8 +122,8 @@ labels:{
 },
 dialogs:{
 "system-reset-history":14,
-"system-udpate-ios":15,
-"system-udpate-android":16,
+"system-update-ios":15,
+"system-update-android":16,
 },
 };
 
