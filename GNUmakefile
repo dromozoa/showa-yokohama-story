@@ -56,6 +56,10 @@ check:: all
 
 #--------------------------------------------------------------------------
 
+build:: build_web build_ios build_android
+
+#--------------------------------------------------------------------------
+
 build_web::
 	rm -f -r build/$(version_web)
 	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)
@@ -76,6 +80,21 @@ build_ios::
 
 clean_ios::
 	rm -f -r build/ios
+	$(MAKE) -C mirror clean
+
+#--------------------------------------------------------------------------
+
+build_android::
+	rm -f -r build/android
+	./tool/build.sh . build/android/sys $(version_system) $(version_web) mirror
+	./tool/build_music.sh assets/music.txt .webm build/music build/android/sys/music/$(version_music)
+	mkdir -p build/android/sys/voice/$(version_voice)
+	cp build/voice/*.webm build/android/sys/voice/$(version_voice)
+	$(MAKE) -C mirror build
+	cp -R build/mirror build/android/sys/mirror
+
+clean_android::
+	rm -f -r build/android
 	$(MAKE) -C mirror clean
 
 #--------------------------------------------------------------------------
