@@ -47,12 +47,16 @@ body.danu {
   }
 }
 
-.danu h1 {
+.danu h1 .danu-title {
   font-family: 'Yuji Syuku', serif;
 }
 
+.danu h1 .danu-subtitle {
+  font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
+}
+
 .danu h2 {
-  font-family: 'BIZ UDPGothic', sans-serif;
+  font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
 }
 
 .danu table tr th,
@@ -90,11 +94,11 @@ body.danu {
   cursor: var(--cursor-pointer, auto);
 }
 
-.danu .danu-versions {
+.danu .danu-versions-description {
   display: none;
 }
 
-.danu .danu-versions.danu-opened {
+.danu .danu-versions-description.danu-opened {
   display: block;
 }
 

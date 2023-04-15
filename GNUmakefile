@@ -33,6 +33,7 @@ targets = \
 	version.json \
 	index.html \
 	game.html \
+	support.html \
 	scenario/scenario.js
 
 ifneq ($(wildcard build/voice.vpp),)
@@ -187,6 +188,9 @@ index.html: index.tmpl $(contexts)
 	$(lua) tool/generate_html.lua $^ $@
 
 game.html: game.tmpl $(contexts)
+	$(lua) tool/generate_html.lua $^ $@
+
+support.html: support.tmpl $(contexts)
 	$(lua) tool/generate_html.lua $^ $@
 
 scenario/scenario.js: $(scenarios)
