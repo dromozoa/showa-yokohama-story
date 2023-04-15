@@ -99,12 +99,12 @@ paragraphs:[
 // index: 15
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新のため、","App Store","を開く？"],
+["更新するために、","App Store","を開く？"],
 ]],
 // index: 16
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新のため、","Google Play","を開く？"],
+["更新するために、","Playストア","を開く？"],
 ]],
 ],
 total:12,
@@ -122,8 +122,8 @@ labels:{
 },
 dialogs:{
 "system-reset-history":14,
-"system-udpate-ios":15,
-"system-udpate-android":16,
+"system-update-ios":15,
+"system-update-android":16,
 },
 };
 

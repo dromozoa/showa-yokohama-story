@@ -1780,7 +1780,7 @@ D.compareVersionWeb = version => {
 };
 
 D.compareVersionApp = version => {
-  const thisVersion = getAppVersion().split(/\./).map(Number.parseInt);
+  const thisVersion = D.getAppVersion().split(/\./).map(Number.parseInt);
   const thatVersion = version.version.split(/\./).map(Number.parseInt);
   for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
     const u = thisVersion[i] || 0;
@@ -1844,7 +1844,7 @@ D.UpdateChecker = class {
 
   async checkApp() {
     try {
-      const response = await fetch("https://dromozoa.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
+      const response = await fetch("https://vaporoid.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
       this.version = await response.json();
       const result = D.compareVersionApp(this.version);
       logging.debug("更新チェック: 成功");
@@ -1951,6 +1951,7 @@ const systemDefault = {
   voiceVolume: 1,
   effectVolume: 1,
   historySize: 50,
+  gamepadSwapAB: false,
   componentColor: [1, 1, 1],
   componentOpacity: 0.25,
   logging: true,
@@ -2813,6 +2814,7 @@ const initializeSystemUi = () => {
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateVoiceVolume);
   systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateEffectVolume);
   systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]").onFinishChange(updateHistorySize);
+  systemUi.add(system, "gamepadSwapAB").name("ゲームパッドAB入替");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -4992,8 +4994,32 @@ const processInputDevice = async ev => {
             next();
           }
           consumed = true;
-        } else if (ev.code === "PageUp" || ev.code === "ButtonX") {
+        } else if (ev.code === "PageUp" || ev.code === "ButtonX" || ev.code === "ButtonY") {
           await mainToHistoryScreen();
+          consumed = true;
+        } else if (ev.code === "ButtonL") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button2"); // LOAD
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonR") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button3"); // SAVE
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonZL") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button4"); // AUTO
+          // クリックの効果音が鳴るので、フォーカスの効果音は鳴らさない。
+          node.classList.add("demeter-focus");
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonZR") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button5"); // SKIP
+          // クリックの効果音が鳴るので、フォーカスの効果音は鳴らさない。
+          node.classList.add("demeter-focus");
+          clickButton(node);
           consumed = true;
         }
       }
@@ -5085,7 +5111,16 @@ const gamepadButtonCodeSet = [
 const onGamepadButtonPress = gamepadButtonIndex => {
   inputDevice = "gamepad";
 
-  const code = gamepadButtonCodeSet[gamepadButtonIndex];
+  let code = gamepadButtonCodeSet[gamepadButtonIndex];
+  if (system.gamepadSwapAB) {
+    if (code === "ButtonA") {
+      D.trace("onGamepadButtonPress processInputDevice ButtonA→ButtonB");
+      code = "ButtonB";
+    } else if (code === "ButtonB") {
+      D.trace("onGamepadButtonPress processInputDevice ButtonB→ButtonA");
+      code = "ButtonA";
+    }
+  }
   const ev = { code: code };
 
   if (system.dupGamepadInput) {

@@ -2308,12 +2308,12 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 // index: 396
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新のため、","App Store","を開く？"],
+["更新するために、","App Store","を開く？"],
 ]],
 // index: 397
 [{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
 ["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新のため、","Google Play","を開く？"],
+["更新するために、","Playストア","を開く？"],
 ]],
 ],
 total:375,
@@ -2387,8 +2387,8 @@ dialogs:{
 "system-update":391,
 "system-multiple":392,
 "system-reset-history":395,
-"system-udpate-ios":396,
-"system-udpate-android":397,
+"system-update-ios":396,
+"system-update-android":397,
 },
 };
 
