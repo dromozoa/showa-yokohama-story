@@ -4992,8 +4992,32 @@ const processInputDevice = async ev => {
             next();
           }
           consumed = true;
-        } else if (ev.code === "PageUp" || ev.code === "ButtonX") {
+        } else if (ev.code === "PageUp" || ev.code === "ButtonX" || ev.code === "ButtonY") {
           await mainToHistoryScreen();
+          consumed = true;
+        } else if (ev.code === "ButtonL") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button2"); // LOAD
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonR") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button3"); // SAVE
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonZL") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button4"); // AUTO
+          // クリックの効果音が鳴るので、フォーカスの効果音は鳴らさない。
+          node.classList.add("demeter-focus");
+          clickButton(node);
+          consumed = true;
+        } else if (ev.code === "ButtonZR") {
+          unsetFocus();
+          const node = document.querySelector(".demeter-main-menu .demeter-button5"); // SKIP
+          // クリックの効果音が鳴るので、フォーカスの効果音は鳴らさない。
+          node.classList.add("demeter-focus");
+          clickButton(node);
           consumed = true;
         }
       }
