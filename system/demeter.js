@@ -1858,9 +1858,17 @@ D.UpdateChecker = class {
   }
 
   async showDialog() {
-    if (await dialog("system-update-title") === "yes") {
-      location.href = "game.html?t=" + Date.now();
-      return true;
+    if (D.isApp()) {
+      const key = "system-update-" + D.isApp();
+      if (await dialog(key) === "yes") {
+        open(this.version.url, "_blank", "noopener,noreferrer");
+      }
+    } else {
+      const key = screenName === "title" ? "system-update-title" : "system-update";
+      if (await dialog(key) === "yes") {
+        location.href = "game.html?t=" + Date.now();
+        return true;
+      }
     }
   }
 
