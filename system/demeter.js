@@ -2157,7 +2157,7 @@ const deleteOldCachesImpl = async () => {
 
 const deleteOldCaches = () => {
   if (!D.useCacheStorage()) {
-    D.trace("useCacheStorage = no", sourceUrls);
+    D.trace("useCacheStorage = no");
     return;
   }
 
