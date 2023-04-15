@@ -88,7 +88,6 @@ extension ViewController {
   }
 
   @objc func authorizationTrackingDetermined() {
-    print("\(#function) \(ATTrackingManager.trackingAuthorizationStatus)")
     if waitForTrackingAuthorization {
       waitForTrackingAuthorization = false
       DispatchQueue.main.async {
