@@ -51,11 +51,9 @@ body.danu {
   font-family: 'Yuji Syuku', serif;
 }
 
-.danu h1 .danu-subtitle {
-  font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
-}
-
-.danu h2 {
+.danu h1 .danu-subtitle,
+.danu h2,
+.danu h3 {
   font-family: 'Share Tech', 'BIZ UDPGothic', sans-serif;
 }
 

@@ -34,6 +34,7 @@ targets = \
 	index.html \
 	game.html \
 	support.html \
+	privacy.html \
 	scenario/scenario.js
 
 ifneq ($(wildcard build/voice.vpp),)
@@ -191,6 +192,9 @@ game.html: game.tmpl $(contexts)
 	$(lua) tool/generate_html.lua $^ $@
 
 support.html: support.tmpl $(contexts)
+	$(lua) tool/generate_html.lua $^ $@
+
+privacy.html: privacy.tmpl $(contexts)
 	$(lua) tool/generate_html.lua $^ $@
 
 scenario/scenario.js: $(scenarios)
