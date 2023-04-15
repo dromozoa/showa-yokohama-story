@@ -32,6 +32,7 @@ D.getAppVersion = (...params) => D.preferences.getAppVersion(...params);
 
 D.useServiceWorker = () => !D.isApp() && navigator.serviceWorker;
 D.useCacheStorage = () => !D.isApp() && globalThis.caches;
+D.useFullscreen = () => !D.isApp() && D.getFullscreenElement;
 
 //-------------------------------------------------------------------------
 
@@ -912,7 +913,7 @@ D.createTitleFrame = (width, height, titleWidth, titleHeight) => {
 
 const fontSize = 24;
 const font = "'BIZ UDPMincho', 'Source Serif Pro', serif";
-const consoleFont = "'Share Tech', sans-serif";
+const consoleFont = "'Share Tech', 'BIZ UDPGothic', sans-serif";
 
 const musicNames = {
   vi03: "Hollow",
@@ -1754,7 +1755,7 @@ const soundEffectFocus = () => {
 
 //-------------------------------------------------------------------------
 
-D.compareVersion = version => {
+D.compareVersionWeb = version => {
   if (typeof version !== "object" || typeof version.web !== "string") {
     throw new Error("invalid version object");
   }
@@ -1778,11 +1779,30 @@ D.compareVersion = version => {
   return version.web;
 };
 
+D.compareVersionApp = version => {
+  const thisVersion = getAppVersion().split(/\./).map(Number.parseInt);
+  const thatVersion = version.version.split(/\./).map(Number.parseInt);
+  for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
+    const u = thisVersion[i] || 0;
+    const v = thatVersion[i] || 0;
+    if (u < v) {
+      return version.version;
+    } else if (u > v) {
+      return;
+    }
+  }
+};
+
 D.UpdateChecker = class {
   constructor(timeout) {
     this.timeout = timeout;
-    this.untilTime = Date.now() + this.timeout;
+    this.untilTime = Date.now();
+    // アプリの場合は起動直後にチェックする。
+    if (!D.isApp()) {
+      this.untilTime += this.timeout;
+    }
     this.status = undefined; // undefined, "checking" or "detected"
+    this.version = undefined;
     this.delayed = undefined;
   }
 
@@ -1791,31 +1811,13 @@ D.UpdateChecker = class {
       return;
     }
 
-    // アプリの場合はアップデートをチェックしない。
-    if (D.isApp()) {
-      return;
-    }
-
-    this.checkWeb();
-  }
-
-  checkWeb() {
     this.status = "checking";
     requestAnimationFrame(async () => {
-      let status;
-      try {
-        const response = await fetch("version.json", { cache: "no-store" });
-        const version = await response.json();
-        const result = D.compareVersion(version);
-        logging.debug("更新チェック: 成功");
-        if (result) {
-          logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
-          status = "detected";
-        }
-      } catch (e) {
-        logging.error("更新チェック: 失敗", e);
+      if (D.isApp()) {
+        this.status = await this.checkApp();
+      } else {
+        this.status = await this.checkWeb();
       }
-      this.status = status;
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
@@ -1823,6 +1825,51 @@ D.UpdateChecker = class {
         await this.dialog();
       }
     });
+  }
+
+  async checkWeb() {
+    try {
+      const response = await fetch("version.json", { cache: "no-store" });
+      this.version = await response.json();
+      const result = D.compareVersionWeb(this.version);
+      logging.debug("更新チェック: 成功");
+      if (result) {
+        logging.notice("更新検出: " + D.preferences.version.web + "→" + result);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
+  }
+
+  async checkApp() {
+    try {
+      const response = await fetch("https://dromozoa.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
+      this.version = await response.json();
+      const result = D.compareVersionApp(this.version);
+      logging.debug("更新チェック: 成功");
+      if (result) {
+        logging.notice("更新検出: " + D.getAppVersion() + "→" + result);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
+  }
+
+  async showDialog() {
+    if (D.isApp()) {
+      const key = "system-update-" + D.isApp();
+      if (await dialog(key) === "yes") {
+        open(this.version.url, "_blank", "noopener,noreferrer");
+      }
+    } else {
+      const key = screenName === "title" ? "system-update-title" : "system-update";
+      if (await dialog(key) === "yes") {
+        location.href = "game.html?t=" + Date.now();
+        return true;
+      }
+    }
   }
 
   async dialog() {
@@ -1840,12 +1887,14 @@ D.UpdateChecker = class {
       soundEffectAlert();
       document.querySelector(".demeter-title-text").style.display = "none";
       hideTitleChoices();
-      if (await dialog("system-update-title") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       document.querySelector(".demeter-title-text").style.display = "block";
       await showTitleChoices();
+
+    } else if (screenName === "start") {
+      setTimeout(async () => await this.dialog(), 4000);
 
     } else if (screenName === "main") {
       if (waitForChoice || waitForDialog) {
@@ -1856,8 +1905,7 @@ D.UpdateChecker = class {
       soundEffectAlert();
       closeSystemUi();
       pause();
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       restart();
@@ -1869,19 +1917,17 @@ D.UpdateChecker = class {
       this.delayed = undefined;
 
       soundEffectAlert();
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
     } else if (screenName === "credits") {
-      // タイトル画面で処理する。
+      // enterTitleScreenで処理する。
     } else if (screenName === "history") {
       soundEffectAlert();
       if (historyVoiceSprite) {
         historyVoiceSprite.pause();
       }
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       if (historyVoiceSprite) {
@@ -2093,18 +2139,16 @@ const getVoiceUrls = paragraphIndices => {
   return paragraphIndices.map(paragraphIndex => getAudioSource(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4)));
 };
 
-const isDeleteOldCacheTarget = url => (
-  !url.pathname.startsWith(D.preferences.systemDir) &&
-  !url.pathname.startsWith(D.preferences.musicDir) &&
-  !url.pathname.startsWith(D.preferences.voiceDir)
-);
+const isDeleteOldCacheTarget = url => {
+  // 絶対パスを計算する。
+  const systemUrl = new URL(D.preferences.systemDir, location.href);
+  const musicUrl = new URL(D.preferences.musicDir, location.href);
+  const voiceUrl = new URL(D.preferences.voiceDir, location.href);
+  const pathname = url.pathname;
+  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname)
+};
 
 const deleteOldCachesImpl = async () => {
-  if (!D.useCacheStorage()) {
-    D.trace("useCacheStorage = no", sourceUrls);
-    return;
-  }
-
   const cache = await caches.open("昭和横濱物語");
   const keys = await cache.keys();
   const deletedUrls = [];
@@ -2120,6 +2164,11 @@ const deleteOldCachesImpl = async () => {
 };
 
 const deleteOldCaches = () => {
+  if (!D.useCacheStorage()) {
+    D.trace("useCacheStorage = no");
+    return;
+  }
+
   deleteOldCachesImpl().then(deletedUrls => {
     D.trace("deleteOldCaches", deletedUrls);
   }).catch(e => {
@@ -2918,7 +2967,7 @@ const initializeSystemUi = () => {
   };
 
   const commandsFolder = addSystemUiFolder(systemUi, "コマンド");
-  if (D.getFullscreenElement) {
+  if (D.useFullscreen()) {
     const controller = commandsFolder.add(commands, "fullscreen");
     updateSystemUiFullscreen = () => {
       if (D.getFullscreenElement() === null) {
@@ -3428,7 +3477,7 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = new D.UpdateChecker(600000);
+const initializeUpdateChecker = () => updateChecker = D.updateChecker = new D.UpdateChecker(600000);
 
 //-------------------------------------------------------------------------
 
@@ -3867,7 +3916,7 @@ const initializeAudio = async () => {
   Howler.autoSuspend = false;
   Howler.volume(system.masterVolume);
 
-  // アプリの場合は自動再生できる。
+  // アプリの場合は自動再生可能である。
   if (D.isApp()) {
     Howler.autoUnlock = false;
     musicPlayer = new D.MusicPlayer(system.musicVolume);
