@@ -2305,9 +2305,19 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["それ以外のデータにはさわらない。"],
 ["過去を消しさっていい？"],
 ]],
+// index: 396
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
+["更新のため、","App Store","を開く？"],
+]],
+// index: 397
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
+["更新のため、","Google Play","を開く？"],
+]],
 ],
 total:375,
-starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395],
+starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397],
 labels:{
 "ニューゲーム":1,
 "おはよう":2,
@@ -2377,6 +2387,8 @@ dialogs:{
 "system-update":391,
 "system-multiple":392,
 "system-reset-history":395,
+"system-udpate-ios":396,
+"system-udpate-android":397,
 },
 };
 

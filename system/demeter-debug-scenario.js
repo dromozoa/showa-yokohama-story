@@ -96,9 +96,19 @@ paragraphs:[
 ["それ以外のデータにはさわらない。"],
 ["過去を消しさっていい？"],
 ]],
+// index: 15
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
+["更新のため、","App Store","を開く？"],
+]],
+// index: 16
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
+["更新のため、","Google Play","を開く？"],
+]],
 ],
 total:12,
-starts:[12,14],
+starts:[12,14,15,16],
 labels:{
 "チュートリアル":1,
 "トロッコ滅亡":3,
@@ -112,6 +122,8 @@ labels:{
 },
 dialogs:{
 "system-reset-history":14,
+"system-udpate-ios":15,
+"system-udpate-android":16,
 },
 };
 
