@@ -3,14 +3,14 @@
 @dialog{system-udpate-ios}
 #narrator
 物語の新しい@r{版}{バージョン}が、公開されたみたい。
-更新のため、@v{App Store}{アップストア}を開く？
+更新するために、@v{App Store}{アップストア}を開く？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
 @dialog{system-udpate-android}
 #narrator
 物語の新しい@r{版}{バージョン}が、公開されたみたい。
-更新のため、@v{Google Play}{グーグルプレイ}を開く？
+更新するために、@v{Playストア}{プレイストア}を開く？
 @dialog_choice{はい}{yes}
 @dialog_choice{いいえ}{no}
 
