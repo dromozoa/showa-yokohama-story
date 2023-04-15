@@ -1951,6 +1951,7 @@ const systemDefault = {
   voiceVolume: 1,
   effectVolume: 1,
   historySize: 50,
+  gamepadSwapAB: false,
   componentColor: [1, 1, 1],
   componentOpacity: 0.25,
   logging: true,
@@ -2813,6 +2814,7 @@ const initializeSystemUi = () => {
   systemUi.add(system, "voiceVolume", 0, 1, 0.01).name("音声の音量 [0-1]").onChange(updateVoiceVolume);
   systemUi.add(system, "effectVolume", 0, 1, 0.01).name("効果の音量 [0-1]").onChange(updateEffectVolume);
   systemUi.add(system, "historySize", 0, 500, 10).name("履歴保持数 [個]").onFinishChange(updateHistorySize);
+  systemUi.add(system, "gamepadSwapAB").name("ゲームパッドAB入替");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
@@ -5109,7 +5111,16 @@ const gamepadButtonCodeSet = [
 const onGamepadButtonPress = gamepadButtonIndex => {
   inputDevice = "gamepad";
 
-  const code = gamepadButtonCodeSet[gamepadButtonIndex];
+  let code = gamepadButtonCodeSet[gamepadButtonIndex];
+  if (system.gamepadSwapAB) {
+    if (code === "ButtonA") {
+      D.trace("onGamepadButtonPress processInputDevice ButtonA→ButtonB");
+      code = "ButtonB";
+    } else if (code === "ButtonB") {
+      D.trace("onGamepadButtonPress processInputDevice ButtonB→ButtonA");
+      code = "ButtonA";
+    }
+  }
   const ev = { code: code };
 
   if (system.dupGamepadInput) {
