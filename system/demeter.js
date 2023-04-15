@@ -1857,6 +1857,13 @@ D.UpdateChecker = class {
     }
   }
 
+  async showDialog() {
+    if (await dialog("system-update-title") === "yes") {
+      location.href = "game.html?t=" + Date.now();
+      return true;
+    }
+  }
+
   async dialog() {
     if (!this.delayed) {
       return;
@@ -1872,12 +1879,14 @@ D.UpdateChecker = class {
       soundEffectAlert();
       document.querySelector(".demeter-title-text").style.display = "none";
       hideTitleChoices();
-      if (await dialog("system-update-title") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       document.querySelector(".demeter-title-text").style.display = "block";
       await showTitleChoices();
+
+    } else if (screenName === "start") {
+      setTimeout(async () => await this.dialog(), 4000);
 
     } else if (screenName === "main") {
       if (waitForChoice || waitForDialog) {
@@ -1888,8 +1897,7 @@ D.UpdateChecker = class {
       soundEffectAlert();
       closeSystemUi();
       pause();
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       restart();
@@ -1901,19 +1909,17 @@ D.UpdateChecker = class {
       this.delayed = undefined;
 
       soundEffectAlert();
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
     } else if (screenName === "credits") {
-      // タイトル画面で処理する。
+      // enterTitleScreenで処理する。
     } else if (screenName === "history") {
       soundEffectAlert();
       if (historyVoiceSprite) {
         historyVoiceSprite.pause();
       }
-      if (await dialog("system-update") === "yes") {
-        location.href = "game.html?t=" + Date.now();
+      if (await this.showDialog()) {
         return;
       }
       if (historyVoiceSprite) {
