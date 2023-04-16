@@ -99,7 +99,6 @@ AdMobが対応していない気がするのでMac対応ははずす。
 ```
 xcrun simctl list
 xcrun simctl status_bar 6B8A53F8-2445-4ECD-BB79-6724B7EF4A07 list
-
 ```
 
 
