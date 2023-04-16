@@ -87,3 +87,19 @@ AdMobが対応していない気がするのでMac対応ははずす。
   - 自動更新されるらしい
     - 手動設定する場合は30-120sec
 
+## スクリーンショット用のiOSシミュレータ
+
+- iPad
+  - 言語は設定済み
+  - 地域を日本に
+  - iPhoneとちがってタイトルに日付が表示されている
+  - iOS 16.1以降では`xcrun simctl status_bar`が効かないらしい
+  - iPad 12.9-inch 6genはiOS 16.0が使えないけど、5genでいけるかな
+
+```
+xcrun simctl list
+xcrun simctl status_bar 6B8A53F8-2445-4ECD-BB79-6724B7EF4A07 list
+
+```
+
+
