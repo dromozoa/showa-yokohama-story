@@ -1,4 +1,4 @@
-version_web = b25
-version_system = 23
+version_web = b26
+version_system = 24
 version_music = 1
 version_voice = 8
