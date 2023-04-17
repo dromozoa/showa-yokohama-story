@@ -306,6 +306,7 @@
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "「許可」すると、キミのあれこれが追跡され、キミに最適化された広告が表示されるかもしれないし、されないかもしれない。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -319,7 +320,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vaporoid.showa-yokohama-story";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaporoid.sys;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -341,6 +342,7 @@
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "「許可」すると、キミのあれこれが追跡され、キミに最適化された広告が表示されるかもしれないし、されないかもしれない。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -354,7 +356,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vaporoid.showa-yokohama-story";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaporoid.sys;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

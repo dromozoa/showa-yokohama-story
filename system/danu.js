@@ -22,55 +22,15 @@ const D = {};
 
 D.requestAnimationFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
 
-document.addEventListener("DOMContentLoaded", async () => {
-  document.querySelector(".danu-versions-title").addEventListener("click", ev => {
-    const iconNode = ev.target.querySelector(".las");
-    if (iconNode.classList.contains("la-angle-right")) {
-      iconNode.classList.remove("la-angle-right");
-      iconNode.classList.add("la-angle-down");
-    } else {
-      iconNode.classList.remove("la-angle-down");
-      iconNode.classList.add("la-angle-right");
-    }
-    document.querySelector(".danu-versions").classList.toggle("danu-opened");
-  });
-
-  const onClickVersionTitle = ev => {
-    const rootNode = ev.target.closest(".danu-version");
-    const iconNode = rootNode.querySelector(".las");
-    if (iconNode.classList.contains("la-angle-right")) {
-      iconNode.classList.remove("la-angle-right");
-      iconNode.classList.add("la-angle-down");
-    } else {
-      iconNode.classList.remove("la-angle-down");
-      iconNode.classList.add("la-angle-right");
-    }
-    rootNode.querySelector(".danu-version-description").classList.toggle("danu-opened");
-  };
-
-  document.querySelectorAll(".danu-version").forEach(node => node.addEventListener("click", onClickVersionTitle));
-
-  const onClickScreenShot = ev => {
-    ev.preventDefault();
-    const targetNode = ev.target.closest(".danu-screen-shot");
-    [...document.querySelectorAll(".danu-screen-shot")].forEach(node => {
-      if (node === targetNode) {
-        node.classList.toggle("danu-active");
-      } else {
-        node.classList.remove("danu-active");
-      }
-    });
-  };
-
-  document.querySelector(".danu-screen-shot1").addEventListener("click", onClickScreenShot);
-  document.querySelector(".danu-screen-shot2").addEventListener("click", onClickScreenShot);
-  document.querySelector(".danu-screen-shot3").addEventListener("click", onClickScreenShot);
-  document.querySelector(".danu-screen-shot4").addEventListener("click", onClickScreenShot);
-
+D.animateAJapan = async () => {
   const T1 = 3000;
   const T2 = 1000;
   const exNode = document.querySelector(".danu-a-japan-ex");
   const nnNode = document.querySelector(".danu-a-japan-nn");
+
+  if (!exNode || !nnNode) {
+    return;
+  }
 
   const startTime = await D.requestAnimationFrame();
   while (true) {
@@ -93,6 +53,39 @@ document.addEventListener("DOMContentLoaded", async () => {
       nnNode.style.opacity = 1 - y;
     }
   }
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const onClickTitle = (ev, rootQuery, descQuery) => {
+    const rootNode = ev.target.closest(rootQuery);
+    const iconNode = rootNode.querySelector(".las");
+    if (iconNode.classList.contains("la-angle-right")) {
+      iconNode.classList.remove("la-angle-right");
+      iconNode.classList.add("la-angle-down");
+    } else {
+      iconNode.classList.remove("la-angle-down");
+      iconNode.classList.add("la-angle-right");
+    }
+    rootNode.querySelector(descQuery).classList.toggle("danu-opened");
+  };
+
+  document.querySelectorAll(".danu-versions-title").forEach(node => node.addEventListener("click", ev => onClickTitle(ev, ".danu-versions", ".danu-versions-description")));
+  document.querySelectorAll(".danu-version").forEach(node => node.addEventListener("click", ev => onClickTitle(ev, ".danu-version", ".danu-version-description")));
+
+  const onClickScreenShot = ev => {
+    ev.preventDefault();
+    const targetNode = ev.target.closest(".danu-screen-shot");
+    [...document.querySelectorAll(".danu-screen-shot")].forEach(node => {
+      if (node === targetNode) {
+        node.classList.toggle("danu-active");
+      } else {
+        node.classList.remove("danu-active");
+      }
+    });
+  };
+  document.querySelectorAll(".danu-screen-shot").forEach(node => node.addEventListener("click", onClickScreenShot));
+
+  requestAnimationFrame(D.animateAJapan);
 });
 
 })();
