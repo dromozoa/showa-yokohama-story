@@ -2179,6 +2179,69 @@ const deleteOldCaches = () => {
 
 //-------------------------------------------------------------------------
 
+const subtle = crypto.subtle;
+const textEncoder = new TextEncoder();
+
+const getBackupKey = async () => {
+  const keyData = textEncoder.encode("EVANGELIUM SECUNDUM STEPHANUS");
+  return await subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, [ "sign", "verify" ]);
+};
+
+const dumpBackup = async () => {
+  const [system, game, read, trophies, autosave, save1, save2, save3] = await Promise.all([
+    database.get("system", "system"),
+    database.get("game", "game"),
+    database.get("read", "read"),
+    database.get("trophies", "trophies"),
+    database.get("save", "autosave"),
+    database.get("save", "save1"),
+    database.get("save", "save2"),
+    database.get("save", "save3"),
+  ]);
+  const root = {
+    dbVersion: database.version,
+    userAgent: navigator.userAgent,
+    webVersion: D.preferences.version.web,
+    system: system,
+    game: game,
+    read: read,
+    trophies: trophies,
+    autosave: autosave,
+    save1: save1,
+    save2: save2,
+    save3: save3,
+  };
+  const json = JSON.stringify(root, (k, v) => v instanceof Map ? [...v.keys()] : v);
+  const jsonData = textEncoder.encode(json);
+
+  const key = await getBackupKey();
+  const signData = await subtle.sign("HMAC", key, jsonData);
+  const magicData = Uint8Array.from([ 0, signData.byteLength ]);
+  const blob = new Blob([ magicData, signData, jsonData ], { type: "applicaiton/octet-stream" });
+  const url = URL.createObjectURL(blob);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
+  `;
+  const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
+  node.dispatchEvent(new MouseEvent("click"));
+
+  // 10秒後に削除する
+  setTimeout(() => {
+    node.remove();
+    URL.revokeObjectURL(url);
+  }, 10000);
+};
+
+const restoreBackup = async () => {
+  // ドラッグアンドドロップにする
+
+
+};
+
+//-------------------------------------------------------------------------
+
 const putSystem = async () => {
   try {
     await database.put("system", system);
@@ -2950,6 +3013,9 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.dumpBackup = dumpBackup;
+  commands.restoreBackup = restoreBackup;
+
   commands.resetAudio = resetAudioContext;
 
   commands.resetCache = async () => {
@@ -2991,6 +3057,10 @@ const initializeSystemUi = () => {
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetHistory").name("履歴データを消去する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+
+  const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
+  backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
+  backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
@@ -3908,6 +3978,13 @@ const initializeDialogOverlay = () => {
   document.querySelector(".demeter-dialog-frame").append(dialogFrameNode);
   dialogFrameNode.querySelector(".demeter-button1").addEventListener("click", () => waitForDialog(1));
   dialogFrameNode.querySelector(".demeter-button2").addEventListener("click", () => waitForDialog(2));
+
+  const dialogOverlayNode = document.querySelector(".demeter-dialog-overlay");
+  dialogOverlayNode.addEventListener("dragover", ev => ev.preventDefault());
+  dialogOverlayNode.addEventListener("drop", ev => {
+    ev.preventDefault();
+    D.trace("onDrop", ev);
+  });
 };
 
 const initializeEmptyOverlay = () => {};
