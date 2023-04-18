@@ -3201,9 +3201,11 @@ const initializeSystemUi = () => {
   systemCommandsFolder.add(commands, "resetHistory").name("履歴データを消去する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
-  const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
-  backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
-  backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
+  if (!D.isApp()) {
+    const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
+    backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
+    backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
+  }
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
