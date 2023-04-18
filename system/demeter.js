@@ -15,10 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+/* jshint esversion: 8 */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.includeGuard) {
   return;
 }
@@ -206,7 +210,7 @@ const parseParagraphFromNode = (source, fontSize, font) => {
           rubyOverhangNext: 0,
         });
         break;
-    };
+    }
   };
   parse(source);
 
@@ -1634,7 +1638,7 @@ D.OpacityAnimation = class {
       prevTime = now;
 
       const x = Math.min(duration / this.duration, 1);
-      const y = x * (2 - x)
+      const y = x * (2 - x);
       const z = this.begin + (this.end - this.begin) * y;
       const opacity = D.numberToString(z);
       this.nodes.forEach(node => node.style.opacity = opacity);
@@ -2132,7 +2136,7 @@ const getAudioSource = basename => {
   } else {
     return basename + "." + getAudioExtension();
   }
-}
+};
 
 const getMusicUrls = () => {
   return Object.keys(musicNames).map(key => getAudioSource(D.preferences.musicDir + "/sessions_" + key));
@@ -2148,7 +2152,7 @@ const isDeleteOldCacheTarget = url => {
   const musicUrl = new URL(D.preferences.musicDir, location.href);
   const voiceUrl = new URL(D.preferences.voiceDir, location.href);
   const pathname = url.pathname;
-  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname)
+  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname);
 };
 
 const deleteOldCachesImpl = async () => {
@@ -3488,7 +3492,7 @@ const enterHistoryScreen = async () => {
               return;
             }
           }
-        };
+        }
 
         document.querySelector(".demeter-history-building").style.display = "none";
         document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
@@ -4551,7 +4555,7 @@ const dialog = async key => {
   });
   document.querySelector(".demeter-dialog-text").replaceChildren(...textNodes);
 
-  const dialog = paragraph[0].dialog
+  const dialog = paragraph[0].dialog;
   const button1Node = document.querySelector(".demeter-dialog-frame .demeter-button1");
   const button2Node = document.querySelector(".demeter-dialog-frame .demeter-button2");
   if (dialog.length === 1) {
@@ -4791,7 +4795,7 @@ const getInputControlXY = ev => {
   } else if (isInputControlRight(ev)) {
     return { x: +1, y: 0 };
   }
-}
+};
 
 const clickButton = async node => {
   if (node) {
@@ -5158,7 +5162,7 @@ const focusParagraph = (nodes, ev, startsWithTail, block) => {
   node.classList.add("demeter-focus");
   node.scrollIntoView({ behavior: "smooth", block: block });
   return true;
-}
+};
 
 const processInputDevice = async ev => {
   let consumed;
@@ -5405,9 +5409,9 @@ const onGamepadConnected = async ev => {
           onGamepadButtonPress(i);
           buttonStates[i] = { pressed: now };
         } else {
-          const repeated = buttonState.repeated === undefined
-            ? buttonState.pressed + system.repeatDelay
-            : buttonState.repeated + system.repeatRate;
+          const repeated = buttonState.repeated === undefined ?
+            buttonState.pressed + system.repeatDelay :
+            buttonState.repeated + system.repeatRate;
           if (repeated <= now) {
             onGamepadButtonPress(i);
             buttonState.repeated = repeated;
