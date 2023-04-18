@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
@@ -154,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const dialogNode = document.createElement("div");
       dialogNode.classList.add("demeter-debug-dialog");
-      dialogNode.dataset.pid = paragraphIndex
+      dialogNode.dataset.pid = paragraphIndex;
       dialogNode.append(speakerNode, dialogFrameNode, textNode, ...itemNodes);
       document.querySelector(".demeter-debug").append(dialogNode);
     } else {
