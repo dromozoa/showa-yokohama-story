@@ -2089,6 +2089,8 @@ let historyParagraphIndex;
 let inputDevice;
 let inputHoverable;
 
+let dialogFile;
+
 //-------------------------------------------------------------------------
 
 const cacheImpl = async (sourceUrls) => {
@@ -2181,63 +2183,182 @@ const deleteOldCaches = () => {
 
 const subtle = crypto.subtle;
 const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
 
 const getBackupKey = async () => {
-  const keyData = textEncoder.encode("EVANGELIUM SECUNDUM STEPHANUS");
-  return await subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, [ "sign", "verify" ]);
+  if (subtle) {
+    const keyData = textEncoder.encode("EVANGELIUM SECUNDUM STEPHANUS");
+    return await subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, [ "sign", "verify" ]);
+  }
+};
+
+const signBackup = async jsonData => {
+  if (subtle) {
+    return await subtle.sign("HMAC", await getBackupKey(), jsonData);
+  } else {
+    // ちょうど32文字
+    return textEncoder.encode("[Web Cryptography API not found]");
+  }
+};
+
+const verifyBackup = async (signatureData, jsonData) => {
+  if (subtle) {
+    return await subtle.verify("HMAC", await getBackupKey(), signatureData, jsonData);
+  } else {
+    return false;
+  }
 };
 
 const dumpBackup = async () => {
-  const [system, game, read, trophies, autosave, save1, save2, save3] = await Promise.all([
-    database.get("system", "system"),
-    database.get("game", "game"),
-    database.get("read", "read"),
-    database.get("trophies", "trophies"),
-    database.get("save", "autosave"),
-    database.get("save", "save1"),
-    database.get("save", "save2"),
-    database.get("save", "save3"),
-  ]);
-  const root = {
-    dbVersion: database.version,
-    userAgent: navigator.userAgent,
-    webVersion: D.preferences.version.web,
-    system: system,
-    game: game,
-    read: read,
-    trophies: trophies,
-    autosave: autosave,
-    save1: save1,
-    save2: save2,
-    save3: save3,
-  };
-  const json = JSON.stringify(root, (k, v) => v instanceof Map ? [...v.keys()] : v);
-  const jsonData = textEncoder.encode(json);
+  try {
+    const [ system, game, read, trophies, autosave, save1, save2, save3, history ] = await Promise.all([
+      database.get("system", "system"),
+      database.get("game", "game"),
+      database.get("read", "read"),
+      database.get("trophies", "trophies"),
+      database.get("save", "autosave"),
+      database.get("save", "save1"),
+      database.get("save", "save2"),
+      database.get("save", "save3"),
+      database.get("history", "history"),
+    ]);
+    const root = {
+      dbVersion: database.version,
+      userAgent: navigator.userAgent,
+      webVersion: D.preferences.version.web,
+      system: system,
+      game: game,
+      read: read,
+      trophies: trophies,
+      autosave: autosave,
+      save1: save1,
+      save2: save2,
+      save3: save3,
+      history: history,
+    };
+    const json = JSON.stringify(root, (k, v) => v instanceof Map ? [...v.keys()] : v, 2);
+    const jsonData = textEncoder.encode(json);
 
-  const key = await getBackupKey();
-  const signData = await subtle.sign("HMAC", key, jsonData);
-  const magicData = Uint8Array.from([ 0, signData.byteLength ]);
-  const blob = new Blob([ magicData, signData, jsonData ], { type: "applicaiton/octet-stream" });
-  const url = URL.createObjectURL(blob);
+    const signatureData = await signBackup(jsonData);
+    const magicData = Uint8Array.from([ 0, signatureData.byteLength ]);
+    const blob = new Blob([ magicData, signatureData, jsonData ], { type: "applicaiton/octet-stream" });
+    const url = URL.createObjectURL(blob);
 
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
-  `;
-  const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
-  node.dispatchEvent(new MouseEvent("click"));
+    const template = document.createElement("template");
+    template.innerHTML = `
+      <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
+    `;
+    const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
+    node.dispatchEvent(new MouseEvent("click"));
 
-  // 10秒後に削除する
-  setTimeout(() => {
-    node.remove();
-    URL.revokeObjectURL(url);
-  }, 10000);
+    // 10秒後に削除する
+    setTimeout(() => {
+      node.remove();
+      URL.revokeObjectURL(url);
+    }, 10000);
+
+    logging.info("バックアップデータ出力: 成功");
+  } catch (e) {
+    logging.error("バックアップデータ出力: 失敗", e);
+  }
+};
+
+const readBackup = async blob => {
+  try {
+    const buffer = await blob.arrayBuffer();
+
+    const headerData = new Uint8Array(buffer, 0, 2);
+    if (headerData[0] !== 0 || headerData[1] !== 32) {
+      return [];
+    }
+
+    const signatureData = new Uint8Array(buffer, 2, 32);
+    const jsonData = new Uint8Array(buffer, 34);
+    const json = textDecoder.decode(jsonData);
+    const root = JSON.parse(json);
+    const result = await verifyBackup(signatureData, jsonData);
+
+    return [ result, root ];
+  } catch (e) {
+    D.trace("readBackup", e);
+    return [];
+  }
+};
+
+const restoreBackupImpl = async root => {
+  const V = 600125580000;
+  await stop();
+
+  try {
+    Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
+    Object.entries(root.system).forEach(([k, v]) => system[k] = v);
+    updateSystemUi();
+
+    gameState = root.game;
+    setItemDefault(gameState, gameStateDefault);
+
+    readState = {};
+    setItemDefault(readState, readStateDefault);
+    readState.map = new Map(root.read.map.map(k => [k, V]));
+
+    trophiesState = {};
+    setItemDefault(trophiesState, trophiesStateDefault);
+    trophiesState.map = new Map(root.trophies.map.map(k => [k, V]));
+    updateTrophies();
+
+    historyState = root.history;
+    setItemDefault(historyState, historyStateDefault);
+
+    await Promise.all([
+      putSystem(),
+      putGameState(),
+      putReadState(),
+      putTrophiesState(),
+      putHistoryState(),
+      restoreSave("autosave", "自動セーブデータ", root.autosave),
+      restoreSave("save1", "セーブデータ#1", root.save1),
+      restoreSave("save2", "セーブデータ#2", root.save2),
+      restoreSave("save3", "セーブデータ#3", root.save3),
+    ]);
+
+    logging.info("バックアップデータ復元: 成功");
+  } catch (e) {
+    logging.error("バックアップデータ復元: 失敗", e);
+  }
+
+  leaveMainScreen();
+  await enterTitleScreen();
 };
 
 const restoreBackup = async () => {
-  // ドラッグアンドドロップにする
+  soundEffectSelect();
+  closeSystemUi();
+  pause();
 
+  while (true) {
+    const dialogResult = await dialog("system-restore-drop");
+    if (dialogResult === "file") {
+      const [ result, root ] = await readBackup(dialogFile);
+      if (result) {
+        if (await dialog("system-restore") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else if (root) {
+        if (await dialog("system-restore-integrity-error") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else {
+        await dialog("system-restore-format-error");
+      }
+    } else if (dialogResult === "yes") {
+      document.querySelector(".demeter-dialog-file-form").reset();
+      document.querySelector(".demeter-dialog-file").dispatchEvent(new MouseEvent("click"));
+      continue;
+    }
+    break;
+  }
 
+  restart();
 };
 
 //-------------------------------------------------------------------------
@@ -2333,6 +2454,24 @@ const putSave = async (key, name) => {
   }
 };
 
+const restoreSave = async (key, name, object) => {
+  if (object) {
+    try {
+      await database.put("save", object);
+      logging.debug(name + "書込: 成功");
+    } catch (e) {
+      logging.error(name + "書込: 失敗", e);
+    }
+  } else {
+    try {
+      await database.delete("save", key);
+      logging.debug(name + "削除: 成功");
+    } catch (e) {
+      logging.error(name + "削除: 失敗", e);
+    }
+  }
+};
+
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
@@ -2394,7 +2533,7 @@ const updateTrophies = () => {
 };
 
 const updateTrophyImpl = async trophy => {
-  updateTrophies();;
+  updateTrophies();
 
   logging.notice("実績解除: " + trophy.name);
   logging.info(trophy.description);
@@ -2828,6 +2967,22 @@ const closeSystemUi = () => {
   systemUi.openAnimated(false);
 };
 
+const updateSystemUi = () => {
+  [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
+
+  updateScaleLimit();
+  updateSpeed();
+  updateMasterVolume();
+  updateMusicVolume();
+  updateVoiceVolume();
+  updateEffectVolume();
+  updateHistorySize();
+  updateComponentColor();
+  updateComponentOpacity();
+  updateComponents();
+
+};
+
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
@@ -2953,19 +3108,7 @@ const initializeSystemUi = () => {
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
       await putSystem();
-
-      [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
-
-      updateScaleLimit();
-      updateSpeed();
-      updateMasterVolume();
-      updateMusicVolume();
-      updateVoiceVolume();
-      updateEffectVolume();
-      updateHistorySize();
-      updateComponentColor();
-      updateComponentOpacity();
-      updateComponents();
+      updateSystemUi();
     }
     restart();
   };
@@ -3983,7 +4126,19 @@ const initializeDialogOverlay = () => {
   dialogOverlayNode.addEventListener("dragover", ev => ev.preventDefault());
   dialogOverlayNode.addEventListener("drop", ev => {
     ev.preventDefault();
-    D.trace("onDrop", ev);
+    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files) {
+      dialogFile = ev.dataTransfer.files.item(0);
+      waitForDialog(0);
+    }
+  });
+
+  const dialogFileNode = document.querySelector(".demeter-dialog-file");
+  dialogFileNode.addEventListener("change", ev => {
+    ev.preventDefault();
+    if (dialogFileNode && dialogFileNode.files) {
+      dialogFile = dialogFileNode.files.item(0);
+      waitForDialog(0);
+    }
   });
 };
 
@@ -4438,8 +4593,14 @@ const dialog = async key => {
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
-  const result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
-  if (result === "no") {
+  let result;
+  if (resultIndex === 0) {
+    result = "file";
+  } else {
+    result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  }
+
+  if (result === "no" || result === "cancel") {
     soundEffectCancel();
   } else {
     soundEffectSelect();

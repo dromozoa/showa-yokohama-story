@@ -2315,9 +2315,31 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
 ["更新するために、","Playストア","を開く？"],
 ]],
+// index: 398
+[{speaker:"narrator",system:true,dialog:[{choice:"選択",result:"yes"},{choice:"取消",result:"no"},],adjacencies:[]},[
+[["復元","リストア"],"するバックアップデータを、此処にドラッグ・アンド・ドロップするか、ファイルダイアログで択ぶかして。"],
+]],
+// index: 399
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["データ",["形式","フォーマット"],"の解析完了。"],
+["整合性チェック成功。"],
+[["復元","リストア"],"して、タイトルに戻る？"],
+]],
+// index: 400
+[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
+["データ",["形式","フォーマット"],"の解析完了。"],
+["整合性チェック失敗。改竄の可能性。"],
+["強制的に",["復元","リストア"],"して、タイトルに戻る？"],
+]],
+// index: 401
+[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
+["データ",["形式","フォーマット"],"の解析失敗。"],
+["未知の言語で記述されている可能性。"],
+[["復元","リストア"],"不能。"],
+]],
 ],
 total:375,
-starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397],
+starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401],
 labels:{
 "ニューゲーム":1,
 "おはよう":2,
@@ -2389,6 +2411,10 @@ dialogs:{
 "system-reset-history":395,
 "system-update-ios":396,
 "system-update-android":397,
+"system-restore-drop":398,
+"system-restore":399,
+"system-restore-integrity-error":400,
+"system-restore-format-error":401,
 },
 };
 
