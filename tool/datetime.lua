@@ -26,4 +26,3 @@ local t = os.time {
 }
 
 print(t)
-
