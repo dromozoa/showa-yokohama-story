@@ -16,6 +16,7 @@
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 /* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
