@@ -1762,6 +1762,45 @@ const soundEffectFocus = () => {
 
 // 表示できるようになるまで待つ。
 D.InterruptQueue = class {
+  constructor() {
+    this.queue = [];
+  }
+
+  push(task) {
+    this.queue.push(task);
+  }
+
+  isEmpty() {
+    return this.queue.length === 0;
+  }
+
+  async dispatch() {
+    D.trace("InterruptQueue dispatch", this.queue.length);
+    while (!this.isEmpty()) {
+      if (screenName === "title") {
+        // アンロックまで遅延させる（アンロックの際に再度呼ばれる）。
+        if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
+          return;
+        }
+        await this.queue.shift()();
+
+      } else if (screenName === "start") {
+        setTimeout(async () => await this.dispatch(), 4000);
+        return;
+
+      } else if (screenName === "credits") {
+        // タイトル画面に入る際にで処理する。
+        return;
+
+      } else {
+        D.trace("InterruptQueue dispatch", screenName, waitForChoice, waitForDialog);
+        if (waitForChoice || waitForDialog) {
+          return;
+        }
+        await this.queue.shift()();
+      }
+    }
+  }
 };
 
 D.compareVersionWeb = version => {
@@ -1812,7 +1851,6 @@ D.UpdateChecker = class {
     }
     this.status = undefined; // undefined, "checking" or "detected"
     this.version = undefined;
-    this.delayed = undefined;
   }
 
   check() {
@@ -1830,8 +1868,8 @@ D.UpdateChecker = class {
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
-        this.delayed = true;
-        await this.dialog();
+        interruptQueue.push(async () => await this.dialog());
+        await interruptQueue.dispatch();
       }
     });
   }
@@ -1882,17 +1920,7 @@ D.UpdateChecker = class {
   }
 
   async dialog() {
-    if (!this.delayed) {
-      return;
-    }
-
     if (screenName === "title") {
-      // アンロックされるまで遅延させる。
-      if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
-        return;
-      }
-      this.delayed = undefined;
-
       soundEffectAlert();
       document.querySelector(".demeter-title-text").style.display = "none";
       hideTitleChoices();
@@ -1902,15 +1930,7 @@ D.UpdateChecker = class {
       document.querySelector(".demeter-title-text").style.display = "block";
       await showTitleChoices();
 
-    } else if (screenName === "start") {
-      setTimeout(async () => await this.dialog(), 4000);
-
     } else if (screenName === "main") {
-      if (waitForChoice || waitForDialog) {
-        return;
-      }
-      this.delayed = undefined;
-
       soundEffectAlert();
       closeSystemUi();
       pause();
@@ -1920,17 +1940,11 @@ D.UpdateChecker = class {
       restart();
 
     } else if (screenName === "load" || screenName === "save") {
-      if (waitForDialog) {
-        return;
-      }
-      this.delayed = undefined;
-
       soundEffectAlert();
       if (await this.showDialog()) {
         return;
       }
-    } else if (screenName === "credits") {
-      // enterTitleScreenで処理する。
+
     } else if (screenName === "history") {
       soundEffectAlert();
       if (historyVoiceSprite) {
@@ -1942,6 +1956,7 @@ D.UpdateChecker = class {
       if (historyVoiceSprite) {
         historyVoiceSprite.restart();
       }
+
     }
   }
 };
@@ -2756,8 +2771,8 @@ const unlockAudio = async () => {
     }
   }
 
-  if (updateChecker.delayed) {
-    await updateChecker.dialog();
+  if (!interruptQueue.isEmpty()) {
+    await interruptQueue.dispatch();
   }
 };
 
@@ -3303,8 +3318,8 @@ const enterTitleScreen = async () => {
     backgroundTransition.fade("モノクローム");
     await showTitleChoices();
 
-    if (updateChecker.delayed) {
-      await updateChecker.dialog();
+    if (!interruptQueue.isEmpty()) {
+      await interruptQueue.dispatch();
     }
   }
 
@@ -3707,7 +3722,7 @@ const initializeBackground = () => {
 const initializeInterrupt = () => {
   interruptQueue = D.interruptQueue = new D.InterruptQueue();
   updateChecker = D.updateChecker = new D.UpdateChecker(600000);
-}
+};
 
 //-------------------------------------------------------------------------
 
@@ -4456,8 +4471,8 @@ const next = async () => {
         document.querySelector(".demeter-main-choices").style.display = "none";
         choices = undefined;
 
-        if (updateChecker.delayed) {
-          setTimeout(async () => await updateChecker.dialog(), 1000);
+        if (!interruptQueue.isEmpty()) {
+          setTimeout(async () => await interruptQueue.dispatch(), 1000);
         }
 
         cont = true;
@@ -4621,8 +4636,8 @@ const dialog = async key => {
     soundEffectSelect();
   }
 
-  if (updateChecker.delayed) {
-    setTimeout(async () => await updateChecker.dialog(), 1000);
+  if (!interruptQueue.isEmpty()) {
+    setTimeout(async () => await interruptQueue.dispatch(), 1000);
   }
 
   return result;
