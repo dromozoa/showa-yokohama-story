@@ -24,8 +24,13 @@ local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
 handle:close()
 
--- VPPファイルから音素を抽出する。
 local vpp = parse_json(source:gsub("\0$", ""))
+
+-- VPPファイルを整形して出力する。
+write_json(io.stdout, vpp)
+os.exit()
+
+-- VPPファイルから音素を抽出する。
 for _, block in ipairs(vpp.project.blocks) do
   for _, sentence in ipairs(block["sentence-list"]) do
     for _, token in ipairs(sentence.tokens) do

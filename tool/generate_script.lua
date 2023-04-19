@@ -45,10 +45,15 @@ end
 local handle = assert(io.open(result_pathname, "w"))
 
 handle:write [[
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.scenario) {
   return;
 }

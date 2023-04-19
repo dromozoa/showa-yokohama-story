@@ -273,10 +273,15 @@ local function write_line_data_js(line_data, result_pathname)
   local name = assert(result_pathname:match "([^/.]+)%.[^.]+$")
 
   handle:write [[
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.scanlines) {
   return;
 }

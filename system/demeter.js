@@ -15,10 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.includeGuard) {
   return;
 }
@@ -206,7 +211,7 @@ const parseParagraphFromNode = (source, fontSize, font) => {
           rubyOverhangNext: 0,
         });
         break;
-    };
+    }
   };
   parse(source);
 
@@ -1634,7 +1639,7 @@ D.OpacityAnimation = class {
       prevTime = now;
 
       const x = Math.min(duration / this.duration, 1);
-      const y = x * (2 - x)
+      const y = x * (2 - x);
       const z = this.begin + (this.end - this.begin) * y;
       const opacity = D.numberToString(z);
       this.nodes.forEach(node => node.style.opacity = opacity);
@@ -1755,6 +1760,86 @@ const soundEffectFocus = () => {
 
 //-------------------------------------------------------------------------
 
+// 表示できるようになるまで待つ。
+D.InterruptQueue = class {
+  constructor() {
+    this.queue = [];
+  }
+
+  push(task) {
+    this.queue.push(task);
+  }
+
+  isEmpty() {
+    return this.queue.length === 0;
+  }
+
+  async dispatch() {
+    D.trace("InterruptQueue dispatch", this.queue.length);
+    while (!this.isEmpty()) {
+      if (screenName === "title") {
+        // アンロックまで遅延させる（アンロックの際に再度呼ばれる）。
+        if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
+          return;
+        }
+        await this.queue.shift()();
+
+      } else if (screenName === "start") {
+        setTimeout(async () => await this.dispatch(), 4000);
+        return;
+
+      } else if (screenName === "credits") {
+        // タイトル画面に入る際にで処理する。
+        return;
+
+      } else {
+        D.trace("InterruptQueue dispatch", screenName, waitForChoice, waitForDialog);
+        if (waitForChoice || waitForDialog) {
+          return;
+        }
+        await this.queue.shift()();
+      }
+    }
+  }
+};
+
+// ダイアログ表示前後にスクリーンごとに必要な処理を行う。
+D.InterruptDialog = async task => {
+  if (screenName === "title") {
+    document.querySelector(".demeter-title-text").style.display = "none";
+    hideTitleChoices();
+    if (await task()) {
+      return;
+    }
+    document.querySelector(".demeter-title-text").style.display = "block";
+    await showTitleChoices();
+
+  } else if (screenName === "main") {
+    closeSystemUi();
+    pause();
+    if (await task()) {
+      return;
+    }
+    restart();
+
+  } else if (screenName === "history") {
+    if (historyVoiceSprite) {
+      historyVoiceSprite.pause();
+    }
+    if (await task()) {
+      return;
+    }
+    if (historyVoiceSprite) {
+      historyVoiceSprite.restart();
+    }
+
+  } else {
+    if (await task()) {
+      return;
+    }
+  }
+};
+
 D.compareVersionWeb = version => {
   if (typeof version !== "object" || typeof version.web !== "string") {
     throw new Error("invalid version object");
@@ -1803,7 +1888,6 @@ D.UpdateChecker = class {
     }
     this.status = undefined; // undefined, "checking" or "detected"
     this.version = undefined;
-    this.delayed = undefined;
   }
 
   check() {
@@ -1821,8 +1905,8 @@ D.UpdateChecker = class {
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
-        this.delayed = true;
-        await this.dialog();
+        interruptQueue.push(async () => await D.InterruptDialog(async () => await this.dialog()));
+        await interruptQueue.dispatch();
       }
     });
   }
@@ -1857,7 +1941,8 @@ D.UpdateChecker = class {
     }
   }
 
-  async showDialog() {
+  async dialog() {
+    soundEffectAlert();
     if (D.isApp()) {
       const key = "system-update-" + D.isApp();
       if (await dialog(key) === "yes") {
@@ -1868,70 +1953,6 @@ D.UpdateChecker = class {
       if (await dialog(key) === "yes") {
         location.href = "game.html?t=" + Date.now();
         return true;
-      }
-    }
-  }
-
-  async dialog() {
-    if (!this.delayed) {
-      return;
-    }
-
-    if (screenName === "title") {
-      // アンロックされるまで遅延させる。
-      if (document.querySelector(".demeter-title-screen").classList.contains("demeter-title-unlock-audio")) {
-        return;
-      }
-      this.delayed = undefined;
-
-      soundEffectAlert();
-      document.querySelector(".demeter-title-text").style.display = "none";
-      hideTitleChoices();
-      if (await this.showDialog()) {
-        return;
-      }
-      document.querySelector(".demeter-title-text").style.display = "block";
-      await showTitleChoices();
-
-    } else if (screenName === "start") {
-      setTimeout(async () => await this.dialog(), 4000);
-
-    } else if (screenName === "main") {
-      if (waitForChoice || waitForDialog) {
-        return;
-      }
-      this.delayed = undefined;
-
-      soundEffectAlert();
-      closeSystemUi();
-      pause();
-      if (await this.showDialog()) {
-        return;
-      }
-      restart();
-
-    } else if (screenName === "load" || screenName === "save") {
-      if (waitForDialog) {
-        return;
-      }
-      this.delayed = undefined;
-
-      soundEffectAlert();
-      if (await this.showDialog()) {
-        return;
-      }
-    } else if (screenName === "credits") {
-      // enterTitleScreenで処理する。
-    } else if (screenName === "history") {
-      soundEffectAlert();
-      if (historyVoiceSprite) {
-        historyVoiceSprite.pause();
-      }
-      if (await this.showDialog()) {
-        return;
-      }
-      if (historyVoiceSprite) {
-        historyVoiceSprite.restart();
       }
     }
   }
@@ -2076,6 +2097,7 @@ let waitForStop;
 let waitForDialog;
 let waitForCredits;
 
+let interruptQueue;
 let updateChecker;
 
 let mainToHistoryScreenOnce;
@@ -2088,6 +2110,8 @@ let historyParagraphIndex;
 
 let inputDevice;
 let inputHoverable;
+
+let dialogFile;
 
 //-------------------------------------------------------------------------
 
@@ -2130,7 +2154,7 @@ const getAudioSource = basename => {
   } else {
     return basename + "." + getAudioExtension();
   }
-}
+};
 
 const getMusicUrls = () => {
   return Object.keys(musicNames).map(key => getAudioSource(D.preferences.musicDir + "/sessions_" + key));
@@ -2146,7 +2170,7 @@ const isDeleteOldCacheTarget = url => {
   const musicUrl = new URL(D.preferences.musicDir, location.href);
   const voiceUrl = new URL(D.preferences.voiceDir, location.href);
   const pathname = url.pathname;
-  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname)
+  return !pathname.startsWith(systemUrl.pathname) && !pathname.startsWith(musicUrl.pathname) && !pathname.startsWith(voiceUrl.pathname);
 };
 
 const deleteOldCachesImpl = async () => {
@@ -2175,6 +2199,188 @@ const deleteOldCaches = () => {
   }).catch(e => {
     D.trace("deleteOldCaches", e);
   });
+};
+
+//-------------------------------------------------------------------------
+
+const subtle = crypto.subtle;
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const getBackupKey = async () => {
+  if (subtle) {
+    const keyData = textEncoder.encode("EVANGELIUM SECUNDUM STEPHANUS");
+    return await subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, [ "sign", "verify" ]);
+  }
+};
+
+const signBackup = async jsonData => {
+  if (subtle) {
+    return await subtle.sign("HMAC", await getBackupKey(), jsonData);
+  } else {
+    // ちょうど32文字
+    return textEncoder.encode("[Web Cryptography API not found]");
+  }
+};
+
+const verifyBackup = async (signatureData, jsonData) => {
+  if (subtle) {
+    return await subtle.verify("HMAC", await getBackupKey(), signatureData, jsonData);
+  } else {
+    return false;
+  }
+};
+
+const dumpBackup = async () => {
+  try {
+    const [ system, game, read, trophies, autosave, save1, save2, save3, history ] = await Promise.all([
+      database.get("system", "system"),
+      database.get("game", "game"),
+      database.get("read", "read"),
+      database.get("trophies", "trophies"),
+      database.get("save", "autosave"),
+      database.get("save", "save1"),
+      database.get("save", "save2"),
+      database.get("save", "save3"),
+      database.get("history", "history"),
+    ]);
+    const root = {
+      dbVersion: database.version,
+      userAgent: navigator.userAgent,
+      webVersion: D.preferences.version.web,
+      system: system,
+      game: game,
+      read: read,
+      trophies: trophies,
+      autosave: autosave,
+      save1: save1,
+      save2: save2,
+      save3: save3,
+      history: history,
+    };
+    const json = JSON.stringify(root, (k, v) => v instanceof Map ? [...v.keys()] : v, 2);
+    const jsonData = textEncoder.encode(json);
+
+    const signatureData = await signBackup(jsonData);
+    const magicData = Uint8Array.from([ 0, signatureData.byteLength ]);
+    const blob = new Blob([ magicData, signatureData, jsonData ], { type: "applicaiton/octet-stream" });
+    const url = URL.createObjectURL(blob);
+
+    const template = document.createElement("template");
+    template.innerHTML = `
+      <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
+    `;
+    const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
+    node.dispatchEvent(new MouseEvent("click"));
+
+    // 10秒後に削除する
+    setTimeout(() => {
+      node.remove();
+      URL.revokeObjectURL(url);
+    }, 10000);
+
+    logging.info("バックアップデータ出力: 成功");
+  } catch (e) {
+    logging.error("バックアップデータ出力: 失敗", e);
+  }
+};
+
+const readBackup = async blob => {
+  try {
+    const buffer = await blob.arrayBuffer();
+
+    const headerData = new Uint8Array(buffer, 0, 2);
+    if (headerData[0] !== 0 || headerData[1] !== 32) {
+      return [];
+    }
+
+    const signatureData = new Uint8Array(buffer, 2, 32);
+    const jsonData = new Uint8Array(buffer, 34);
+    const json = textDecoder.decode(jsonData);
+    const root = JSON.parse(json);
+    const result = await verifyBackup(signatureData, jsonData);
+
+    return [ result, root ];
+  } catch (e) {
+    D.trace("readBackup", e);
+    return [];
+  }
+};
+
+const restoreBackupImpl = async root => {
+  const V = 600125580000;
+  await stop();
+
+  try {
+    Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
+    Object.entries(root.system).forEach(([k, v]) => system[k] = v);
+    updateSystemUi();
+
+    gameState = root.game;
+    setItemDefault(gameState, gameStateDefault);
+
+    readState = {};
+    setItemDefault(readState, readStateDefault);
+    readState.map = new Map(root.read.map.map(k => [k, V]));
+
+    trophiesState = {};
+    setItemDefault(trophiesState, trophiesStateDefault);
+    trophiesState.map = new Map(root.trophies.map.map(k => [k, V]));
+    updateTrophies();
+
+    historyState = root.history;
+    setItemDefault(historyState, historyStateDefault);
+
+    await Promise.all([
+      putSystem(),
+      putGameState(),
+      putReadState(),
+      putTrophiesState(),
+      putHistoryState(),
+      restoreSave("autosave", "自動セーブデータ", root.autosave),
+      restoreSave("save1", "セーブデータ#1", root.save1),
+      restoreSave("save2", "セーブデータ#2", root.save2),
+      restoreSave("save3", "セーブデータ#3", root.save3),
+    ]);
+
+    logging.info("バックアップデータ復元: 成功");
+  } catch (e) {
+    logging.error("バックアップデータ復元: 失敗", e);
+  }
+
+  leaveMainScreen();
+  await enterTitleScreen();
+};
+
+const restoreBackup = async () => {
+  soundEffectSelect();
+  closeSystemUi();
+  pause();
+
+  while (true) {
+    const dialogResult = await dialog("system-restore-drop");
+    if (dialogResult === "file") {
+      const [ result, root ] = await readBackup(dialogFile);
+      if (result) {
+        if (await dialog("system-restore") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else if (root) {
+        if (await dialog("system-restore-integrity-error") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else {
+        await dialog("system-restore-format-error");
+      }
+    } else if (dialogResult === "yes") {
+      document.querySelector(".demeter-dialog-file-form").reset();
+      document.querySelector(".demeter-dialog-file").dispatchEvent(new MouseEvent("click"));
+      continue;
+    }
+    break;
+  }
+
+  restart();
 };
 
 //-------------------------------------------------------------------------
@@ -2270,6 +2476,24 @@ const putSave = async (key, name) => {
   }
 };
 
+const restoreSave = async (key, name, object) => {
+  if (object) {
+    try {
+      await database.put("save", object);
+      logging.debug(name + "書込: 成功");
+    } catch (e) {
+      logging.error(name + "書込: 失敗", e);
+    }
+  } else {
+    try {
+      await database.delete("save", key);
+      logging.debug(name + "削除: 成功");
+    } catch (e) {
+      logging.error(name + "削除: 失敗", e);
+    }
+  }
+};
+
 const deleteSave = async (key, name) => {
   try {
     await database.delete("save", key);
@@ -2331,7 +2555,7 @@ const updateTrophies = () => {
 };
 
 const updateTrophyImpl = async trophy => {
-  updateTrophies();;
+  updateTrophies();
 
   logging.notice("実績解除: " + trophy.name);
   logging.info(trophy.description);
@@ -2544,8 +2768,8 @@ const unlockAudio = async () => {
     }
   }
 
-  if (updateChecker.delayed) {
-    await updateChecker.dialog();
+  if (!interruptQueue.isEmpty()) {
+    await interruptQueue.dispatch();
   }
 };
 
@@ -2765,6 +2989,22 @@ const closeSystemUi = () => {
   systemUi.openAnimated(false);
 };
 
+const updateSystemUi = () => {
+  [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
+
+  updateScaleLimit();
+  updateSpeed();
+  updateMasterVolume();
+  updateMusicVolume();
+  updateVoiceVolume();
+  updateEffectVolume();
+  updateHistorySize();
+  updateComponentColor();
+  updateComponentOpacity();
+  updateComponents();
+
+};
+
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
 const addSystemUiFolder = (gui, title) => {
   const folder = new lil.GUI({
@@ -2890,19 +3130,7 @@ const initializeSystemUi = () => {
     if (await dialog("system-reset-system") === "yes") {
       Object.entries(systemDefault).forEach(([k, v]) => system[k] = v);
       await putSystem();
-
-      [ systemUi, ...systemUi.folders ].forEach(ui => ui.controllers.forEach(controller => controller.updateDisplay()));
-
-      updateScaleLimit();
-      updateSpeed();
-      updateMasterVolume();
-      updateMusicVolume();
-      updateVoiceVolume();
-      updateEffectVolume();
-      updateHistorySize();
-      updateComponentColor();
-      updateComponentOpacity();
-      updateComponents();
+      updateSystemUi();
     }
     restart();
   };
@@ -2950,6 +3178,9 @@ const initializeSystemUi = () => {
     restart();
   };
 
+  commands.dumpBackup = dumpBackup;
+  commands.restoreBackup = restoreBackup;
+
   commands.resetAudio = resetAudioContext;
 
   commands.resetCache = async () => {
@@ -2991,6 +3222,12 @@ const initializeSystemUi = () => {
   systemCommandsFolder.add(commands, "resetSystem").name("システム設定を初期化する");
   systemCommandsFolder.add(commands, "resetHistory").name("履歴データを消去する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
+
+  if (!D.isApp()) {
+    const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
+    backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
+    backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
+  }
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
@@ -3078,8 +3315,8 @@ const enterTitleScreen = async () => {
     backgroundTransition.fade("モノクローム");
     await showTitleChoices();
 
-    if (updateChecker.delayed) {
-      await updateChecker.dialog();
+    if (!interruptQueue.isEmpty()) {
+      await interruptQueue.dispatch();
     }
   }
 
@@ -3273,7 +3510,7 @@ const enterHistoryScreen = async () => {
               return;
             }
           }
-        };
+        }
 
         document.querySelector(".demeter-history-building").style.display = "none";
         document.querySelector(".demeter-history-paragraphs").replaceChildren(...historyParagraphNodes);
@@ -3479,7 +3716,10 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = D.updateChecker = new D.UpdateChecker(600000);
+const initializeInterrupt = () => {
+  interruptQueue = D.interruptQueue = new D.InterruptQueue();
+  updateChecker = D.updateChecker = new D.UpdateChecker(600000);
+};
 
 //-------------------------------------------------------------------------
 
@@ -3908,6 +4148,25 @@ const initializeDialogOverlay = () => {
   document.querySelector(".demeter-dialog-frame").append(dialogFrameNode);
   dialogFrameNode.querySelector(".demeter-button1").addEventListener("click", () => waitForDialog(1));
   dialogFrameNode.querySelector(".demeter-button2").addEventListener("click", () => waitForDialog(2));
+
+  const dialogOverlayNode = document.querySelector(".demeter-dialog-overlay");
+  dialogOverlayNode.addEventListener("dragover", ev => ev.preventDefault());
+  dialogOverlayNode.addEventListener("drop", ev => {
+    ev.preventDefault();
+    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files) {
+      dialogFile = ev.dataTransfer.files.item(0);
+      waitForDialog(0);
+    }
+  });
+
+  const dialogFileNode = document.querySelector(".demeter-dialog-file");
+  dialogFileNode.addEventListener("change", ev => {
+    ev.preventDefault();
+    if (dialogFileNode && dialogFileNode.files) {
+      dialogFile = dialogFileNode.files.item(0);
+      waitForDialog(0);
+    }
+  });
 };
 
 const initializeEmptyOverlay = () => {};
@@ -4209,8 +4468,8 @@ const next = async () => {
         document.querySelector(".demeter-main-choices").style.display = "none";
         choices = undefined;
 
-        if (updateChecker.delayed) {
-          setTimeout(async () => await updateChecker.dialog(), 1000);
+        if (!interruptQueue.isEmpty()) {
+          setTimeout(async () => await interruptQueue.dispatch(), 1000);
         }
 
         cont = true;
@@ -4317,7 +4576,7 @@ const dialog = async key => {
   });
   document.querySelector(".demeter-dialog-text").replaceChildren(...textNodes);
 
-  const dialog = paragraph[0].dialog
+  const dialog = paragraph[0].dialog;
   const button1Node = document.querySelector(".demeter-dialog-frame .demeter-button1");
   const button2Node = document.querySelector(".demeter-dialog-frame .demeter-button2");
   if (dialog.length === 1) {
@@ -4361,15 +4620,21 @@ const dialog = async key => {
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
-  const result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
-  if (result === "no") {
+  let result;
+  if (resultIndex === 0) {
+    result = "file";
+  } else {
+    result = dialog[dialog.length === 1 ? 0 : 2 - resultIndex].result;
+  }
+
+  if (result === "no" || result === "cancel") {
     soundEffectCancel();
   } else {
     soundEffectSelect();
   }
 
-  if (updateChecker.delayed) {
-    setTimeout(async () => await updateChecker.dialog(), 1000);
+  if (!interruptQueue.isEmpty()) {
+    setTimeout(async () => await interruptQueue.dispatch(), 1000);
   }
 
   return result;
@@ -4551,7 +4816,7 @@ const getInputControlXY = ev => {
   } else if (isInputControlRight(ev)) {
     return { x: +1, y: 0 };
   }
-}
+};
 
 const clickButton = async node => {
   if (node) {
@@ -4918,7 +5183,7 @@ const focusParagraph = (nodes, ev, startsWithTail, block) => {
   node.classList.add("demeter-focus");
   node.scrollIntoView({ behavior: "smooth", block: block });
   return true;
-}
+};
 
 const processInputDevice = async ev => {
   let consumed;
@@ -5165,9 +5430,9 @@ const onGamepadConnected = async ev => {
           onGamepadButtonPress(i);
           buttonStates[i] = { pressed: now };
         } else {
-          const repeated = buttonState.repeated === undefined
-            ? buttonState.pressed + system.repeatDelay
-            : buttonState.repeated + system.repeatRate;
+          const repeated = buttonState.repeated === undefined ?
+            buttonState.pressed + system.repeatDelay :
+            buttonState.repeated + system.repeatRate;
           if (repeated <= now) {
             onGamepadButtonPress(i);
             buttonState.repeated = repeated;
@@ -5204,7 +5469,7 @@ D.onDOMContentLoaded = async () => {
   await initializeAudio(); // initializeTitleScreenより後、enterTitleScreenより前に実行する。
   await onResize();
   initializeBackground();
-  initializeUpdateChecker();
+  initializeInterrupt();
   initializeFocusable(); // SVGを作り終えた後に実行する。
 
   addEventListener("resize", onResize);
