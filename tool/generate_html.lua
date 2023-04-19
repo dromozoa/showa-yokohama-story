@@ -16,6 +16,7 @@
 -- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
 local parse_json = require "parse_json"
+local quote_shell = require "quote_shell"
 local read_all = require "read_all"
 
 local template_pathname, loader_pathname, graph_pathname, credits_pathname, trophies_pathname, version_pathname, result_pathname = ...
@@ -27,8 +28,9 @@ local credits = read_all(credits_pathname)
 local trophies = read_all(trophies_pathname)
 local version = parse_json(read_all(version_pathname))
 
-local date = os.date "*t"
-local updated = ("%d年%d月%d日"):format(date.year, date.month, date.day)
+local handle = io.popen("git log -1 --date='format:%Y年%m年%d日' --pretty='%ad' "..quote_shell(template_pathname))
+local updated = handle:read():gsub("%d+", function (v) return (v:gsub("^0+", "")) end)
+handle:close();
 
 local handle = assert(io.open(result_pathname, "w"))
 local result = template

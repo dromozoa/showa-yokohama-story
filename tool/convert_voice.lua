@@ -92,10 +92,15 @@ generate_wav(output_dirname.."/silent.wav", 0.4)
 local handle_js = assert(io.open(output_dirname.."/demeter-voice-sprites.js", "w"))
 
 handle_js:write [[
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.voiceSprites) {
   return;
 }

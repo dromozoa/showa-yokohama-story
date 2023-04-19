@@ -15,10 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
 
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.preferenes) {
   return;
 }
@@ -39,7 +44,7 @@ const getAppVersion = () => {
   if (result) {
     return result[1];
   }
-}
+};
 
 const getAudioExtensions = () => {
   switch (isApp()) {
@@ -53,7 +58,7 @@ const getAudioExtensions = () => {
 };
 
 const mode = "develop";
-const version = { web: "b27", system: 25, music: 1, voice: 8 };
+const version = { web: "b27", system: 25, music: 1, voice: 9 };
 const audioExtensions = getAudioExtensions();
 
 if (mode === "develop") {

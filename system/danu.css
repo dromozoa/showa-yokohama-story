@@ -116,6 +116,17 @@ body.danu {
 
 /*************************************************************************/
 
+.danu-badge svg,
+.danu-badge img {
+  display: inline-box;
+  margin-right: 24px;
+  margin-bottom: 16px;
+  width: auto;
+  height: 56px;
+}
+
+/*************************************************************************/
+
 .danu-a-japan {
   display: inline-block;
   position: relative;

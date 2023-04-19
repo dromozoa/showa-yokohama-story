@@ -54,10 +54,15 @@ execute(("ffmpeg -y -i %s/silent.wav -ac 2 %s/silent-stereo.wav"):format(
 
 local handle_js = assert(io.open(output_dirname.."/demeter-effect-sprite.js", "w"))
 handle_js:write [[
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.effectSprite) {
   return;
 }
