@@ -101,3 +101,7 @@ xcrun simctl list
 xcrun simctl status_bar 6B8A53F8-2445-4ECD-BB79-6724B7EF4A07 list
 ```
 
+## URL
+
+- https://apps.apple.com/jp/app/id6447784319
+- https://play.google.com/store/apps/details?id=com.vaporoid.sys

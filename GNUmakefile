@@ -21,16 +21,11 @@ scenarios = $(wildcard scenario/*.txt)
 credits = scenario/credits
 trophies = scenario/trophies
 contexts = build/loader.html build/graph.svg build/credits.html build/trophies.html version.json
-targets = \
-	build/loader.html \
-	build/graph.svg \
-	build/credits.html \
-	build/trophies.html \
+targets = $(contexts) \
 	build/voice.txt \
 	build/debug.txt \
 	system/demeter-scenario.js \
 	system/demeter-debug-scenario.js \
-	version.json \
 	index.html \
 	game.html \
 	support.html \
@@ -51,7 +46,7 @@ include version.mk
 all:: $(voicepeak_dic) $(targets)
 
 clean::
-	rm -f $(targets) build/*.vpp
+	rm -f $(targets)
 
 check:: all
 	./test.sh lua
@@ -172,14 +167,20 @@ build/credits.html: $(credits)
 build/trophies.html: $(trophies)
 	$(lua) tool/generate_trophies.lua $< $@ system/demeter-trophies.js
 
+version.json: versions
+	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js version.mk
+
+build/voice.txt: $(scenarios)
+	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
+
+build/debug.txt: $(scenarios)
+	$(lua) tool/generate_voice_txt.lua scenario/debug.txt $@
+
 system/demeter-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/scenario.txt $@
 
 system/demeter-debug-scenario.js: $(scenarios)
 	$(lua) tool/generate_script.lua scenario/debug.txt $@
-
-version.json: versions
-	$(lua) tool/generate_version.lua versions version.json system/demeter-preferences.js version.mk
 
 index.html: index.tmpl $(contexts)
 	$(lua) tool/generate_html.lua $^ $@
@@ -195,12 +196,6 @@ privacy.html: privacy.tmpl $(contexts)
 
 scenario/scenario.js: $(scenarios)
 	$(lua) tool/generate_glance.lua scenario/scenario.txt $@
-
-build/voice.txt: $(scenarios)
-	$(lua) tool/generate_voice_txt.lua scenario/scenario.txt $@
-
-build/debug.txt: $(scenarios)
-	$(lua) tool/generate_voice_txt.lua scenario/debug.txt $@
 
 build/voice-out.vpp: build/voice.vpp $(scenarios)
 	$(lua) tool/generate_voice.lua scenario/scenario.txt build/voice.vpp $@
