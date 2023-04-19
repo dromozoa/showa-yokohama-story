@@ -182,8 +182,42 @@ extension ViewController: WKURLSchemeHandler {
 }
 
 extension ViewController {
-  func dumpBackup(_ body: Any, replyHandler: @escaping (Any?, String?) -> Void) {
-    replyHandler("ok", nil)
+  func dumpBackup(_ bodySource: Any, replyHandler: @escaping (Any?, String?) -> Void) {
+    guard let body = bodySource as? NSArray,
+      body.count >= 2,
+      let header = body[0] as? NSArray,
+      let json = body[1] as? String,
+      let jsonData = json.data(using: .utf8)
+    else {
+      replyHandler(nil, "invalid argument")
+      return
+    }
+
+    var headerData: [UInt8] = []
+    for itemSource in header {
+      guard let item = itemSource as? NSNumber else {
+        replyHandler(nil, "invalid argument")
+        return
+      }
+      headerData.append(item.uint8Value)
+    }
+
+    var data = Data(headerData)
+    data.append(jsonData)
+
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("昭和横濱物語バックアップ.dat")
+    print("!!! \(url)")
+
+    do {
+      try data.write(to: url, options: [.atomic])
+    } catch {
+      replyHandler(nil, "cannot write: \(error.localizedDescription)")
+      return
+    }
+
+    let controller = UIDocumentInteractionController(url: url)
+    let result = controller.presentOpenInMenu(from: view.frame, in: view, animated: true)
+    replyHandler(result, nil)
   }
 }
 
