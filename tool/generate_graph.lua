@@ -35,7 +35,7 @@ local nodes = {}
 local edge_max = 0
 local edges = {}
 
-for group_id, group_class, title, data in source:gmatch [[<g id="(.-)" class="(.-)"><title>(.-)</title>%s*(.-)%s*</g>]] do
+for group_id, group_class, title, data in source:gmatch [[<g id="([^"]*)" class="([^"]*)">%s*<title>([^<]*)</title>%s*(.-)%s*</g>]] do
   assert(group_class == "node" or group_class == "edge")
   if group_class == "node" then
     local n = tonumber(assert(group_id:match "^node(%d+)$"))
