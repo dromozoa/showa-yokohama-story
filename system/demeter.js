@@ -1803,6 +1803,43 @@ D.InterruptQueue = class {
   }
 };
 
+// ダイアログ表示前後にスクリーンごとに必要な処理を行う。
+D.InterruptDialog = async task => {
+  if (screenName === "title") {
+    document.querySelector(".demeter-title-text").style.display = "none";
+    hideTitleChoices();
+    if (await task()) {
+      return;
+    }
+    document.querySelector(".demeter-title-text").style.display = "block";
+    await showTitleChoices();
+
+  } else if (screenName === "main") {
+    closeSystemUi();
+    pause();
+    if (await task()) {
+      return;
+    }
+    restart();
+
+  } else if (screenName === "history") {
+    if (historyVoiceSprite) {
+      historyVoiceSprite.pause();
+    }
+    if (await task()) {
+      return;
+    }
+    if (historyVoiceSprite) {
+      historyVoiceSprite.restart();
+    }
+
+  } else {
+    if (await task()) {
+      return;
+    }
+  }
+};
+
 D.compareVersionWeb = version => {
   if (typeof version !== "object" || typeof version.web !== "string") {
     throw new Error("invalid version object");
@@ -1868,7 +1905,7 @@ D.UpdateChecker = class {
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
-        interruptQueue.push(async () => await this.dialog());
+        interruptQueue.push(async () => await D.InterruptDialog(async () => await this.dialog()));
         await interruptQueue.dispatch();
       }
     });
@@ -1904,7 +1941,8 @@ D.UpdateChecker = class {
     }
   }
 
-  async showDialog() {
+  async dialog() {
+    soundEffectAlert();
     if (D.isApp()) {
       const key = "system-update-" + D.isApp();
       if (await dialog(key) === "yes") {
@@ -1916,47 +1954,6 @@ D.UpdateChecker = class {
         location.href = "game.html?t=" + Date.now();
         return true;
       }
-    }
-  }
-
-  async dialog() {
-    if (screenName === "title") {
-      soundEffectAlert();
-      document.querySelector(".demeter-title-text").style.display = "none";
-      hideTitleChoices();
-      if (await this.showDialog()) {
-        return;
-      }
-      document.querySelector(".demeter-title-text").style.display = "block";
-      await showTitleChoices();
-
-    } else if (screenName === "main") {
-      soundEffectAlert();
-      closeSystemUi();
-      pause();
-      if (await this.showDialog()) {
-        return;
-      }
-      restart();
-
-    } else if (screenName === "load" || screenName === "save") {
-      soundEffectAlert();
-      if (await this.showDialog()) {
-        return;
-      }
-
-    } else if (screenName === "history") {
-      soundEffectAlert();
-      if (historyVoiceSprite) {
-        historyVoiceSprite.pause();
-      }
-      if (await this.showDialog()) {
-        return;
-      }
-      if (historyVoiceSprite) {
-        historyVoiceSprite.restart();
-      }
-
     }
   }
 };
