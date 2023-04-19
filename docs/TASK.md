@@ -96,8 +96,9 @@
 
 - ウェブページ
   - [x] app-ads.txt
-  - [ ] ストアURLを確認
-  - [ ] Appleのmeta
+  - [x] ストアURLを確認
+  - [x] Appleのmeta
+    - 表示がおかしいからやめた
   - [ ] 動画を作る
     - filmoreというのをつかってみる？
   - [ ] アプリケーションインストール
@@ -107,9 +108,11 @@
 - デバッグ
 
 - アプリ
-  - [ ] 承認されたら、AdMobの設定をする
-  - [ ] iOSアプリのinfoを修正する
+  - [x] 承認されたら、AdMobの設定をする
+  - [x] iOSアプリのinfoを修正する
     - https://developer.apple.com/jp/help/app-store-connect/manage-app-information/overview-of-export-compliance/
   - [ ] バックアップのWebView対応
     - 送るで実装するのは？
+  - [ ] キーボード操作をどうしよう
+  - [ ] 画面の拡大縮小は？
 
