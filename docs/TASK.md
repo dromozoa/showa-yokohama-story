@@ -9,6 +9,10 @@
 - ビルド
   - [x] データをコミットする
   - [x] 不要なファイルの削除
+  - [x] VOICEPEAKの更新
+  - [x] コマンドラインで生成してみる
+    - ちょっと実験してあきらめた
+  - [x] graphvizをローカルにおく
 
 - シナリオ
   - [x] 中黒の調整
@@ -77,10 +81,7 @@
 ## タスク
 
 - ビルド
-  - [x] VOICEPEAKの更新
-  - [x] コマンドラインで生成してみる
-    - ちょっと実験してあきらめた
-  - [x] graphvizをローカルにおく
+  - [ ] buildレポジトリもリリース時にタグをつける
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
@@ -93,11 +94,11 @@
   - [ ] 選択肢のボタンを増やす
 
 - ウェブページ
+  - [x] app-ads.txt
   - [ ] ストアURLを確認
   - [ ] Appleのmeta
   - [ ] 動画を作る
     - filmoreというのをつかってみる？
-  - [x] app-ads.txt
   - [ ] アプリケーションインストール
     - https://developer.chrome.com/blog/app-install-banners-native/
     - https://web.dev/customize-install/
