@@ -1760,6 +1760,10 @@ const soundEffectFocus = () => {
 
 //-------------------------------------------------------------------------
 
+// 表示できるようになるまで待つ。
+D.InterruptQueue = class {
+};
+
 D.compareVersionWeb = version => {
   if (typeof version !== "object" || typeof version.web !== "string") {
     throw new Error("invalid version object");
@@ -2081,6 +2085,7 @@ let waitForStop;
 let waitForDialog;
 let waitForCredits;
 
+let interruptQueue;
 let updateChecker;
 
 let mainToHistoryScreenOnce;
@@ -3699,7 +3704,10 @@ const initializeBackground = () => {
   backgroundTransition = new D.BackgroundTransition([...document.querySelectorAll(".demeter-background")]);
 };
 
-const initializeUpdateChecker = () => updateChecker = D.updateChecker = new D.UpdateChecker(600000);
+const initializeInterrupt = () => {
+  interruptQueue = D.interruptQueue = new D.InterruptQueue();
+  updateChecker = D.updateChecker = new D.UpdateChecker(600000);
+}
 
 //-------------------------------------------------------------------------
 
@@ -5449,7 +5457,7 @@ D.onDOMContentLoaded = async () => {
   await initializeAudio(); // initializeTitleScreenより後、enterTitleScreenより前に実行する。
   await onResize();
   initializeBackground();
-  initializeUpdateChecker();
+  initializeInterrupt();
   initializeFocusable(); // SVGを作り終えた後に実行する。
 
   addEventListener("resize", onResize);
