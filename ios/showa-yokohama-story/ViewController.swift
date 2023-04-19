@@ -33,6 +33,11 @@ class ViewController: UIViewController {
 
     let configuration = WKWebViewConfiguration()
 
+    let userContentController = WKUserContentController()
+    userContentController.addScriptMessageHandler(
+      self, contentWorld: .page, name: "demeterDumpBackup")
+    configuration.userContentController = userContentController
+
     // オーディオの自動再生を許可する。
     configuration.allowsInlineMediaPlayback = true
     configuration.mediaTypesRequiringUserActionForPlayback = [.video]
@@ -173,5 +178,25 @@ extension ViewController: WKURLSchemeHandler {
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // https://developer.apple.com/documentation/webkit/wkurlschemehandler/2890835-webview
     // Don’t call any methods of the provided urlSchemeTask object to report your progress back to WebKit.
+  }
+}
+
+extension ViewController {
+  func dumpBackup(_ body: Any, replyHandler: @escaping (Any?, String?) -> Void) {
+    replyHandler("ok", nil)
+  }
+}
+
+extension ViewController: WKScriptMessageHandlerWithReply {
+  func userContentController(
+    _ userContentController: WKUserContentController, didReceive message: WKScriptMessage,
+    replyHandler: @escaping (Any?, String?) -> Void
+  ) {
+    switch message.name {
+    case "demeterDumpBackup":
+      dumpBackup(message.body, replyHandler: replyHandler)
+    default:
+      replyHandler(nil, "\(message.name) not found")
+    }
   }
 }
