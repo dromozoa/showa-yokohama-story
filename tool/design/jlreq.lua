@@ -303,10 +303,15 @@ end
 local handle = assert(io.open(result_filename, "w"))
 
 handle:write [[
+/* jshint esversion: 8 */
+/* globals globalThis */
 (() => {
 "use strict";
 
-const D = globalThis.demeter ||= {};
+if (!globalThis.demeter) {
+  globalThis.demeter = {};
+}
+const D = globalThis.demeter;
 if (D.jlreq) {
   return;
 }
