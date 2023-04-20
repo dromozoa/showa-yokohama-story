@@ -48,6 +48,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func sceneDidEnterBackground(_ scene: UIScene) {
     print("\(#function)")
   }
+
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    print("\(#function) \(URLContexts.first?.url)")
+  }
 }
 
 extension SceneDelegate {
