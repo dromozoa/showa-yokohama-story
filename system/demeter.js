@@ -1804,7 +1804,7 @@ D.InterruptQueue = class {
 };
 
 // ダイアログ表示前後にスクリーンごとに必要な処理を行う。
-D.InterruptDialog = async task => {
+D.interruptDialog = async task => {
   if (screenName === "title") {
     document.querySelector(".demeter-title-text").style.display = "none";
     hideTitleChoices();
@@ -1905,7 +1905,7 @@ D.UpdateChecker = class {
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
-        interruptQueue.push(async () => await D.InterruptDialog(async () => await this.dialog()));
+        interruptQueue.push(async () => await D.interruptDialog(async () => await this.dialog()));
         await interruptQueue.dispatch();
       }
     });
@@ -2231,6 +2231,29 @@ const verifyBackup = async (signatureData, jsonData) => {
   }
 };
 
+const dumpBackupWeb = (magicData, signatureData, jsonData) => {
+  const blob = new Blob([ magicData, signatureData, jsonData ], { type: "applicaiton/octet-stream" });
+  const url = URL.createObjectURL(blob);
+
+  const template = document.createElement("template");
+  template.innerHTML = `
+    <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
+  `;
+  const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
+  node.dispatchEvent(new MouseEvent("click"));
+
+  // 10秒後に削除する
+  setTimeout(() => {
+    node.remove();
+    URL.revokeObjectURL(url);
+  }, 10000);
+};
+
+const dumpBackupIos = async (magicData, signatureData, json) => {
+  const header = [ ...magicData, ...new Uint8Array(signatureData) ];
+  await webkit.messageHandlers.demeterDumpBackup.postMessage([ header, json ]);
+};
+
 const dumpBackup = async () => {
   try {
     const [ system, game, read, trophies, autosave, save1, save2, save3, history ] = await Promise.all([
@@ -2264,20 +2287,17 @@ const dumpBackup = async () => {
     const signatureData = await signBackup(jsonData);
     const magicData = Uint8Array.from([ 0, signatureData.byteLength ]);
     const blob = new Blob([ magicData, signatureData, jsonData ], { type: "applicaiton/octet-stream" });
-    const url = URL.createObjectURL(blob);
 
-    const template = document.createElement("template");
-    template.innerHTML = `
-      <a href="${url}" download="昭和横濱物語バックアップ.dat">バックアップデータを出力する</a>
-    `;
-    const node = document.querySelector(".demeter-offscreen").appendChild(template.content.firstElementChild);
-    node.dispatchEvent(new MouseEvent("click"));
-
-    // 10秒後に削除する
-    setTimeout(() => {
-      node.remove();
-      URL.revokeObjectURL(url);
-    }, 10000);
+    D.trace(D.isApp(), magicData, signatureData);
+    switch (D.isApp()) {
+      case "ios":
+        await dumpBackupIos(magicData, signatureData, json);
+        break;
+      case "android":
+        break;
+      default:
+        dumpBackupWeb(magicData, signatureData, jsonData);
+    }
 
     logging.info("バックアップデータ出力: 成功");
   } catch (e) {
@@ -2352,6 +2372,7 @@ const restoreBackupImpl = async root => {
   await enterTitleScreen();
 };
 
+// TODO 切り分けをする
 const restoreBackup = async () => {
   soundEffectSelect();
   closeSystemUi();
@@ -2381,6 +2402,37 @@ const restoreBackup = async () => {
   }
 
   restart();
+};
+
+const restoreBackupIos = async () => {
+  try {
+    const response = await fetch("demeter:///demeterRestoreBackup.dat");
+    const blob = await response.blob();
+    const [ result, root ] = await readBackup(blob);
+
+    if (result) {
+      if (await dialog("system-restore") === "yes") {
+        await restoreBackupImpl(root);
+      }
+    } else if (root) {
+      if (await dialog("system-restore-integrity-error") === "yes") {
+        await restoreBackupImpl(root);
+      }
+    } else {
+      await dialog("system-restore-format-error");
+    }
+  } catch (e) {
+    logging.error("バックアップデータ復元: 失敗", e);
+  }
+};
+
+globalThis.demeterRestoreBackup = () => {
+  interruptQueue.push(async () => await D.interruptDialog(async () => await restoreBackupIos()));
+  interruptQueue.dispatch().then(() => {
+    D.trace("demeterRestoreBackup");
+  }).catch(e => {
+    D.trace("demeterRestoreBackup", e);
+  });
 };
 
 //-------------------------------------------------------------------------
@@ -3223,11 +3275,9 @@ const initializeSystemUi = () => {
   systemCommandsFolder.add(commands, "resetHistory").name("履歴データを消去する");
   systemCommandsFolder.add(commands, "resetSave").name("全セーブデータを削除する");
 
-  if (!D.isApp()) {
-    const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
-    backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
-    backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
-  }
+  const backupCommandsFolder = addSystemUiFolder(systemUi, "バックアップコマンド");
+  backupCommandsFolder.add(commands, "dumpBackup").name("バックアップデータを出力する");
+  backupCommandsFolder.add(commands, "restoreBackup").name("バックアップデータから復元する");
 
   systemUiDebugCommandsFolder = addSystemUiFolder(systemUi, "デバッグコマンド");
   systemUiDebugCommandsFolder.add(commands, "resetAudio").name("オーディオを一時停止して再開する");
