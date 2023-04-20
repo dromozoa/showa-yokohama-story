@@ -18,11 +18,14 @@
 package com.vaporoid.sys;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +44,11 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+
+import org.json.JSONArray;
+
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -109,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        webView.addJavascriptInterface(new JavascriptInterface(), "demeterAndroid");
+
         loadGame();
 
         MobileAds.initialize(this, initializationStatus -> {
@@ -145,5 +155,31 @@ public class MainActivity extends AppCompatActivity {
 
         AdRequest request = new AdRequest.Builder().build();
         adView.loadAd(request);
+    }
+
+    public class JavascriptInterface {
+        @android.webkit.JavascriptInterface
+        public void dumpBackup(String headerSource, String json) {
+            try {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "昭和横濱物語バックアップ.dat");
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream");
+                ContentResolver contentResolver = getContentResolver();
+                Uri uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues);
+                try (OutputStream stream = contentResolver.openOutputStream(uri)) {
+                    JSONArray header = new JSONArray(headerSource);
+                    for (int i = 0; i < header.length(); ++i) {
+                        stream.write(header.getInt(i));
+                    }
+                    stream.write(json.getBytes(StandardCharsets.UTF_8));
+                }
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.setType("application/octet-stream");
+                startActivity(Intent.createChooser(intent, null));
+            } catch (Exception e) {
+                Log.w(TAG, e);
+            }
+        }
     }
 }
