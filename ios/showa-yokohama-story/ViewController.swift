@@ -31,6 +31,8 @@ class ViewController: UIViewController {
     NotificationCenter.default.addObserver(
       self, selector: #selector(authorizationTrackingDetermined),
       name: .demeterAuthorizationTrackingDetermined, object: nil)
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(restoreBackup), name: .demeterRestoreBackup, object: nil)
 
     let configuration = WKWebViewConfiguration()
 
@@ -135,10 +137,22 @@ extension ViewController: WKURLSchemeHandler {
   func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
     if let requestUrl = urlSchemeTask.request.url {
       let requestPath = requestUrl.path as NSString
-      let resource = "sys" + requestPath.deletingPathExtension
-      let resourceExtension = requestPath.pathExtension
+      var resourceExtension: String = ""
+      var url: URL?
 
-      if let url = Bundle.main.url(forResource: resource, withExtension: resourceExtension),
+      // リストア用のデータは特別扱いする
+      // demeter:///demeterRestoreBackup.dat
+      if requestPath == "/demeterRestoreBackup.dat" {
+        resourceExtension = "dat"
+        url = FileManager.default.temporaryDirectory.appendingPathComponent(
+          "demeterRestoreBackup.dat")
+      } else {
+        resourceExtension = requestPath.pathExtension
+        url = Bundle.main.url(
+          forResource: "sys" + requestPath.deletingPathExtension, withExtension: resourceExtension)
+      }
+
+      if let url = url,
         let data = try? Data(contentsOf: url)
       {
         var headerFields = [
@@ -218,6 +232,13 @@ extension ViewController {
     let result = documentInteractionController!.presentOpenInMenu(
       from: view.frame, in: view, animated: true)
     replyHandler(result, nil)
+  }
+
+  @objc
+  func restoreBackup() {
+    DispatchQueue.main.async {
+      self.webView.evaluateJavaScript("demeterRestoreBackup()")
+    }
   }
 }
 

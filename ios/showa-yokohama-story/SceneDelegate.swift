@@ -50,7 +50,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    print("\(#function) \(URLContexts.first?.url)")
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(
+      "demeterRestoreBackup.dat")
+    guard let openUrl = URLContexts.first?.url,
+      let data = try? Data(contentsOf: openUrl),
+      let _ = try? data.write(to: url, options: [.atomic])
+    else { return }
+    NotificationCenter.default.post(name: .demeterRestoreBackup, object: nil)
   }
 }
 
@@ -70,4 +76,5 @@ extension SceneDelegate {
 extension Notification.Name {
   static let demeterAuthorizationTrackingDetermined = Notification.Name(
     "demeterAuthorizationTrackingDetermined")
+  static let demeterRestoreBackup = Notification.Name("demeterRestoreBackup")
 }
