@@ -24,6 +24,7 @@ class ViewController: UIViewController {
   @IBOutlet weak var bannerView: GADBannerView!
   var webView: WKWebView!
   var waitForTrackingAuthorization: Bool = false
+  var documentInteractionController: UIDocumentInteractionController?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -206,8 +207,6 @@ extension ViewController {
     data.append(jsonData)
 
     let url = FileManager.default.temporaryDirectory.appendingPathComponent("昭和横濱物語バックアップ.dat")
-    print("!!! \(url)")
-
     do {
       try data.write(to: url, options: [.atomic])
     } catch {
@@ -215,8 +214,9 @@ extension ViewController {
       return
     }
 
-    let controller = UIDocumentInteractionController(url: url)
-    let result = controller.presentOpenInMenu(from: view.frame, in: view, animated: true)
+    documentInteractionController = UIDocumentInteractionController(url: url)
+    let result = documentInteractionController!.presentOpenInMenu(
+      from: view.frame, in: view, animated: true)
     replyHandler(result, nil)
   }
 }
