@@ -2411,6 +2411,10 @@ const restoreBackupWeb = async () => {
 };
 
 const restoreBackupIos = async () => {
+  soundEffectSelect();
+  closeSystemUi();
+  pause();
+
   if (await dialog("system-restore-ios") === "file") {
     const [ result, root ] = await readBackup(dialogFile);
     if (result) {
@@ -2425,6 +2429,8 @@ const restoreBackupIos = async () => {
       await dialog("system-restore-format-error");
     }
   }
+
+  restart();
 };
 
 const restoreBackup = async () => {
