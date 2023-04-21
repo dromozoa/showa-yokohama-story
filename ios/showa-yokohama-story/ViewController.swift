@@ -24,14 +24,22 @@ class ViewController: UIViewController {
   @IBOutlet weak var bannerView: GADBannerView!
   var webView: WKWebView!
   var waitForTrackingAuthorization: Bool = false
+  var documentInteractionController: UIDocumentInteractionController?
 
   override func viewDidLoad() {
     super.viewDidLoad()
     NotificationCenter.default.addObserver(
       self, selector: #selector(authorizationTrackingDetermined),
       name: .demeterAuthorizationTrackingDetermined, object: nil)
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(restoreBackup), name: .demeterRestoreBackup, object: nil)
 
     let configuration = WKWebViewConfiguration()
+
+    let userContentController = WKUserContentController()
+    userContentController.addScriptMessageHandler(
+      self, contentWorld: .page, name: "demeterDumpBackup")
+    configuration.userContentController = userContentController
 
     // オーディオの自動再生を許可する。
     configuration.allowsInlineMediaPlayback = true
@@ -129,10 +137,22 @@ extension ViewController: WKURLSchemeHandler {
   func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
     if let requestUrl = urlSchemeTask.request.url {
       let requestPath = requestUrl.path as NSString
-      let resource = "sys" + requestPath.deletingPathExtension
-      let resourceExtension = requestPath.pathExtension
+      var resourceExtension: String = ""
+      var url: URL?
 
-      if let url = Bundle.main.url(forResource: resource, withExtension: resourceExtension),
+      // リストア用のデータは特別扱いする
+      // demeter:///demeterRestoreBackup.dat
+      if requestPath == "/demeterRestoreBackup.dat" {
+        resourceExtension = "dat"
+        url = FileManager.default.temporaryDirectory.appendingPathComponent(
+          "demeterRestoreBackup.dat")
+      } else {
+        resourceExtension = requestPath.pathExtension
+        url = Bundle.main.url(
+          forResource: "sys" + requestPath.deletingPathExtension, withExtension: resourceExtension)
+      }
+
+      if let url = url,
         let data = try? Data(contentsOf: url)
       {
         var headerFields = [
@@ -173,5 +193,65 @@ extension ViewController: WKURLSchemeHandler {
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // https://developer.apple.com/documentation/webkit/wkurlschemehandler/2890835-webview
     // Don’t call any methods of the provided urlSchemeTask object to report your progress back to WebKit.
+  }
+}
+
+extension ViewController {
+  func dumpBackup(_ bodySource: Any, replyHandler: @escaping (Any?, String?) -> Void) {
+    guard let body = bodySource as? NSArray,
+      body.count >= 2,
+      let header = body[0] as? NSArray,
+      let json = body[1] as? String,
+      let jsonData = json.data(using: .utf8)
+    else {
+      replyHandler(nil, "invalid argument")
+      return
+    }
+
+    var headerData: [UInt8] = []
+    for itemSource in header {
+      guard let item = itemSource as? NSNumber else {
+        replyHandler(nil, "invalid argument")
+        return
+      }
+      headerData.append(item.uint8Value)
+    }
+
+    var data = Data(headerData)
+    data.append(jsonData)
+
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("昭和横濱物語バックアップ.dat")
+    do {
+      try data.write(to: url, options: [.atomic])
+    } catch {
+      replyHandler(nil, "cannot write: \(error.localizedDescription)")
+      return
+    }
+
+    documentInteractionController = UIDocumentInteractionController(url: url)
+    let result = documentInteractionController!.presentOpenInMenu(
+      from: view.frame, in: view, animated: true)
+    replyHandler(result, nil)
+  }
+
+  @objc
+  func restoreBackup() {
+    DispatchQueue.main.async {
+      self.webView.evaluateJavaScript("demeterRestoreBackup(\"demeter:///demeterRestoreBackup.dat\");")
+    }
+  }
+}
+
+extension ViewController: WKScriptMessageHandlerWithReply {
+  func userContentController(
+    _ userContentController: WKUserContentController, didReceive message: WKScriptMessage,
+    replyHandler: @escaping (Any?, String?) -> Void
+  ) {
+    switch message.name {
+    case "demeterDumpBackup":
+      dumpBackup(message.body, replyHandler: replyHandler)
+    default:
+      replyHandler(nil, "\(message.name) not found")
+    }
   }
 }

@@ -13,6 +13,9 @@
   - [x] コマンドラインで生成してみる
     - ちょっと実験してあきらめた
   - [x] graphvizをローカルにおく
+  - [x] buildレポジトリもリリース時にタグをつける
+  - [x] iosとandroidのサブ番号は管理しづらい気がする
+    - よしとした
 
 - シナリオ
   - [x] 中黒の調整
@@ -67,6 +70,10 @@
   - [x] 自己紹介
     - 廃棄
   - [x] ツイッターのmeta
+  - [x] app-ads.txt
+  - [x] ストアURLを確認
+  - [x] Appleのmeta
+    - 表示がおかしいからやめた
 
 - デバッグ
   - [x] 履歴の消去ができてない？
@@ -77,12 +84,41 @@
 
 - アプリ
   - [x] 不要な開発環境を削除する
+  - [x] 承認されたら、AdMobの設定をする
+  - [x] iOSアプリのinfoを修正する
+    - https://developer.apple.com/jp/help/app-store-connect/manage-app-information/overview-of-export-compliance/
+  - [x] バックアップのWebView対応
+    - 送るで実装するのは？
+  - [x] Androidの権限
+    - ファイルIO
+      - EXTERNAL STORAGEは最近は意味がないらしい
+    - Chromeでダウンロードしたファイルを読めるか？
+    - Android 9では問題なかった。
+  - [x] iOSのコールバック対応
+  - [x] iOSでダイアログ表示のときにシステムメニューが消えてない
+  - [x] iOSで送られたとき、音声がかぶる？
+    - Howlerのタイマーの問題なのでどうしようもないっぽい。
+  - [x] Androidのバージョン更新
+  - [x] キーボード入力をどうしよう
+    - 仮想キーボードが問題
+    - Mobile Safariがだめ
+    - Android Chromeはまあよし
+  - [x] 画面の拡大縮小は？
+    - これはOKとする
+  - [x] 長押し
+    - 通常のボタンはOK
+    - 画像が問題
+    - テープだけ
+    - Mobile Safariかな。
+  - [x] 更新チェックのテスト実行
+    - v1.0がすでにないわけだが……
+    - URLの確認だからよしとする
+    - iOS OK
+    - Android OK
 
 ## タスク
 
 - ビルド
-  - [ ] buildレポジトリもリリース時にタグをつける
-  - [ ] iosとandroidのサブ番号は管理しづらい気がする
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
@@ -95,9 +131,6 @@
   - [ ] 選択肢のボタンを増やす
 
 - ウェブページ
-  - [x] app-ads.txt
-  - [ ] ストアURLを確認
-  - [ ] Appleのmeta
   - [ ] 動画を作る
     - filmoreというのをつかってみる？
   - [ ] アプリケーションインストール
@@ -107,9 +140,4 @@
 - デバッグ
 
 - アプリ
-  - [ ] 承認されたら、AdMobの設定をする
-  - [ ] iOSアプリのinfoを修正する
-    - https://developer.apple.com/jp/help/app-store-connect/manage-app-information/overview-of-export-compliance/
-  - [ ] バックアップのWebView対応
-    - 送るで実装するのは？
 

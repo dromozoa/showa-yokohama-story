@@ -18,6 +18,7 @@
 package com.vaporoid.sys;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -32,6 +33,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.webkit.WebViewAssetLoader;
@@ -42,11 +45,66 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import org.json.JSONArray;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
-
+    private static final String RESTORE_BACKUP_URL = "/demeterAndroid/demeterRestoreBackup.dat";
     private WebView webView;
     private AdView adView;
+    private byte[] dumpBackupHeader;
+    private String dumpBackupJson;
+    private final ActivityResultLauncher<Intent> dumpBackupLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        try {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    Uri uri = data.getData();
+                    try (OutputStream stream = getContentResolver().openOutputStream(uri)) {
+                        stream.write(dumpBackupHeader);
+                        stream.write(dumpBackupJson.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, e);
+        }
+    });
+    private ByteArrayOutputStream restoreBackupStream;
+    private final ActivityResultLauncher<Intent> restoreBackupLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        try {
+            if (result.getResultCode() != Activity.RESULT_OK) {
+                return;
+            }
+            Intent data = result.getData();
+            if (data == null) {
+                return;
+            }
+            Uri uri = data.getData();
+            restoreBackupStream = new ByteArrayOutputStream();
+            try (InputStream inputStream = getContentResolver().openInputStream(uri);
+                 OutputStream outputStream = restoreBackupStream) {
+                byte[] buffer = new byte[4096];
+                while (true) {
+                    int size = inputStream.read(buffer);
+                    if (size == -1) {
+                        break;
+                    }
+                    outputStream.write(buffer, 0, size);
+                }
+            }
+            webView.evaluateJavascript("demeterRestoreBackup(\"" + RESTORE_BACKUP_URL + "\");", null);
+        } catch (Exception e) {
+            Log.w(TAG, e);
+        }
+    });
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -71,19 +129,28 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClientCompat() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                Uri uri = request.getUrl();
+                if (Objects.equals(uri.getPath(), RESTORE_BACKUP_URL)) {
+                    if (restoreBackupStream != null) {
+                        return new WebResourceResponse("application/octet-stream", null, 200, "OK", null, new ByteArrayInputStream(restoreBackupStream.toByteArray()));
+                    } else {
+                        return new WebResourceResponse("application/octet-stream", null, 404, "Not Found", null, null);
+                    }
+                } else {
+                    return assetLoader.shouldInterceptRequest(request.getUrl());
+                }
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
                 Uri url = request.getUrl();
                 Log.d(TAG, "shouldOverrideUrlLoading " + url);
-                if (url.getHost().equals("appassets.androidplatform.net")) {
+                if (Objects.equals(url.getHost(), "appassets.androidplatform.net")) {
                     return false;
                 } else {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(url);
-                    if (url.getHost().equals("play.google.com")) {
+                    if (Objects.equals(url.getHost(), "play.google.com")) {
                         intent.setPackage("com.android.vending");
                     }
 
@@ -108,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        webView.addJavascriptInterface(new JavascriptInterface(), "demeterAndroid");
 
         loadGame();
 
@@ -145,5 +214,35 @@ public class MainActivity extends AppCompatActivity {
 
         AdRequest request = new AdRequest.Builder().build();
         adView.loadAd(request);
+    }
+
+    public class JavascriptInterface {
+        @android.webkit.JavascriptInterface
+        public void dumpBackup(String headerSource, String json) {
+            try {
+                JSONArray header = new JSONArray(headerSource);
+                dumpBackupHeader = new byte[header.length()];
+                for (int i = 0; i < header.length(); ++i) {
+                    dumpBackupHeader[i] = (byte) header.getInt(i);
+                }
+                dumpBackupJson = json;
+
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/octet-stream");
+                intent.putExtra(Intent.EXTRA_TITLE, "昭和横濱物語バックアップ.dat");
+                dumpBackupLauncher.launch(intent);
+            } catch (Exception e) {
+                Log.w(TAG, e);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void restoreBackup() {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/octet-stream");
+            restoreBackupLauncher.launch(intent);
+        }
     }
 }

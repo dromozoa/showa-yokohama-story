@@ -119,10 +119,10 @@ body.danu {
 .danu-badge svg,
 .danu-badge img {
   display: inline-box;
-  margin-right: 24px;
+  margin-right: 16px;
   margin-bottom: 16px;
   width: auto;
-  height: 56px;
+  height: 40px;
 }
 
 /*************************************************************************/
