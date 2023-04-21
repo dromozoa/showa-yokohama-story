@@ -113,6 +113,9 @@
     - https://developer.apple.com/jp/help/app-store-connect/manage-app-information/overview-of-export-compliance/
   - [ ] バックアップのWebView対応
     - 送るで実装するのは？
-  - [ ] キーボード操作をどうしよう
+  - [ ] Androidの権限
+    - ファイルIO
+  - [ ] キーボード入力をどうしよう
+    - 仮想キーボードが問題
   - [ ] 画面の拡大縮小は？
 
