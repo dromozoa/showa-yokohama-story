@@ -867,6 +867,8 @@ body.demeter {
   width: calc(var(--font-size) * 11);
   height: calc(var(--font-size) * 7);
   cursor: var(--cursor-pointer, auto);
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
 }
 
 .demeter-data-tape-label,
