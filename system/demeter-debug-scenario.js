@@ -35,9 +35,13 @@ paragraphs:[
 ["未知の言語で記述されている可能性。"],
 [["復元","リストア"],"不能。"],
 ]],
+// index: 5
+[{speaker:"narrator",system:true,dialog:[{choice:"取消",result:"no"},],adjacencies:[]},[
+[["復元","リストア"],"するバックアップデータを、此処にドラッグ・アンド・ドロップするか、","他","のアプリから",["共有","シェア"],"して。"],
+]],
 ],
 total:0,
-starts:[1,2,3,4],
+starts:[1,2,3,4,5],
 labels:{
 },
 dialogs:{
@@ -45,6 +49,7 @@ dialogs:{
 "system-restore":2,
 "system-restore-integrity-error":3,
 "system-restore-format-error":4,
+"system-restore-ios":5,
 },
 };
 

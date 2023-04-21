@@ -111,11 +111,19 @@
   - [x] 承認されたら、AdMobの設定をする
   - [x] iOSアプリのinfoを修正する
     - https://developer.apple.com/jp/help/app-store-connect/manage-app-information/overview-of-export-compliance/
-  - [ ] バックアップのWebView対応
+  - [x] バックアップのWebView対応
     - 送るで実装するのは？
-  - [ ] Androidの権限
+  - [x] Androidの権限
     - ファイルIO
+      - EXTERNAL STORAGEは最近は意味がないらしい
     - Chromeでダウンロードしたファイルを読めるか？
+    - Android 9では問題なかった。
+
+  - [ ] iOSのコールバック対応
+  - [ ] iOSでダイアログ表示のときにシステムメニューが消えてない
+  - [ ] iOSで送られたとき、音声がかぶる？
+  - [ ] Androidのバージョン更新
+
   - [ ] キーボード入力をどうしよう
     - 仮想キーボードが問題
   - [ ] 画面の拡大縮小は？

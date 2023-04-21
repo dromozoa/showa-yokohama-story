@@ -2111,6 +2111,7 @@ let historyParagraphIndex;
 let inputDevice;
 let inputHoverable;
 
+let dialogKey;
 let dialogFile;
 
 //-------------------------------------------------------------------------
@@ -2409,13 +2410,29 @@ const restoreBackupWeb = async () => {
   restart();
 };
 
+const restoreBackupIos = async () => {
+  if (await dialog("system-restore-ios") === "file") {
+    const [ result, root ] = await readBackup(dialogFile);
+    if (result) {
+      if (await dialog("system-restore") === "yes") {
+        await restoreBackupImpl(root);
+      }
+    } else if (root) {
+      if (await dialog("system-restore-integrity-error") === "yes") {
+        await restoreBackupImpl(root);
+      }
+    } else {
+      await dialog("system-restore-format-error");
+    }
+  }
+};
+
 const restoreBackup = async () => {
   switch (D.isApp()) {
     case "ios":
-      // 説明ダイアログ
+      await restoreBackupIos();
       break;
     case "android":
-      // 説明ダイアログ？
       demeterAndroid.restoreBackup();
       break;
     default:
@@ -2424,32 +2441,44 @@ const restoreBackup = async () => {
 };
 
 globalThis.demeterRestoreBackup = url => {
-  interruptQueue.push(async () => await D.interruptDialog(async () => {
-    try {
+  if (dialogKey === "system-restore-ios" && waitForDialog) {
+    (async () => {
       const response = await fetch(url, { cache: "no-store" });
-      const blob = await response.blob();
-      const [ result, root ] = await readBackup(blob);
+      dialogFile = await response.blob();
+      waitForDialog(0);
+    })().then(() => {
+      D.trace("demeterRestoreBackup");
+    }).catch(e => {
+      D.trace("demeterRestoreBackup", e);
+    });
+  } else {
+    interruptQueue.push(async () => await D.interruptDialog(async () => {
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        const blob = await response.blob();
+        const [ result, root ] = await readBackup(blob);
 
-      if (result) {
-        if (await dialog("system-restore") === "yes") {
-          await restoreBackupImpl(root);
+        if (result) {
+          if (await dialog("system-restore") === "yes") {
+            await restoreBackupImpl(root);
+          }
+        } else if (root) {
+          if (await dialog("system-restore-integrity-error") === "yes") {
+            await restoreBackupImpl(root);
+          }
+        } else {
+          await dialog("system-restore-format-error");
         }
-      } else if (root) {
-        if (await dialog("system-restore-integrity-error") === "yes") {
-          await restoreBackupImpl(root);
-        }
-      } else {
-        await dialog("system-restore-format-error");
+      } catch (e) {
+        logging.error("バックアップデータ復元: 失敗", e);
       }
-    } catch (e) {
-      logging.error("バックアップデータ復元: 失敗", e);
-    }
-  }));
-  interruptQueue.dispatch().then(() => {
-    D.trace("demeterRestoreBackup");
-  }).catch(e => {
-    D.trace("demeterRestoreBackup", e);
-  });
+    }));
+    interruptQueue.dispatch().then(() => {
+      D.trace("demeterRestoreBackup");
+    }).catch(e => {
+      D.trace("demeterRestoreBackup", e);
+    });
+  }
 };
 
 //-------------------------------------------------------------------------
@@ -4220,7 +4249,7 @@ const initializeDialogOverlay = () => {
   dialogOverlayNode.addEventListener("dragover", ev => ev.preventDefault());
   dialogOverlayNode.addEventListener("drop", ev => {
     ev.preventDefault();
-    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files) {
+    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files && waitForDialog) {
       dialogFile = ev.dataTransfer.files.item(0);
       waitForDialog(0);
     }
@@ -4229,7 +4258,7 @@ const initializeDialogOverlay = () => {
   const dialogFileNode = document.querySelector(".demeter-dialog-file");
   dialogFileNode.addEventListener("change", ev => {
     ev.preventDefault();
-    if (dialogFileNode && dialogFileNode.files) {
+    if (dialogFileNode && dialogFileNode.files && waitForDialog) {
       dialogFile = dialogFileNode.files.item(0);
       waitForDialog(0);
     }
@@ -4666,6 +4695,7 @@ const dialog = async key => {
 
   document.querySelector(".demeter-screen").append(document.querySelector(".demeter-dialog-overlay"));
 
+  dialogKey = key;
   const runDialog = new Promise(resolve => waitForDialog = choice => {
     if (voiceSprite) {
       voiceSprite.finish();
@@ -4684,6 +4714,7 @@ const dialog = async key => {
 
   const [resultIndex] = await Promise.all([ runDialog, runVoiceSprite() ]);
 
+  dialogKey = undefined;
   waitForDialog = undefined;
   document.querySelector(".demeter-offscreen").append(document.querySelector(".demeter-dialog-overlay"));
 
