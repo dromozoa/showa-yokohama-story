@@ -79,6 +79,14 @@
 }
 
 /*
+ * 仮想キーボードが出ないように、タッチによるフォーカスを阻止する。
+ */
+.demeter-main-system-ui .lil-gui input[type='number'],
+.demeter-main-system-ui .lil-gui input[type='text'] {
+  pointer-events: none;
+}
+
+/*
  * 入力対象のタイトルとコントローラの背景色を変更したいので、marginとpaddingを
  * 調整する。
  */
@@ -139,7 +147,7 @@ body.demeter {
 
   /*
    * 全域で選択を禁止する。テキストを含む要素のカーソルが変わらないので、明示的
-   * に上書きする
+   * に上書きする。
    */
   -webkit-user-select: none;
   user-select: none;
