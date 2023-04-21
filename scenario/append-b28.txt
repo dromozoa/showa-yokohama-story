@@ -1,0 +1,7 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@dialog{system-restore-ios}
+#narrator
+@r{復元}{リストア}するバックアップデータを、此処にドラッグ・アンド・ドロップするか、@v{他}{ほか}のアプリから@r{共有}{シェア}して。
+@dialog_choice{取消}{no}
+

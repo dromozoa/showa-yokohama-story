@@ -2,10 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Data</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.data</string>
+			</array>
+		</dict>
+	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>$(GADApplicationIdentifier)</string>
 	<key>GADBannerUnitIdentifier</key>
 	<string>$(GADBannerUnitIdentifier)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -229,6 +244,8 @@
 		</dict>
 	</dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 </dict>
 </plist>
