@@ -2254,6 +2254,11 @@ const dumpBackupIos = async (magicData, signatureData, json) => {
   await webkit.messageHandlers.demeterDumpBackup.postMessage([ header, json ]);
 };
 
+const dumpBackupAndroid = (magicData, signatureData, json) => {
+  const header = [ ...magicData, ...new Uint8Array(signatureData) ];
+  demeterAndroid.dumpBackup(JSON.stringify(header), json);
+};
+
 const dumpBackup = async () => {
   try {
     const [ system, game, read, trophies, autosave, save1, save2, save3, history ] = await Promise.all([
@@ -2294,6 +2299,7 @@ const dumpBackup = async () => {
         await dumpBackupIos(magicData, signatureData, json);
         break;
       case "android":
+        dumpBackupAndroid(magicData, signatureData, json);
         break;
       default:
         dumpBackupWeb(magicData, signatureData, jsonData);
@@ -2372,8 +2378,7 @@ const restoreBackupImpl = async root => {
   await enterTitleScreen();
 };
 
-// TODO 切り分けをする
-const restoreBackup = async () => {
+const restoreBackupWeb = async () => {
   soundEffectSelect();
   closeSystemUi();
   pause();
@@ -2404,30 +2409,42 @@ const restoreBackup = async () => {
   restart();
 };
 
-const restoreBackupIos = async () => {
-  try {
-    const response = await fetch("demeter:///demeterRestoreBackup.dat");
-    const blob = await response.blob();
-    const [ result, root ] = await readBackup(blob);
-
-    if (result) {
-      if (await dialog("system-restore") === "yes") {
-        await restoreBackupImpl(root);
-      }
-    } else if (root) {
-      if (await dialog("system-restore-integrity-error") === "yes") {
-        await restoreBackupImpl(root);
-      }
-    } else {
-      await dialog("system-restore-format-error");
-    }
-  } catch (e) {
-    logging.error("バックアップデータ復元: 失敗", e);
+const restoreBackup = async () => {
+  switch (D.isApp()) {
+    case "ios":
+      // 説明ダイアログ
+      break;
+    case "android":
+      // 説明ダイアログ？
+      demeterAndroid.restoreBackup();
+      break;
+    default:
+      await restoreBackupWeb();
   }
 };
 
-globalThis.demeterRestoreBackup = () => {
-  interruptQueue.push(async () => await D.interruptDialog(async () => await restoreBackupIos()));
+globalThis.demeterRestoreBackup = url => {
+  interruptQueue.push(async () => await D.interruptDialog(async () => {
+    try {
+      const response = await fetch(url, { cache: "no-store" });
+      const blob = await response.blob();
+      const [ result, root ] = await readBackup(blob);
+
+      if (result) {
+        if (await dialog("system-restore") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else if (root) {
+        if (await dialog("system-restore-integrity-error") === "yes") {
+          await restoreBackupImpl(root);
+        }
+      } else {
+        await dialog("system-restore-format-error");
+      }
+    } catch (e) {
+      logging.error("バックアップデータ復元: 失敗", e);
+    }
+  }));
   interruptQueue.dispatch().then(() => {
     D.trace("demeterRestoreBackup");
   }).catch(e => {

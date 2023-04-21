@@ -105,3 +105,12 @@ xcrun simctl status_bar 6B8A53F8-2445-4ECD-BB79-6724B7EF4A07 list
 
 - https://apps.apple.com/jp/app/id6447784319
 - https://play.google.com/store/apps/details?id=com.vaporoid.sys
+
+## Android ADB
+
+```
+~/Library/Android/sdk/platform-tools/adb devices
+~/Library/Android/sdk/platform-tools/adb -s emulator-5554 shell
+setprop log.tag.MainActivity VERBOSE
+```
+

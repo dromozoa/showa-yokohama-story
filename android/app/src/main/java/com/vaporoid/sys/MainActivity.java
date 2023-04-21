@@ -52,11 +52,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String RESTORE_BACKUP_URL = "/demeterAndroid/demeterRestoreBackup.dat";
+    private WebView webView;
+    private AdView adView;
+    private byte[] dumpBackupHeader;
+    private String dumpBackupJson;
+    private final ActivityResultLauncher<Intent> dumpBackupLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        try {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                    Uri uri = data.getData();
+                    try (OutputStream stream = getContentResolver().openOutputStream(uri)) {
+                        stream.write(dumpBackupHeader);
+                        stream.write(dumpBackupJson.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, e);
+        }
+    });
     private ByteArrayOutputStream restoreBackupStream;
     private final ActivityResultLauncher<Intent> restoreBackupLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         try {
@@ -80,27 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     outputStream.write(buffer, 0, size);
                 }
             }
-            Log.d(TAG, uri.toString());
-        } catch (Exception e) {
-            Log.w(TAG, e);
-        }
-    });
-    private WebView webView;
-    private AdView adView;
-    private byte[] dumpBackupHeader;
-    private String dumpBackupJson;
-    private final ActivityResultLauncher<Intent> dumpBackupLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        try {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                Intent data = result.getData();
-                if (data != null) {
-                    Uri uri = data.getData();
-                    try (OutputStream stream = getContentResolver().openOutputStream(uri)) {
-                        stream.write(dumpBackupHeader);
-                        stream.write(dumpBackupJson.getBytes(StandardCharsets.UTF_8));
-                    }
-                }
-            }
+            webView.evaluateJavascript("demeterRestoreBackup(\"" + RESTORE_BACKUP_URL + "\");", null);
         } catch (Exception e) {
             Log.w(TAG, e);
         }
@@ -130,17 +130,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                if (uri.getScheme().equals("demeter")) {
-                    Map<String, String> responseHeaders = new TreeMap<>();
-                    responseHeaders.put("Access-Control-Allow-Origin", "*");
-
-                    if (uri.getPath().equals("/demeterRestoreBackup.dat")) {
-                        if (restoreBackupStream != null) {
-                            byte[] data = restoreBackupStream.toByteArray();
-                            return new WebResourceResponse("application/octet-stream", null, 200, "OK", responseHeaders, new ByteArrayInputStream(data));
-                        }
+                if (Objects.equals(uri.getPath(), RESTORE_BACKUP_URL)) {
+                    if (restoreBackupStream != null) {
+                        return new WebResourceResponse("application/octet-stream", null, 200, "OK", null, new ByteArrayInputStream(restoreBackupStream.toByteArray()));
+                    } else {
+                        return new WebResourceResponse("application/octet-stream", null, 404, "Not Found", null, null);
                     }
-                    return new WebResourceResponse(null, null, 404, "Not Found", responseHeaders, null);
                 } else {
                     return assetLoader.shouldInterceptRequest(request.getUrl());
                 }
@@ -150,12 +145,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
                 Uri url = request.getUrl();
                 Log.d(TAG, "shouldOverrideUrlLoading " + url);
-                if (url.getHost().equals("appassets.androidplatform.net")) {
+                if (Objects.equals(url.getHost(), "appassets.androidplatform.net")) {
                     return false;
                 } else {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(url);
-                    if (url.getHost().equals("play.google.com")) {
+                    if (Objects.equals(url.getHost(), "play.google.com")) {
                         intent.setPackage("com.android.vending");
                     }
 

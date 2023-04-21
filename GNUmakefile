@@ -53,6 +53,10 @@ check:: all
 
 #--------------------------------------------------------------------------
 
+build_all:: build_web build_ios build_android
+
+#--------------------------------------------------------------------------
+
 build_web::
 	rm -f -r build/$(version_web)
 	./tool/build.sh . build/$(version_web) $(version_system) $(version_web)

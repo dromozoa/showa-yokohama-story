@@ -237,7 +237,7 @@ extension ViewController {
   @objc
   func restoreBackup() {
     DispatchQueue.main.async {
-      self.webView.evaluateJavaScript("demeterRestoreBackup()")
+      self.webView.evaluateJavaScript("demeterRestoreBackup();")
     }
   }
 }
