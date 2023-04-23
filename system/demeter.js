@@ -4255,7 +4255,7 @@ const initializeDialogOverlay = () => {
   dialogOverlayNode.addEventListener("dragover", ev => ev.preventDefault());
   dialogOverlayNode.addEventListener("drop", ev => {
     ev.preventDefault();
-    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files && waitForDialog) {
+    if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files.length > 0 && waitForDialog) {
       dialogFile = ev.dataTransfer.files.item(0);
       waitForDialog(0);
     }
