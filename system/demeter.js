@@ -1865,8 +1865,8 @@ D.compareVersionWeb = version => {
 };
 
 D.compareVersionApp = version => {
-  const thisVersion = D.getAppVersion().split(/\./).map(Number.parseInt);
-  const thatVersion = version.version.split(/\./).map(Number.parseInt);
+  const thisVersion = D.getAppVersion().split(/\./).map(v => Number.parseInt(v));
+  const thatVersion = version.version.split(/\./).map(v => Number.parseInt(v));
   for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
     const u = thisVersion[i] || 0;
     const v = thatVersion[i] || 0;
