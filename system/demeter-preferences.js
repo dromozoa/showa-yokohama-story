@@ -58,7 +58,7 @@ const getAudioExtensions = () => {
 };
 
 const mode = "develop";
-const version = { web: "b29", system: 27, music: 1, voice: 10 };
+const version = { web: "b30", system: 28, music: 1, voice: 10 };
 const audioExtensions = getAudioExtensions();
 
 if (mode === "develop") {
