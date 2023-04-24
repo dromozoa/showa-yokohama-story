@@ -28,7 +28,7 @@ local credits = read_all(credits_pathname)
 local trophies = read_all(trophies_pathname)
 local version = parse_json(read_all(version_pathname))
 
-local handle = io.popen("git log -1 --date='format:%Y年%m年%d日' --pretty='%ad' "..quote_shell(template_pathname))
+local handle = io.popen("git log -1 --date='format:%Y年%m月%d日' --pretty='%ad' "..quote_shell(template_pathname))
 local updated = handle:read():gsub("%d+", function (v) return (v:gsub("^0+", "")) end)
 handle:close();
 
