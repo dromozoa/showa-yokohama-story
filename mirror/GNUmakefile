@@ -20,6 +20,12 @@ all:: build
 fetch::
 	../tool/mirror.sh fetch mirror.json
 
+fetch_npm::
+	../tool/mirror.sh fetch_npm mirror.json
+
+fetch_googlefonts::
+	../tool/mirror.sh fetch_googlefonts mirror.json
+
 build::
 	rm -f -r ../build/mirror
 	../tool/mirror.sh build mirror.json ../build/mirror
