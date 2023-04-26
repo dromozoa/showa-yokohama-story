@@ -40,10 +40,13 @@
 
   --color-title: #C63322;
   --color-console: #029D93;
+  --color-disabled: #666;
   --color-fill: rgba(31, 31, 31, 0.5);
   --color-fill-active: rgba(2, 157, 147, 0.25);
+  --color-fill-disabled: rgba(102, 102, 102, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
+  --color-stroke-disabled: rgba(102, 102, 102, 0.5);
   --color-graph: rgba(2, 157, 147, 0.5);
 }
 
@@ -312,10 +315,6 @@ body.demeter {
   height: calc(var(--font-size) * 4);
 }
 
-.demeter-title-choice.demeter-center {
-  left: calc(var(--font-size) * 6);
-}
-
 .demeter-title-choice2 {
   left: calc(var(--font-size) * 12);
   top: 0;
@@ -366,6 +365,10 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: center;
   pointer-events: none;
+}
+
+.demeter-title-choice-text.demeter-disabled {
+  color: var(--color-disabled);
 }
 
 .demeter-title-kcode {
@@ -1616,6 +1619,16 @@ body.demeter {
   .demeter-button.demeter-hover:hover {
     stroke: var(--color-stroke-active);
   }
+}
+
+.demeter-button.demeter-disabled {
+  cursor: auto;
+  fill: var(--color-fill-disabled);
+  stroke: var(--color-stroke-disabled);
+}
+
+.demeter-button.demeter-disabled:active {
+  fill: var(--color-fill-disabled);
 }
 
 /*************************************************************************/
