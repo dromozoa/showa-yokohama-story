@@ -2712,27 +2712,41 @@ const checkTrophies = async () => {
 
 //-------------------------------------------------------------------------
 
+const enableTitleChoice = node => {
+  [
+    node,
+    node.querySelector(".demeter-button"),
+    node.querySelector(".demeter-title-choice-text"),
+  ].forEach(node => node.classList.remove("demeter-disabled"));
+};
+
 const disableTitleChoice = node => {
-  // node.querySelector(".demeter-button").classList.add("demeter-disabled");
-  // node.querySelector(".
+  [
+    node,
+    node.querySelector(".demeter-button"),
+    node.querySelector(".demeter-title-choice-text"),
+  ].forEach(node => node.classList.add("demeter-disabled"));
 };
 
 const showTitleChoices = async () => {
   const choice3Node = document.querySelector(".demeter-title-choice3");
   const choice4Node = document.querySelector(".demeter-title-choice4");
 
-  // const autosave = await database.get("save", "autosave");
-  // if (autosave) {
-  //   choice3Node.classList.remove("demeter-disabled");
-  // } else {
-  //   choice3Node.classList.add("demeter-disabled");
-  // }
+  const autosave = await database.get("save", "autosave");
+  if (autosave) {
+    enableTitleChoice(choice3Node);
+  } else {
+    disableTitleChoice(choice3Node);
+  }
 
-  // if (gameState.visitedCredits) {
-  //   choice4Node.classList.remove("demeter-disabled");
-  // } else {
-  //   choice4Node.classList.add("demeter-disabled");
-  // }
+  if (gameState.visitedCredits) {
+    enableTitleChoice(choice4Node);
+  } else {
+    disableTitleChoice(choice4Node);
+  }
+
+  disableTitleChoice(document.querySelector(".demeter-title-choice5"));
+  disableTitleChoice(document.querySelector(".demeter-title-choice6"));
 
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
@@ -3897,6 +3911,10 @@ const initializeTitleScreen = () => {
   // CONTINUE
   choiceButtonNodes[2].addEventListener("click", async ev => {
     ev.stopPropagation();
+    if (choiceButtonNodes[2].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
     soundEffectSelect();
     setSave(await database.get("save", "autosave"));
     leaveTitleScreen();
@@ -3907,9 +3925,31 @@ const initializeTitleScreen = () => {
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async ev => {
     ev.stopPropagation();
+    if (choiceButtonNodes[3].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
     soundEffectSelect();
     leaveTitleScreen();
     await enterCreditsScreen();
+  });
+
+  // EXTRA GAME
+  choiceButtonNodes[4].addEventListener("click", ev => {
+    ev.stopPropagation();
+    if (choiceButtonNodes[4].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
+  });
+
+  // POSTSCRIPT
+  choiceButtonNodes[5].addEventListener("click", ev => {
+    ev.stopPropagation();
+    if (choiceButtonNodes[5].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
   });
 };
 
