@@ -2729,20 +2729,17 @@ const disableTitleChoice = node => {
 };
 
 const showTitleChoices = async () => {
-  const choice3Node = document.querySelector(".demeter-title-choice3");
-  const choice4Node = document.querySelector(".demeter-title-choice4");
-
   const autosave = await database.get("save", "autosave");
   if (autosave) {
-    enableTitleChoice(choice3Node);
+    enableTitleChoice(document.querySelector(".demeter-title-choice3"));
   } else {
-    disableTitleChoice(choice3Node);
+    disableTitleChoice(document.querySelector(".demeter-title-choice3"));
   }
 
   if (gameState.visitedCredits) {
-    enableTitleChoice(choice4Node);
+    enableTitleChoice(document.querySelector(".demeter-title-choice4"));
   } else {
-    disableTitleChoice(choice4Node);
+    disableTitleChoice(document.querySelector(".demeter-title-choice4"));
   }
 
   disableTitleChoice(document.querySelector(".demeter-title-choice5"));
@@ -5038,18 +5035,18 @@ const focusTitleChoice = ev => {
     [ 2, 0 ], [ 2, 1 ], [ 2, -1 ],
   ];
 
-  let col;
-  let row;
+  let col = 0;
+  let row = 0;
 
   const focusNode = unsetFocus();
   const index = nodes.findIndex(node => node === focusNode);
   if (index === -1) {
-    if (delta.y === 0) {
-      col = delta.x === 1 ? 0 : cols - 1;
-      row = Math.floor((rows - 1) / 2);
-    } else {
-      col = Math.floor((cols - 1) / 2);
-      row = delta.y === 1 ? 0 : rows - 1;
+    if (delta.x === -1) {
+      col = cols - 1;
+      row = 0;
+    } else if (delta.y === -1) {
+      col = 0;
+      row = rows - 1;
     }
   } else {
     col = index % cols + delta.x;
@@ -5074,7 +5071,11 @@ const focusTitleChoice = ev => {
   });
 
   if (result) {
-    soundEffectFocus();
+    if (resultIndex === index) {
+      soundEffectBeep();
+    } else {
+      soundEffectFocus();
+    }
     nodes[resultIndex].classList.add("demeter-focus");
   } else {
     soundEffectBeep();
@@ -5083,62 +5084,6 @@ const focusTitleChoice = ev => {
     }
   }
   return true;
-
-/*
-  const nodes = [
-    document.querySelector(".demeter-title-choice1 .demeter-button"),
-    document.querySelector(".demeter-title-choice2 .demeter-button"),
-  ];
-
-  const choice3Node = document.querySelector(".demeter-title-choice3");
-  if (choice3Node.style.display === "block") {
-    nodes.push(choice3Node.querySelector(".demeter-button"));
-  }
-
-  const choice4Node = document.querySelector(".demeter-title-choice4");
-  if (choice4Node.style.display === "block") {
-    nodes.push(choice4Node.querySelector(".demeter-button"));
-  }
-
-  if (nodes.length === 2) {
-    nodes.push(nodes[0]);
-    nodes.push(nodes[1]);
-  } else if (nodes.length === 3) {
-    nodes.push(nodes[2]);
-  }
-
-  const cols = 2;
-  const rows = 2;
-  let col;
-  let row;
-
-  const focusNode = unsetFocus();
-  const index = nodes.findIndex(node => node === focusNode);
-  if (index === -1) {
-    col = delta.x > -1 ? 0 : cols - 1;
-    row = delta.y > -1 ? 0 : rows - 1;
-  } else {
-    col = index % cols + delta.x;
-    row = Math.floor(index / cols) + delta.y;
-    col = (col + cols) % cols;
-    row = (row + rows) % rows;
-    if (nodes[2] === nodes[3] && col === 1 && row === 1) {
-      if (delta.x === -1) {
-        // 下行のボタンから左に移動→NEW GAME
-        col = 0;
-        row = 0;
-      } else if (delta.x === 1) {
-        // 下行のボタンから右に移動→LOAD GAME
-        col = 1;
-        row = 0;
-      }
-    }
-  }
-
-  soundEffectFocus();
-  nodes[col + row * cols].classList.add("demeter-focus");
-  return true;
-*/
 };
 
 const getUiComponents = () => [
