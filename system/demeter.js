@@ -2712,41 +2712,27 @@ const checkTrophies = async () => {
 
 //-------------------------------------------------------------------------
 
+const disableTitleChoice = node => {
+  // node.querySelector(".demeter-button").classList.add("demeter-disabled");
+  // node.querySelector(".
+};
+
 const showTitleChoices = async () => {
   const choice3Node = document.querySelector(".demeter-title-choice3");
   const choice4Node = document.querySelector(".demeter-title-choice4");
-  let n = 0;
 
-  const autosave = await database.get("save", "autosave");
-  if (autosave) {
-    choice3Node.style.display = "block";
-    ++n;
-    // 自動保存の段落の音声をキャッシュする。
-    D.cache(getVoiceUrls([autosave.paragraphIndex]));
-  } else {
-    choice3Node.style.display = "none";
-  }
+  // const autosave = await database.get("save", "autosave");
+  // if (autosave) {
+  //   choice3Node.classList.remove("demeter-disabled");
+  // } else {
+  //   choice3Node.classList.add("demeter-disabled");
+  // }
 
-  if (gameState.visitedCredits) {
-    choice4Node.style.display = "block";
-    ++n;
-  } else {
-    choice4Node.style.display = "none";
-  }
-
-  if (n === 1) {
-    choice3Node.classList.add("demeter-center");
-    choice4Node.classList.add("demeter-center");
-  } else {
-    choice3Node.classList.remove("demeter-center");
-    choice4Node.classList.remove("demeter-center");
-  }
-
-  // FIXME デザインデバッグ
-  choice3Node.style.display = "block";
-  choice4Node.style.display = "block";
-  choice3Node.classList.remove("demeter-center");
-  choice4Node.classList.remove("demeter-center");
+  // if (gameState.visitedCredits) {
+  //   choice4Node.classList.remove("demeter-disabled");
+  // } else {
+  //   choice4Node.classList.add("demeter-disabled");
+  // }
 
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
