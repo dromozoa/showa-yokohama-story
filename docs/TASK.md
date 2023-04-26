@@ -144,5 +144,10 @@
 
 - アプリ
   - [ ] Androidで起動中の自動更新に対応する
+    - そもそも充電していなかったからじゃ？
     - 更新に対応するフックがあった気がする
+      - ブロードキャストを受信する
+      - `ACTION_MY_PACKAGE_REPLACED`
+    - Google Play
+      - https://developer.android.com/guide/playcore/in-app-updates
 
