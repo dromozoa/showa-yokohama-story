@@ -4942,15 +4942,22 @@ const getInputControlY = (ev, def) => {
   }
 };
 
+const rotations = [
+  [ +1,  0,  0, +1 ], // 0度
+  [  0, -1, +1,  0 ], // 90度
+  [ -1,  0,  0, -1 ], // 180度
+  [  0, +1, -1,  0 ], // 270度
+];
+
 const getInputControlXY = ev => {
   if (isInputControlLeft(ev)) {
-    return { x: -1, y: 0 };
+    return { x: -1, y: 0, r: rotations[2] }; // ←, 180度
   } else if (isInputControlUp(ev)) {
-    return { x: 0, y: -1 };
+    return { x: 0, y: -1, r: rotations[3] }; // ↑, 270度
   } else if (isInputControlDown(ev)) {
-    return { x: 0, y: +1 };
+    return { x: 0, y: +1, r: rotations[1] }; // ↓, 90度
   } else if (isInputControlRight(ev)) {
-    return { x: +1, y: 0 };
+    return { x: +1, y: 0, r: rotations[0] }; // →, 0
   }
 };
 
@@ -5004,6 +5011,80 @@ const focusTitleChoice = ev => {
     return;
   }
 
+  let nodes;
+  let cols;
+  let rows;
+
+  if (screenOrientation === "orientationPortrait") {
+    nodes = [
+      1, 2,
+      3, 4,
+      5, 6,
+    ].map(n => document.querySelector(`.demeter-title-choice${n} .demeter-button`));
+    cols = 2;
+    rows = 3;
+  } else {
+    nodes = [
+      1, 2, 5,
+      3, 4, 6,
+    ].map(n => document.querySelector(`.demeter-title-choice${n} .demeter-button`));
+    cols = 3;
+    rows = 2;
+  }
+
+  const vectors = [
+    [ 0, 0 ], [ 0, 1 ], [ 0, -1 ],
+    [ 1, 0 ], [ 1, 1 ], [ 1, -1 ],
+    [ 2, 0 ], [ 2, 1 ], [ 2, -1 ],
+  ];
+
+  let col;
+  let row;
+
+  const focusNode = unsetFocus();
+  const index = nodes.findIndex(node => node === focusNode);
+  if (index === -1) {
+    if (delta.y === 0) {
+      col = delta.x === 1 ? 0 : cols - 1;
+      row = Math.floor((rows - 1) / 2);
+    } else {
+      col = Math.floor((cols - 1) / 2);
+      row = delta.y === 1 ? 0 : rows - 1;
+    }
+  } else {
+    col = index % cols + delta.x;
+    row = Math.floor(index / cols) + delta.y;
+    col = (col + cols) % cols;
+    row = (row + rows) % rows;
+  }
+
+  const [ m11, m12, m21, m22 ] = delta.r;
+
+  let resultIndex;
+  const result = vectors.some(v => {
+    const x = m11 * v[0] + m12 * v[1];
+    const y = m21 * v[0] + m22 * v[1];
+    const c = (col + x + cols) % cols;
+    const r = (row + y + rows) % rows;
+    const index = c + r * cols;
+    if (!nodes[index].classList.contains("demeter-disabled")) {
+      resultIndex = index;
+      return true;
+    }
+  });
+
+  if (result) {
+    soundEffectFocus();
+    nodes[resultIndex].classList.add("demeter-focus");
+  } else {
+    soundEffectBeep();
+    if (index !== -1) {
+      nodes[index].classList.add("demeter-focus");
+    }
+  }
+  return true;
+
+/*
   const nodes = [
     document.querySelector(".demeter-title-choice1 .demeter-button"),
     document.querySelector(".demeter-title-choice2 .demeter-button"),
@@ -5057,6 +5138,7 @@ const focusTitleChoice = ev => {
   soundEffectFocus();
   nodes[col + row * cols].classList.add("demeter-focus");
   return true;
+*/
 };
 
 const getUiComponents = () => [
