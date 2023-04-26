@@ -9,11 +9,11 @@
 --
 -- 昭和横濱物語 is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 -- GNU General Public License for more details.
 --
 -- You should have received a copy of the GNU General Public License
--- along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+-- along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 local source_pathname, result_pathname = ...
 local handle_html = assert(io.open(result_pathname, "w"))
