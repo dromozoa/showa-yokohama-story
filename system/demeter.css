@@ -193,6 +193,20 @@ body.demeter {
 
 /*************************************************************************/
 
+@media(orientation: portrait) {
+  :root {
+    --title-width: calc(var(--font-size) * 27);
+    --title-height: calc(var(--font-size) * 26);
+  }
+}
+
+@media(orientation: landscape) {
+  :root {
+    --title-width: calc(var(--font-size) * 35);
+    --title-height: calc(var(--font-size) * 22);
+  }
+}
+
 .demeter-title-screen {
   position: absolute;
   width: var(--screen-width);
@@ -205,15 +219,15 @@ body.demeter {
 
 .demeter-title {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 22);
-  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
-  top: calc((var(--screen-height) - var(--font-size) * 22) * 0.5);
+  width: var(--title-width);
+  height: var(--title-height);
+  left: calc((var(--screen-width) - var(--title-width)) * 0.5);
+  top: calc((var(--screen-height) - var(--title-height)) * 0.5);
 }
 
 .demeter-title-ja {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 6);
   color: var(--color-title);
   font-family: var(--font-family-title-ja);
@@ -229,7 +243,7 @@ body.demeter {
 
 .demeter-title-en {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: var(--font-size);
   left: 0;
   top: calc(var(--font-size) * 6);
@@ -247,7 +261,7 @@ body.demeter {
 
 .demeter-title-text {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 12);
@@ -260,7 +274,7 @@ body.demeter {
 .demeter-title-icon {
   display: none;
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 16);
@@ -272,10 +286,24 @@ body.demeter {
 .demeter-title-choices {
   display: none;
   position: absolute;
-  width: calc(var(--font-size) * 23);
-  height: calc(var(--font-size) * 8);
-  left: calc(var(--font-size) * 2);
-  top: calc(var(--font-size) * 14);
+}
+
+@media(orientation: portrait) {
+  .demeter-title-choices {
+    width: calc(var(--font-size) * 23);
+    height: calc(var(--font-size) * 12);
+    left: calc(var(--font-size) * 2);
+    top: calc(var(--font-size) * 14);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-title-choices {
+    width: calc(var(--font-size) * 35);
+    height: calc(var(--font-size) * 8);
+    left: 0;
+    top: calc(var(--font-size) * 14);
+  }
 }
 
 .demeter-title-choice {
@@ -301,6 +329,30 @@ body.demeter {
 .demeter-title-choice4 {
   left: calc(var(--font-size) * 12);
   top: calc(var(--font-size) * 4);
+}
+
+@media(orientation: portrait) {
+  .demeter-title-choice5 {
+    left: 0;
+    top: calc(var(--font-size) * 8);
+  }
+
+  .demeter-title-choice6 {
+    left: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 8);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-title-choice5 {
+    left: calc(var(--font-size) * 24);
+    top: 0;
+  }
+
+  .demeter-title-choice6 {
+    left: calc(var(--font-size) * 24);
+    top: calc(var(--font-size) * 4);
+  }
 }
 
 .demeter-title-choice-text {

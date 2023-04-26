@@ -2742,6 +2742,12 @@ const showTitleChoices = async () => {
     choice4Node.classList.remove("demeter-center");
   }
 
+  // FIXME デザインデバッグ
+  choice3Node.style.display = "block";
+  choice4Node.style.display = "block";
+  choice3Node.classList.remove("demeter-center");
+  choice4Node.classList.remove("demeter-center");
+
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
 
