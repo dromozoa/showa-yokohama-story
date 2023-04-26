@@ -2714,7 +2714,6 @@ const checkTrophies = async () => {
 
 const enableTitleChoice = node => {
   [
-    node,
     node.querySelector(".demeter-button"),
     node.querySelector(".demeter-title-choice-text"),
   ].forEach(node => node.classList.remove("demeter-disabled"));
@@ -2722,7 +2721,6 @@ const enableTitleChoice = node => {
 
 const disableTitleChoice = node => {
   [
-    node,
     node.querySelector(".demeter-button"),
     node.querySelector(".demeter-title-choice-text"),
   ].forEach(node => node.classList.add("demeter-disabled"));
@@ -4578,8 +4576,19 @@ const next = async () => {
 
         document.querySelector(".demeter-main-choices").style.display = "block";
         while (true) {
+          const menuNodes = [
+            document.querySelector(".demeter-main-menu-item1"),
+            document.querySelector(".demeter-main-menu-item4"),
+            document.querySelector(".demeter-main-menu-item5"),
+            document.querySelector(".demeter-main-menu .demeter-button1"),
+            document.querySelector(".demeter-main-menu .demeter-button4"),
+            document.querySelector(".demeter-main-menu .demeter-button5"),
+          ];
+
+          menuNodes.forEach(node => node.classList.add("demeter-disabled"));
           const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
           waitForChoice = undefined;
+          menuNodes.forEach(node => node.classList.remove("demeter-disabled"));
 
           if (waitForStop) {
             document.querySelector(".demeter-main-choices").style.display = "none";

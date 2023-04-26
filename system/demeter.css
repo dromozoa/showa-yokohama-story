@@ -46,7 +46,7 @@
   --color-fill-disabled: rgba(102, 102, 102, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
-  --color-stroke-disabled: rgba(102, 102, 102, 0.5);
+  --color-stroke-disabled: var(--color-disabled);
   --color-graph: rgba(2, 157, 147, 0.5);
 }
 
