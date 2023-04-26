@@ -583,6 +583,10 @@ body.demeter {
   pointer-events: none;
 }
 
+.demeter-main-menu-item.demeter-disabled {
+  color: var(--color-disabled);
+}
+
 .demeter-main-menu-item1 {
   left: calc(var(--font-size) * 8.5);
   top: calc(var(--font-size) * 0.25);
