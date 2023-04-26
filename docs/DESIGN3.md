@@ -40,7 +40,18 @@
   [CONTINUE ]  [CREDITS  ]
 ```
 
+```
+  [NEW GAME ]  [LOAD GAME]
+  [CONTINUE ]  [CREDITS  ]
+  [EXTRA    ]  [POSTSCRIPT]
+```
 
+- EXTRA GAME
+- POSTSCRIPT
 
+```
+  [NEW GAME] [LOAD GAME] [EXTRA GAME]
+  [CONTINUE] [CREDITS] [POSTSCRIPT]
+```
 
 
