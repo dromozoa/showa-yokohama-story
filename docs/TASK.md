@@ -74,6 +74,9 @@
   - [x] ストアURLを確認
   - [x] Appleのmeta
     - 表示がおかしいからやめた
+  - [x] Twitter App Cardが使えないことを確認する
+    - https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/app-card
+    - 広告じゃないと読みこまれない模様。
 
 - デバッグ
   - [x] 履歴の消去ができてない？
@@ -137,8 +140,6 @@
   - [ ] アプリケーションインストール
     - https://developer.chrome.com/blog/app-install-banners-native/
     - https://web.dev/customize-install/
-  - [ ] Twitter App Cardが使えないことを確認する
-    - https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/app-card
 
 - デバッグ
 
