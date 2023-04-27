@@ -9,11 +9,11 @@
 //
 // 昭和横濱物語 is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+// along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 package com.vaporoid.sys;
 
@@ -24,6 +24,8 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,5 +35,20 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.vaporoid.sys", appContext.getPackageName());
+    }
+
+    @Test
+    public void testJsonObject() throws JSONException {
+        JSONObject object = new JSONObject();
+        assertEquals("{}", object.toString());
+        object.put("foo", 42);
+        object.put("bar", "baz\"qux");
+        assertEquals("{\"foo\":42,\"bar\":\"baz\\\"qux\"}", object.toString());
+    }
+
+    @Test
+    public void testJsonObjectQuote() {
+        String quote = JSONObject.quote("foo\nbar\tbaz\"qux");
+        assertEquals("\"foo\\nbar\\tbaz\\\"qux\"", quote);
     }
 }

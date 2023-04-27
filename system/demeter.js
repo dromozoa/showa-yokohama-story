@@ -9,11 +9,11 @@
 //
 // 昭和横濱物語 is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+// along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 /* jshint esversion: 8 */
 /* globals globalThis */
@@ -1865,8 +1865,8 @@ D.compareVersionWeb = version => {
 };
 
 D.compareVersionApp = version => {
-  const thisVersion = D.getAppVersion().split(/\./).map(Number.parseInt);
-  const thatVersion = version.version.split(/\./).map(Number.parseInt);
+  const thisVersion = D.getAppVersion().split(/\./).map(v => Number.parseInt(v));
+  const thatVersion = version.version.split(/\./).map(v => Number.parseInt(v));
   for (let i = 0; i < Math.max(thisVersion.length, thatVersion.length); ++i) {
     const u = thisVersion[i] || 0;
     const v = thatVersion[i] || 0;
@@ -1897,11 +1897,17 @@ D.UpdateChecker = class {
 
     this.status = "checking";
     requestAnimationFrame(async () => {
-      if (D.isApp()) {
-        this.status = await this.checkApp();
-      } else {
-        this.status = await this.checkWeb();
+      switch (D.isApp()) {
+        case "ios":
+          this.status = await this.checkIos();
+          break;
+        case "android":
+          this.status = await this.checkAndroid();
+          break;
+        default:
+          this.status = await this.checkWeb();
       }
+
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
@@ -1926,7 +1932,7 @@ D.UpdateChecker = class {
     }
   }
 
-  async checkApp() {
+  async checkIos() {
     try {
       const response = await fetch("https://vaporoid.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
       this.version = await response.json();
@@ -1941,19 +1947,54 @@ D.UpdateChecker = class {
     }
   }
 
+  async checkAndroid() {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        globalThis.demeterGetAppUpdateInfo = (result, error) => {
+          if (result !== undefined) {
+            resolve(result);
+          } else if (error !== undefined) {
+            reject(error);
+          } else {
+            reject("canceled");
+          }
+        };
+        demeterAndroid.getAppUpdateInfo();
+      });
+
+      logging.debug("更新チェック: 成功");
+      D.trace(result);
+
+      this.version = result;
+      if (result.updateAvailability === "UPDATE_AVAILABLE" && result.isImmediateUpdateAllowed) {
+        logging.notice("更新検出: #" + result.versionCode + "→#" + result.availableVersionCode);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
+    globalThis.demeterGetAppUpdateInfo = undefined;
+  }
+
   async dialog() {
     soundEffectAlert();
-    if (D.isApp()) {
-      const key = "system-update-" + D.isApp();
-      if (await dialog(key) === "yes") {
-        open(this.version.url, "_blank", "noopener,noreferrer");
-      }
-    } else {
-      const key = screenName === "title" ? "system-update-title" : "system-update";
-      if (await dialog(key) === "yes") {
-        location.href = "game.html?t=" + Date.now();
-        return true;
-      }
+    switch (D.isApp()) {
+      case "ios":
+        if (await dialog("system-update-ios") === "yes") {
+          open(this.version.url, "_blank", "noopener,noreferrer");
+        }
+        break;
+      case "android":
+        if (await dialog("system-update-android-in-app") === "yes") {
+          demeterAndroid.startImmediateUpdateFlow();
+        }
+        break;
+      default:
+        const key = screenName === "title" ? "system-update-title" : "system-update";
+        if (await dialog(key) === "yes") {
+          location.href = "game.html?t=" + Date.now();
+          return true;
+        }
     }
   }
 };
@@ -2712,35 +2753,36 @@ const checkTrophies = async () => {
 
 //-------------------------------------------------------------------------
 
-const showTitleChoices = async () => {
-  const choice3Node = document.querySelector(".demeter-title-choice3");
-  const choice4Node = document.querySelector(".demeter-title-choice4");
-  let n = 0;
+const enableTitleChoice = node => {
+  [
+    node.querySelector(".demeter-button"),
+    node.querySelector(".demeter-title-choice-text"),
+  ].forEach(node => node.classList.remove("demeter-disabled"));
+};
 
+const disableTitleChoice = node => {
+  [
+    node.querySelector(".demeter-button"),
+    node.querySelector(".demeter-title-choice-text"),
+  ].forEach(node => node.classList.add("demeter-disabled"));
+};
+
+const showTitleChoices = async () => {
   const autosave = await database.get("save", "autosave");
   if (autosave) {
-    choice3Node.style.display = "block";
-    ++n;
-    // 自動保存の段落の音声をキャッシュする。
-    D.cache(getVoiceUrls([autosave.paragraphIndex]));
+    enableTitleChoice(document.querySelector(".demeter-title-choice3"));
   } else {
-    choice3Node.style.display = "none";
+    disableTitleChoice(document.querySelector(".demeter-title-choice3"));
   }
 
   if (gameState.visitedCredits) {
-    choice4Node.style.display = "block";
-    ++n;
+    enableTitleChoice(document.querySelector(".demeter-title-choice4"));
   } else {
-    choice4Node.style.display = "none";
+    disableTitleChoice(document.querySelector(".demeter-title-choice4"));
   }
 
-  if (n === 1) {
-    choice3Node.classList.add("demeter-center");
-    choice4Node.classList.add("demeter-center");
-  } else {
-    choice3Node.classList.remove("demeter-center");
-    choice4Node.classList.remove("demeter-center");
-  }
+  disableTitleChoice(document.querySelector(".demeter-title-choice5"));
+  disableTitleChoice(document.querySelector(".demeter-title-choice6"));
 
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
@@ -3905,6 +3947,10 @@ const initializeTitleScreen = () => {
   // CONTINUE
   choiceButtonNodes[2].addEventListener("click", async ev => {
     ev.stopPropagation();
+    if (choiceButtonNodes[2].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
     soundEffectSelect();
     setSave(await database.get("save", "autosave"));
     leaveTitleScreen();
@@ -3915,9 +3961,31 @@ const initializeTitleScreen = () => {
   // CREDITS
   choiceButtonNodes[3].addEventListener("click", async ev => {
     ev.stopPropagation();
+    if (choiceButtonNodes[3].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
     soundEffectSelect();
     leaveTitleScreen();
     await enterCreditsScreen();
+  });
+
+  // EXTRA GAME
+  choiceButtonNodes[4].addEventListener("click", ev => {
+    ev.stopPropagation();
+    if (choiceButtonNodes[4].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
+  });
+
+  // POSTSCRIPT
+  choiceButtonNodes[5].addEventListener("click", ev => {
+    ev.stopPropagation();
+    if (choiceButtonNodes[5].classList.contains("demeter-disabled")) {
+      soundEffectBeep();
+      return;
+    }
   });
 };
 
@@ -4549,8 +4617,19 @@ const next = async () => {
 
         document.querySelector(".demeter-main-choices").style.display = "block";
         while (true) {
+          const menuNodes = [
+            document.querySelector(".demeter-main-menu-item1"),
+            document.querySelector(".demeter-main-menu-item4"),
+            document.querySelector(".demeter-main-menu-item5"),
+            document.querySelector(".demeter-main-menu .demeter-button1"),
+            document.querySelector(".demeter-main-menu .demeter-button4"),
+            document.querySelector(".demeter-main-menu .demeter-button5"),
+          ];
+
+          menuNodes.forEach(node => node.classList.add("demeter-disabled"));
           const choice = await new Promise(resolve => waitForChoice = choice => resolve(choice));
           waitForChoice = undefined;
+          menuNodes.forEach(node => node.classList.remove("demeter-disabled"));
 
           if (waitForStop) {
             document.querySelector(".demeter-main-choices").style.display = "none";
@@ -4910,15 +4989,22 @@ const getInputControlY = (ev, def) => {
   }
 };
 
+const rotations = [
+  [ +1,  0,  0, +1 ], // 0度
+  [  0, -1, +1,  0 ], // 90度
+  [ -1,  0,  0, -1 ], // 180度
+  [  0, +1, -1,  0 ], // 270度
+];
+
 const getInputControlXY = ev => {
   if (isInputControlLeft(ev)) {
-    return { x: -1, y: 0 };
+    return { x: -1, y: 0, r: rotations[2] }; // ←, 180度
   } else if (isInputControlUp(ev)) {
-    return { x: 0, y: -1 };
+    return { x: 0, y: -1, r: rotations[3] }; // ↑, 270度
   } else if (isInputControlDown(ev)) {
-    return { x: 0, y: +1 };
+    return { x: 0, y: +1, r: rotations[1] }; // ↓, 90度
   } else if (isInputControlRight(ev)) {
-    return { x: +1, y: 0 };
+    return { x: +1, y: 0, r: rotations[0] }; // →, 0
   }
 };
 
@@ -4972,58 +5058,81 @@ const focusTitleChoice = ev => {
     return;
   }
 
-  const nodes = [
-    document.querySelector(".demeter-title-choice1 .demeter-button"),
-    document.querySelector(".demeter-title-choice2 .demeter-button"),
+  let nodes;
+  let cols;
+  let rows;
+
+  if (screenOrientation === "orientationPortrait") {
+    nodes = [
+      1, 2,
+      3, 4,
+      5, 6,
+    ].map(n => document.querySelector(`.demeter-title-choice${n} .demeter-button`));
+    cols = 2;
+    rows = 3;
+  } else {
+    nodes = [
+      1, 2, 5,
+      3, 4, 6,
+    ].map(n => document.querySelector(`.demeter-title-choice${n} .demeter-button`));
+    cols = 3;
+    rows = 2;
+  }
+
+  const vectors = [
+    [ 0, 0 ], [ 0, 1 ], [ 0, -1 ],
+    [ 1, 0 ], [ 1, 1 ], [ 1, -1 ],
+    [ 2, 0 ], [ 2, 1 ], [ 2, -1 ],
   ];
 
-  const choice3Node = document.querySelector(".demeter-title-choice3");
-  if (choice3Node.style.display === "block") {
-    nodes.push(choice3Node.querySelector(".demeter-button"));
-  }
-
-  const choice4Node = document.querySelector(".demeter-title-choice4");
-  if (choice4Node.style.display === "block") {
-    nodes.push(choice4Node.querySelector(".demeter-button"));
-  }
-
-  if (nodes.length === 2) {
-    nodes.push(nodes[0]);
-    nodes.push(nodes[1]);
-  } else if (nodes.length === 3) {
-    nodes.push(nodes[2]);
-  }
-
-  const cols = 2;
-  const rows = 2;
-  let col;
-  let row;
+  let col = 0;
+  let row = 0;
 
   const focusNode = unsetFocus();
   const index = nodes.findIndex(node => node === focusNode);
   if (index === -1) {
-    col = delta.x > -1 ? 0 : cols - 1;
-    row = delta.y > -1 ? 0 : rows - 1;
+    if (delta.x === -1) {
+      col = cols - 1;
+      row = 0;
+    } else if (delta.y === -1) {
+      col = 0;
+      row = rows - 1;
+    }
   } else {
     col = index % cols + delta.x;
     row = Math.floor(index / cols) + delta.y;
     col = (col + cols) % cols;
     row = (row + rows) % rows;
-    if (nodes[2] === nodes[3] && col === 1 && row === 1) {
-      if (delta.x === -1) {
-        // 下行のボタンから左に移動→NEW GAME
-        col = 0;
-        row = 0;
-      } else if (delta.x === 1) {
-        // 下行のボタンから右に移動→LOAD GAME
-        col = 1;
-        row = 0;
-      }
-    }
   }
 
-  soundEffectFocus();
-  nodes[col + row * cols].classList.add("demeter-focus");
+  const [ m11, m12, m21, m22 ] = delta.r;
+
+  let resultIndex;
+  const result = vectors.some(v => {
+    const x = m11 * v[0] + m12 * v[1];
+    const y = m21 * v[0] + m22 * v[1];
+    const c = (col + x + cols) % cols;
+    const r = (row + y + rows) % rows;
+    const index = c + r * cols;
+    if (!nodes[index].classList.contains("demeter-disabled")) {
+      resultIndex = index;
+      return true;
+    }
+  });
+
+  if (result) {
+    if (resultIndex === index) {
+      soundEffectBeep();
+    } else {
+      soundEffectFocus();
+    }
+    nodes[resultIndex].classList.add("demeter-focus");
+  } else {
+    soundEffectBeep();
+    if (index !== -1) {
+      nodes[index].classList.add("demeter-focus");
+    }
+  }
   return true;
 };
 

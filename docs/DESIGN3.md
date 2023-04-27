@@ -40,7 +40,17 @@
   [CONTINUE ]  [CREDITS  ]
 ```
 
+```
+[NEW GAME  ]  [LOAD GAME ]
+[CONTINUE  ]  [CREDITS   ]
+[EXTRA GAME]  [POSTSCRIPT]
+```
+```
+[NEW GAME  ]  [LOAD GAME ]  [EXTRA GAME]
+[CONTINUE  ]  [CREDITS   ]  [POSTSCRIPT]
+```
 
-
-
+- 鍵状態: これはつくらない
+- 無効状態
+  - カーソルをdefaultにする
 
