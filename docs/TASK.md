@@ -95,6 +95,7 @@
   - [x] Twitter App Cardが使えないことを確認する
     - https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/app-card
     - 広告じゃないと読みこまれない模様。
+  - [x] Googleバナーのつくりなおし
 
 - デバッグ
   - [x] 履歴の消去ができてない？
@@ -151,7 +152,6 @@
 - システム
 
 - ウェブページ
-  - Googleアイコンのつくりなおし
   - [ ] 動画を作る
     - filmoreというのをつかってみる？
   - [ ] アプリケーションインストール
