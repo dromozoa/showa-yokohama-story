@@ -1967,7 +1967,7 @@ D.UpdateChecker = class {
 
       this.version = result;
       if (result.updateAvailability === "UPDATE_AVAILABLE" && result.isImmediateUpdateAllowed) {
-        logging.notice("更新検出: " + result.versionCode + "→" + result.availableVersionCode);
+        logging.notice("更新検出: #" + result.versionCode + "→#" + result.availableVersionCode);
         return "detected";
       }
     } catch (e) {
