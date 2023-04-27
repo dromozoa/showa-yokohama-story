@@ -16,6 +16,7 @@
   - [x] buildレポジトリもリリース時にタグをつける
   - [x] iosとandroidのサブ番号は管理しづらい気がする
     - よしとした
+  - [x] 依存関係のnpmの展開後に`.DS_Store`を削除する
 
 - シナリオ
   - [x] 中黒の調整
@@ -137,11 +138,17 @@
     - URLの確認だからよしとする
     - iOS OK
     - Android OK
+  - [x] Androidで起動中の自動更新に対応する
+    - そもそも充電していなかったからじゃ？
+    - 更新に対応するフックがあった気がする
+      - ブロードキャストを受信する
+      - `ACTION_MY_PACKAGE_REPLACED`
+    - Google Play
+      - https://developer.android.com/guide/playcore/in-app-updates
 
 ## タスク
 
 - ビルド
-  - [x] 依存関係のnpmの展開後に`.DS_Store`を削除する
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
@@ -163,11 +170,4 @@
 - デバッグ
 
 - アプリ
-  - [ ] Androidで起動中の自動更新に対応する
-    - そもそも充電していなかったからじゃ？
-    - 更新に対応するフックがあった気がする
-      - ブロードキャストを受信する
-      - `ACTION_MY_PACKAGE_REPLACED`
-    - Google Play
-      - https://developer.android.com/guide/playcore/in-app-updates
 
