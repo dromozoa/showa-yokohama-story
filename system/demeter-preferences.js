@@ -9,11 +9,11 @@
 //
 // 昭和横濱物語 is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+// along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 /* jshint esversion: 8 */
 /* globals globalThis */
@@ -58,7 +58,7 @@ const getAudioExtensions = () => {
 };
 
 const mode = "develop";
-const version = { web: "b29", system: 27, music: 1, voice: 10 };
+const version = { web: "b30", system: 28, music: 1, voice: 11 };
 const audioExtensions = getAudioExtensions();
 
 if (mode === "develop") {

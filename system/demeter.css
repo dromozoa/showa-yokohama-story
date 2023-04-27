@@ -10,11 +10,11 @@
  *
  * 昭和横濱物語 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with 昭和横濱物語.  If not, see <http://www.gnu.org/licenses/>.
+ * along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*************************************************************************/
@@ -40,10 +40,14 @@
 
   --color-title: #C63322;
   --color-console: #029D93;
+  --color-disabled: #666;
+  --color-banner: #FFD800;
   --color-fill: rgba(31, 31, 31, 0.5);
   --color-fill-active: rgba(2, 157, 147, 0.25);
+  --color-fill-disabled: rgba(102, 102, 102, 0.25);
   --color-stroke: #FFF;
   --color-stroke-active: var(--color-console);
+  --color-stroke-disabled: var(--color-disabled);
   --color-graph: rgba(2, 157, 147, 0.5);
 }
 
@@ -193,6 +197,20 @@ body.demeter {
 
 /*************************************************************************/
 
+@media(orientation: portrait) {
+  :root {
+    --title-width: calc(var(--font-size) * 27);
+    --title-height: calc(var(--font-size) * 26);
+  }
+}
+
+@media(orientation: landscape) {
+  :root {
+    --title-width: calc(var(--font-size) * 35);
+    --title-height: calc(var(--font-size) * 22);
+  }
+}
+
 .demeter-title-screen {
   position: absolute;
   width: var(--screen-width);
@@ -205,15 +223,15 @@ body.demeter {
 
 .demeter-title {
   position: absolute;
-  width: calc(var(--font-size) * 27);
-  height: calc(var(--font-size) * 22);
-  left: calc((var(--screen-width) - var(--font-size) * 27) * 0.5);
-  top: calc((var(--screen-height) - var(--font-size) * 22) * 0.5);
+  width: var(--title-width);
+  height: var(--title-height);
+  left: calc((var(--screen-width) - var(--title-width)) * 0.5);
+  top: calc((var(--screen-height) - var(--title-height)) * 0.5);
 }
 
 .demeter-title-ja {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 6);
   color: var(--color-title);
   font-family: var(--font-family-title-ja);
@@ -229,7 +247,7 @@ body.demeter {
 
 .demeter-title-en {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: var(--font-size);
   left: 0;
   top: calc(var(--font-size) * 6);
@@ -247,7 +265,7 @@ body.demeter {
 
 .demeter-title-text {
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 12);
@@ -260,7 +278,7 @@ body.demeter {
 .demeter-title-icon {
   display: none;
   position: absolute;
-  width: calc(var(--font-size) * 27);
+  width: var(--title-width);
   height: calc(var(--font-size) * 2);
   left: 0;
   top: calc(var(--font-size) * 16);
@@ -272,20 +290,30 @@ body.demeter {
 .demeter-title-choices {
   display: none;
   position: absolute;
-  width: calc(var(--font-size) * 23);
-  height: calc(var(--font-size) * 8);
-  left: calc(var(--font-size) * 2);
-  top: calc(var(--font-size) * 14);
+}
+
+@media(orientation: portrait) {
+  .demeter-title-choices {
+    width: calc(var(--font-size) * 23);
+    height: calc(var(--font-size) * 12);
+    left: calc(var(--font-size) * 2);
+    top: calc(var(--font-size) * 14);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-title-choices {
+    width: calc(var(--font-size) * 35);
+    height: calc(var(--font-size) * 8);
+    left: 0;
+    top: calc(var(--font-size) * 14);
+  }
 }
 
 .demeter-title-choice {
   position: absolute;
   width: calc(var(--font-size) * 11);
   height: calc(var(--font-size) * 4);
-}
-
-.demeter-title-choice.demeter-center {
-  left: calc(var(--font-size) * 6);
 }
 
 .demeter-title-choice2 {
@@ -303,6 +331,30 @@ body.demeter {
   top: calc(var(--font-size) * 4);
 }
 
+@media(orientation: portrait) {
+  .demeter-title-choice5 {
+    left: 0;
+    top: calc(var(--font-size) * 8);
+  }
+
+  .demeter-title-choice6 {
+    left: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 8);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-title-choice5 {
+    left: calc(var(--font-size) * 24);
+    top: 0;
+  }
+
+  .demeter-title-choice6 {
+    left: calc(var(--font-size) * 24);
+    top: calc(var(--font-size) * 4);
+  }
+}
+
 .demeter-title-choice-text {
   position: absolute;
   width: calc(var(--font-size) * 7);
@@ -313,6 +365,24 @@ body.demeter {
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;
+  pointer-events: none;
+}
+
+.demeter-title-choice-text.demeter-disabled {
+  color: var(--color-disabled);
+}
+
+.demeter-title-choice-banner {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: var(--font-size);
+  color: var(--color-banner);
+  font-family: var(--font-family-console);
+  font-size: calc(var(--font-size) * 2 / 3);
+  line-height: var(--font-size);
+  text-align: center;
+  transform: translate(calc(var(--font-size) * 6.5), calc(var(--font-size) * 2.25)) rotate(-22.5deg);
+  transform-origin: center;
   pointer-events: none;
 }
 
@@ -526,6 +596,10 @@ body.demeter {
   line-height: calc(var(--font-size) * 2);
   text-align: center;
   pointer-events: none;
+}
+
+.demeter-main-menu-item.demeter-disabled {
+  color: var(--color-disabled);
 }
 
 .demeter-main-menu-item1 {
@@ -1564,6 +1638,16 @@ body.demeter {
   .demeter-button.demeter-hover:hover {
     stroke: var(--color-stroke-active);
   }
+}
+
+.demeter-button.demeter-disabled {
+  cursor: auto;
+  fill: var(--color-fill-disabled);
+  stroke: var(--color-stroke-disabled);
+}
+
+.demeter-button.demeter-disabled:active {
+  fill: var(--color-fill-disabled);
 }
 
 /*************************************************************************/
