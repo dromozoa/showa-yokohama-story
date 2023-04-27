@@ -1,0 +1,9 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@dialog{system-update-android-in-app}
+#narrator
+物語の新しい@r{版}{バージョン}が、公開されたみたい。
+@v{Playストア}{プレイストア}から@r{取得}{ダウンロード}して、自己更新していい？
+@dialog_choice{はい}{yes}
+@dialog_choice{いいえ}{no}
+
