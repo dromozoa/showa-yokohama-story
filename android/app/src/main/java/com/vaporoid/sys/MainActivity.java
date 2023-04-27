@@ -44,8 +44,13 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,6 +62,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String RESTORE_BACKUP_URL = "/demeterAndroid/demeterRestoreBackup.dat";
+    private AppUpdateManager appUpdateManager;
     private WebView webView;
     private AdView adView;
     private byte[] dumpBackupHeader;
@@ -111,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        appUpdateManager = AppUpdateManagerFactory.create(this);
 
         webView = findViewById(R.id.webView);
         webView.setBackgroundColor(getColor(R.color.windowBackground));
@@ -243,6 +251,21 @@ public class MainActivity extends AppCompatActivity {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("application/octet-stream");
             restoreBackupLauncher.launch(intent);
+        }
+
+        @android.webkit.JavascriptInterface
+        public void getAppUpdateInfo() {
+            final String JS = "demeterGetAppUpdateInfo";
+            Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+            appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+                JSONObject json = new JSONObject();
+                webView.evaluateJavascript(JS + "(" + json + ",undefined);", null);
+            });
+            appUpdateInfoTask.addOnCanceledListener(() -> webView.evaluateJavascript(JS + "(undefined,\"canceled\");", null));
+            appUpdateInfoTask.addOnFailureListener(e -> {
+                String message = JSONObject.quote(e.getLocalizedMessage());
+                webView.evaluateJavascript(JS + "(undefined," + message + ");", null);
+            });
         }
     }
 }
