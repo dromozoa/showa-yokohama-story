@@ -120,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
 
         appUpdateManager = AppUpdateManagerFactory.create(this);
 
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         webView = findViewById(R.id.webView);
         webView.setBackgroundColor(getColor(R.color.windowBackground));
 
