@@ -166,8 +166,10 @@
   - [ ] アプリケーションインストール
     - https://developer.chrome.com/blog/app-install-banners-native/
     - https://web.dev/customize-install/
+  - [ ] スクリーンショットのとりなおし
 
 - デバッグ
 
 - アプリ
+  - [ ] iOSの新機能って一行めと二行めのあいだに空行がはいる？
 
