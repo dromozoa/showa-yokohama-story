@@ -118,6 +118,7 @@ function commands.build(config_pathname, output_pathname)
     local package = parse_json(read_all(package_pathname))
     local tarball = package.versions[v].dist.tarball
     execute(("tar -x -C %s -f %s"):format(quote_shell(output_pathname.."/npm"), quote_shell("npm/"..basename(tarball))))
+    execute(("find %s -name .DS_Store -exec rm {} ';'"):format(quote_shell(output_pathname.."/npm/package")))
     execute(("mv %s %s"):format(quote_shell(output_pathname.."/npm/package"), quote_shell(output_pathname.."/npm/"..k.."@"..v)))
 
     -- line-awesomeのsvgは6.4MiBあるので削除する。
