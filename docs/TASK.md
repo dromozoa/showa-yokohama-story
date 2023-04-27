@@ -141,6 +141,7 @@
 ## タスク
 
 - ビルド
+  - [ ] 依存関係のnpmの展開後に`.DS_Store`を削除する
 
 - シナリオ
   - [ ] リヴァイアサン戦後の尺をのばす
@@ -157,6 +158,7 @@
   - [ ] アプリケーションインストール
     - https://developer.chrome.com/blog/app-install-banners-native/
     - https://web.dev/customize-install/
+  - [ ] ストアの更新内容をウェブページにも記載する
 
 - デバッグ
 

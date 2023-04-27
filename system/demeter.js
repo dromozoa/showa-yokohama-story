@@ -1897,11 +1897,17 @@ D.UpdateChecker = class {
 
     this.status = "checking";
     requestAnimationFrame(async () => {
-      if (D.isApp()) {
-        this.status = await this.checkApp();
-      } else {
-        this.status = await this.checkWeb();
+      switch (D.isApp()) {
+        case "ios":
+          this.status = await this.checkIos();
+          break;
+        case "android":
+          this.status = await this.checkAndroid();
+          break;
+        default:
+          this.status = await this.checkWeb();
       }
+
       this.untilTime = Date.now() + this.timeout;
 
       if (this.status === "detected") {
@@ -1926,7 +1932,7 @@ D.UpdateChecker = class {
     }
   }
 
-  async checkApp() {
+  async checkIos() {
     try {
       const response = await fetch("https://vaporoid.com/sys/version-" + D.isApp() + ".json", { cache: "no-store" });
       this.version = await response.json();
@@ -1941,19 +1947,54 @@ D.UpdateChecker = class {
     }
   }
 
+  async checkAndroid() {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        globalThis.demeterGetAppUpdateInfo = (result, error) => {
+          if (result !== undefined) {
+            resolve(result);
+          } else if (error !== undefined) {
+            reject(error);
+          } else {
+            reject("canceled");
+          }
+        };
+        demeterAndroid.getAppUpdateInfo();
+      });
+
+      logging.debug("更新チェック: 成功");
+      D.trace(result);
+
+      this.version = result;
+      if (result.updateAvailability === "UPDATE_AVAILABLE" && result.isImmediateUpdateAllowed) {
+        logging.notice("更新検出: " + result.versionCode + "→" + result.availableVersionCode);
+        return "detected";
+      }
+    } catch (e) {
+      logging.error("更新チェック: 失敗", e);
+    }
+    globalThis.demeterGetAppUpdateInfo = undefined;
+  }
+
   async dialog() {
     soundEffectAlert();
-    if (D.isApp()) {
-      const key = "system-update-" + D.isApp();
-      if (await dialog(key) === "yes") {
-        open(this.version.url, "_blank", "noopener,noreferrer");
-      }
-    } else {
-      const key = screenName === "title" ? "system-update-title" : "system-update";
-      if (await dialog(key) === "yes") {
-        location.href = "game.html?t=" + Date.now();
-        return true;
-      }
+    switch (D.isApp()) {
+      case "ios":
+        if (await dialog("system-update-ios") === "yes") {
+          open(this.version.url, "_blank", "noopener,noreferrer");
+        }
+        break;
+      case "android":
+        if (await dialog("system-update-android-in-app") === "yes") {
+          demeterAndroid.startImmediateUpdateFlow();
+        }
+        break;
+      default:
+        const key = screenName === "title" ? "system-update-title" : "system-update";
+        if (await dialog(key) === "yes") {
+          location.href = "game.html?t=" + Date.now();
+          return true;
+        }
     }
   }
 };
