@@ -28,12 +28,20 @@ local credits = read_all(credits_pathname)
 local trophies = read_all(trophies_pathname)
 local version = parse_json(read_all(version_pathname))
 
+local pattern = "<style>\n[^<]*</style>\n"
+local graph_style = assert(graph:match(pattern))
+local graph = graph:gsub(pattern, "")
+local credits_style = assert(credits:match(pattern))
+local credits = credits:gsub(pattern, "")
+
 local handle = io.popen("git log -1 --date='format:%Y年%m月%d日' --pretty='%ad' "..quote_shell(template_pathname))
 local updated = handle:read():gsub("%d+", function (v) return (v:gsub("^0+", "")) end)
 handle:close();
 
 local handle = assert(io.open(result_pathname, "w"))
 local result = template
+  :gsub("$graph_style\n", graph_style)
+  :gsub("$credits_style\n", credits_style)
   :gsub("$loader\n", loader)
   :gsub("$graph\n", graph)
   :gsub("$credits\n", credits)
