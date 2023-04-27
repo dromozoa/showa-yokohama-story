@@ -41,6 +41,7 @@
   --color-title: #C63322;
   --color-console: #029D93;
   --color-disabled: #666;
+  --color-banner: #FFD800;
   --color-fill: rgba(31, 31, 31, 0.5);
   --color-fill-active: rgba(2, 157, 147, 0.25);
   --color-fill-disabled: rgba(102, 102, 102, 0.25);
@@ -369,6 +370,20 @@ body.demeter {
 
 .demeter-title-choice-text.demeter-disabled {
   color: var(--color-disabled);
+}
+
+.demeter-title-choice-banner {
+  position: absolute;
+  width: calc(var(--font-size) * 6);
+  height: var(--font-size);
+  color: var(--color-banner);
+  font-family: var(--font-family-console);
+  font-size: calc(var(--font-size) * 2 / 3);
+  line-height: var(--font-size);
+  text-align: center;
+  transform: translate(calc(var(--font-size) * 6.5), calc(var(--font-size) * 2.25)) rotate(-22.5deg);
+  transform-origin: center;
+  pointer-events: none;
 }
 
 .demeter-title-kcode {
