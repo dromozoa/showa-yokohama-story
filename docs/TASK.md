@@ -38,6 +38,8 @@
     - https://developer.chrome.com/blog/app-install-banners-native/
     - https://web.dev/customize-install/
   - [ ] スクリーンショットのとりなおし
+  - [ ] 表の横幅をスマートフォンに対応させる
+    - 横スクロール？
 
 - デバッグ
 
@@ -45,4 +47,7 @@
   - [ ] iOSの新機能って一行めと二行めのあいだに空行がはいる？
     - iPhoneで見るとそんなことはなかった
   - [ ] ストアページのスクリーンショットを収集する
+  - [ ] iOSのアプリの依存関係更新のやりかたは？
+  - [ ] Apple Siliconのmacで動かしてみる
+    - AWSでできそう
 
