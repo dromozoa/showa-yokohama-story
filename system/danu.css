@@ -60,6 +60,7 @@ body.danu {
 .danu table tr th,
 .danu table tr td {
   vertical-align: top;
+  white-space: nowrap;
 }
 
 .danu table tr td ul:last-child {
