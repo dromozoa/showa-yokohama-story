@@ -15,7 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
-local min = math.huge
+local min =  math.huge
 local max = -math.huge
 
 local dataset = {}
@@ -27,17 +27,18 @@ for line in io.lines() do
     max = math.max(v, max)
     data[#data + 1] = v
   end
+  -- 次元数は20固定
   assert(#data == 20)
   dataset[#dataset + 1] = data
 end
 
-assert(-1024 <= min)
-assert(max <= 1024)
+assert(-1024 <= min and min <= 1024)
+assert(-1024 <= max and max <= 1024)
 
-local n = 10
+local width = 10
 
 io.write "P3\n"
-io.write(20 * n, " ", #dataset, "\n")
+io.write(20 * width, " ", #dataset, "\n")
 io.write "255\n"
 
 for _, data in ipairs(dataset) do
@@ -51,7 +52,7 @@ for _, data in ipairs(dataset) do
       g = math.floor(0.5 - v / 4)
     end
 
-    for i = 1, n do
+    for i = 1, width do
       io.write(r, " ", g, " ", b, " ")
     end
   end
