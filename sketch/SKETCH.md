@@ -22,3 +22,28 @@ cmake --build . --config Release
 - https://pytorch.org/cppdocs/frontend.html
 - https://github.com/zalandoresearch/fashion-mnist/
 
+## 音声データ
+
+- wav
+- webm, mp3
+
+- pythonだったら
+  - librosa
+  - torchaudio
+
+- mfccにでもするかな
+
+### librosa
+
+- [昔のメモ](../docs/DESIGN.md)に書いたようにlibrosaはpipでインストールされている。
+- `~/Library/Python/3.9`にインストールされた。
+
+```
+pip3 list
+# pip自体のupgrade
+python3 -m pip install --upgrade pip
+# 更新可能なものを表示
+pip3 list -o
+# librosaを更新
+pip3 install -U librosa
+```
