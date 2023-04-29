@@ -31,7 +31,7 @@ cmake --build . --config Release
   - librosa
   - torchaudio
 
-- mfccにでもするかな
+- librosaでmfccするかな
 
 ### librosa
 
@@ -47,3 +47,9 @@ pip3 list -o
 # librosaを更新
 pip3 install -U librosa
 ```
+
+### データ変換
+
+
+
+
