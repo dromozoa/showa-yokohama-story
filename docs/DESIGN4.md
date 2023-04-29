@@ -72,3 +72,53 @@ plugin libraries:
   xlib:          Yes
 ```
 
+## Howler.js
+
+``` JavaScript
+Howler.masterGain = (typeof Howler.ctx.createGain === 'undefined') ? Howler.ctx.createGainNode() : Howler.ctx.createGain();
+Howler.masterGain.gain.setValueAtTime(Howler._muted ? 0 : Howler._volume, Howler.ctx.currentTime);
+Howler.masterGain.connect(Howler.ctx.destination);
+```
+
+``` JavaScript
+self._node = (typeof Howler.ctx.createGain === 'undefined') ? Howler.ctx.createGainNode() : Howler.ctx.createGain();
+self._node.gain.setValueAtTime(volume, Howler.ctx.currentTime);
+self._node.paused = true;
+self._node.connect(Howler.masterGain);
+```
+
+- `sound._node`が作られるのは`Howl.load`のタイミング
+- 基本は自動ロードなので、onloadでフックする？
+- `Howl._sounds`にはいっているっぽい
+
+- `_drain`のタイミングで`disconnect(0)`がはいる
+- `_drain`→`_inactiveSound`→`play`
+
+### オリジナルの接続
+
+```
+sound._node: GainNode
+  ↓
+Howler.masterGain: GainNode
+  ↓
+Howler.ctx.destination
+```
+
+### アナライザをはさむ（現行）
+
+```
+sound._node: GainNode
+  ↓
+Howler.masterGain: GainNode
+  ↓
+analyser
+  ↓
+Howler.ctx.destination
+```
+
+## リップシンク
+
+- 入力: FFT （MFCCを使う？）
+- 教師: セリフテキスト
+- 音声認識となにがちがうの？
+
