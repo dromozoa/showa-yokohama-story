@@ -19,6 +19,8 @@ local min =  math.huge
 local max = -math.huge
 
 local dataset = {}
+local cols
+
 for line in io.lines() do
   local data = {}
   for v in line:gmatch "[^\t]+" do
@@ -27,31 +29,44 @@ for line in io.lines() do
     max = math.max(v, max)
     data[#data + 1] = v
   end
-  -- 次元数は20固定
-  assert(#data == 20)
+  if not cols then
+    cols = #data
+  end
   dataset[#dataset + 1] = data
 end
 
-assert(-1024 <= min and min <= 1024)
-assert(-1024 <= max and max <= 1024)
-
+local mode
 local width = 10
+assert(cols == 20 or cols == 128)
+if cols == 20 then
+  mode = function (v)
+    if v < 0 then
+      return 0, math.floor(0.5 - v / 4), 0
+    else
+      return math.floor(0.5 + v / 4), 0, 0
+    end
+  end
+  assert(-1024 <= min and min <= 1024)
+  assert(-1024 <= max and max <= 1024)
+elseif cols == 128 then
+  local size = max - min
+  mode = function (v)
+    local u = math.floor((v - min) / size * 255 + 0.5)
+    return u, u, u
+  end
+  assert(-81 < min and min < 1)
+  assert(-81 < max and max < 1)
+else
+  error "unknown mode"
+end
 
 io.write "P3\n"
-io.write(20 * width, " ", #dataset, "\n")
+io.write(cols * width, " ", #dataset, "\n")
 io.write "255\n"
 
 for _, data in ipairs(dataset) do
   for _, v in ipairs(data) do
-    local r = 0
-    local g = 0
-    local b = 0
-    if v > 0 then
-      r = math.floor(0.5 + v / 4)
-    elseif v < 0 then
-      g = math.floor(0.5 - v / 4)
-    end
-
+    local r, g, b = mode(v)
     for i = 1, width do
       io.write(r, " ", g, " ", b, " ")
     end
