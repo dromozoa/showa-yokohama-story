@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
-import sys, librosa, numpy
+import sys
+import librosa
+import numpy
 
-y, nr = librosa.load(sys.argv[1], sr=float(sys.argv[2]))
-M = librosa.feature.mfcc(y=y, sr=nr) # lifterを22にしてみる？
-numpy.savetxt(sys.argv[3], M.transpose(), delimiter="\t")
+y, nr = librosa.load(sys.argv[1], sr=None)
+M = librosa.feature.mfcc(y=y, sr=nr)
+numpy.savetxt(sys.argv[2], M.transpose(), delimiter="\t")
