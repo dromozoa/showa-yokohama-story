@@ -12,10 +12,8 @@
 ```
 mkdir build
 cd build
-/Applications/CMake.app/Contents/bin/cmake -G"Unix Makefiles" -DCMAKE_PREFIX_PATH=/opt/libtorch ..
-/Applications/CMake.app/Contents/bin/cmake --build . --config Release
+cmake -G"Unix Makefiles" -DCMAKE_PREFIX_PATH=/opt/libtorch ..
+cmake --build . --config Release
 ./sketch
 ```
-
-
 
