@@ -48,6 +48,9 @@ pip3 list -o
 pip3 install -U librosa
 ```
 
+- macOSの場合、CoreAudioで読むらしい
+  - https://pypi.org/project/audioread/
+
 ### 分析
 
 | アルゴリズム     | 列数 |
@@ -63,7 +66,7 @@ pip3 install -U librosa
 voicepeak_dump.lua
 ```
 
+## データ作成
 
-
-
+`build/lip`以下に用意していく。
 
