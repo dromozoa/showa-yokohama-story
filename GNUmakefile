@@ -97,15 +97,17 @@ clean_android::
 #--------------------------------------------------------------------------
 
 convert_voice::
-	mkdir -p build/voice
+	mkdir -p build/voice build/voice-lip
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
 	cp -f build/voice/demeter-voice-sprites.js system/demeter-voice-sprites.js
+	./tool/convert_voice_lip.sh build/voice-lip build/voice-out "*-voice-out.wav"
 	rm -f build/voice-out/*-voice-out.wav
 
 convert_debug:
-	mkdir -p build/debug
+	mkdir -p build/debug build/debug-lip
 	./tool/convert_voice.sh scenario/debug.txt build/debug build/voice-out "*-debug-out.wav"
 	cp -f build/debug/demeter-voice-sprites.js system/demeter-debug-voice-sprites.js
+	./tool/convert_voice_lip.sh build/debug-lip build/voice-out "*-debug-out.wav"
 	rm -f build/voice-out/*-debug-out.wav
 
 clean_voice::
