@@ -28,7 +28,7 @@ local source_pathnames = { table.unpack(arg, 2) }
 
 for i, source_pathname in ipairs(source_pathnames) do
   assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i - 1)
-  execute(("ffmpeg -y -i %s -q:a 4 %s/%04d.mp3"):format(
+  execute(("ffmpeg -y -i %s -codec:a libvorbis -qscale:a 4 %s/%04d.oga"):format(
       quote_shell(source_pathname),
       quote_shell(output_dirname),
       i))
