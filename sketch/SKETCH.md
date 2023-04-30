@@ -57,3 +57,9 @@ pip3 install -U librosa
 
 - デフォルトの設定では512サンプルなので秒数×93.75行になる
 
+## 科白データ
+
+```
+voicepeak_check.lua
+```
+
