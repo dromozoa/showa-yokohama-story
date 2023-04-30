@@ -16,16 +16,27 @@
 # along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 import sys
+import librosa
 import torch
 import torchaudio
 import matplotlib.pyplot as plt
 
-print(torchaudio.get_audio_backend())
-# torchaudio.set_audio_backend("soundfile")
-print(torchaudio.get_audio_backend())
-
-print(torchaudio.info(filepath=sys.argv[1]))
-
 waveform, sample_rate = torchaudio.load(filepath=sys.argv[1])
 print(waveform.shape)
 print(sample_rate)
+
+melspectrogram = torchaudio.transforms.MelSpectrogram(
+    sample_rate=sample_rate,
+    n_fft=1024,
+    n_mels=40,
+    win_length=None,
+    hop_length=512,
+    window_fn=torch.hann_window)
+
+S = melspectrogram(waveform)
+# print(S.size())
+
+# plt.plot(waveform.t().numpy())
+plt.imshow(librosa.power_to_db(S[0]))
+plt.show()
+
