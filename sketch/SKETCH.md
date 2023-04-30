@@ -60,6 +60,6 @@ pip3 install -U librosa
 ## 科白データ
 
 ```
-voicepeak_check.lua
+voicepeak_dump.lua
 ```
 
