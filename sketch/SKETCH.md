@@ -77,3 +77,13 @@ voicepeak_dump.lua
 
 ## C++はおいておいてPythonで書くか
 
+```
+pip3 list
+pip3 install torch torchvision torchaudio
+pip3 install matplotlib
+```
+
+- tochaudio, librosaの両方でよいかんじに読む
+  - ogg/vorbisがバランスがよさそう
+
+
