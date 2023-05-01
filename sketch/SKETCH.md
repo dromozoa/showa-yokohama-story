@@ -105,3 +105,16 @@ vim libsent/src/adin/adin_mic_darwin_coreaudio.c
 make
 ```
 
+## リップ画像
+
+- コンポーネントの基本サイズは(10,5)=(240px,120px)
+- `shutterstock_2253757383.jpg`
+ - 400x270できりだす？
+ - 1行め: Y:670
+ - 2行め: Y:1045
+ - 3行め: Y:1415
+
+
+
+
+
