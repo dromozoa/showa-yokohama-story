@@ -547,6 +547,28 @@ body.demeter {
   }
 }
 
+.demeter-main-lip-visualizer {
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 5);
+  /* FIXME */
+  background-color: rgba(102, 102, 102, 0.5);
+}
+
+@media(orientation: portrait) {
+  .demeter-main-lip-visualizer {
+    left: var(--font-size);
+    top: calc(var(--font-size) * 25);
+  }
+}
+
+@media(orientation: landscape) {
+  .demeter-main-lip-visualizer {
+    left: calc(var(--font-size) * 12);
+    top: calc(var(--font-size) * 12);
+  }
+}
+
 .demeter-main-silhouette {
   position: absolute;
   width: calc(var(--font-size) * 16);
