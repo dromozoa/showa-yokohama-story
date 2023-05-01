@@ -26,10 +26,14 @@ end
 local output_dirname = ...
 local source_pathnames = { table.unpack(arg, 2) }
 
+-- JuliusのSegmentation Tookitは16KHzのPCMを入力とする。
+local audio_filter = "aresample=16000:resampler=soxr"
+
 for i, source_pathname in ipairs(source_pathnames) do
   assert(tonumber(basename(source_pathname):match "^(%d+).*%.wav$") == i - 1)
-  execute(("ffmpeg -y -i %s -codec:a libvorbis -qscale:a 4 %s/%04d.oga"):format(
+  execute(("ffmpeg -y -i %s -filter:a %s %s/%04d.wav"):format(
       quote_shell(source_pathname),
+      quote_shell(audio_filter),
       quote_shell(output_dirname),
       i))
 end

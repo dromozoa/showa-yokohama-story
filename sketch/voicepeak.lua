@@ -26,21 +26,34 @@ handle:close()
 
 local vpp = parse_json(source:gsub("\0$", ""))
 
--- VPPファイルから音素を抽出する。
-for _, block in ipairs(vpp.project.blocks) do
-  local items = {}
+-- VPPファイルから、JuliusのSegment Tookitに渡すテキストファイルを作成する。
+for i, block in ipairs(vpp.project.blocks) do
+  local buffer = {}
+
   for _, sentence in ipairs(block["sentence-list"]) do
     for _, token in ipairs(sentence.tokens) do
       for _, syl in ipairs(token.syl) do
-        -- syl.sとsyl.p.sを取得する。
-        local ps = {}
-        for _, p in ipairs(syl.p) do
-          ps[#ps + 1] = p.s
+        local s = syl.s
+        if s == "" then
+          s = " "
         end
-        -- io.write(table.concat(ps), "\n")
-        items[#items + 1] = table.concat(ps)
+        buffer[#buffer + 1] = s
       end
     end
   end
-  io.write(table.concat(items, ","), "\n")
+
+  local buffer = table.concat(buffer):gsub("^ +", ""):gsub(" +$", "")
+  for _, code in utf8.codes(buffer) do
+    if code == 0x20 then
+      io.write " sp "
+    elseif 0x30A1 <= code and code <= 0x30F3 then
+      io.write(utf8.char(code - 0x60))
+    elseif code == 0x30F4 then
+      -- segment_julius.plは「ゔ」を受け付けない。
+      io.write "う゛"
+    else
+      error("noconv "..utf8.char(code).."\n")
+    end
+  end
+  io.write "\n"
 end
