@@ -18,7 +18,7 @@
 local parse_json = require "parse_json"
 local write_json = require "write_json"
 
-local source_pathname = ...
+local source_pathname, output_dirname = ...
 
 local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
@@ -42,18 +42,23 @@ for i, block in ipairs(vpp.project.blocks) do
     end
   end
 
+  local output_pathname = output_dirname..("/%04d.txt"):format(i)
+  local handle = assert(io.open(output_pathname, "w"))
+
   local buffer = table.concat(buffer):gsub("^ +", ""):gsub(" +$", "")
   for _, code in utf8.codes(buffer) do
     if code == 0x20 then
-      io.write " sp "
+      handle:write " sp "
     elseif 0x30A1 <= code and code <= 0x30F3 then
-      io.write(utf8.char(code - 0x60))
+      handle:write(utf8.char(code - 0x60))
     elseif code == 0x30F4 then
       -- segment_julius.plは「ゔ」を受け付けない。
-      io.write "う゛"
+      handle:write "う゛"
     else
-      error("noconv "..utf8.char(code).."\n")
+      error("cannot convert: "..utf8.char(code))
     end
   end
-  io.write "\n"
+
+  handle:write "\n"
+  handle:close()
 end
