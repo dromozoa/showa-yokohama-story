@@ -26,12 +26,9 @@ handle:close()
 
 local vpp = parse_json(source:gsub("\0$", ""))
 
--- VPPファイルを整形して出力する。
-write_json(io.stdout, vpp)
-os.exit()
-
 -- VPPファイルから音素を抽出する。
 for _, block in ipairs(vpp.project.blocks) do
+  local items = {}
   for _, sentence in ipairs(block["sentence-list"]) do
     for _, token in ipairs(sentence.tokens) do
       for _, syl in ipairs(token.syl) do
@@ -40,8 +37,10 @@ for _, block in ipairs(vpp.project.blocks) do
         for _, p in ipairs(syl.p) do
           ps[#ps + 1] = p.s
         end
-        io.write(table.concat(ps), "\t", syl.s, "\n")
+        -- io.write(table.concat(ps), "\n")
+        items[#items + 1] = table.concat(ps)
       end
     end
   end
+  io.write(table.concat(items, ","), "\n")
 end

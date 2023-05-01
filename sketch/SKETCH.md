@@ -86,4 +86,22 @@ pip3 install matplotlib
 - tochaudio, librosaの両方でよいかんじに読む
   - ogg/vorbisがバランスがよさそう
 
+## visme
+
+- https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-speech-synthesis-viseme?tabs=visemeid&pivots=programming-language-csharp
+
+## julius
+
+- セグメンテーションがかなりうまくいく
+- https://julius.osdn.jp/index.php?q=ouyoukit.html
+- https://github.com/julius-speech/segmentation-kit
+
+
+```
+# jlogが見つからないと怒られるのでてきとうにインクルードする
+# https://github.com/julius-speech/julius/issues/153
+vim libsent/src/adin/adin_mic_darwin_coreaudio.c
+./configure --prefix=/opt/julius-4.6
+make
+```
 
