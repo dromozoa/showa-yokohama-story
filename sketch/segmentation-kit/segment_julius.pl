@@ -51,6 +51,9 @@ if ($^O =~ /MSWin/){
 } else {
     $juliusbin="./bin/julius-4.3.1";
 }
+if (defined $ARGV[1]) {
+    $juliusbin = $ARGV[1];
+}
 
 ## acoustic model
 $hmmdefs="./models/hmmdefs_monof_mix16_gid.binhmm"; # monophone model
