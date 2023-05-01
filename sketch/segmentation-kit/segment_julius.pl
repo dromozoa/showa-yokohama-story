@@ -84,6 +84,7 @@ while ($f = readdir $dh) {
 }
 closedir $dh;
 
+@files = sort @files;
 foreach $f (@files) {
     print $f . ".wav\n";
 
