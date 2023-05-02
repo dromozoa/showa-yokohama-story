@@ -2037,6 +2037,7 @@ const systemDefault = {
   logging: true,
   audioVisualizer: true,
   frameRateVisualizer: true,
+  lipSync: true,
   silhouette: true,
   unionSetting: "ろうそ",
 
@@ -3172,7 +3173,6 @@ const updateSystemUi = () => {
   updateComponentColor();
   updateComponentOpacity();
   updateComponents();
-
 };
 
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
@@ -3232,6 +3232,7 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
+  componentFolder.add(system, "lipSync").name("表示: リップシンク").onChange(updateComponents);
   componentFolder.add(system, "silhouette").name("表示: シルエット").onChange(updateComponents);
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
