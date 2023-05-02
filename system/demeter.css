@@ -570,7 +570,13 @@ body.demeter {
   }
 }
 
-.demeter-main-lip-sync-image {
+.demeter-main-lip-sync-images {
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 10);
+}
+
+.demeter-main-lip-sync img {
   display: block;
   position: absolute;
   width: calc(var(--font-size) * 7);
