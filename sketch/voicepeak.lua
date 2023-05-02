@@ -18,7 +18,7 @@
 local parse_json = require "parse_json"
 local write_json = require "write_json"
 
-local source_pathname = ...
+local source_pathname, output_dirname = ...
 
 local handle = assert(io.open(source_pathname))
 local source = handle:read "a"
@@ -26,22 +26,39 @@ handle:close()
 
 local vpp = parse_json(source:gsub("\0$", ""))
 
--- VPPファイルを整形して出力する。
-write_json(io.stdout, vpp)
-os.exit()
+-- VPPファイルから、JuliusのSegment Tookitに渡すテキストファイルを作成する。
+for i, block in ipairs(vpp.project.blocks) do
+  local buffer = {}
 
--- VPPファイルから音素を抽出する。
-for _, block in ipairs(vpp.project.blocks) do
   for _, sentence in ipairs(block["sentence-list"]) do
     for _, token in ipairs(sentence.tokens) do
       for _, syl in ipairs(token.syl) do
-        -- syl.sとsyl.p.sを取得する。
-        local ps = {}
-        for _, p in ipairs(syl.p) do
-          ps[#ps + 1] = p.s
+        local s = syl.s
+        if s == "" then
+          s = " "
         end
-        io.write(table.concat(ps), "\t", syl.s, "\n")
+        buffer[#buffer + 1] = s
       end
     end
   end
+
+  local output_pathname = output_dirname..("/%04d.txt"):format(i)
+  local handle = assert(io.open(output_pathname, "w"))
+
+  local buffer = table.concat(buffer):gsub("^ +", ""):gsub(" +$", "")
+  for _, code in utf8.codes(buffer) do
+    if code == 0x20 then
+      handle:write " sp "
+    elseif 0x30A1 <= code and code <= 0x30F3 then
+      handle:write(utf8.char(code - 0x60))
+    elseif code == 0x30F4 then
+      -- segment_julius.plは「ゔ」を受け付けない。
+      handle:write "う゛"
+    else
+      error("cannot convert: "..utf8.char(code))
+    end
+  end
+
+  handle:write "\n"
+  handle:close()
 end

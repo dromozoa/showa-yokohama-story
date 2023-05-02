@@ -1325,6 +1325,24 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.LipSync = class {
+  constructor(colorArray) {
+    this.updateColor(colorArray);
+  }
+
+  updateColor(colorArray) {
+    const [ r, g, b, a ] = colorArray;
+    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
+      r, 0, 0, 0, 0,
+      0, g, 0, 0, 0,
+      0, 0, b, 0, 0,
+      0, 0, 0, a, 0,
+    ].map(D.numberToString).join(" "));
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.Silhouette = class {
   constructor(width, height, color) {
     const canvas = document.createElement("canvas");
@@ -2019,6 +2037,7 @@ const systemDefault = {
   logging: true,
   audioVisualizer: true,
   frameRateVisualizer: true,
+  lipSync: true,
   silhouette: true,
   unionSetting: "ろうそ",
 
@@ -2116,6 +2135,7 @@ let musicPlayer;
 let soundEffect;
 let audioVisualizer;
 let frameRateVisualizer;
+let lipSync;
 let silhouette;
 let place;
 
@@ -3038,6 +3058,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3048,6 +3069,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3095,6 +3117,27 @@ const updateComponents = () => {
     node.style.display = "none";
   }
 
+  if (system.lipSync) {
+    const node = document.querySelector(".demeter-main-lip-sync");
+    node.style.display = "block";
+    if (screenOrientation === "orientationPortrait") {
+      node.style.left = D.numberToCss(fontSize);
+      node.style.top = D.numberToCss(top);
+    } else {
+      if (top <= fontSize * 7) {
+        node.style.left = D.numberToCss(fontSize);
+      } else {
+        node.style.left = D.numberToCss(fontSize * 12);
+      }
+      top = fontSize * 7;
+      node.style.top = D.numberToCss(top);
+    }
+    top += fontSize * 10 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-lip-sync");
+    node.style.display = "none";
+  }
+
   if (system.silhouette) {
     const node = document.querySelector(".demeter-main-silhouette");
     node.style.display = "block";
@@ -3110,6 +3153,7 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
+  lipSync = new D.LipSync([ ...system.componentColor, system.componentOpacity ]);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
@@ -3148,7 +3192,6 @@ const updateSystemUi = () => {
   updateComponentColor();
   updateComponentOpacity();
   updateComponents();
-
 };
 
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
@@ -3208,6 +3251,7 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
+  componentFolder.add(system, "lipSync").name("表示: リップシンク").onChange(updateComponents);
   componentFolder.add(system, "silhouette").name("表示: シルエット").onChange(updateComponents);
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
