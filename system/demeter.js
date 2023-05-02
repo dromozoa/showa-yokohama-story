@@ -1332,7 +1332,7 @@ D.LipSync = class {
 
   updateColor(colorArray) {
     const [ r, g, b, a ] = colorArray;
-    document.querySelector("#demeter-main-lip-filter feColorMatrix").setAttribute("values", [
+    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
       r, 0, 0, 0, 0,
       0, g, 0, 0, 0,
       0, 0, b, 0, 0,
@@ -3118,7 +3118,7 @@ const updateComponents = () => {
   }
 
   if (system.lipSync) {
-    const node = document.querySelector(".demeter-main-lip");
+    const node = document.querySelector(".demeter-main-lip-sync");
     node.style.display = "block";
     if (screenOrientation === "orientationPortrait") {
       node.style.left = D.numberToCss(fontSize);
@@ -3134,7 +3134,7 @@ const updateComponents = () => {
     }
     top += fontSize * 10 + spacing;
   } else {
-    const node = document.querySelector(".demeter-main-lip");
+    const node = document.querySelector(".demeter-main-lip-sync");
     node.style.display = "none";
   }
 

@@ -547,30 +547,30 @@ body.demeter {
   }
 }
 
-.demeter-main-lip {
+.demeter-main-lip-sync {
   position: absolute;
   box-sizing: border-box;
   border: 1px solid #FFF;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 10);
-  filter: url(#demeter-main-lip-filter);
+  filter: url(#demeter-main-lip-sync-filter);
 }
 
 @media(orientation: portrait) {
-  .demeter-main-lip {
+  .demeter-main-lip-sync {
     left: var(--font-size);
     top: calc(var(--font-size) * 25);
   }
 }
 
 @media(orientation: landscape) {
-  .demeter-main-lip {
+  .demeter-main-lip-sync {
     left: calc(var(--font-size) * 12);
     top: calc(var(--font-size) * 7);
   }
 }
 
-.demeter-main-lip-image {
+.demeter-main-lip-sync-image {
   display: block;
   position: absolute;
   width: calc(var(--font-size) * 7);
