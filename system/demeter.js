@@ -1328,6 +1328,10 @@ D.FrameRateVisualizer = class {
 D.LipSync = class {
   constructor(colorArray) {
     this.updateColor(colorArray);
+    this.map = new Map();
+    [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ].forEach(image => {
+      image.dataset.lipSyncVisemes.split(",").forEach(viseme => this.map.set(viseme, image));
+    });
   }
 
   updateColor(colorArray) {
