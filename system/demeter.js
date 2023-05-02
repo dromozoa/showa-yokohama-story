@@ -1328,10 +1328,14 @@ D.FrameRateVisualizer = class {
 D.LipSync = class {
   constructor(colorArray) {
     this.updateColor(colorArray);
-    this.map = new Map();
+    this.imageMap = new Map();
     [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ].forEach(image => {
-      image.dataset.lipSyncVisemes.split(",").forEach(viseme => this.map.set(viseme, image));
+      image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => {
+        this.imageMap.set(viseme, image);
+      });
     });
+    this.imageNeutral = this.imageMap.get("neutral");
+    this.image = this.imageNeutral;
   }
 
   updateColor(colorArray) {
@@ -1342,6 +1346,17 @@ D.LipSync = class {
       0, 0, b, 0, 0,
       0, 0, 0, a, 0,
     ].map(D.numberToString).join(" "));
+  }
+
+  update() {
+    if (voiceSprite) {
+      const viseme = voiceSprite.getViseme();
+      const image = this.imageMap.get(viseme) || this.imageNeutral;
+      if (this.image !== image) {
+        document.querySelector(".demeter-main-lip-sync").replaceChildren(image);
+        this.image = image;
+      }
+    }
   }
 };
 
@@ -1666,6 +1681,17 @@ D.VoiceSprite = class {
     } else {
       return 0;
     }
+  }
+
+  getViseme() {
+    const t = this.getTime();
+    const s = this.sound.segment[this.sprite].find(s => {
+      const [ u, v ] = s;
+      if (t < u) {
+        return true;
+      }
+    });
+    return s ? s[1] : "";
   }
 };
 
@@ -5812,6 +5838,9 @@ D.onDOMContentLoaded = async () => {
     if (frameRateVisualizer) {
       frameRateVisualizer.update();
       frameRateVisualizer.draw();
+    }
+    if (lipSync) {
+      lipSync.update();
     }
     if (silhouette) {
       silhouette.draw();
