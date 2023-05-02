@@ -1325,6 +1325,57 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.LipSync = class {
+  constructor(colorArray) {
+    this.updateColor(colorArray);
+    this.imageMap = new Map();
+    [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ].forEach(image => {
+      image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => {
+        this.imageMap.set(viseme, image);
+      });
+    });
+    this.imageNeutral = this.imageMap.get("neutral");
+    this.image1 = this.imageNeutral;
+    this.image2 = undefined;
+  }
+
+  updateColor(colorArray) {
+    const [ r, g, b, a ] = colorArray;
+    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
+      r, 0, 0, 0, 0,
+      0, g, 0, 0, 0,
+      0, 0, b, 0, 0,
+      0, 0, 0, a, 0,
+    ].map(D.numberToString).join(" "));
+  }
+
+  update() {
+    if (voiceSprite) {
+      const [ a, u, v ] = voiceSprite.getViseme();
+      const image1 = this.imageMap.get(u) || this.imageNeutral;
+      const image2 = this.imageMap.get(v) || this.imageNeutral;
+      if (image1 === image2) {
+        image1.style.opacity = "1";
+        if (this.image1 !== image1 || this.image2 !== undefined) {
+          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1);
+          this.image1 = image1;
+          this.image2 = undefined;
+        }
+      } else {
+        image1.style.opacity = D.numberToString(a);
+        image2.style.opacity = D.numberToString(1 - a);
+        if (this.image1 !== image1 || this.image2 !== image2) {
+          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1, image2);
+          this.image1 = image1;
+          this.image2 = image2;
+        }
+      }
+    }
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.Silhouette = class {
   constructor(width, height, color) {
     const canvas = document.createElement("canvas");
@@ -1466,9 +1517,11 @@ D.TextAnimation = class {
 //-------------------------------------------------------------------------
 
 D.VoiceSound = class {
-  constructor(basename, sprite) {
+  constructor(basename, sprite, segment) {
     this.basename = basename;
     this.sprite = sprite;
+    this.segment = segment;
+    D.trace(segment);
     this.loadErrorSoundId = undefined;
     this.loadErrorMessage = undefined;
     this.onceLoadError = undefined;
@@ -1525,6 +1578,10 @@ D.VoiceSound = class {
     return this.getSound().stop(...params);
   }
 
+  on(...params) {
+    return this.getSound().on(...params);
+  }
+
   once(...params) {
     return this.getSound().once(...params);
   }
@@ -1542,6 +1599,9 @@ D.VoiceSprite = class {
     this.soundId = undefined;
     this.paused = false;
     this.finished = false;
+    this.timeOnStart = undefined;
+    this.timeOnPause = undefined;
+    this.timeOffset = 0;
   }
 
   start(pauseState) {
@@ -1584,6 +1644,16 @@ D.VoiceSprite = class {
       this.soundId = this.sound.play(this.sprite);
       this.updateVolume(this.volume);
 
+      // 再生位置を計算する。
+      this.sound.on("play", soundId => {
+        this.timeOnStart = Howler.ctx.currentTime;
+        this.timeOnPause = undefined;
+      }, this.soundId);
+      this.sound.on("pause", soundId => {
+        this.timeOnPause = Howler.ctx.currentTime;
+        this.timeOffset += this.timeOnPause - this.timeOnStart;
+      }, this.soundId);
+
       if (pauseState) {
         this.pause();
       }
@@ -1614,6 +1684,53 @@ D.VoiceSprite = class {
     if (this.soundId !== undefined) {
       this.finished = true;
       this.sound.stop(this.soundId);
+    }
+  }
+
+  getTime() {
+    if (this.timeOnPause !== undefined) {
+      return this.timeOffset;
+    } else if (this.timeOnStart !== undefined) {
+      return this.timeOffset + Howler.ctx.currentTime - this.timeOnStart;
+    } else {
+      return 0;
+    }
+  }
+
+  getViseme() {
+    const segment = this.sound.segment[this.sprite];
+    const time = this.getTime();
+
+    let t = 0;
+    const i = segment.findIndex(s => {
+      const u = s[0];
+      if (time < u) {
+        return true;
+      } else {
+        t = u;
+      }
+    });
+    if (i === -1) {
+      return [ 0.5, "neutral", "neutral" ];
+    }
+
+    const [ u, v ] = segment[i];
+    const d = (u - t) * 0.5;
+    const p = (u + t) * 0.5;
+    let j;
+    let a;
+    if (time < p) {
+      j = Math.max(i - 1, 0);
+      a = (p - time) / d;
+    } else {
+      j = Math.min(i + 1, segment.length - 1);
+      a = (time - p) / d;
+    }
+    console.assert(0 <= a && a <= 1);
+    if (i === j) {
+      return [ 0.5, v, v ];
+    } else {
+      return [ a * 0.5 + 0.5, v, segment[j][1] ];
     }
   }
 };
@@ -2019,6 +2136,7 @@ const systemDefault = {
   logging: true,
   audioVisualizer: true,
   frameRateVisualizer: true,
+  lipSync: true,
   silhouette: true,
   unionSetting: "ろうそ",
 
@@ -2116,6 +2234,7 @@ let musicPlayer;
 let soundEffect;
 let audioVisualizer;
 let frameRateVisualizer;
+let lipSync;
 let silhouette;
 let place;
 
@@ -3038,6 +3157,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3048,6 +3168,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3095,6 +3216,27 @@ const updateComponents = () => {
     node.style.display = "none";
   }
 
+  if (system.lipSync) {
+    const node = document.querySelector(".demeter-main-lip-sync");
+    node.style.display = "block";
+    if (screenOrientation === "orientationPortrait") {
+      node.style.left = D.numberToCss(fontSize);
+      node.style.top = D.numberToCss(top);
+    } else {
+      if (top <= fontSize * 7) {
+        node.style.left = D.numberToCss(fontSize);
+      } else {
+        node.style.left = D.numberToCss(fontSize * 12);
+      }
+      top = fontSize * 7;
+      node.style.top = D.numberToCss(top);
+    }
+    top += fontSize * 10 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-lip-sync");
+    node.style.display = "none";
+  }
+
   if (system.silhouette) {
     const node = document.querySelector(".demeter-main-silhouette");
     node.style.display = "block";
@@ -3110,6 +3252,7 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
+  lipSync = new D.LipSync([ ...system.componentColor, system.componentOpacity ]);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
@@ -3148,7 +3291,6 @@ const updateSystemUi = () => {
   updateComponentColor();
   updateComponentOpacity();
   updateComponents();
-
 };
 
 // gui.addFolderはtouchStylesを継承しないので自前で構築する。
@@ -3208,6 +3350,7 @@ const initializeSystemUi = () => {
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
+  componentFolder.add(system, "lipSync").name("表示: リップシンク").onChange(updateComponents);
   componentFolder.add(system, "silhouette").name("表示: シルエット").onChange(updateComponents);
   componentFolder.add(system, "unionSetting", [ "ろうそ", "ろうくみ" ]).name("設定: 労組");
 
@@ -4562,7 +4705,7 @@ const next = async () => {
       textNode.replaceChildren(...textNodes);
       textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1]);
+      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1], D.voiceSegments[paragraphIndex - 1]);
 
       // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
       if (playState !== "skip") {
@@ -5735,6 +5878,9 @@ D.onDOMContentLoaded = async () => {
     if (frameRateVisualizer) {
       frameRateVisualizer.update();
       frameRateVisualizer.draw();
+    }
+    if (lipSync) {
+      lipSync.update();
     }
     if (silhouette) {
       silhouette.draw();
