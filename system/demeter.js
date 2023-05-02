@@ -1335,7 +1335,8 @@ D.LipSync = class {
       });
     });
     this.imageNeutral = this.imageMap.get("neutral");
-    this.image = this.imageNeutral;
+    this.image1 = this.imageNeutral;
+    this.image2 = undefined;
   }
 
   updateColor(colorArray) {
@@ -1350,11 +1351,26 @@ D.LipSync = class {
 
   update() {
     if (voiceSprite) {
-      const viseme = voiceSprite.getViseme();
-      const image = this.imageMap.get(viseme) || this.imageNeutral;
-      if (this.image !== image) {
-        document.querySelector(".demeter-main-lip-sync").replaceChildren(image);
-        this.image = image;
+      const [ a, u, v ] = voiceSprite.getViseme();
+      const image1 = this.imageMap.get(u) || this.imageNeutral;
+      const image2 = this.imageMap.get(v) || this.imageNeutral;
+      if (image1 === image2) {
+        image1.style.opacity = "1";
+        if (this.image1 !== image1 || this.image2 !== undefined) {
+          document.querySelector(".demeter-main-lip-sync").replaceChildren(image1);
+          this.image1 = image1;
+          this.image2 = undefined;
+        }
+      } else {
+        // const alpha = Math.sin((a - 0.5) * Math.PI) * 0.5 + 0.5;
+        const alpha = a;
+        image1.style.opacity = D.numberToString(alpha);
+        image2.style.opacity = D.numberToString(1 - alpha);
+        if (this.image1 !== image1 || this.image2 !== image2) {
+          document.querySelector(".demeter-main-lip-sync").replaceChildren(image1, image2);
+          this.image1 = image1;
+          this.image2 = image2;
+        }
       }
     }
   }
@@ -1684,14 +1700,40 @@ D.VoiceSprite = class {
   }
 
   getViseme() {
-    const t = this.getTime();
-    const s = this.sound.segment[this.sprite].find(s => {
-      const [ u, v ] = s;
-      if (t < u) {
+    const segment = this.sound.segment[this.sprite];
+    const time = this.getTime();
+
+    let t = 0;
+    const i = segment.findIndex(s => {
+      const u = s[0];
+      if (time < u) {
         return true;
+      } else {
+        t = u;
       }
     });
-    return s ? s[1] : "";
+    if (i === -1) {
+      return [ 0.5, "neutral", "neutral" ];
+    }
+
+    const [ u, v ] = segment[i];
+    const d = (u - t) * 0.5;
+    const p = (u + t) * 0.5;
+    let j;
+    let a;
+    if (time < p) {
+      j = Math.max(i - 1, 0);
+      a = (p - time) / d;
+    } else {
+      j = Math.min(i + 1, segment.length - 1);
+      a = (time - p) / d;
+    }
+    console.assert(0 <= a && a <= 1);
+    if (i === j) {
+      return [ 0.5, v, v ];
+    } else {
+      return [ a * 0.5 + 0.5, v, segment[j][1] ];
+    }
   }
 };
 
