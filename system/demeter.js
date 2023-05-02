@@ -1329,14 +1329,11 @@ D.LipSync = class {
   constructor(colorArray) {
     this.updateColor(colorArray);
     this.imageMap = new Map();
-    [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ].forEach(image => {
-      image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => {
-        this.imageMap.set(viseme, image);
-      });
-    });
+    this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ];
+    this.images.forEach(image => image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => this.imageMap.set(viseme, image)));
     this.imageNeutral = this.imageMap.get("neutral");
-    this.image1 = this.imageNeutral;
-    this.image2 = undefined;
+    // this.image1 = this.imageNeutral;
+    // this.image2 = undefined;
   }
 
   updateColor(colorArray) {
@@ -1355,20 +1352,12 @@ D.LipSync = class {
       const image1 = this.imageMap.get(u) || this.imageNeutral;
       const image2 = this.imageMap.get(v) || this.imageNeutral;
       if (image1 === image2) {
+        this.images.forEach(image => image.style.opacity = "0");
         image1.style.opacity = "1";
-        if (this.image1 !== image1 || this.image2 !== undefined) {
-          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1);
-          this.image1 = image1;
-          this.image2 = undefined;
-        }
       } else {
+        this.images.forEach(image => image.style.opacity = "0");
         image1.style.opacity = D.numberToString(a);
         image2.style.opacity = D.numberToString(1 - a);
-        if (this.image1 !== image1 || this.image2 !== image2) {
-          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1, image2);
-          this.image1 = image1;
-          this.image2 = image2;
-        }
       }
     }
   }
