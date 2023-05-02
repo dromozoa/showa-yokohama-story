@@ -3117,7 +3117,26 @@ const updateComponents = () => {
     node.style.display = "none";
   }
 
-  // FIXME lip-visualizerの位置調整
+  if (system.lipSync) {
+    const node = document.querySelector(".demeter-main-lip");
+    node.style.display = "block";
+    if (screenOrientation === "orientationPortrait") {
+      node.style.left = D.numberToCss(fontSize);
+      node.style.top = D.numberToCss(top);
+    } else {
+      if (top <= fontSize * 7) {
+        node.style.left = D.numberToCss(fontSize);
+      } else {
+        node.style.left = D.numberToCss(fontSize * 12);
+      }
+      top = fontSize * 7;
+      node.style.top = D.numberToCss(top);
+    }
+    top += fontSize * 10 + spacing;
+  } else {
+    const node = document.querySelector(".demeter-main-lip");
+    node.style.display = "none";
+  }
 
   if (system.silhouette) {
     const node = document.querySelector(".demeter-main-silhouette");
