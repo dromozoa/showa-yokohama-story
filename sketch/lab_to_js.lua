@@ -30,8 +30,6 @@ for i, source_pathname in ipairs(source_pathnames) do
   local prev = "0.0000"
   for line in io.lines(source_pathname) do
     local t, u, v = assert(line:match "^(%d+%.%d%d%d%d)000 (%d+%.%d%d%d%d)000 ([%a:]+)$")
-    -- local t = tonumber(t)
-    -- local u = tonumber(u)
     assert(prev == t)
     prev = u
     segment[#segment + 1] = { t = t, u = u, v = v }
