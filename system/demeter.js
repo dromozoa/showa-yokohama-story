@@ -1357,17 +1357,15 @@ D.LipSync = class {
       if (image1 === image2) {
         image1.style.opacity = "1";
         if (this.image1 !== image1 || this.image2 !== undefined) {
-          document.querySelector(".demeter-main-lip-sync").replaceChildren(image1);
+          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1);
           this.image1 = image1;
           this.image2 = undefined;
         }
       } else {
-        // const alpha = Math.sin((a - 0.5) * Math.PI) * 0.5 + 0.5;
-        const alpha = a;
-        image1.style.opacity = D.numberToString(alpha);
-        image2.style.opacity = D.numberToString(1 - alpha);
+        image1.style.opacity = D.numberToString(a);
+        image2.style.opacity = D.numberToString(1 - a);
         if (this.image1 !== image1 || this.image2 !== image2) {
-          document.querySelector(".demeter-main-lip-sync").replaceChildren(image1, image2);
+          document.querySelector(".demeter-main-lip-sync-images").replaceChildren(image1, image2);
           this.image1 = image1;
           this.image2 = image2;
         }
