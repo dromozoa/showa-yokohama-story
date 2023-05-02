@@ -1325,6 +1325,24 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+D.LipSync = class {
+  constructor(colorArray) {
+    this.updateColor(colorArray);
+  }
+
+  updateColor(colorArray) {
+    const [ r, g, b, a ] = colorArray;
+    document.querySelector("#demeter-main-lip-filter feColorMatrix").setAttribute("values", [
+      r, 0, 0, 0, 0,
+      0, g, 0, 0, 0,
+      0, 0, b, 0, 0,
+      0, 0, 0, a, 0,
+    ].map(D.numberToString).join(" "));
+  }
+};
+
+//-------------------------------------------------------------------------
+
 D.Silhouette = class {
   constructor(width, height, color) {
     const canvas = document.createElement("canvas");
@@ -2116,6 +2134,7 @@ let musicPlayer;
 let soundEffect;
 let audioVisualizer;
 let frameRateVisualizer;
+let lipSync;
 let silhouette;
 let place;
 
@@ -3038,6 +3057,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3048,6 +3068,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3112,6 +3133,7 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
+  lipSync = new D.LipSync([ ...system.componentColor, system.componentOpacity ]);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
