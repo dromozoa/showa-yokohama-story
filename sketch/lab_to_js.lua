@@ -23,6 +23,7 @@ local scenario = parse(scenario_pathname)
 local source_pathnames = { table.unpack(arg, 3) }
 
 local segments = {}
+local map = {}
 
 for i, source_pathname in ipairs(source_pathnames) do
   assert(tonumber(basename(source_pathname):match "^(%d+)%.lab$") == i)
@@ -33,8 +34,13 @@ for i, source_pathname in ipairs(source_pathnames) do
     assert(prev == t)
     prev = u
     segment[#segment + 1] = { t = t, u = u, v = v }
+    map[v] = (map[v] or 0) + 1
   end
   segments[i] = segment
+end
+
+for v, n in pairs(map) do
+  print(v, n)
 end
 
 local handle = assert(io.open(output_pathname, "w"))
