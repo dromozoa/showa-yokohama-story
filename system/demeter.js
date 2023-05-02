@@ -3095,6 +3095,8 @@ const updateComponents = () => {
     node.style.display = "none";
   }
 
+  // FIXME lip-visualizerの位置調整
+
   if (system.silhouette) {
     const node = document.querySelector(".demeter-main-silhouette");
     node.style.display = "block";

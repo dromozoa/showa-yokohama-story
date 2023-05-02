@@ -88,6 +88,14 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="demeter-main-lip-filter">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="
+        0.2126 0.7152 0.0722 0.0000 0
+        0.2126 0.7152 0.0722 0.0000 0
+        0.2126 0.7152 0.0722 0.0000 0
+        0.0000 0.0000 0.0000 0.5000 0
+      "/>
+    </filter>
   </defs>
 </svg>
 
@@ -179,7 +187,9 @@
   <div class="demeter-main-logging"></div>
   <div class="demeter-main-audio-visualizer"></div>
   <div class="demeter-main-frame-rate-visualizer"></div>
-  <div class="demeter-main-lip-visualizer"></div>
+  <div class="demeter-main-lip">
+    <img class="demeter-main-lip-image" data-lip="" src="system/./lip-neutral.png">
+  </div>
   <div class="demeter-main-silhouette"></div>
   <div class="demeter-main-menu">
     <div class="demeter-main-menu-frame"></div>
