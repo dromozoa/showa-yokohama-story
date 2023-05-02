@@ -1488,9 +1488,11 @@ D.TextAnimation = class {
 //-------------------------------------------------------------------------
 
 D.VoiceSound = class {
-  constructor(basename, sprite) {
+  constructor(basename, sprite, segment) {
     this.basename = basename;
     this.sprite = sprite;
+    this.segment = segment;
+    D.trace(segment);
     this.loadErrorSoundId = undefined;
     this.loadErrorMessage = undefined;
     this.onceLoadError = undefined;
@@ -4637,7 +4639,7 @@ const next = async () => {
       textNode.replaceChildren(...textNodes);
       textNode.dataset.pid = D.numberToString(paragraphIndex);
 
-      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1]);
+      voiceSound = new D.VoiceSound(D.preferences.voiceDir + "/" + D.padStart(paragraphIndex, 4), D.voiceSprites[paragraphIndex - 1], D.voiceSegments[paragraphIndex - 1]);
 
       // SKIP中でなければ、次に到達する可能性がある段落のボイスをキャッシュする。
       if (playState !== "skip") {
