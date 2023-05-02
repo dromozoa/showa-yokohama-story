@@ -1547,6 +1547,10 @@ D.VoiceSound = class {
     return this.getSound().stop(...params);
   }
 
+  on(...params) {
+    return this.getSound().on(...params);
+  }
+
   once(...params) {
     return this.getSound().once(...params);
   }
@@ -1564,6 +1568,9 @@ D.VoiceSprite = class {
     this.soundId = undefined;
     this.paused = false;
     this.finished = false;
+    this.timeOnStart = undefined;
+    this.timeOnPause = undefined;
+    this.timeOffset = 0;
   }
 
   start(pauseState) {
@@ -1606,6 +1613,16 @@ D.VoiceSprite = class {
       this.soundId = this.sound.play(this.sprite);
       this.updateVolume(this.volume);
 
+      // 再生位置を計算する。
+      this.sound.on("play", soundId => {
+        this.timeOnStart = Howler.ctx.currentTime;
+        this.timeOnPause = undefined;
+      }, this.soundId);
+      this.sound.on("pause", soundId => {
+        this.timeOnPause = Howler.ctx.currentTime;
+        this.timeOffset += this.timeOnPause - this.timeOnStart;
+      }, this.soundId);
+
       if (pauseState) {
         this.pause();
       }
@@ -1636,6 +1653,16 @@ D.VoiceSprite = class {
     if (this.soundId !== undefined) {
       this.finished = true;
       this.sound.stop(this.soundId);
+    }
+  }
+
+  getTime() {
+    if (this.timeOnPause !== undefined) {
+      return this.timeOffset;
+    } else if (this.timeOnStart !== undefined) {
+      return this.timeOffset + Howler.ctx.currentTime - this.timeOnStart;
+    } else {
+      return 0;
     }
   }
 };
