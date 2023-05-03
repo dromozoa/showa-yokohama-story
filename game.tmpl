@@ -89,9 +89,6 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <filter id="demeter-main-lip-sync-filter">
-      <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.25 0"/>
-    </filter>
   </defs>
 </svg>
 
@@ -183,22 +180,7 @@
   <div class="demeter-main-logging"></div>
   <div class="demeter-main-audio-visualizer"></div>
   <div class="demeter-main-frame-rate-visualizer"></div>
-  <div class="demeter-main-lip-sync">
-    <img class="demeter-main-lip-sync-face-image" src="system/./lip-face.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 1" data-lip-sync-visemes="neutral, silB,silE,sp" src="system/./lip-neutral.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="a,e,i, i:" src="system/./lip-a-e-i.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="th, ts" src="system/./lip-th.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="o" src="system/./lip-o.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="ee" src="system/./lip-ee.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="u" src="system/./lip-u.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="b,m,p, N,by,my,py" src="system/./lip-b-m-p.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="f,v, h,hy" src="system/./lip-f-v.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="w,q" src="system/./lip-w-q.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="ch,j,sh" src="system/./lip-ch-j-sh.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="c,d,n,s,t,x,y,z, ny" src="system/./lip-c-d-n-s-t-x-y-z.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="g,k, gy,ky" src="system/./lip-g-k.png">
-    <img class="demeter-main-lip-sync-image" style="opacity: 0" data-lip-sync-visemes="l, r,ry" src="system/./lip-l.png">
-  </div>
+  <div class="demeter-main-lip-sync"></div>
   <div class="demeter-main-silhouette"></div>
   <div class="demeter-main-menu">
     <div class="demeter-main-menu-frame"></div>
@@ -239,6 +221,21 @@
   </div>
   <div class="demeter-notice demeter-main-notice"><span class="las la-trophy"></span> <span class="demeter-notice-trophy-name"></span></div>
 </div>
+
+<img class="demeter-main-lip-sync-face-image" src="system/./lip-face.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="neutral"         data-lip-sync-map="silB,silE,sp" src="system/./lip-neutral.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="a,e,i"           data-lip-sync-map="i:"           src="system/./lip-a-e-i.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="th"              data-lip-sync-map="ts"           src="system/./lip-th.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="o"                                                src="system/./lip-o.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="ee"                                               src="system/./lip-ee.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="u"                                                src="system/./lip-u.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="b,m,p"           data-lip-sync-map="N,by,my,py"   src="system/./lip-b-m-p.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="f,v"             data-lip-sync-map="h,hy"         src="system/./lip-f-v.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="w,q"                                              src="system/./lip-w-q.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="ch,j,sh"                                          src="system/./lip-ch-j-sh.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="c,d,n,s,t,x,y,z" data-lip-sync-map="ny"           src="system/./lip-c-d-n-s-t-x-y-z.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="g,k"             data-lip-sync-map="gy,ky"        src="system/./lip-g-k.png">
+<img class="demeter-main-lip-sync-lip-image" data-lip-sync="l"               data-lip-sync-map="r,ry"         src="system/./lip-l.png">
 
 <div class="demeter-data-screen demeter-load-screen">
   <div class="demeter-data-back">

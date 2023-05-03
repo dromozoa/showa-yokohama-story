@@ -1326,24 +1326,72 @@ D.FrameRateVisualizer = class {
 //-------------------------------------------------------------------------
 
 D.LipSync = class {
-  constructor(colorArray) {
-    this.updateColor(colorArray);
+  constructor(width, height, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    this.canvas = canvas;
+    this.width = width;
+    this.color = color;
+    this.height = height;
+    this.faceImage = document.querySelector(".demeter-main-lip-sync-face-image");
     this.imageMap = new Map();
-    this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ];
-    this.images.forEach(image => image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => this.imageMap.set(viseme, image)));
-    this.imageNeutral = this.imageMap.get("neutral");
-    // this.image1 = this.imageNeutral;
-    // this.image2 = undefined;
+    this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-lip-image") ];
+    this.images.forEach(image => {
+      const visemes = image.dataset.lipSync.split(/,/);
+      if (image.dataset.lipSyncMap !== undefined) {
+        visemes.push(...image.dataset.lipSyncMap.split(/,/));
+      }
+      visemes.forEach(viseme => this.imageMap.set(viseme, image));
+    });
+    this.neutralImage = this.imageMap.get("neutral");
   }
 
-  updateColor(colorArray) {
-    const [ r, g, b, a ] = colorArray;
-    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
-      r, 0, 0, 0, 0,
-      0, g, 0, 0, 0,
-      0, 0, b, 0, 0,
-      0, 0, 0, a, 0,
-    ].map(D.numberToString).join(" "));
+  updateColor(color) {
+    this.color = color;
+  }
+
+  draw() {
+    const W = this.width;
+    const H = this.height;
+
+    const context = this.canvas.getContext("2d");
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = "source-over";
+
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.lineWidth = 1;
+    context.fillStyle = "#FFF";
+    context.strokeStyle = "#FFF";
+
+    context.clearRect(0, 0, W, H);
+    context.strokeRect(0.5, 0.5, W - 1, H - 1);
+
+    // 画像の座標系は4倍で計算する
+    context.scale(0.25, 0.25);
+    context.drawImage(this.faceImage, 0, 0);
+
+    if (voiceSprite) {
+      const [ a, u, v ] = voiceSprite.getViseme();
+      const image1 = this.imageMap.get(u) || this.neutralImage;
+      const image2 = this.imageMap.get(v) || this.neutralImage;
+      context.globalAlpha = a;
+      context.drawImage(image1, 360, 624);
+      context.globalAlpha = 1 - a;
+      context.drawImage(image2, 360, 624);
+    } else {
+      context.drawImage(this.neutralImage, 360, 624);
+    }
+
+    context.globalAlpha = 1;
+    context.globalCompositeOperation = "multiply";
+    context.fillStyle = this.color;
+    context.strokeStyle = this.color;
+    context.fillRect(0, 0, W * 4, H * 4);
   }
 
   update() {
@@ -3146,7 +3194,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
-  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
+  lipSync.updateColor(color);
   silhouette.updateColor(color);
 };
 
@@ -3157,7 +3205,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
-  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
+  lipSync.updateColor(color);
   silhouette.updateColor(color);
 };
 
@@ -3241,7 +3289,10 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
-  lipSync = new D.LipSync([ ...system.componentColor, system.componentOpacity ]);
+  lipSync = new D.LipSync(fontSize * 10, fontSize * 10, color);
+  lipSync.canvas.style.display = "block";
+  lipSync.canvas.style.position = "absolute";
+  document.querySelector(".demeter-main-lip-sync").append(lipSync.canvas);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
@@ -5869,7 +5920,7 @@ D.onDOMContentLoaded = async () => {
       frameRateVisualizer.draw();
     }
     if (lipSync) {
-      lipSync.update();
+      lipSync.draw();
     }
     if (silhouette) {
       silhouette.draw();
