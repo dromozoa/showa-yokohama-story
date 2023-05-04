@@ -15,21 +15,39 @@
 -- You should have received a copy of the GNU General Public License
 -- along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
+local parse_json = require "parse_json"
+local quote_shell = require "quote_shell"
+
+-- lua lum_to_alpha.lua source.png result.png
+
 -- convert source.png -depth 8 graya:output.raw
 -- lua lum_to_alpha.lua 240 192 output.raw result.raw
 -- convert -depth 8 -size 240x192 graya:result.raw result.png
 
-local W, H, source_pathname, result_pathname = ...
-local W = assert(tonumber(W))
-local H = assert(tonumber(H))
+local DYLD_LIBRARY_PATH, source_pathname, result_pathname = ...
+local command = ("env DYLD_LIBRARY_PATH=%s convert %s json:-"):format(
+    quote_shell(DYLD_LIBRARY_PATH),
+    quote_shell(source_pathname))
+local handle = assert(io.popen(command))
+local source = parse_json(handle:read "a")
+handle:close()
 
-local handle = assert(io.open(source_pathname, "rb"))
+local W = source[1].image.geometry.width
+local H = source[1].image.geometry.height
+
+local command = ("env DYLD_LIBRARY_PATH=%s convert %s -depth 8 graya:-"):format(
+    quote_shell(DYLD_LIBRARY_PATH),
+    quote_shell(source_pathname))
+local handle = assert(io.popen(command))
 local data = handle:read "a"
 handle:close()
 assert(#data == W * H * 2)
 
-local handle = assert(io.open(result_pathname, "wb"))
-
+local command = ("env DYLD_LIBRARY_PATH=%s convert -depth 8 -size %dx%d graya:- %s"):format(
+    quote_shell(DYLD_LIBRARY_PATH),
+    W, H,
+    quote_shell(result_pathname))
+local handle = assert(io.popen(command, "w"))
 local p = 1
 for y = 1, H do
   for x = 1, W do
@@ -38,5 +56,4 @@ for y = 1, H do
     handle:write(string.pack("BB", 0, math.floor(y * a / 255 + 0.5)))
   end
 end
-
 handle:close()
