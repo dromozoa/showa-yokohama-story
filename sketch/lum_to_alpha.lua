@@ -18,12 +18,6 @@
 local parse_json = require "parse_json"
 local quote_shell = require "quote_shell"
 
--- lua lum_to_alpha.lua source.png result.png
-
--- convert source.png -depth 8 graya:output.raw
--- lua lum_to_alpha.lua 240 192 output.raw result.raw
--- convert -depth 8 -size 240x192 graya:result.raw result.png
-
 local DYLD_LIBRARY_PATH, source_pathname, result_pathname = ...
 local command = ("env DYLD_LIBRARY_PATH=%s convert %s json:-"):format(
     quote_shell(DYLD_LIBRARY_PATH),
