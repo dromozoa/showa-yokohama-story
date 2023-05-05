@@ -47,7 +47,7 @@ for y = 1, H do
   for x = 1, W do
     local y, a = string.unpack("BB", data, p)
     p = p + 2
-    handle:write(string.pack("BB", 0, math.floor(y * a / 255 + 0.5)))
+    handle:write(string.pack("BB", y, a))
   end
 end
 handle:close()

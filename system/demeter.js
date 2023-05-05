@@ -1386,12 +1386,6 @@ D.LipSync = class {
     } else {
       context.drawImage(this.neutralImage, 360, 624);
     }
-
-    context.globalAlpha = 1;
-    context.globalCompositeOperation = "multiply";
-    context.fillStyle = this.color;
-    context.strokeStyle = this.color;
-    context.fillRect(0, 0, W * 4, H * 4);
   }
 
   update() {
