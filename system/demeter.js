@@ -1326,7 +1326,7 @@ D.FrameRateVisualizer = class {
 //-------------------------------------------------------------------------
 
 D.LipSync = class {
-  constructor(width, height, color) {
+  constructor(width, height, colorArray) {
     const canvas = document.createElement("canvas");
     canvas.width = width * devicePixelRatio;
     canvas.height = height * devicePixelRatio;
@@ -1335,8 +1335,8 @@ D.LipSync = class {
 
     this.canvas = canvas;
     this.width = width;
-    this.color = color;
     this.height = height;
+    this.updateColor(colorArray);
     this.faceImage = document.querySelector(".demeter-main-lip-sync-face-image");
     this.imageMap = new Map();
     this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-lip-image") ];
@@ -1350,8 +1350,14 @@ D.LipSync = class {
     this.neutralImage = this.imageMap.get("neutral");
   }
 
-  updateColor(color) {
-    this.color = color;
+  updateColor(colorArray) {
+    const [ r, g, b, a ] = colorArray;
+    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
+      r, 0, 0, 0, 0,
+      0, g, 0, 0, 0,
+      0, 0, b, 0, 0,
+      0, 0, 0, a, 0,
+    ].map(D.numberToString).join(" "));
   }
 
   draw() {
@@ -3188,7 +3194,7 @@ const updateComponentColor = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
-  lipSync.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3199,7 +3205,7 @@ const updateComponentOpacity = () => {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
-  lipSync.updateColor(color);
+  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
   silhouette.updateColor(color);
 };
 
@@ -3283,7 +3289,7 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
-  lipSync = new D.LipSync(fontSize * 10, fontSize * 10, color);
+  lipSync = new D.LipSync(fontSize * 10, fontSize * 10, [ ...system.componentColor, system.componentOpacity ]);
   lipSync.canvas.style.display = "block";
   lipSync.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-lip-sync").append(lipSync.canvas);
