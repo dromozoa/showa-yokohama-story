@@ -53,9 +53,11 @@
 - システム
   - [x] リップシンクの画像を透明度で制御する
   - [ ] iOSで60FPSでるようにする
-    - [ ] ピクセル数の調整
+    - [x] ピクセル数の調整
       - 解像度調整
-    - [ ] global compositeの利用
+    - [x] global compositeの利用
+    - 結局、WebGLを使う方向性で
+  - [ ] `tool/google_fonts_serif.css`の更新
 
 - ウェブページ
   - [ ] 動画を作る
