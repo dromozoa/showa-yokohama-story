@@ -1333,10 +1333,17 @@ D.LipSync = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
+    const buffer = document.createElement("canvas");
+    buffer.width = width * devicePixelRatio;
+    buffer.height = height * devicePixelRatio;
+    buffer.style.width = D.numberToCss(width);
+    buffer.style.height = D.numberToCss(height);
+
     this.canvas = canvas;
+    this.buffer = buffer;
     this.width = width;
     this.height = height;
-    this.updateColor(colorArray);
+    this.colorArray = colorArray;
     this.faceImage = document.querySelector(".demeter-main-lip-sync-face-image");
     this.imageMap = new Map();
     this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-lip-image") ];
@@ -1351,22 +1358,13 @@ D.LipSync = class {
   }
 
   updateColor(colorArray) {
-    const [ r, g, b, a ] = colorArray;
-    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
-      r, 0, 0, 0, 0,
-      0, g, 0, 0, 0,
-      0, 0, b, 0, 0,
-      0, 0, 0, a, 0,
-    ].map(D.numberToString).join(" "));
+    this.colorArray = colorArray;
   }
 
-  draw() {
+  drawBuffer() {
     const W = this.width;
     const H = this.height;
-
-    const context = this.canvas.getContext("2d");
-    context.globalAlpha = 1;
-    context.globalCompositeOperation = "source-over";
+    const context = this.buffer.getContext("2d");
 
     context.resetTransform();
     context.scale(devicePixelRatio, devicePixelRatio);
@@ -1389,25 +1387,46 @@ D.LipSync = class {
       context.drawImage(image1, 360, 624);
       context.globalAlpha = 1 - a;
       context.drawImage(image2, 360, 624);
+      context.globalAlpha = 1;
     } else {
       context.drawImage(this.neutralImage, 360, 624);
     }
+
+    // return context.getImageData(0, 0, W * devicePixelRatio, H * devicePixelRatio);
   }
 
-  update() {
-    if (voiceSprite) {
-      const [ a, u, v ] = voiceSprite.getViseme();
-      const image1 = this.imageMap.get(u) || this.imageNeutral;
-      const image2 = this.imageMap.get(v) || this.imageNeutral;
-      if (image1 === image2) {
-        this.images.forEach(image => image.style.opacity = "0");
-        image1.style.opacity = "1";
-      } else {
-        this.images.forEach(image => image.style.opacity = "0");
-        image1.style.opacity = D.numberToString(a);
-        image2.style.opacity = D.numberToString(1 - a);
-      }
-    }
+  draw() {
+    // const imageData = this.drawBuffer();
+    // const [ R, G, B, A ] = this.colorArray;
+    // const data = imageData.data;
+    // for (let i = 0; i < data.length; i += 4) {
+    //   data[i + 0] *= R;
+    //   data[i + 1] *= G;
+    //   data[i + 2] *= B;
+    //   data[i + 3] *= A;
+    // }
+
+    this.drawBuffer();
+
+    const W = this.width;
+    const H = this.height;
+    const context = this.canvas.getContext("2d");
+
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+
+    context.clearRect(0, 0, W, H);
+
+    const color = D.toCssColor(...this.colorArray);
+    context.globalCompositeOperation = "source-over";
+    context.lineWidth = 1;
+    context.fillStyle = color;
+    context.strokeStyle = color;
+    context.fillRect(0, 0, W, H);
+
+    context.globalCompositeOperation = "multiply";
+    context.drawImage(this.buffer, 0, 0, W, H);
+    context.globalCompositeOperation = "source-over";
   }
 };
 
@@ -3293,6 +3312,9 @@ const initializeComponents = () => {
   lipSync.canvas.style.display = "block";
   lipSync.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-lip-sync").append(lipSync.canvas);
+  lipSync.buffer.style.display = "block";
+  lipSync.buffer.style.position = "absolute";
+  document.querySelector(".demeter-offscreen").append(lipSync.buffer);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";

@@ -551,7 +551,6 @@ body.demeter {
   position: absolute;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 10);
-  filter: url(#demeter-main-lip-sync-filter);
 }
 
 @media(orientation: portrait) {
