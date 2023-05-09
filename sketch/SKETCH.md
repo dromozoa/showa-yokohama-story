@@ -143,3 +143,42 @@ make
 
 - (Y,a) => (black,alpha)の画像に変換
 
+## 数式
+
+```
+| R       | | y |
+|   G     | | y |
+|     B   | | y |
+|       A | | a |
+```
+
+2D合成の一般式
+
+```
+a_o = a_s F_a + a_b F_b
+c_o = a_s F_a C_s + a_b F_b C_b
+```
+
+| operator         | `F_a`     | `F_b`     |
+|------------------|-----------|-----------|
+| clear            | `0`       | `0`       |
+| copy             | `1`       | `0`       |
+| destination      | `0`       | `1`       |
+| source-over      | `1`       | `1 - a_s` |
+| destination-over | `1 - a_b` | `1`       |
+| source-in        | `a_b`     | `0`       |
+| destination-in   | `0`       | `a_s`     |
+| source-out       | `1 - a_b` | `0`       |
+| destination-out  | `0`       | `1 - a_s` |
+| source-atop      | `a_b`     | `1 - a_s` |
+| destination-atop | `1 - a_b` | `a_s`     |
+| xor              | `1 - a_b` | `1 - a_s` |
+| lighter          | `1`       | `1`       |
+
+## テクスチャ
+
+- `960x960`を`1024x1024`に
+  - `+32+32`移動
+- `240x192`を`256x256`に
+  - `+8+32`移動
+

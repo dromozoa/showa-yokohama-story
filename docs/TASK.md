@@ -57,6 +57,7 @@
       - 解像度調整
     - [x] global compositeの利用
     - 結局、WebGLを使う方向性で
+    - [ ] mipmap?
   - [ ] `tool/google_fonts_serif.css`の更新
 
 - ウェブページ

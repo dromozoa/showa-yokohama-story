@@ -1325,6 +1325,32 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+const compileShader = (gl, type, source) => {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    return shader;
+  }
+
+  const message = gl.getShaderInfoLog(shader);
+  gl.deleteShader(shader);
+  throw new Error(message);
+};
+
+const linkProgram = (gl, ...shaders) => {
+  const program = gl.createProgram();
+  shaders.forEach(shader => gl.attachShader(program, shader));
+  gl.linkProgram(program);
+  if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    return program;
+  }
+
+  const message = gl.getProgramInfoLog(program);
+  gl.deleteProgram(program);
+  throw new Error(message);
+};
+
 D.LipSync = class {
   constructor(width, height, colorArray) {
     const canvas = document.createElement("canvas");
@@ -1333,14 +1359,7 @@ D.LipSync = class {
     canvas.style.width = D.numberToCss(width);
     canvas.style.height = D.numberToCss(height);
 
-    const buffer = document.createElement("canvas");
-    buffer.width = width * devicePixelRatio;
-    buffer.height = height * devicePixelRatio;
-    buffer.style.width = D.numberToCss(width);
-    buffer.style.height = D.numberToCss(height);
-
     this.canvas = canvas;
-    this.buffer = buffer;
     this.width = width;
     this.height = height;
     this.colorArray = colorArray;
@@ -1355,78 +1374,106 @@ D.LipSync = class {
       visemes.forEach(viseme => this.imageMap.set(viseme, image));
     });
     this.neutralImage = this.imageMap.get("neutral");
+
+    this.initialize();
+  }
+
+  initialize() {
+    const W = this.width;
+    const H = this.height;
+    const gl = this.canvas.getContext("webgl");
+
+    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, `
+      attribute vec4 position;
+      attribute vec2 texcoord;
+      uniform mat4 modelView;
+      uniform mat4 projection;
+      varying vec2 v_texcoord;
+      void main() {
+        gl_Position = projection * modelView * position;
+        v_texcoord = texcoord;
+      }
+    `);
+
+    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, `
+      precision mediump float;
+      varying vec2 v_texcoord;
+      uniform sampler2D texture;
+      void main() {
+        // gl_FragColor = vec4(1, 0, 1, 1);
+        gl_FragColor = texture2D(texture, v_texcoord);
+      }
+    `);
+
+    this.program = linkProgram(gl, vertexShader, fragmentShader);
+    this.locations = {
+      position: gl.getAttribLocation(this.program, "position"),
+      texcoord: gl.getAttribLocation(this.program, "texcoord"),
+      modelView: gl.getUniformLocation(this.program, "modelView"),
+      projection: gl.getUniformLocation(this.program, "projection"),
+      texture: gl.getUniformLocation(this.program, "texture"),
+    };
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1, -1,  -1, +1,  +1, +1,
+      -1, -1,  +1, +1,  +1, -1,
+    ]), gl.STATIC_DRAW);
+
+    const texcoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0, 0,  0, 1,  1, 1,
+      0, 0,  1, 1,  1, 0,
+    ]), gl.STATIC_DRAW);
+
+    this.buffers = {
+      position: positionBuffer,
+    };
   }
 
   updateColor(colorArray) {
     this.colorArray = colorArray;
   }
 
-  drawBuffer() {
-    const W = this.width;
-    const H = this.height;
-    const context = this.buffer.getContext("2d");
-
-    context.resetTransform();
-    context.scale(devicePixelRatio, devicePixelRatio);
-    context.lineWidth = 1;
-    context.fillStyle = "#FFF";
-    context.strokeStyle = "#FFF";
-
-    context.clearRect(0, 0, W, H);
-    context.strokeRect(0.5, 0.5, W - 1, H - 1);
-
-    // 画像の座標系は4倍で計算する
-    context.scale(0.25, 0.25);
-    context.drawImage(this.faceImage, 0, 0);
-
-    if (voiceSprite) {
-      const [ a, u, v ] = voiceSprite.getViseme();
-      const image1 = this.imageMap.get(u) || this.neutralImage;
-      const image2 = this.imageMap.get(v) || this.neutralImage;
-      context.globalAlpha = a;
-      context.drawImage(image1, 360, 624);
-      context.globalAlpha = 1 - a;
-      context.drawImage(image2, 360, 624);
-      context.globalAlpha = 1;
-    } else {
-      context.drawImage(this.neutralImage, 360, 624);
-    }
-
-    // return context.getImageData(0, 0, W * devicePixelRatio, H * devicePixelRatio);
-  }
-
   draw() {
-    // const imageData = this.drawBuffer();
-    // const [ R, G, B, A ] = this.colorArray;
-    // const data = imageData.data;
-    // for (let i = 0; i < data.length; i += 4) {
-    //   data[i + 0] *= R;
-    //   data[i + 1] *= G;
-    //   data[i + 2] *= B;
-    //   data[i + 3] *= A;
-    // }
-
-    this.drawBuffer();
-
     const W = this.width;
     const H = this.height;
-    const context = this.canvas.getContext("2d");
+    const gl = this.canvas.getContext("webgl");
 
-    context.resetTransform();
-    context.scale(devicePixelRatio, devicePixelRatio);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clearDepth(1);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    context.clearRect(0, 0, W, H);
+    gl.useProgram(this.program);
 
-    const color = D.toCssColor(...this.colorArray);
-    context.globalCompositeOperation = "source-over";
-    context.lineWidth = 1;
-    context.fillStyle = color;
-    context.strokeStyle = color;
-    context.fillRect(0, 0, W, H);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
+    gl.vertexAttribPointer(this.locations.position, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(this.locations.position);
 
-    context.globalCompositeOperation = "multiply";
-    context.drawImage(this.buffer, 0, 0, W, H);
-    context.globalCompositeOperation = "source-over";
+    gl.uniformMatrix4fv(this.locations.modelView, false, [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1,
+    ]);
+
+    gl.uniformMatrix4fv(this.locations.projection, false, [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1,
+    ]);
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([ 0, 0, 255, 255 ]));
+
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 };
 
@@ -3312,9 +3359,6 @@ const initializeComponents = () => {
   lipSync.canvas.style.display = "block";
   lipSync.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-lip-sync").append(lipSync.canvas);
-  lipSync.buffer.style.display = "block";
-  lipSync.buffer.style.position = "absolute";
-  document.querySelector(".demeter-offscreen").append(lipSync.buffer);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
