@@ -40,54 +40,44 @@ for _, source_pathname in ipairs(source_pathnames) do
   H = h
 end
 
-assert(W == 2^math.floor(math.log(W) / math.log(2)))
-assert(H == 2^math.floor(math.log(H) / math.log(2)))
-assert(#source_pathnames <= 16)
+assert(W == 120)
+assert(H ==  96)
 
 local result = {}
 
-for Y = 0, 3 do
-  for X = 0, 3 do
-    local source_pathname = source_pathnames[Y * 4 + X + 1]
-    if source_pathname then
-      local command = ("env DYLD_LIBRARY_PATH=%s convert %s -depth 8 graya:-"):format(
-          quote_shell(DYLD_LIBRARY_PATH),
-          quote_shell(source_pathname))
-      local handle = assert(io.popen(command))
-      local source = handle:read "a"
-      handle:close()
-      assert(#source == W * H * 2)
+local q = 0
+for i, source_pathname in ipairs(source_pathnames) do
+  local command = ("env DYLD_LIBRARY_PATH=%s convert %s -depth 8 graya:-"):format(
+      quote_shell(DYLD_LIBRARY_PATH),
+      quote_shell(source_pathname))
+  local handle = assert(io.popen(command))
+  local source = handle:read "a"
+  handle:close()
+  assert(#source == W * H * 2)
 
-      local p = 1
-      for y = 0, H - 1 do
-        for x = 0, W - 1 do
-          local u, v = string.unpack("BB", source, p)
-          p = p + 2
-          local q = ((Y * H + y) * (4 * W) + (X * W + x)) * 2
-          result[q + 1] = u
-          result[q + 2] = v
-        end
-      end
+  local p = 1
+  for y = 0, H - 1 do
+    for x = 0, W - 1 do
+      local u, v = string.unpack("BB", source, p)
+      result[q + 1] = u
+      result[q + 2] = v
+      p = p + 2
+      q = q + 2
     end
   end
 end
 
-local W = W * 4
-local H = H * 4
+local H = H * #source_pathnames
+assert(#result == W * H * 2)
 
 local command = ("env DYLD_LIBRARY_PATH=%s convert -depth 8 -size %dx%d graya:- %s"):format(
     quote_shell(DYLD_LIBRARY_PATH),
-    W, H,
+    W,
+    H,
     quote_shell(result_pathname))
 local handle = assert(io.popen(command, "w"))
-local p = 0
-for y = 1, H do
-  for x = 1, W do
-    local u = result[p + 1] or 0
-    local v = result[p + 2] or 0
-    p = p + 2
-    handle:write(string.pack("BB", u, v))
-  end
+for _, v in ipairs(result) do
+  handle:write(string.pack("B", v))
 end
 handle:close()
 
