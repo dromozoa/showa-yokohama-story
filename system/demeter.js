@@ -1351,6 +1351,17 @@ const linkProgram = (gl, ...shaders) => {
   throw new Error(message);
 };
 
+const loadImage = url => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.addEventListener("load", () => {
+    resolve(image);
+  });
+  image.addEventListener("error", ev => {
+    reject(ev);
+  });
+  image.src = url;
+});
+
 D.LipSync = class {
   constructor(width, height, colorArray) {
     const canvas = document.createElement("canvas");
@@ -1363,25 +1374,38 @@ D.LipSync = class {
     this.width = width;
     this.height = height;
     this.colorArray = colorArray;
-    this.faceImage = document.querySelector(".demeter-main-lip-sync-face-image");
-    this.imageMap = new Map();
-    this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-lip-image") ];
-    this.images.forEach(image => {
-      const visemes = image.dataset.lipSync.split(/,/);
-      if (image.dataset.lipSyncMap !== undefined) {
-        visemes.push(...image.dataset.lipSyncMap.split(/,/));
-      }
-      visemes.forEach(viseme => this.imageMap.set(viseme, image));
-    });
-    this.neutralImage = this.imageMap.get("neutral");
-
-    this.initialize();
   }
 
-  initialize() {
+  async initialize() {
+    this.faceImage = await loadImage(D.preferences.systemDir + "/face.png");
+    this.lipImage = await loadImage(D.preferences.systemDir + "/lip.png");
+
+    this.lipMap = new Map();
+    [
+      [ "neutral",                               "silB", "silE", "sp",  ],
+      [ "a", "e", "i",                                                  ],
+      [ "th",                                    "ts",                  ],
+      [ "o",                                                            ],
+      [ "ee",                                    "i:",                  ],
+      [ "u",                                                            ],
+      [ "b", "m", "p",                           "N", "by", "my", "py", ],
+      [ "f", "v",                                "h", "hy",             ],
+      [ "w", "q",                                                       ],
+      [ "ch", "j", "sh",                                                ],
+      [ "c", "d", "n", "s", "t", "x", "y", "z",  "ny",                  ],
+      [ "g", "k",                                "gy", "ky",            ],
+      [ "l",                                     "r", "ry",             ],
+    ].forEach((visemes, index) => {
+      const x = index % 4;
+      const y = Math.floor(index / 4);
+      const v = { x: x, y: y };
+      visemes.forEach(viseme => this.lipMap.set(viseme, v));
+    });
+
     const W = this.width;
     const H = this.height;
-    const gl = this.canvas.getContext("webgl");
+    // https://stackoverflow.com/questions/39341564/webgl-how-to-correctly-blend-alpha-channel-png
+    const gl = this.canvas.getContext("webgl", { premultipliedAlpha: false });
 
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, `
       attribute vec4 position;
@@ -1397,10 +1421,13 @@ D.LipSync = class {
 
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, `
       precision mediump float;
-      varying vec2 v_texcoord;
       uniform sampler2D texture;
+      varying vec2 v_texcoord;
       void main() {
-        // gl_FragColor = vec4(1, 0, 1, 1);
+        // gl_FragColor = vec4(v_texcoord.x, v_texcoord.y, 1, 0.25);
+        // vec4 x = texture2D(texture, v_texcoord);
+        // gl_FragColor = vec4(x.x, x.y, x.z, x.w);
+        // gl_FragColor = x;
         gl_FragColor = texture2D(texture, v_texcoord);
       }
     `);
@@ -1424,13 +1451,30 @@ D.LipSync = class {
     const texcoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      0, 0,  0, 1,  1, 1,
-      0, 0,  1, 1,  1, 0,
+      1, 1,  1, 0,  0, 0,
+      1, 1,  0, 0,  0, 1,
     ]), gl.STATIC_DRAW);
 
     this.buffers = {
       position: positionBuffer,
+      texcoord: texcoordBuffer,
     };
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([
+    //   255,   0,   0, 255,
+    //   255,   0,   0, 255,
+    //     0,   0, 255, 255,
+    //     0,   0, 255, 255,
+    // ]));
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE_ALPHA, gl.LUMINANCE_ALPHA, gl.UNSIGNED_BYTE, this.faceImage);
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.faceImage);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    this.texture0 = texture;
   }
 
   updateColor(colorArray) {
@@ -1442,7 +1486,7 @@ D.LipSync = class {
     const H = this.height;
     const gl = this.canvas.getContext("webgl");
 
-    gl.clearColor(0, 0, 0, 1);
+    gl.clearColor(1, 0, 0, 1);
     gl.clearDepth(1);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
@@ -1453,6 +1497,10 @@ D.LipSync = class {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
     gl.vertexAttribPointer(this.locations.position, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(this.locations.position);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.texcoord);
+    gl.vertexAttribPointer(this.locations.texcoord, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(this.locations.texcoord);
 
     gl.uniformMatrix4fv(this.locations.modelView, false, [
       1, 0, 0, 0,
@@ -1468,11 +1516,12 @@ D.LipSync = class {
       0, 0, 0, 1,
     ]);
 
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([ 0, 0, 255, 255 ]));
-
     // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture0);
+    gl.uniform1i(this.locations.texture, 0);
+
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 };
@@ -5941,6 +5990,7 @@ D.onDOMContentLoaded = async () => {
   addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
   await enterTitleScreen();
+  await lipSync.initialize();
 
   if (D.useServiceWorker()) {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
