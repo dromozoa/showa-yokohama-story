@@ -1,0 +1,11 @@
+@# vim: set filetype=showa-yokohama-story tw=0:
+
+@label_root{あとがき}
+@music{vi03}
+@place{ここではないどこか}
+@background{モノクローム}
+#danu
+こんにちは。
+ダヌーさんだよ。
+@finish{title}
+

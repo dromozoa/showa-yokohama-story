@@ -2261,6 +2261,11 @@ const savePreview = {
   state: {},
 };
 
+const savePostscript = {
+  paragraphIndex: D.scenario.labels["あとがき"],
+  state: {},
+};
+
 const logging = new D.Logging();
 
 const sender = {
@@ -2966,7 +2971,8 @@ const showTitleChoices = async () => {
   }
 
   disableTitleChoice(document.querySelector(".demeter-title-choice5"));
-  disableTitleChoice(document.querySelector(".demeter-title-choice6"));
+
+  enableTitleChoice(document.querySelector(".demeter-title-choice6"));
 
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
@@ -4186,6 +4192,11 @@ const initializeTitleScreen = () => {
       soundEffectBeep();
       return;
     }
+    soundEffectSelect();
+    setSave(savePostscript);
+    leaveTitleScreen();
+    enterMainScreen();
+    next();
   });
 };
 
