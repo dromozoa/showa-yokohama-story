@@ -1358,7 +1358,9 @@ D.LipSync = class {
       0, 0, b, 0, 0,
       0, 0, 0, a, 0,
     ].map(D.numberToString).join(" "));
+
     this.colorArray = colorArray;
+    this.drawBuffer();
   }
 
   async initialize(visemes) {
@@ -1384,6 +1386,10 @@ D.LipSync = class {
   }
 
   drawBuffer() {
+    if (this.buffer === undefined) {
+      return;
+    }
+
     const [ R, G, B, A ] = this.colorArray;
     const W = this.bufferWidth;
     const H = this.bufferHeight;
@@ -3209,7 +3215,7 @@ const updateEffectVolume = () => {
   }
 };
 
-const updateComponentColor = render => {
+const updateComponentColor = () => {
   document.documentElement.style.setProperty("--component-color", D.toCssColor(...system.componentColor));
   document.documentElement.style.setProperty("--component-opacity", system.componentOpacity);
 
@@ -3219,9 +3225,6 @@ const updateComponentColor = render => {
   }
   frameRateVisualizer.updateColor(color);
   lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
-  if (render) {
-    lipSync.drawBuffer();
-  }
   silhouette.updateColor(color);
 };
 
@@ -3343,7 +3346,7 @@ const updateSystemUi = () => {
   updateVoiceVolume();
   updateEffectVolume();
   updateHistorySize();
-  updateComponentColor(true);
+  updateComponentColor();
   updateComponents();
 };
 
@@ -3399,8 +3402,8 @@ const initializeSystemUi = () => {
   systemUi.add(system, "gamepadSwapAB").name("ゲームパッドAB入替");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
-  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(() => updateComponentColor()).onFinishChange(() => updateComponentColor(true));
-  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(() => updateComponentColor()).onFinishChange(() => updateComponentColor(true));
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
+  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(updateComponentColor);
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
