@@ -1325,15 +1325,29 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+const loadImage = url => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.addEventListener("load", () => {
+    resolve(image);
+  });
+  image.addEventListener("error", ev => {
+    reject(ev);
+  });
+  image.src = url;
+});
+
 D.LipSync = class {
-  constructor(colorArray) {
+  constructor(width, height, colorArray) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = D.numberToCss(width);
+    canvas.style.height = D.numberToCss(height);
+
+    this.canvas = canvas;
+    this.width = width;
+    this.height = height;
     this.updateColor(colorArray);
-    this.imageMap = new Map();
-    this.images = [ ...document.querySelectorAll(".demeter-main-lip-sync-image") ];
-    this.images.forEach(image => image.dataset.lipSyncVisemes.split(/,\s*/).forEach(viseme => this.imageMap.set(viseme, image)));
-    this.imageNeutral = this.imageMap.get("neutral");
-    // this.image1 = this.imageNeutral;
-    // this.image2 = undefined;
   }
 
   updateColor(colorArray) {
@@ -1344,22 +1358,85 @@ D.LipSync = class {
       0, 0, b, 0, 0,
       0, 0, 0, a, 0,
     ].map(D.numberToString).join(" "));
+
+    this.colorArray = colorArray;
+    this.drawBuffer();
   }
 
-  update() {
-    if (voiceSprite) {
-      const [ a, u, v ] = voiceSprite.getViseme();
-      const image1 = this.imageMap.get(u) || this.imageNeutral;
-      const image2 = this.imageMap.get(v) || this.imageNeutral;
-      if (image1 === image2) {
-        this.images.forEach(image => image.style.opacity = "0");
-        image1.style.opacity = "1";
-      } else {
-        this.images.forEach(image => image.style.opacity = "0");
-        image1.style.opacity = D.numberToString(a);
-        image2.style.opacity = D.numberToString(1 - a);
-      }
+  async initialize(visemes) {
+    const image = await loadImage(D.preferences.systemDir + "/lip.png");
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+    const map = new Map();
+    visemes.forEach((visemes, i) => visemes.forEach(viseme => map.set(viseme, i)));
+
+    const buffer = document.createElement("canvas");
+    buffer.width = width;
+    buffer.height = height;
+    buffer.style.width = D.numberToCss(width);
+    buffer.style.height = D.numberToCss(height);
+
+    this.lipImage = image;
+    this.lipWidth = width;
+    this.lipHeight = Math.floor(height / visemes.length);
+    this.lipMap = map;
+    this.buffer = buffer;
+    this.bufferWidth = width;
+    this.bufferHeight = height;
+  }
+
+  drawBuffer() {
+    if (this.buffer === undefined) {
+      return;
     }
+
+    const [ R, G, B, A ] = this.colorArray;
+    const W = this.bufferWidth;
+    const H = this.bufferHeight;
+
+    const context = this.buffer.getContext("2d");
+    context.resetTransform();
+    context.clearRect(0, 0, W, H);
+    context.drawImage(this.lipImage, 0, 0);
+
+    const imageData = context.getImageData(0, 0, W, H);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      data[i + 0] *= R;
+      data[i + 1] *= G;
+      data[i + 2] *= B;
+      data[i + 3] *= A;
+    }
+    context.putImageData(imageData, 0, 0);
+  }
+
+  draw() {
+    const W = this.width;
+    const H = this.height;
+
+    const context = this.canvas.getContext("2d");
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.clearRect(0, 0, W, H);
+
+    let viseme = [ 0.5, "neutral", "neutral" ];
+    if (voiceSprite) {
+      viseme = voiceSprite.getViseme();
+    }
+    const [ a, u, v ] = viseme;
+    const i = this.lipMap.get(u);
+    const j = this.lipMap.get(v);
+
+    if (i === j) {
+      context.globalAlpha = 1;
+      context.drawImage(this.buffer, 0, this.lipHeight * i, this.lipWidth, this.lipHeight, 0, 0, W, H);
+    } else {
+      context.globalAlpha = a;
+      context.drawImage(this.buffer, 0, this.lipHeight * i, this.lipWidth, this.lipHeight, 0, 0, W, H);
+      context.globalAlpha = 1 - a;
+      context.drawImage(this.buffer, 0, this.lipHeight * j, this.lipWidth, this.lipHeight, 0, 0, W, H);
+    }
+    context.globalAlpha = 1;
   }
 };
 
@@ -1715,7 +1792,6 @@ D.VoiceSprite = class {
       j = Math.min(i + 1, segment.length - 1);
       a = (time - p) / d;
     }
-    console.assert(0 <= a && a <= 1);
     if (i === j) {
       return [ 0.5, v, v ];
     } else {
@@ -3141,17 +3217,8 @@ const updateEffectVolume = () => {
 
 const updateComponentColor = () => {
   document.documentElement.style.setProperty("--component-color", D.toCssColor(...system.componentColor));
-  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-  if (audioVisualizer) {
-    audioVisualizer.updateColor(color);
-  }
-  frameRateVisualizer.updateColor(color);
-  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
-  silhouette.updateColor(color);
-};
-
-const updateComponentOpacity = () => {
   document.documentElement.style.setProperty("--component-opacity", system.componentOpacity);
+
   const color = D.toCssColor(...system.componentColor, system.componentOpacity);
   if (audioVisualizer) {
     audioVisualizer.updateColor(color);
@@ -3241,14 +3308,16 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
-  lipSync = new D.LipSync([ ...system.componentColor, system.componentOpacity ]);
+  lipSync = new D.LipSync(fontSize * 2.5, fontSize * 2, [ ...system.componentColor, system.componentOpacity ]);
+  lipSync.canvas.style.display = "block";
+  lipSync.canvas.style.position = "absolute";
+  document.querySelector(".demeter-main-lip-sync-lip").append(lipSync.canvas);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
-  updateComponentOpacity();
   updateComponents();
 
   logging.info("コンポーネント初期化: 完了");
@@ -3278,7 +3347,6 @@ const updateSystemUi = () => {
   updateEffectVolume();
   updateHistorySize();
   updateComponentColor();
-  updateComponentOpacity();
   updateComponents();
 };
 
@@ -3335,7 +3403,7 @@ const initializeSystemUi = () => {
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
   componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
-  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(updateComponentOpacity);
+  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(updateComponentColor);
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
@@ -5825,6 +5893,27 @@ D.onDOMContentLoaded = async () => {
 
   await enterTitleScreen();
 
+  // リップシンクの画像を準備し、バッファにレンダリングする。
+  await lipSync.initialize([
+    [ "neutral",                               "silB", "silE", "sp",  ],
+    [ "a", "e", "i",                                                  ],
+    [ "th",                                    "ts",                  ],
+    [ "o",                                                            ],
+    [ "ee",                                    "i:",                  ],
+    [ "u",                                                            ],
+    [ "b", "m", "p",                           "N", "by", "my", "py", ],
+    [ "f", "v",                                "h", "hy",             ],
+    [ "w", "q",                                                       ],
+    [ "ch", "j", "sh",                                                ],
+    [ "c", "d", "n", "s", "t", "x", "y", "z",  "ny",                  ],
+    [ "g", "k",                                "gy", "ky",            ],
+    [ "l",                                     "r", "ry",             ],
+  ]);
+  lipSync.buffer.style.display = "block";
+  lipSync.buffer.style.position = "absolute";
+  document.querySelector(".demeter-offscreen").append(lipSync.buffer);
+  lipSync.drawBuffer();
+
   if (D.useServiceWorker()) {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {
       logging.info("サービスワーカ変更: 検出");
@@ -5869,7 +5958,7 @@ D.onDOMContentLoaded = async () => {
       frameRateVisualizer.draw();
     }
     if (lipSync) {
-      lipSync.update();
+      lipSync.draw();
     }
     if (silhouette) {
       silhouette.draw();

@@ -549,11 +549,8 @@ body.demeter {
 
 .demeter-main-lip-sync {
   position: absolute;
-  box-sizing: border-box;
-  border: 1px solid #FFF;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 10);
-  filter: url(#demeter-main-lip-sync-filter);
 }
 
 @media(orientation: portrait) {
@@ -570,18 +567,20 @@ body.demeter {
   }
 }
 
-.demeter-main-lip-sync-images {
+.demeter-main-lip-sync-face {
+  display: block;
   position: absolute;
   width: calc(var(--font-size) * 10);
   height: calc(var(--font-size) * 10);
+  filter: url(#demeter-main-lip-sync-filter);
 }
 
-.demeter-main-lip-sync img {
-  display: block;
+.demeter-main-lip-sync-lip {
   position: absolute;
-  width: calc(var(--font-size) * 7);
-  left: calc(var(--font-size) * 1.5);
-  bottom: calc(var(--font-size) * 1.5);
+  width: calc(var(--font-size) * 2.5);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 3.75);
+  top: calc(var(--font-size) * 6.5);
 }
 
 .demeter-main-silhouette {
