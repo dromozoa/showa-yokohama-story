@@ -1325,32 +1325,6 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
-const compileShader = (gl, type, source) => {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    return shader;
-  }
-
-  const message = gl.getShaderInfoLog(shader);
-  gl.deleteShader(shader);
-  throw new Error(message);
-};
-
-const linkProgram = (gl, ...shaders) => {
-  const program = gl.createProgram();
-  shaders.forEach(shader => gl.attachShader(program, shader));
-  gl.linkProgram(program);
-  if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    return program;
-  }
-
-  const message = gl.getProgramInfoLog(program);
-  gl.deleteProgram(program);
-  throw new Error(message);
-};
-
 const loadImage = url => new Promise((resolve, reject) => {
   const image = new Image();
   image.addEventListener("load", () => {
@@ -1373,156 +1347,90 @@ D.LipSync = class {
     this.canvas = canvas;
     this.width = width;
     this.height = height;
-    this.colorArray = colorArray;
-  }
-
-  async initialize() {
-    this.faceImage = await loadImage(D.preferences.systemDir + "/face.png");
-    this.lipImage = await loadImage(D.preferences.systemDir + "/lip.png");
-
-    this.lipMap = new Map();
-    [
-      [ "neutral",                               "silB", "silE", "sp",  ],
-      [ "a", "e", "i",                                                  ],
-      [ "th",                                    "ts",                  ],
-      [ "o",                                                            ],
-      [ "ee",                                    "i:",                  ],
-      [ "u",                                                            ],
-      [ "b", "m", "p",                           "N", "by", "my", "py", ],
-      [ "f", "v",                                "h", "hy",             ],
-      [ "w", "q",                                                       ],
-      [ "ch", "j", "sh",                                                ],
-      [ "c", "d", "n", "s", "t", "x", "y", "z",  "ny",                  ],
-      [ "g", "k",                                "gy", "ky",            ],
-      [ "l",                                     "r", "ry",             ],
-    ].forEach((visemes, index) => {
-      const x = index % 4;
-      const y = Math.floor(index / 4);
-      const v = { x: x, y: y };
-      visemes.forEach(viseme => this.lipMap.set(viseme, v));
-    });
-
-    const W = this.width;
-    const H = this.height;
-    // https://stackoverflow.com/questions/39341564/webgl-how-to-correctly-blend-alpha-channel-png
-    const gl = this.canvas.getContext("webgl", { premultipliedAlpha: false });
-
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, `
-      attribute vec4 position;
-      attribute vec2 texcoord;
-      uniform mat4 modelView;
-      uniform mat4 projection;
-      varying vec2 v_texcoord;
-      void main() {
-        gl_Position = projection * modelView * position;
-        v_texcoord = texcoord;
-      }
-    `);
-
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, `
-      precision mediump float;
-      uniform sampler2D texture;
-      varying vec2 v_texcoord;
-      void main() {
-        // gl_FragColor = vec4(v_texcoord.x, v_texcoord.y, 1, 0.25);
-        // vec4 x = texture2D(texture, v_texcoord);
-        // gl_FragColor = vec4(x.x, x.y, x.z, x.w);
-        // gl_FragColor = x;
-        gl_FragColor = texture2D(texture, v_texcoord);
-      }
-    `);
-
-    this.program = linkProgram(gl, vertexShader, fragmentShader);
-    this.locations = {
-      position: gl.getAttribLocation(this.program, "position"),
-      texcoord: gl.getAttribLocation(this.program, "texcoord"),
-      modelView: gl.getUniformLocation(this.program, "modelView"),
-      projection: gl.getUniformLocation(this.program, "projection"),
-      texture: gl.getUniformLocation(this.program, "texture"),
-    };
-
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      -1, -1,  -1, +1,  +1, +1,
-      -1, -1,  +1, +1,  +1, -1,
-    ]), gl.STATIC_DRAW);
-
-    const texcoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      1, 1,  1, 0,  0, 0,
-      1, 1,  0, 0,  0, 1,
-    ]), gl.STATIC_DRAW);
-
-    this.buffers = {
-      position: positionBuffer,
-      texcoord: texcoordBuffer,
-    };
-
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([
-    //   255,   0,   0, 255,
-    //   255,   0,   0, 255,
-    //     0,   0, 255, 255,
-    //     0,   0, 255, 255,
-    // ]));
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE_ALPHA, gl.LUMINANCE_ALPHA, gl.UNSIGNED_BYTE, this.faceImage);
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.faceImage);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    this.texture0 = texture;
+    this.updateColor(colorArray);
   }
 
   updateColor(colorArray) {
+    const [ r, g, b, a ] = colorArray;
+    document.querySelector("#demeter-main-lip-sync-filter feColorMatrix").setAttribute("values", [
+      r, 0, 0, 0, 0,
+      0, g, 0, 0, 0,
+      0, 0, b, 0, 0,
+      0, 0, 0, a, 0,
+    ].map(D.numberToString).join(" "));
     this.colorArray = colorArray;
+  }
+
+  async initialize(visemes) {
+    const image = await loadImage(D.preferences.systemDir + "/lip.png");
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+    const map = new Map();
+    visemes.forEach((visemes, i) => visemes.forEach(viseme => map.set(viseme, i)));
+
+    const buffer = document.createElement("canvas");
+    buffer.width = width;
+    buffer.height = height;
+    buffer.style.width = D.numberToCss(width);
+    buffer.style.height = D.numberToCss(height);
+
+    this.lipImage = image;
+    this.lipWidth = width;
+    this.lipHeight = Math.floor(height / visemes.length);
+    this.lipMap = map;
+    this.buffer = buffer;
+    this.bufferWidth = width;
+    this.bufferHeight = height;
+  }
+
+  drawBuffer() {
+    const [ R, G, B, A ] = this.colorArray;
+    const W = this.bufferWidth;
+    const H = this.bufferHeight;
+
+    const context = this.buffer.getContext("2d");
+    context.resetTransform();
+    context.clearRect(0, 0, W, H);
+    context.drawImage(this.lipImage, 0, 0);
+
+    const imageData = context.getImageData(0, 0, W, H);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      data[i + 0] *= R;
+      data[i + 1] *= G;
+      data[i + 2] *= B;
+      data[i + 3] *= A;
+    }
+    context.putImageData(imageData, 0, 0);
   }
 
   draw() {
     const W = this.width;
     const H = this.height;
-    const gl = this.canvas.getContext("webgl");
 
-    gl.clearColor(1, 0, 0, 1);
-    gl.clearDepth(1);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const context = this.canvas.getContext("2d");
+    context.resetTransform();
+    context.scale(devicePixelRatio, devicePixelRatio);
+    context.clearRect(0, 0, W, H);
 
-    gl.useProgram(this.program);
+    let viseme = [ 0.5, "neutral", "neutral" ];
+    if (voiceSprite) {
+      viseme = voiceSprite.getViseme();
+    }
+    const [ a, u, v ] = viseme;
+    const i = this.lipMap.get(u);
+    const j = this.lipMap.get(v);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
-    gl.vertexAttribPointer(this.locations.position, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(this.locations.position);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.texcoord);
-    gl.vertexAttribPointer(this.locations.texcoord, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(this.locations.texcoord);
-
-    gl.uniformMatrix4fv(this.locations.modelView, false, [
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1,
-    ]);
-
-    gl.uniformMatrix4fv(this.locations.projection, false, [
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1,
-    ]);
-
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.texture0);
-    gl.uniform1i(this.locations.texture, 0);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    if (i === j) {
+      context.globalAlpha = 1;
+      context.drawImage(this.buffer, 0, this.lipHeight * i, this.lipWidth, this.lipHeight, 0, 0, W, H);
+    } else {
+      context.globalAlpha = a;
+      context.drawImage(this.buffer, 0, this.lipHeight * i, this.lipWidth, this.lipHeight, 0, 0, W, H);
+      context.globalAlpha = 1 - a;
+      context.drawImage(this.buffer, 0, this.lipHeight * j, this.lipWidth, this.lipHeight, 0, 0, W, H);
+    }
+    context.globalAlpha = 1;
   }
 };
 
@@ -1878,7 +1786,6 @@ D.VoiceSprite = class {
       j = Math.min(i + 1, segment.length - 1);
       a = (time - p) / d;
     }
-    console.assert(0 <= a && a <= 1);
     if (i === j) {
       return [ 0.5, v, v ];
     } else {
@@ -3302,25 +3209,19 @@ const updateEffectVolume = () => {
   }
 };
 
-const updateComponentColor = () => {
+const updateComponentColor = render => {
   document.documentElement.style.setProperty("--component-color", D.toCssColor(...system.componentColor));
-  const color = D.toCssColor(...system.componentColor, system.componentOpacity);
-  if (audioVisualizer) {
-    audioVisualizer.updateColor(color);
-  }
-  frameRateVisualizer.updateColor(color);
-  lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
-  silhouette.updateColor(color);
-};
-
-const updateComponentOpacity = () => {
   document.documentElement.style.setProperty("--component-opacity", system.componentOpacity);
+
   const color = D.toCssColor(...system.componentColor, system.componentOpacity);
   if (audioVisualizer) {
     audioVisualizer.updateColor(color);
   }
   frameRateVisualizer.updateColor(color);
   lipSync.updateColor([ ...system.componentColor, system.componentOpacity ]);
+  if (render) {
+    lipSync.drawBuffer();
+  }
   silhouette.updateColor(color);
 };
 
@@ -3404,17 +3305,16 @@ const initializeComponents = () => {
   frameRateVisualizer.canvas.style.display = "block";
   frameRateVisualizer.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-frame-rate-visualizer").append(frameRateVisualizer.canvas);
-  lipSync = new D.LipSync(fontSize * 10, fontSize * 10, [ ...system.componentColor, system.componentOpacity ]);
+  lipSync = new D.LipSync(fontSize * 2.5, fontSize * 2, [ ...system.componentColor, system.componentOpacity ]);
   lipSync.canvas.style.display = "block";
   lipSync.canvas.style.position = "absolute";
-  document.querySelector(".demeter-main-lip-sync").append(lipSync.canvas);
+  document.querySelector(".demeter-main-lip-sync-lip").append(lipSync.canvas);
   silhouette = new D.Silhouette(fontSize * 16, fontSize * 25, color);
   silhouette.canvas.style.display = "block";
   silhouette.canvas.style.position = "absolute";
   document.querySelector(".demeter-main-silhouette").append(silhouette.canvas);
 
   updateComponentColor();
-  updateComponentOpacity();
   updateComponents();
 
   logging.info("コンポーネント初期化: 完了");
@@ -3443,8 +3343,7 @@ const updateSystemUi = () => {
   updateVoiceVolume();
   updateEffectVolume();
   updateHistorySize();
-  updateComponentColor();
-  updateComponentOpacity();
+  updateComponentColor(true);
   updateComponents();
 };
 
@@ -3500,8 +3399,8 @@ const initializeSystemUi = () => {
   systemUi.add(system, "gamepadSwapAB").name("ゲームパッドAB入替");
 
   const componentFolder = addSystemUiFolder(systemUi, "コンポーネント設定");
-  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(updateComponentColor);
-  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(updateComponentOpacity);
+  componentFolder.addColor(system, "componentColor").name("色 [#RGB]").onChange(() => updateComponentColor()).onFinishChange(() => updateComponentColor(true));
+  componentFolder.add(system, "componentOpacity", 0, 1, 0.01).name("不透明度 [0-1]").onChange(() => updateComponentColor()).onFinishChange(() => updateComponentColor(true));
   componentFolder.add(system, "logging").name("表示: ロギング").onChange(updateComponents);
   componentFolder.add(system, "audioVisualizer").name("表示: オーディオ").onChange(updateComponents);
   componentFolder.add(system, "frameRateVisualizer").name("表示: フレームレート").onChange(updateComponents);
@@ -5990,7 +5889,27 @@ D.onDOMContentLoaded = async () => {
   addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
   await enterTitleScreen();
-  await lipSync.initialize();
+
+  // リップシンクの画像を準備し、バッファにレンダリングする。
+  await lipSync.initialize([
+    [ "neutral",                               "silB", "silE", "sp",  ],
+    [ "a", "e", "i",                                                  ],
+    [ "th",                                    "ts",                  ],
+    [ "o",                                                            ],
+    [ "ee",                                    "i:",                  ],
+    [ "u",                                                            ],
+    [ "b", "m", "p",                           "N", "by", "my", "py", ],
+    [ "f", "v",                                "h", "hy",             ],
+    [ "w", "q",                                                       ],
+    [ "ch", "j", "sh",                                                ],
+    [ "c", "d", "n", "s", "t", "x", "y", "z",  "ny",                  ],
+    [ "g", "k",                                "gy", "ky",            ],
+    [ "l",                                     "r", "ry",             ],
+  ]);
+  lipSync.buffer.style.display = "block";
+  lipSync.buffer.style.position = "absolute";
+  document.querySelector(".demeter-offscreen").append(lipSync.buffer);
+  lipSync.drawBuffer();
 
   if (D.useServiceWorker()) {
     navigator.serviceWorker.addEventListener("controllerchange", ev => {

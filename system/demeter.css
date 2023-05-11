@@ -567,6 +567,22 @@ body.demeter {
   }
 }
 
+.demeter-main-lip-sync-face {
+  display: block;
+  position: absolute;
+  width: calc(var(--font-size) * 10);
+  height: calc(var(--font-size) * 10);
+  filter: url(#demeter-main-lip-sync-filter);
+}
+
+.demeter-main-lip-sync-lip {
+  position: absolute;
+  width: calc(var(--font-size) * 2.5);
+  height: calc(var(--font-size) * 2);
+  left: calc(var(--font-size) * 3.75);
+  top: calc(var(--font-size) * 6.5);
+}
+
 .demeter-main-silhouette {
   position: absolute;
   width: calc(var(--font-size) * 16);

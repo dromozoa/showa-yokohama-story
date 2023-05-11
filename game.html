@@ -99,6 +99,15 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="demeter-main-lip-sync-filter">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.25 0" result="color"/>
+      <feComponentTransfer in="color">
+        <feFuncR type="gamma" amplitude="1" exponent="2.2" offset="0"/>
+        <feFuncG type="gamma" amplitude="1" exponent="2.2" offset="0"/>
+        <feFuncB type="gamma" amplitude="1" exponent="2.2" offset="0"/>
+        <feFuncA type="identity"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
 </svg>
 
@@ -190,7 +199,10 @@
   <div class="demeter-main-logging"></div>
   <div class="demeter-main-audio-visualizer"></div>
   <div class="demeter-main-frame-rate-visualizer"></div>
-  <div class="demeter-main-lip-sync"></div>
+  <div class="demeter-main-lip-sync">
+    <img class="demeter-main-lip-sync-face" src="system/./face.png">
+    <div class="demeter-main-lip-sync-lip"></div>
+  </div>
   <div class="demeter-main-silhouette"></div>
   <div class="demeter-main-menu">
     <div class="demeter-main-menu-frame"></div>
