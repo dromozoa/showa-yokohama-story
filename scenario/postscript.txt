@@ -2,7 +2,7 @@
 
 @label_root{あとがき}
 @music{vi03}
-@place{ここではないどこか}
+@place{あの日の横濱}
 @background{モノクローム}
 #danu
 こんにちは。

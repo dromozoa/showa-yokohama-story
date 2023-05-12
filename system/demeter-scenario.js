@@ -2352,7 +2352,7 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["Playストア","から",["取得","ダウンロード"],"して、自己更新していい？"],
 ]],
 // index: 404
-[{speaker:"danu",finish:"title",music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[]},[
+[{speaker:"danu",finish:"title",music:"vi03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
 ["こんにちは。"],
 ["ダヌーさんだよ。"],
 ]],

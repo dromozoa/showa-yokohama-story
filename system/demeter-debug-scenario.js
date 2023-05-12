@@ -14,7 +14,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index: 1
-[{speaker:"danu",finish:"title",music:"vi03",place:"ここではないどこか",background:"モノクローム",adjacencies:[]},[
+[{speaker:"danu",finish:"title",music:"vi03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
 ["こんにちは。"],
 ["ダヌーさんだよ。"],
 ]],
