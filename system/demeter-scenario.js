@@ -2353,15 +2353,28 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ]],
 // index: 404
 [{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[405]},[
-["ダヌーさんだよ。"],
+["自由ラジオ横濱",["前線","フロント"],"。"],
+["パーソナリティのダヌーさんだよ。"],
 ["で、",["貴下","アンタ"],"、誰。"],
 ]],
 // index: 405
-[{speaker:"author",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
-["ドーモ、作者です。"],
+[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[406]},[
+["よお。"],
+]],
+// index: 406
+[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[407]},[
+["そうきたか。"],
+]],
+// index: 407
+[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[408]},[
+["……どうでもいいが、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
+]],
+// index: 408
+[{speaker:"danu",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
+["面倒だからいちいち突っ込まないぞ。"],
 ]],
 ],
-total:377,
+total:380,
 starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404],
 labels:{
 "ニューゲーム":1,
