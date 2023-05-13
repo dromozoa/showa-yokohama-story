@@ -24,6 +24,7 @@ integrated_loudness_target=$1
 output_dirname=$2
 shift 2
 
+# output_name:source_dirname
 for i in "$@"
 do
   output_name=`expr "X$i" : 'X\([^:]*\):'`

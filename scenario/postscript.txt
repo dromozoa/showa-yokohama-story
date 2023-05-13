@@ -1,7 +1,7 @@
 @# vim: set filetype=showa-yokohama-story tw=0:
 
 @label_root{あとがき}
-@music{vi03}
+@music{star_guardian03}
 @place{あの日の横濱}
 @background{モノクローム}
 #danu
