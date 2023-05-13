@@ -42,15 +42,30 @@ handle:close()
 --  "params": {"speed": 1.0, "pitch": 0.0, "pause": 1.0, "volume": 1.0},
 --  "emotions": {"happy": 0.0, "fun": 0.0, "angry": 0.0, "sad": 0.0},
 
+-- フリモメンの場合
+-- {"narrator": {"key": "\u30d5\u30ea\u30e2\u30e1\u30f3"},
+--  ...
+--  "emotions": {"happy": 0.0, "angry": 0.0, "sad": 0.0, "ochoushimono": 1.0, "fun": 0.0},
+
 local params = { "speed", "pitch", "pause", "volume", "happy", "fun", "angry", "sad" }
 
 local i = 0
 local result = source:gsub([[{"narrator": .-, "emotions": {"happy": .-},]], function (s)
   i = i + 1
   local speaker = assert(speakers[i])
-  s = s:gsub('"key": "[^"]*"', '"key": "'..speaker.speaker..'"')
-  for _, param in ipairs(params) do
-    s = s:gsub('"'..param..'": [%-%.0-9]+', '"'..param..'": '..speaker[param])
+  if speaker.speaker == "フリモメン" then
+    s = s:gsub('"key": "[^"]*"', '"key": "\\u30d5\\u30ea\\u30e2\\u30e1\\u30f3"')
+    s = s:gsub('"emotions": {"happy": .-},', '"emotions": {"happy": '..speaker.happy
+      ..', "angry": '..speaker.angry
+      ..', "sad": '..speaker.sad
+      ..', "ochoushimono": '..speaker.ochoushimono
+      ..', "fun": '..speaker.fun
+      ..'},')
+  else
+    s = s:gsub('"key": "[^"]*"', '"key": "'..speaker.speaker..'"')
+    for _, param in ipairs(params) do
+      s = s:gsub('"'..param..'": [%-%.0-9]+', '"'..param..'": '..speaker[param])
+    end
   end
   return s
 end)

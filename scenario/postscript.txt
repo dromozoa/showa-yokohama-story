@@ -5,7 +5,10 @@
 @place{あの日の横濱}
 @background{モノクローム}
 #danu
-こんにちは。
 ダヌーさんだよ。
+で、@r{貴下}{アンタ}、誰。
+
+#author
+ドーモ、作者です。
 @finish{title}
 
