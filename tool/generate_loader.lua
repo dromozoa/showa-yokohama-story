@@ -103,6 +103,7 @@ for _, paragraph in ipairs(scenario) do
       if not map[face] then
         map[face] = true
         handle:write(utf8.char(code))
+        print(face, code)
       end
     end
   end
