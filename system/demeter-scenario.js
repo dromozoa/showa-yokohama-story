@@ -2354,8 +2354,8 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 // index: 404
 [{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[405]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
-["パーソナリティのダヌーさんだよ。"],
-["で、",["貴下","アンタ"],"、誰。"],
+["パーソナリティ","のダヌーさんだよ。"],
+["で、",["貴方","アンタ"],"、誰。"],
 ]],
 // index: 405
 [{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[406]},[
@@ -2370,11 +2370,34 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["……どうでもいいが、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
 ]],
 // index: 408
-[{speaker:"danu",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
+[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[409]},[
 ["面倒だからいちいち突っ込まないぞ。"],
+["と言い条、好きな作家は。"],
+]],
+// index: 409
+[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[410]},[
+["私淑する作家は、","ろくごまるにと","ぶらじま","太郎です。"],
+]],
+// index: 410
+[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[411]},[
+["そこで、タイラーとかスレイヤーズとか挙げられないところが、",["貴方","アンタ"],"達の限界だわよ。"],
+]],
+// index: 411
+[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[412]},[
+["その","『——だわよ』","口調は、","『レッツゴー怪奇組』","組長口調というんだぜ。"],
+]],
+// index: 412
+[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[413]},[
+["こすってくるなあ。"],
+["企画書には、黒歴史ラジオの風体で、オーディオコメンタリーしてみたいって書いてあって。"],
+["じゃあ、ネタばらしでもしていく。"],
+]],
+// index: 413
+[{speaker:"author",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
+["『真・女神転生V』と『モナーク』をやったんだヨネ。"],
 ]],
 ],
-total:380,
+total:385,
 starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404],
 labels:{
 "ニューゲーム":1,

@@ -148,8 +148,8 @@ return {
     volume = "2.0";
     -- "emotions": {"happy": 0.0, "angry": 0.0, "sad": 0.0, "ochoushimono": 1.0, "fun": 0.0},
     happy = "0.0";
-    angry = "0.0";
-    sad = "0.0";
+    angry = "0.2";
+    sad = "0.2";
     ochoushimono = "1.0";
     fun = "0.0";
   };
