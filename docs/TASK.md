@@ -36,6 +36,10 @@
     - 結局、WebGLを使う方向性で
     - [x] mipmap?
       - WebGLごと廃棄
+  - [x] `tool/google_fonts_serif.css`の更新
+  - [x] ローマ数字
+    - NOTOとShipporiを検討
+    - Vで代替
 
 - ウェブページ
   - [x] 表の横幅をスマートフォンに対応させる
@@ -59,8 +63,6 @@
     - メガテン風？
 
 - システム
-  - [ ] `tool/google_fonts_serif.css`の更新
-  - [ ] ローマ数字
 
 - ウェブページ
   - [ ] 動画を作る
