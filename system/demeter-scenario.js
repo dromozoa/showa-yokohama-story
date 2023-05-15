@@ -2352,51 +2352,107 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["Playストア","から",["取得","ダウンロード"],"して、自己更新していい？"],
 ]],
 // index: 404
-[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[405]},[
+[{speaker:"danu",when:async($,ctx)=>{
+if(ctx.game.vistedCredits)return 405;
+},music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[405]},[
+["あれまあ、あとがきを最初に見ちゃう",["種別","タイプ"],"の",["人類","ヒューマン"],"だね。"],
+[["妾","アタシ"],"もそういう",["種別","タイプ"],"だから、判るよ。"],
+["って、まあ、",["人類","ヒューマン"],"じゃないかもしれないけどね、",["妾","アタシ"],"達。"],
+]],
+// index: 405
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[406]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
 ["パーソナリティ","のダヌーさんだよ。"],
 ["で、",["貴方","アンタ"],"、誰。"],
 ]],
-// index: 405
-[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[406]},[
+// index: 406
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[407]},[
 ["よお。"],
 ]],
-// index: 406
-[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[407]},[
+// index: 407
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[408]},[
 ["そうきたか。"],
 ]],
-// index: 407
-[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[408]},[
+// index: 408
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[409]},[
 ["……どうでも","いい","が、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
 ]],
-// index: 408
-[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[409]},[
+// index: 409
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[410]},[
 ["面倒だからいちいち突っ込まないぞ。"],
 ]],
-// index: 409
-[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[410]},[
+// index: 410
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[411]},[
 ["私淑する作家は、","ろくごまるにと","ぶらじま","太郎です。"],
 ]],
-// index: 410
-[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[411]},[
+// index: 411
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[412]},[
 ["そこで、タイラーとかスレイヤーズとか挙げられないところが、",["貴方","アンタ"],"達の限界だわよ。"],
 ]],
-// index: 411
-[{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[412]},[
+// index: 412
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[413]},[
 ["その","『——だわよ』","口調は、","『レッツゴー怪奇組』","組長口調というんだぜ。"],
 ]],
-// index: 412
-[{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[413]},[
-["こすってくるなあ。"],
-["企画書には、黒歴史ラジオの風体で、オーディオコメンタリーしてみたいって書いてあって。"],
-]],
 // index: 413
-[{speaker:"author",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
-["『真・女神転生V』","と","『モナーク』","をやったんだ","ヨネ","。"],
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[414]},[
+["こすってくるなあ。"],
+["企画書には、黒歴史ラジオの風体でコメンタリーしたいって書いてあったけど。"],
+]],
+// index: 414
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[415]},[
+["実は、君の名は","『真・女神転生V』","に由来する。"],
+]],
+// index: 415
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[416]},[
+["実はもなんも、","STEVEN","がでてきた時点で、読者諸賢はおさっしだわよ。"],
+]],
+// index: 416
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[417]},[
+["実は、メサイア会のモデルは、イエズス会。"],
+]],
+// index: 417
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[418]},[
+["それは、まあ、ね。"],
+["けど、いいの。"],
+["AK","遣うくらいなら、",["素手","ステゴロ"],"すんのがあ",["奴","いつ"],"らでしょ。"],
+]],
+// index: 418
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[419]},[
+[["偽史","フィクション"],"だからね、どこまでいってもさ。"],
+]],
+// index: 419
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[420]},[
+["原子爆弾以外は。"],
+]],
+// index: 420
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[421]},[
+["そりゃあそうさ。"],
+["それらだけは叩きこまれるのさ。"],
+]],
+// index: 421
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[422]},[
+["で、どうなの。"],
+["方向性とか、そういうの。"],
+]],
+// index: 422
+[{speaker:"author",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[423]},[
+["『昭和米国物語』","のコンセプトに、",["屍者","ゾンビ"],"と",["怪獣","カイジュー"],"とロボってあってさ、ロボまでたどりつけなかったんだよね。"],
+["黄色い会社はその痕跡なわけだけど。"],
+]],
+// index: 423
+[{speaker:"danu",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[424]},[
+["ビーンボール、投げてくれんじゃん。"],
+["まあ、そんなかんじでネタばらしをしていくわけだよね。"],
+["んじゃ、チャンネル登録よろしくおなしゃす——"],
+]],
+// index: 424
+[{speaker:"narrator",finish:"title",music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これは最後の物語。自由ラジオ横濱",["前線","フロント"],"。第一回。"],
+["了。（つづく）"],
 ]],
 ],
-total:385,
-starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404],
+total:396,
+starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404,405],
 labels:{
 "ニューゲーム":1,
 "おはよう":2,
@@ -2446,6 +2502,7 @@ labels:{
 "空の履歴":393,
 "チュートリアル:ヒストリー":394,
 "あとがき":404,
+"あとがき開始":405,
 },
 dialogs:{
 "system-back-to-title":375,

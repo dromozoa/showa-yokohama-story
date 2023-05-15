@@ -191,3 +191,8 @@ const paragraph374_enter = async ($, ctx) => {
 ctx.game.visitedSixtyNine = true;
 };
 
+const paragraph404_when = async ($, ctx) => {
+// postscript.txt:7
+if (ctx.game.vistedCredits) { return "あとがき開始"; }
+};
+
