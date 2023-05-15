@@ -1337,6 +1337,7 @@ const getSystemUrl = path => {
 
 const loadImage = url => new Promise((resolve, reject) => {
   const image = new Image();
+  image.crossOrigin = "Anonymous";
   image.addEventListener("load", () => {
     resolve(image);
   });
@@ -4890,7 +4891,7 @@ const next = async () => {
         // 時に指定できないので評価しなくてよい。
         const paragraphIndexNext = paragraphIndexPrev + 1;
         const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
-        if (paragraphNext[0].start) {
+        if (!paragraphNext || paragraphNext[0].start) {
           await cancelPlayState();
         }
       }
