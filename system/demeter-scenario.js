@@ -2367,12 +2367,11 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ]],
 // index: 407
 [{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[408]},[
-["……どうでもいいが、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
+["……どうでも","いい","が、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
 ]],
 // index: 408
 [{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[409]},[
 ["面倒だからいちいち突っ込まないぞ。"],
-["と言い条、好きな作家は。"],
 ]],
 // index: 409
 [{speaker:"author",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[410]},[
@@ -2390,11 +2389,10 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 [{speaker:"danu",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[413]},[
 ["こすってくるなあ。"],
 ["企画書には、黒歴史ラジオの風体で、オーディオコメンタリーしてみたいって書いてあって。"],
-["じゃあ、ネタばらしでもしていく。"],
 ]],
 // index: 413
 [{speaker:"author",finish:"title",music:"star_guardian03",place:"あの日の横濱",background:"モノクローム",adjacencies:[]},[
-["『真・女神転生V』と『モナーク』をやったんだヨネ。"],
+["『真・女神転生V』","と","『モナーク』","をやったんだ","ヨネ","。"],
 ]],
 ],
 total:385,
