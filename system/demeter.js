@@ -1327,6 +1327,14 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+const getSystemUrl = path => {
+  if (D.isApp() === "ios") {
+    return "demeter:///" + path;
+  } else {
+    return path;
+  }
+};
+
 const loadImage = url => new Promise((resolve, reject) => {
   const image = new Image();
   image.addEventListener("load", () => {
@@ -1366,7 +1374,7 @@ D.LipSync = class {
   }
 
   async initialize(visemes) {
-    const image = await loadImage(D.preferences.systemDir + "/lip.png");
+    const image = await loadImage(getSystemUrl(D.preferences.systemDir + "/lip.png"));
     const width = image.naturalWidth;
     const height = image.naturalHeight;
     const map = new Map();

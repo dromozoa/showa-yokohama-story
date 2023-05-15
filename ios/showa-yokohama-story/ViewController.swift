@@ -56,9 +56,11 @@ class ViewController: UIViewController {
 
     webView = WKWebView(frame: .zero, configuration: configuration)
 
-    if #available(iOS 16.4, *) {
-      webView.isInspectable = true
-    }
+    #if DEBUG
+      if #available(iOS 16.4, *) {
+        webView.isInspectable = true
+      }
+    #endif
 
     webView.isOpaque = false
     webView.backgroundColor = UIColor(red: 17 / 255, green: 17 / 255, blue: 17 / 255, alpha: 1)
@@ -170,6 +172,8 @@ extension ViewController: WKURLSchemeHandler {
           headerFields["Content-Type"] = "audio/mpeg"
         case "webm":
           headerFields["Content-Type"] = "video/webm"
+        case "png":
+          headerFields["Content-Type"] = "image/png"
         default:
           headerFields["Content-Type"] = "application/octet-stream"
         }
