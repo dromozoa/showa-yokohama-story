@@ -942,6 +942,7 @@ const speakerNames = {
   activist: "店主",
   steven:   "STEVEN",
   rosa:     "ローザ",
+  author:   "作者",
 };
 
 const startTexts = {
