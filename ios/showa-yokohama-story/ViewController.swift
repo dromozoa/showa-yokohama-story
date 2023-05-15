@@ -55,6 +55,11 @@ class ViewController: UIViewController {
     configuration.setURLSchemeHandler(self, forURLScheme: "demeter")
 
     webView = WKWebView(frame: .zero, configuration: configuration)
+
+    if #available(iOS 16.4, *) {
+      webView.isInspectable = true
+    }
+
     webView.isOpaque = false
     webView.backgroundColor = UIColor(red: 17 / 255, green: 17 / 255, blue: 17 / 255, alpha: 1)
 
@@ -237,7 +242,8 @@ extension ViewController {
   @objc
   func restoreBackup() {
     DispatchQueue.main.async {
-      self.webView.evaluateJavaScript("demeterRestoreBackup(\"demeter:///demeterRestoreBackup.dat\");")
+      self.webView.evaluateJavaScript(
+        "demeterRestoreBackup(\"demeter:///demeterRestoreBackup.dat\");")
     }
   }
 }
