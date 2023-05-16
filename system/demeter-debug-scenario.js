@@ -15,7 +15,7 @@ D.scenario = {
 paragraphs:[
 // index: 1
 [{speaker:"danu",when:async($,ctx)=>{
-if(ctx.game.vistedCredits)return 2;
+if(ctx.game.visitedCredits)return 2;
 },music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[]},[
 ["あれまあ、あとがきを最初に見ちゃう",["種別","タイプ"],"の",["人類","ヒューマン"],"だね。"],
 [["妾","アタシ"],"もそういう",["種別","タイプ"],"だから、判るよ。"],

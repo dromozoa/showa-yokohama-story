@@ -2353,7 +2353,7 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ]],
 // index: 404
 [{speaker:"danu",when:async($,ctx)=>{
-if(ctx.game.vistedCredits)return 405;
+if(ctx.game.visitedCredits)return 405;
 },music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[405]},[
 ["あれまあ、あとがきを最初に見ちゃう",["種別","タイプ"],"の",["人類","ヒューマン"],"だね。"],
 [["妾","アタシ"],"もそういう",["種別","タイプ"],"だから、判るよ。"],

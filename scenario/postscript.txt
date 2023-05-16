@@ -4,7 +4,7 @@
 @music{star_guardian03}
 @place{ながいながい階段}
 @background{モノクローム}
-@when{{ctx.game.vistedCredits}}{あとがき開始}
+@when{{ctx.game.visitedCredits}}{あとがき開始}
 #danu
 あれまあ、あとがきを最初に見ちゃう@r{種別}{タイプ}の@r{人類}{ヒューマン}だね。
 @r{妾}{アタシ}もそういう@r{種別}{タイプ}だから、判るよ。

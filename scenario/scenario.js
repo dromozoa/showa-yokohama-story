@@ -193,6 +193,6 @@ ctx.game.visitedSixtyNine = true;
 
 const paragraph404_when = async ($, ctx) => {
 // postscript.txt:7
-if (ctx.game.vistedCredits) { return "あとがき開始"; }
+if (ctx.game.visitedCredits) { return "あとがき開始"; }
 };
 
