@@ -39,9 +39,9 @@ for i, source_pathname in ipairs(source_pathnames) do
   segments[i] = segment
 end
 
-for v, n in pairs(map) do
-  print(v, n)
-end
+-- for v, n in pairs(map) do
+--   print(v, n)
+-- end
 
 local handle = assert(io.open(output_pathname, "w"))
 
@@ -69,7 +69,7 @@ for _, paragraph in ipairs(scenario) do
   for i in ipairs(paragraph) do
     index = index + 1
     handle:write(('"%d":['):format(i))
-    for _, s in ipairs(segments[index]) do
+    for _, s in ipairs(assert(segments[index], "segment not found: "..index)) do
       handle:write(('[%s,"%s"],\n'):format(s.u, s.v))
     end
     handle:write "],\n"

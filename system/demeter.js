@@ -928,6 +928,7 @@ const musicNames = {
   diana21: "Last Time",
   diana23: "Sentinel",
   diana33: "Shadow Island",
+  star_guardian03: "Jump",
 };
 
 const speakerNames = {
@@ -941,6 +942,7 @@ const speakerNames = {
   activist: "店主",
   steven:   "STEVEN",
   rosa:     "ローザ",
+  author:   "作者",
 };
 
 const startTexts = {
@@ -1325,8 +1327,17 @@ D.FrameRateVisualizer = class {
 
 //-------------------------------------------------------------------------
 
+const getSystemUrl = path => {
+  if (D.isApp() === "ios") {
+    return "demeter:///" + path;
+  } else {
+    return path;
+  }
+};
+
 const loadImage = url => new Promise((resolve, reject) => {
   const image = new Image();
+  image.crossOrigin = "Anonymous";
   image.addEventListener("load", () => {
     resolve(image);
   });
@@ -1364,7 +1375,7 @@ D.LipSync = class {
   }
 
   async initialize(visemes) {
-    const image = await loadImage(D.preferences.systemDir + "/lip.png");
+    const image = await loadImage(getSystemUrl(D.preferences.systemDir + "/lip.png"));
     const width = image.naturalWidth;
     const height = image.naturalHeight;
     const map = new Map();
@@ -2261,6 +2272,11 @@ const savePreview = {
   state: {},
 };
 
+const savePostscript = {
+  paragraphIndex: D.scenario.labels["あとがき"],
+  state: {},
+};
+
 const logging = new D.Logging();
 
 const sender = {
@@ -2966,7 +2982,8 @@ const showTitleChoices = async () => {
   }
 
   disableTitleChoice(document.querySelector(".demeter-title-choice5"));
-  disableTitleChoice(document.querySelector(".demeter-title-choice6"));
+
+  enableTitleChoice(document.querySelector(".demeter-title-choice6"));
 
   document.querySelector(".demeter-title-choices").style.display = "block";
 };
@@ -4186,6 +4203,11 @@ const initializeTitleScreen = () => {
       soundEffectBeep();
       return;
     }
+    soundEffectSelect();
+    setSave(savePostscript);
+    leaveTitleScreen();
+    enterMainScreen();
+    next();
   });
 };
 
@@ -4869,7 +4891,7 @@ const next = async () => {
         // 時に指定できないので評価しなくてよい。
         const paragraphIndexNext = paragraphIndexPrev + 1;
         const paragraphNext = D.scenario.paragraphs[paragraphIndexNext - 1];
-        if (paragraphNext[0].start) {
+        if (!paragraphNext || paragraphNext[0].start) {
           await cancelPlayState();
         }
       }
