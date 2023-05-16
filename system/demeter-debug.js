@@ -38,6 +38,7 @@ const musics = {
   "#3": "diana23",
   "ED": "diana12",
   "Preview": "diana21",
+  "Postscript": "star_guardian03",
 };
 
 const speakerNames = {
@@ -51,6 +52,7 @@ const speakerNames = {
   activist: "店主",
   steven:   "STEVEN",
   rosa:     "ローザ",
+  author:   "作者",
 };
 
 //-------------------------------------------------------------------------

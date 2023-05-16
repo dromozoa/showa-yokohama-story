@@ -18,16 +18,21 @@
 # along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
 here=`dirname "$0"`
-export LUA_PATH="$here/?.lua;;"
+here=`(cd "$here" && pwd)`
+root=`(cd "$here/.." && pwd)`
+export LUA_PATH="$root/tool/?.lua;;"
 
-integrated_loudness_target=$1
+source_pathname=$1
 output_dirname=$2
-shift 2
+output_dirname=`(cd "$output_dirname" && pwd)`
+scenario_pathname=$3
+result_pathname=$4
 
-# output_name:source_dirname
-for i in "$@"
-do
-  output_name=`expr "X$i" : 'X\([^:]*\):'`
-  source_dirname=`expr "X$i" : 'X[^:]*:\(.*\)'`
-  lua "$here/convert_music.lua" "$integrated_loudness_target" "$output_dirname" "$output_name" "$source_dirname"/*.wav
-done
+lua "$here/vpp_to_txt.lua" "$source_pathname" "$output_dirname"
+
+oldpwd=`pwd`
+cd "$here/segmentation-kit"
+perl segment_julius.pl "$output_dirname" julius 2>&1 | tee "$output_dirname/segment_julius.log"
+cd "$oldpwd"
+
+lua "$here/lab_to_js.lua" "$scenario_pathname" "$result_pathname" "$output_dirname"/*.lab

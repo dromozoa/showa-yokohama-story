@@ -101,6 +101,7 @@ convert_voice::
 	./tool/convert_voice.sh scenario/scenario.txt build/voice build/voice-out "*-voice-out.wav"
 	cp -f build/voice/demeter-voice-sprites.js system/demeter-voice-sprites.js
 	./tool/convert_voice_lip.sh build/voice-lip build/voice-out "*-voice-out.wav"
+	./sketch/lip.sh build/voice-out.vpp build/voice-lip scenario/scenario.txt system/demeter-voice-segments.js
 	rm -f build/voice-out/*-voice-out.wav
 
 convert_debug:

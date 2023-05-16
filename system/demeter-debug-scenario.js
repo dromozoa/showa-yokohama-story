@@ -14,60 +14,112 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index: 1
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
-["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新するために、","App Store","を開く？"],
+[{speaker:"danu",when:async($,ctx)=>{
+if(ctx.game.vistedCredits)return 2;
+},music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[]},[
+["あれまあ、あとがきを最初に見ちゃう",["種別","タイプ"],"の",["人類","ヒューマン"],"だね。"],
+[["妾","アタシ"],"もそういう",["種別","タイプ"],"だから、判るよ。"],
+["って、まあ、",["人類","ヒューマン"],"じゃないかもしれないけどね、",["妾","アタシ"],"達。"],
 ]],
 // index: 2
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
-["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["更新するために、","Playストア","を開く？"],
+[{speaker:"danu",adjacencies:[]},[
+["自由ラジオ横濱",["前線","フロント"],"。"],
+["パーソナリティ","のダヌーさんだよ。"],
+["で、",["貴方","アンタ"],"、誰。"],
 ]],
 // index: 3
-[{speaker:"narrator",system:true,dialog:[{choice:"選択",result:"yes"},{choice:"取消",result:"no"},],adjacencies:[]},[
-[["復元","リストア"],"するバックアップデータを、此処にドラッグ・アンド・ドロップするか、ファイルダイアログで択ぶかして。"],
+[{speaker:"author",adjacencies:[]},[
+["よお。"],
 ]],
 // index: 4
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
-["データ",["形式","フォーマット"],"の解析完了。"],
-["整合性チェック成功。"],
-[["復元","リストア"],"して、タイトルに戻る？"],
+[{speaker:"danu",adjacencies:[]},[
+["そうきたか。"],
 ]],
 // index: 5
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
-["データ",["形式","フォーマット"],"の解析完了。"],
-["整合性チェック失敗。改竄の可能性。"],
-["強制的に",["復元","リストア"],"して、タイトルに戻る？"],
+[{speaker:"author",adjacencies:[]},[
+["……どうでも","いい","が、あとがきで作者が登場人物と会話をするって、ジュブナイルの基本やよな。"],
 ]],
 // index: 6
-[{speaker:"narrator",system:true,dialog:[{choice:"了解",result:"ok"},],adjacencies:[]},[
-["データ",["形式","フォーマット"],"の解析失敗。"],
-["未知の言語で記述されている可能性。"],
-[["復元","リストア"],"不能。"],
+[{speaker:"danu",adjacencies:[]},[
+["面倒だからいちいち突っ込まないぞ。"],
 ]],
 // index: 7
-[{speaker:"narrator",system:true,dialog:[{choice:"取消",result:"no"},],adjacencies:[]},[
-[["復元","リストア"],"するバックアップデータを、此処にドラッグ・アンド・ドロップするか、","他","のアプリから",["共有","シェア"],"して。"],
+[{speaker:"author",adjacencies:[]},[
+["私淑する作家は、","ろくごまるにと","ぶらじま","太郎です。"],
 ]],
 // index: 8
-[{speaker:"narrator",system:true,dialog:[{choice:"はい",result:"yes"},{choice:"いいえ",result:"no"},],adjacencies:[]},[
-["物語の新しい",["版","バージョン"],"が、公開されたみたい。"],
-["Playストア","から",["取得","ダウンロード"],"して、自己更新していい？"],
+[{speaker:"danu",adjacencies:[]},[
+["そこで、タイラーとかスレイヤーズとか挙げられないところが、",["貴方","アンタ"],"達の限界だわよ。"],
+]],
+// index: 9
+[{speaker:"author",adjacencies:[]},[
+["その","『——だわよ』","口調は、","『レッツゴー怪奇組』","組長口調というんだぜ。"],
+]],
+// index: 10
+[{speaker:"danu",adjacencies:[]},[
+["こすってくるなあ。"],
+["企画書には、黒歴史ラジオの風体でコメンタリーしたいって書いてあったけど。"],
+]],
+// index: 11
+[{speaker:"author",adjacencies:[]},[
+["実は、君の名は","『真・女神転生V』","に由来する。"],
+]],
+// index: 12
+[{speaker:"danu",adjacencies:[]},[
+["実はもなんも、","STEVEN","がでてきた時点で、読者諸賢はおさっしだわよ。"],
+]],
+// index: 13
+[{speaker:"author",adjacencies:[]},[
+["実は、メサイア会のモデルは、イエズス会。"],
+]],
+// index: 14
+[{speaker:"danu",adjacencies:[]},[
+["それは、まあ、ね。"],
+["けど、いいの。"],
+["AK","遣うくらいなら、",["素手","ステゴロ"],"すんのがあ",["奴","いつ"],"らでしょ。"],
+]],
+// index: 15
+[{speaker:"author",adjacencies:[]},[
+[["偽史","フィクション"],"だからね、どこまでいってもさ。"],
+]],
+// index: 16
+[{speaker:"danu",adjacencies:[]},[
+["原子爆弾以外は。"],
+]],
+// index: 17
+[{speaker:"author",adjacencies:[]},[
+["そりゃあそうさ。"],
+["それらだけは叩きこまれるのさ。"],
+]],
+// index: 18
+[{speaker:"danu",adjacencies:[]},[
+["で、どうなの。"],
+["方向性とか、そういうの。"],
+]],
+// index: 19
+[{speaker:"author",adjacencies:[]},[
+["『昭和米国物語』","のコンセプトに、",["屍者","ゾンビ"],"と",["怪獣","カイジュー"],"とロボってあってさ、ロボまでたどりつけなかったんだよね。"],
+["黄色い会社はその痕跡なわけだけど。"],
+]],
+// index: 20
+[{speaker:"danu",adjacencies:[]},[
+["ビーンボール、投げてくれんじゃん。"],
+["まあ、そんなかんじでネタばらしをしていくわけだよね。"],
+["んじゃ、チャンネル登録よろしくおなしゃす——"],
+]],
+// index: 21
+[{speaker:"narrator",finish:"title",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これは最後の物語。自由ラジオ横濱",["前線","フロント"],"。第一回。"],
+["了。（つづく）"],
 ]],
 ],
-total:0,
-starts:[1,2,3,4,5,6,7,8],
+total:21,
+starts:[1,2],
 labels:{
+"あとがき":1,
+"あとがき開始":2,
 },
 dialogs:{
-"system-update-ios":1,
-"system-update-android":2,
-"system-restore-drop":3,
-"system-restore":4,
-"system-restore-integrity-error":5,
-"system-restore-format-error":6,
-"system-restore-ios":7,
-"system-update-android-in-app":8,
 },
 };
 
