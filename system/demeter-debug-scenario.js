@@ -16,7 +16,7 @@ paragraphs:[
 // index: 1
 [{speaker:"danu",when:async($,ctx)=>{
 if(ctx.game.visitedCredits)return 22;
-},music:"star_guardian03",place:"壁にかこまれた街",background:"モノクローム",adjacencies:[]},[
+},music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
 ["あれまあ、あとがきを最初に読んじゃう",["種別","タイプ"],"の人類だわね。"],
 ["妾","もそういう","類","だから、判るよ。"],
 ["って、まあ、人類じゃないかもだけどね、","妾","達。"],
