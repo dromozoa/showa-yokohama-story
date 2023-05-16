@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   // フォントロードをちょっと待つ
-  await D.setTimeout(500);
+  await D.setTimeout(1000);
 
   updateStatus("レイアウト中");
   for (let paragraphIndex = 1; paragraphIndex <= D.scenario.paragraphs.length; ++paragraphIndex) {

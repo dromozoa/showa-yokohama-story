@@ -15,17 +15,18 @@ D.scenario = {
 paragraphs:[
 // index: 1
 [{speaker:"danu",when:async($,ctx)=>{
-if(ctx.game.vistedCredits)return 2;
-},music:"star_guardian03",place:"ながいながい階段",background:"モノクローム",adjacencies:[]},[
-["あれまあ、あとがきを最初に見ちゃう",["種別","タイプ"],"の",["人類","ヒューマン"],"だね。"],
-[["妾","アタシ"],"もそういう",["種別","タイプ"],"だから、判るよ。"],
-["って、まあ、",["人類","ヒューマン"],"じゃないかもしれないけどね、",["妾","アタシ"],"達。"],
+if(ctx.game.visitedCredits)return 22;
+},music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
+["あれまあ、あとがきを最初に読んじゃう",["種別","タイプ"],"の人類だわね。"],
+["妾","もそういう","類","だから、判るよ。"],
+["って、まあ、人類じゃないかもだけどね、","妾","達。"],
 ]],
 // index: 2
 [{speaker:"danu",adjacencies:[]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
-["パーソナリティ","のダヌーさんだよ。"],
-["で、",["貴方","アンタ"],"、誰。"],
+["あらためまして、おはこんばんちは。"],
+["気高き","天の女王、ダヌーさんだよ。"],
+["で、","貴方","、誰。"],
 ]],
 // index: 3
 [{speaker:"author",adjacencies:[]},[
@@ -49,7 +50,7 @@ if(ctx.game.vistedCredits)return 2;
 ]],
 // index: 8
 [{speaker:"danu",adjacencies:[]},[
-["そこで、タイラーとかスレイヤーズとか挙げられないところが、",["貴方","アンタ"],"達の限界だわよ。"],
+["そこで、タイラーとかスレイヤーズとか挙げられないところが、","貴方","達の限界だわよ。"],
 ]],
 // index: 9
 [{speaker:"author",adjacencies:[]},[
@@ -89,7 +90,6 @@ if(ctx.game.vistedCredits)return 2;
 // index: 17
 [{speaker:"author",adjacencies:[]},[
 ["そりゃあそうさ。"],
-["それらだけは叩きこまれるのさ。"],
 ]],
 // index: 18
 [{speaker:"danu",adjacencies:[]},[
@@ -109,15 +109,23 @@ if(ctx.game.vistedCredits)return 2;
 ]],
 // index: 21
 [{speaker:"narrator",finish:"title",adjacencies:[]},[
-["壁にかこまれた横濱から脱出するための、これは最後の物語。自由ラジオ横濱",["前線","フロント"],"。第一回。"],
+["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第一回。"],
 ["了。（つづく）"],
 ]],
+// index: 22
+[{speaker:"danu",choices:[
+{choice:["第一回"],barcode:"Author",label:2},
+],adjacencies:[]},[
+["自由ラジオ横濱",["前線","フロント"],"。"],
+["パーソナリティ","のダヌーさんだよ。"],
+]],
 ],
-total:21,
-starts:[1,2],
+total:22,
+starts:[1,22],
 labels:{
 "あとがき":1,
-"あとがき開始":2,
+"第一回":2,
+"あとがき開始":22,
 },
 dialogs:{
 },
