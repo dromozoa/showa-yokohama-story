@@ -14,7 +14,7 @@ if (D.scenario) {
 D.scenario = {
 paragraphs:[
 // index: 1
-[{speaker:"danu",when:async($,ctx)=>{
+[{speaker:"danu",jump:22,when:async($,ctx)=>{
 if(ctx.game.visitedCredits)return 22;
 },music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
 ["あれまあ、あとがきを最初に読んじゃう",["種別","タイプ"],"の人類だわね。"],
@@ -115,17 +115,106 @@ if(ctx.game.visitedCredits)return 22;
 // index: 22
 [{speaker:"danu",choices:[
 {choice:["第一回"],barcode:"Author",label:2},
+{choice:["第二回"],barcode:"Demeter",label:23},
 ],adjacencies:[]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
 ["パーソナリティ","のダヌーさんだよ。"],
 ]],
+// index: 23
+[{speaker:"danu",adjacencies:[]},[
+["自由ラジオ横濱",["前線","フロント"],"。"],
+["あらためまして、本日のゲストは……"],
+]],
+// index: 24
+[{speaker:"demeter",adjacencies:[]},[
+[["豊穣","ハーベスト"],"！"],
+["今後とも、よろしくですの！"],
+]],
+// index: 25
+[{speaker:"danu",adjacencies:[]},[
+["はいはい、",["豊穣","ハーベスト"],"。"],
+["ていうか","貴方","、","そもそもどして","情報分隊なん。"],
+]],
+// index: 26
+[{speaker:"demeter",adjacencies:[]},[
+["そこには聞くも","涙","語るも涙の物語","が","ないんですけど。"],
+]],
+// index: 27
+[{speaker:"danu",adjacencies:[]},[
+["嘘","吐","き。"],
+["あるんでしょ。"],
+]],
+// index: 28
+[{speaker:"demeter",adjacencies:[]},[
+[["屍者","ゾンビ"],"禍","で産業基盤が破壊されつくしたのに、半導体が生産されてるっておかしくないですか。"],
+["と、","彼女","は","オノ＝センダイ","をかかげる。"],
+]],
+// index: 29
+[{speaker:"danu",adjacencies:[]},[
+["あーね。"],
+["ゆうて",["珪素","シリコン"],"っしょ。"],
+]],
+// index: 30
+[{speaker:"demeter",adjacencies:[]},[
+["聞いたときある——"],
+["天照","機関の秘儀。"],
+["濱の真砂が尽きるとも。"],
+]],
+// index: 31
+[{speaker:"danu",adjacencies:[]},[
+["出出〜","、","大嘗祭","を女がやると稲米じゃなくて産業の米ができちゃう奴。"],
+]],
+// index: 32
+[{speaker:"demeter",adjacencies:[]},[
+["天照","機関の",["巫女","エルブズ"],"がいっしょうけんめい錬成してんの。"],
+]],
+// index: 33
+[{speaker:"danu",adjacencies:[]},[
+["マジかぁ。"],
+]],
+// index: 34
+[{speaker:"demeter",adjacencies:[]},[
+["って、今つくった設定。"],
+]],
+// index: 35
+[{speaker:"danu",adjacencies:[]},[
+["をい。"],
+]],
+// index: 36
+[{speaker:"demeter",adjacencies:[]},[
+["大御神と",["妖精","エルフ"],"が百合せっせすると",["世界樹","ユグドラシル"],"に半導体が実る。"],
+]],
+// index: 37
+[{speaker:"danu",adjacencies:[]},[
+["雷管がなる樹はないの。"],
+]],
+// index: 38
+[{speaker:"demeter",adjacencies:[]},[
+["四十五口径ってところが、どうしたって",["男根主義","マチズモ"],"。"],
+]],
+// index: 39
+[{speaker:"danu",adjacencies:[]},[
+["あれは、まあ、","彼女","のこだわりだから。"],
+]],
+// index: 40
+[{speaker:"demeter",adjacencies:[]},[
+["ガーンズバック連続じゃなかった未来だって、いくつかありえた","かも","なんだよ。"],
+["不連続だったり。"],
+["非連続だったり。"],
+]],
+// index: 41
+[{speaker:"narrator",finish:"title",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
+["了。（つづく）"],
+]],
 ],
-total:22,
+total:41,
 starts:[1,22],
 labels:{
 "あとがき":1,
 "第一回":2,
 "あとがき開始":22,
+"第二回":23,
 },
 dialogs:{
 },
