@@ -2352,9 +2352,9 @@ if(ctx.game.father === "マイク・ハマー")return 359;
 ["Playストア","から",["取得","ダウンロード"],"して、自己更新していい？"],
 ]],
 // index: 404
-[{speaker:"danu",when:async($,ctx)=>{
+[{speaker:"danu",jump:425,when:async($,ctx)=>{
 if(ctx.game.visitedCredits)return 425;
-},music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[405]},[
+},music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[425]},[
 ["あれまあ、あとがきを最初に読んじゃう",["種別","タイプ"],"の人類だわね。"],
 ["妾","もそういう","類","だから、判るよ。"],
 ["って、まあ、人類じゃないかもだけどね、","妾","達。"],
@@ -2453,12 +2453,130 @@ if(ctx.game.visitedCredits)return 425;
 // index: 425
 [{speaker:"danu",choices:[
 {choice:["第一回"],barcode:"Author",label:405},
-],music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[405]},[
+{choice:["第二回"],barcode:"Demeter",label:426},
+],music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[405,426]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
 ["パーソナリティ","のダヌーさんだよ。"],
 ]],
+// index: 426
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[427]},[
+["自由ラジオ横濱",["前線","フロント"],"。"],
+["あらためまして、本日のゲストは……"],
+]],
+// index: 427
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[428]},[
+[["豊穣","ハーベスト"],"！"],
+["今後とも、よろしくですの！"],
+]],
+// index: 428
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[429]},[
+["はいはい、",["豊穣","ハーベスト"],"。"],
+["ていうか","自分","、","そもそもどして","情報分隊なん。"],
+]],
+// index: 429
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[430]},[
+["そこには聞くも","涙","語るも涙の物語","が","ないんですけど。"],
+]],
+// index: 430
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[431]},[
+["嘘","吐","き。"],
+["あるんでしょ。"],
+]],
+// index: 431
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[432]},[
+[["屍者","ゾンビ"],"禍","で産業基盤が破壊されつくしたのに、半導体が生産されてるっておかしくないですか。"],
+["と、","彼女","は","オノ＝センダイ","をかかげる。"],
+]],
+// index: 432
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[433]},[
+["あーね。"],
+["ゆうて",["珪素","シリコン"],"っしょ。"],
+]],
+// index: 433
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[434]},[
+["聞いたときある——"],
+["天照","機関の秘儀。"],
+["濱の真砂が尽きるとも。"],
+]],
+// index: 434
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[435]},[
+["出出〜","、","大嘗祭","を女がやると、稲米じゃなくて産業の米ができちゃう奴。"],
+]],
+// index: 435
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[436]},[
+["天照","機関の",["巫女","エルブズ"],"がいっしょうけんめい錬成してんの。"],
+]],
+// index: 436
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[437]},[
+["マジかぁ。"],
+]],
+// index: 437
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[438]},[
+["って、今つくった設定。"],
+]],
+// index: 438
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[439]},[
+["をい。"],
+]],
+// index: 439
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[440]},[
+["大御神と",["妖精","エルフ"],"が百合せっせすると",["世界樹","ユグドラシル"],"に半導体が実る。"],
+]],
+// index: 440
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[441]},[
+["雷管がなる樹はないの。"],
+]],
+// index: 441
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[442]},[
+["四十五口径ってところが、どうしたって",["男根主義","マチズモ"],"。"],
+]],
+// index: 442
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[443]},[
+["あれは、まあ、","彼女","のこだわりだから。"],
+]],
+// index: 443
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[444]},[
+["ガーンズバック連続じゃなかった未来だって、いくつかありえたかも。"],
+]],
+// index: 444
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[445]},[
+["統合航空軍とか飛鳥とか、あのあたりのダサさはなんとかならんの。"],
+]],
+// index: 445
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[446]},[
+["おおめに見たってよ。"],
+["佐藤大輔に私淑して駒大に進んだ作者の友人がいてさ。"],
+["佐藤大輔とおんなじ体型で、佐藤大輔とおなじく死んだんだよね。"],
+]],
+// index: 446
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[447]},[
+["やれやれ。"],
+["友人、ね。"],
+["まあ、やせなきゃね。"],
+]],
+// index: 447
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[448]},[
+["ネタとメタとベタ。"],
+["スキゾにパラノ。"],
+["妾","たちが斗っているのは、ただしく絶滅戦争なんでしてよ！"],
+]],
+// index: 448
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[449]},[
+["ちがうよ。"],
+["これは、ただしく無国籍アクションなんだわよ。"],
+]],
+// index: 449
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[450]},[
+["国体を北海道以北にうつせば、無国籍が道理。"],
+["九〇年代","を終わらせるために、アクションが条件。"],
+]],
+// index: 450
+[{speaker:"narrator",finish:"title",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
+["了。（つづく）"],
+]],
 ],
-total:397,
+total:422,
 starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404,425],
 labels:{
 "ニューゲーム":1,
@@ -2511,6 +2629,7 @@ labels:{
 "あとがき":404,
 "第一回":405,
 "あとがき開始":425,
+"第二回":426,
 },
 dialogs:{
 "system-back-to-title":375,
