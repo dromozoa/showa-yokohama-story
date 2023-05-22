@@ -2471,7 +2471,7 @@ if(ctx.game.visitedCredits)return 425;
 // index: 428
 [{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[429]},[
 ["はいはい、",["豊穣","ハーベスト"],"。"],
-["ていうか","貴方","、","そもそもどして","情報分隊なん。"],
+["ていうか","自分","、","そもそもどして","情報分隊なん。"],
 ]],
 // index: 429
 [{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[430]},[
@@ -2500,7 +2500,7 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 434
 [{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[435]},[
-["出出〜","、","大嘗祭","を女がやると稲米じゃなくて産業の米ができちゃう奴。"],
+["出出〜","、","大嘗祭","を女がやると、稲米じゃなくて産業の米ができちゃう奴。"],
 ]],
 // index: 435
 [{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[436]},[
@@ -2536,17 +2536,47 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 443
 [{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[444]},[
-["ガーンズバック連続じゃなかった未来だって、いくつかありえた","かも","なんだよ。"],
-["不連続だったり。"],
-["非連続だったり。"],
+["ガーンズバック連続じゃなかった未来だって、いくつかありえたかも。"],
 ]],
 // index: 444
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[445]},[
+["統合航空軍とか飛鳥とか、あのあたりのダサさはなんとかならんの。"],
+]],
+// index: 445
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[446]},[
+["おおめに見たってよ。"],
+["佐藤大輔に私淑して駒大に進んだ作者の友人がいてさ。"],
+["佐藤大輔とおんなじ体型で、佐藤大輔とおなじく死んだんだよね。"],
+]],
+// index: 446
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[447]},[
+["やれやれ。"],
+["友人、ね。"],
+["まあ、やせなきゃね。"],
+]],
+// index: 447
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[448]},[
+["ネタとメタとベタ。"],
+["スキゾにパラノ。"],
+["妾","たちが斗っているのは、ただしく絶滅戦争なんでしてよ！"],
+]],
+// index: 448
+[{speaker:"danu",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[449]},[
+["ちがうよ。"],
+["これは、ただしく無国籍アクションなんだわよ。"],
+]],
+// index: 449
+[{speaker:"demeter",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[450]},[
+["国体を北海道以北にうつせば、無国籍が道理。"],
+["九〇年代","を終わらせるために、アクションが条件。"],
+]],
+// index: 450
 [{speaker:"narrator",finish:"title",music:"star_guardian03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
 ["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
 ["了。（つづく）"],
 ]],
 ],
-total:416,
+total:422,
 starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404,425],
 labels:{
 "ニューゲーム":1,

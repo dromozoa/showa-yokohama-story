@@ -133,7 +133,7 @@ if(ctx.game.visitedCredits)return 22;
 // index: 25
 [{speaker:"danu",adjacencies:[]},[
 ["はいはい、",["豊穣","ハーベスト"],"。"],
-["ていうか","貴方","、","そもそもどして","情報分隊なん。"],
+["ていうか","自分","、","そもそもどして","情報分隊なん。"],
 ]],
 // index: 26
 [{speaker:"demeter",adjacencies:[]},[
@@ -162,7 +162,7 @@ if(ctx.game.visitedCredits)return 22;
 ]],
 // index: 31
 [{speaker:"danu",adjacencies:[]},[
-["出出〜","、","大嘗祭","を女がやると稲米じゃなくて産業の米ができちゃう奴。"],
+["出出〜","、","大嘗祭","を女がやると、稲米じゃなくて産業の米ができちゃう奴。"],
 ]],
 // index: 32
 [{speaker:"demeter",adjacencies:[]},[
@@ -198,17 +198,47 @@ if(ctx.game.visitedCredits)return 22;
 ]],
 // index: 40
 [{speaker:"demeter",adjacencies:[]},[
-["ガーンズバック連続じゃなかった未来だって、いくつかありえた","かも","なんだよ。"],
-["不連続だったり。"],
-["非連続だったり。"],
+["ガーンズバック連続じゃなかった未来だって、いくつかありえたかも。"],
 ]],
 // index: 41
+[{speaker:"danu",adjacencies:[]},[
+["統合航空軍とか飛鳥とか、あのあたりのダサさはなんとかならんの。"],
+]],
+// index: 42
+[{speaker:"demeter",adjacencies:[]},[
+["おおめに見たってよ。"],
+["佐藤大輔に私淑して駒大に進んだ作者の友人がいてさ。"],
+["佐藤大輔とおんなじ体型で、佐藤大輔とおなじく死んだんだよね。"],
+]],
+// index: 43
+[{speaker:"danu",adjacencies:[]},[
+["やれやれ。"],
+["友人、ね。"],
+["まあ、やせなきゃね。"],
+]],
+// index: 44
+[{speaker:"demeter",adjacencies:[]},[
+["ネタとメタとベタ。"],
+["スキゾにパラノ。"],
+["妾","たちが斗っているのは、ただしく絶滅戦争なんでしてよ！"],
+]],
+// index: 45
+[{speaker:"danu",adjacencies:[]},[
+["ちがうよ。"],
+["これは、ただしく無国籍アクションなんだわよ。"],
+]],
+// index: 46
+[{speaker:"demeter",adjacencies:[]},[
+["国体を北海道以北にうつせば、無国籍が道理。"],
+["九〇年代","を終わらせるために、アクションが条件。"],
+]],
+// index: 47
 [{speaker:"narrator",finish:"title",adjacencies:[]},[
 ["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
 ["了。（つづく）"],
 ]],
 ],
-total:41,
+total:47,
 starts:[1,22],
 labels:{
 "あとがき":1,
