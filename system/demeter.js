@@ -928,7 +928,7 @@ const musicNames = {
   diana21: "Last Time",
   diana23: "Sentinel",
   diana33: "Shadow Island",
-  star_guardian03: "Jump",
+  sgt03: "Jump",
 };
 
 const speakerNames = {
