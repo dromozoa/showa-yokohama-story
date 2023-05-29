@@ -2454,7 +2454,8 @@ if(ctx.game.visitedCredits)return 425;
 [{speaker:"danu",choices:[
 {choice:["第一回"],barcode:"Author",label:405},
 {choice:["第二回"],barcode:"Demeter",label:426},
-],music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[405,426]},[
+{choice:["最終回"],barcode:"Alice",label:451},
+],music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[405,426,451]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
 ["パーソナリティ","のダヌーさんだよ。"],
 ]],
@@ -2571,12 +2572,117 @@ if(ctx.game.visitedCredits)return 425;
 ["九〇年代","を終わらせるために、アクションが条件。"],
 ]],
 // index: 450
-[{speaker:"narrator",finish:"title",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
+[{speaker:"narrator",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[451]},[
 ["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
 ["了。（つづく）"],
 ]],
+// index: 451
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[452]},[
+["自由ラジオ横濱",["前線","フロント"],"。最終回。"],
+["あらためまして、本日のゲストは……"],
+]],
+// index: 452
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[453]},[
+[["六本木","ギロッポン"],"の",["偶像","アイドル"],"、アリスだよ！"],
+["今後とも、よろしく……"],
+]],
+// index: 453
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[454]},[
+["いや、アリス。"],
+["それはさすがにさ。"],
+]],
+// index: 454
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[455]},[
+["ちゃんと伏線は","はって","おいたぜ。"],
+["父","ちゃんが海兵隊からガヴァメントをまきあげたのは、六本木なんだから。"],
+]],
+// index: 455
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[456]},[
+["矢作俊彦への",["引用","オマージュ"],"かな。"],
+["でも、",["解放者","リベレータ"],"は違うでしょ。"],
+["『吉里吉里人』","とかいったりしないよね、まさか。"],
+]],
+// index: 456
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[457]},[
+["正直にいうと、その嘘も考えたけどね。"],
+["九〇年代","のマニュアル","本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
+]],
+// index: 457
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[458]},[
+["——サブカル。"],
+]],
+// index: 458
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[459]},[
+["あれは富士見だったのかなあ。"],
+["おぼえてないんだけど。"],
+]],
+// index: 459
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[460]},[
+["『悪の江ノ島大決戦』","のはなし？"],
+]],
+// index: 460
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[461]},[
+["ちがうよ。"],
+["ちがわないかな。"],
+["やっぱり、ちがうよ。"],
+]],
+// index: 461
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[462]},[
+["じゃあ、","『望郷戦士』","のはなし？"],
+]],
+// index: 462
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[463]},[
+["豪速球だな、軍曹。"],
+["僕はまだおぼえている。"],
+["あのころのジュブナイル小説賞の講評でさ。"],
+]],
+// index: 463
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[464]},[
+["ききあきたよ。"],
+["壁にかこまれた世界から脱出しすぎ","ワロタ","ってはなしっしょ。"],
+]],
+// index: 464
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[465]},[
+["《壁》","とはなんだったんだろう。"],
+["僕はそれをずっと考えている。"],
+["まさか、ベルリンのあの壁だったはずはない。"],
+["まして。"],
+]],
+// index: 465
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[466]},[
+[["壁","フェンス"],"でも",["壁","バリケード"],"でもなく。"],
+]],
+// index: 466
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[467]},[
+["多摩川","でも","江戸川","でも。"],
+["まして、荒川でもなかった。"],
+]],
+// index: 467
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[468]},[
+["脱出しなければならないという思いだけを抱えて。"],
+]],
+// index: 468
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[469]},[
+["抱えこんだという記憶だけを抱きしめて。"],
+]],
+// index: 469
+[{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[470]},[
+["屋上で。"],
+["少女たちは。"],
+]],
+// index: 470
+[{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[471]},[
+["屋上で。"],
+["川","むこうをにらみ。"],
+["少女たちが。"],
+]],
+// index: 471
+[{speaker:"narrator",finish:"title",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。最終回。"],
+["了。（つづく）"],
+]],
 ],
-total:422,
+total:443,
 starts:[1,2,3,4,6,5,352,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,395,396,397,398,399,400,401,402,403,404,425],
 labels:{
 "ニューゲーム":1,
@@ -2630,6 +2736,7 @@ labels:{
 "第一回":405,
 "あとがき開始":425,
 "第二回":426,
+"最終回":451,
 },
 dialogs:{
 "system-back-to-title":375,

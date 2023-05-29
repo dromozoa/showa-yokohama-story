@@ -116,6 +116,7 @@ if(ctx.game.visitedCredits)return 22;
 [{speaker:"danu",choices:[
 {choice:["第一回"],barcode:"Author",label:2},
 {choice:["第二回"],barcode:"Demeter",label:23},
+{choice:["最終回"],barcode:"Alice",label:48},
 ],adjacencies:[]},[
 ["自由ラジオ横濱",["前線","フロント"],"。"],
 ["パーソナリティ","のダヌーさんだよ。"],
@@ -233,18 +234,124 @@ if(ctx.game.visitedCredits)return 22;
 ["九〇年代","を終わらせるために、アクションが条件。"],
 ]],
 // index: 47
-[{speaker:"narrator",finish:"title",adjacencies:[]},[
+[{speaker:"narrator",adjacencies:[]},[
 ["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
 ["了。（つづく）"],
 ]],
+// index: 48
+[{speaker:"danu",adjacencies:[]},[
+["自由ラジオ横濱",["前線","フロント"],"。最終回。"],
+["あらためまして、本日のゲストは……"],
+]],
+// index: 49
+[{speaker:"alice",adjacencies:[]},[
+[["六本木","ギロッポン"],"の",["偶像","アイドル"],"、アリスだよ！"],
+["今後とも、よろしく……"],
+]],
+// index: 50
+[{speaker:"danu",adjacencies:[]},[
+["いや、アリス。"],
+["それはさすがにさ。"],
+]],
+// index: 51
+[{speaker:"alice",adjacencies:[]},[
+["ちゃんと伏線は","はって","おいたぜ。"],
+["父","ちゃんが海兵隊からガヴァメントをまきあげたのは、六本木なんだから。"],
+]],
+// index: 52
+[{speaker:"danu",adjacencies:[]},[
+["矢作俊彦への",["引用","オマージュ"],"かな。"],
+["でも、",["解放者","リベレータ"],"は違うでしょ。"],
+["『吉里吉里人』","とかいったりしないよね、まさか。"],
+]],
+// index: 53
+[{speaker:"alice",adjacencies:[]},[
+["正直にいうと、その嘘も考えたけどね。"],
+["九〇年代","のマニュアル","本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
+]],
+// index: 54
+[{speaker:"danu",adjacencies:[]},[
+["——サブカル。"],
+]],
+// index: 55
+[{speaker:"alice",adjacencies:[]},[
+["あれは富士見だったのかなあ。"],
+["おぼえてないんだけど。"],
+]],
+// index: 56
+[{speaker:"danu",adjacencies:[]},[
+["『悪の江ノ島大決戦』","のはなし？"],
+]],
+// index: 57
+[{speaker:"alice",adjacencies:[]},[
+["ちがうよ。"],
+["ちがわないかな。"],
+["やっぱり、ちがうよ。"],
+]],
+// index: 58
+[{speaker:"danu",adjacencies:[]},[
+["じゃあ、","『望郷戦士』","のはなし？"],
+]],
+// index: 59
+[{speaker:"alice",adjacencies:[]},[
+["豪速球だな、軍曹。"],
+["僕はまだおぼえている。"],
+["あのころのジュブナイル小説賞の講評でさ。"],
+]],
+// index: 60
+[{speaker:"danu",adjacencies:[]},[
+["ききあきたよ。"],
+["壁にかこまれた世界から脱出しすぎ","ワロタ","ってはなしっしょ。"],
+]],
+// index: 61
+[{speaker:"alice",adjacencies:[]},[
+["《壁》","とはなんだったんだろう。"],
+["僕はそれをずっと考えている。"],
+["まさか、ベルリンのあの壁だったはずはない。"],
+["まして。"],
+]],
+// index: 62
+[{speaker:"danu",adjacencies:[]},[
+[["壁","フェンス"],"でも",["壁","バリケード"],"でもなく。"],
+]],
+// index: 63
+[{speaker:"alice",adjacencies:[]},[
+["多摩川","でも","江戸川","でも。"],
+["まして、荒川でもなかった。"],
+]],
+// index: 64
+[{speaker:"danu",adjacencies:[]},[
+["脱出しなければならないという思いだけを抱えて。"],
+]],
+// index: 65
+[{speaker:"alice",adjacencies:[]},[
+["抱えこんだという記憶だけを抱きしめて。"],
+]],
+// index: 66
+[{speaker:"danu",adjacencies:[]},[
+["屋上で。"],
+["少女たちは。"],
+]],
+// index: 67
+[{speaker:"alice",adjacencies:[]},[
+["屋上で。"],
+["川","むこうをにらみ。"],
+["少女たちが。"],
+]],
+// index: 68
+[{speaker:"narrator",finish:"title",adjacencies:[]},[
+["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。最終回。"],
+["了。（つづく）"],
+]],
 ],
-total:47,
+total:68,
 starts:[1,22],
 labels:{
 "あとがき":1,
 "第一回":2,
 "あとがき開始":22,
 "第二回":23,
+"最終回":48,
 },
 dialogs:{
 },
