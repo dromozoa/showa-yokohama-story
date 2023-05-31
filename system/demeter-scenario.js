@@ -2572,7 +2572,7 @@ if(ctx.game.visitedCredits)return 425;
 ["九〇年代","を終わらせるために、アクションが条件。"],
 ]],
 // index: 450
-[{speaker:"narrator",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[451]},[
+[{speaker:"narrator",finish:"title",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[]},[
 ["壁にかこまれた横濱から脱出するための、これが最後の物語。自由ラジオ横濱",["前線","フロント"],"。第二回。"],
 ["了。（つづく）"],
 ]],
