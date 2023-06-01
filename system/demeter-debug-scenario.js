@@ -267,7 +267,7 @@ if(ctx.game.visitedCredits)return 22;
 // index: 53
 [{speaker:"alice",adjacencies:[]},[
 ["正直にいうと、その嘘も考えたけどね。"],
-["九〇年代","のマニュアル","本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
+["九〇年代","の","マニュアル本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
 ]],
 // index: 54
 [{speaker:"danu",adjacencies:[]},[
@@ -290,11 +290,11 @@ if(ctx.game.visitedCredits)return 22;
 ]],
 // index: 58
 [{speaker:"danu",adjacencies:[]},[
-["じゃあ、","『望郷戦士』","のはなし？"],
+["じゃあ、","『",["望郷戦士","ティアフルソルジャー"],"』","のはなし？"],
 ]],
 // index: 59
 [{speaker:"alice",adjacencies:[]},[
-["豪速球だな、軍曹。"],
+["豪速球だな。"],
 ["僕はまだおぼえている。"],
 ["あのころのジュブナイル小説賞の講評でさ。"],
 ]],
