@@ -2583,7 +2583,7 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 452
 [{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[453]},[
-[["六本木","ギロッポン"],"の",["偶像","アイドル"],"、アリスだよ！"],
+[["六本木","ロッポンギ"],"の",["偶像","アイドル"],"、アリスだよ！"],
 ["今後とも、よろしく……"],
 ]],
 // index: 453
@@ -2598,7 +2598,7 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 455
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[456]},[
-["矢作俊彦への",["引用","オマージュ"],"かな。"],
+["矢作俊彦の",["引用","オマージュ"],"かな。"],
 ["でも、",["解放者","リベレータ"],"は違うでしょ。"],
 ["『吉里吉里人』","とかいったりしないよね、まさか。"],
 ]],
@@ -2638,7 +2638,7 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 463
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[464]},[
-["ききあきたよ。"],
+["聞き厭きたよ。"],
 ["壁にかこまれた世界から脱出しすぎ","ワロタ","ってはなしっしょ。"],
 ]],
 // index: 464
