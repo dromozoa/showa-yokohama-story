@@ -50,11 +50,10 @@ handle:close()
 local params = { "speed", "pitch", "pause", "volume", "happy", "fun", "angry", "sad" }
 local fremomen_params = { "speed", "pitch", "pause", "volume" }
 
-
 local i = 0
 local result = source:gsub([[{"narrator": .-, "emotions": {"happy": .-},]], function (s)
   i = i + 1
-  local speaker = assert(speakers[i], "speaker not found: "..i)
+  local speaker = assert(speakers[i], "speaker not found: "..i.." "..s)
   if speaker.speaker == "フリモメン" then
     s = s:gsub('"key": "[^"]*"', '"key": "\\u30d5\\u30ea\\u30e2\\u30e1\\u30f3"')
     for _, param in ipairs(fremomen_params) do

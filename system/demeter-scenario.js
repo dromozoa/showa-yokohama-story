@@ -2583,7 +2583,7 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 452
 [{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[453]},[
-[["六本木","ギロッポン"],"の",["偶像","アイドル"],"、アリスだよ！"],
+[["六本木","ロッポンギ"],"の",["偶像","アイドル"],"、アリスだよ！"],
 ["今後とも、よろしく……"],
 ]],
 // index: 453
@@ -2598,14 +2598,14 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 455
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[456]},[
-["矢作俊彦への",["引用","オマージュ"],"かな。"],
+["矢作俊彦の",["引用","オマージュ"],"かな。"],
 ["でも、",["解放者","リベレータ"],"は違うでしょ。"],
 ["『吉里吉里人』","とかいったりしないよね、まさか。"],
 ]],
 // index: 456
 [{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[457]},[
 ["正直にいうと、その嘘も考えたけどね。"],
-["九〇年代","のマニュアル","本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
+["九〇年代","の","マニュアル本","とか悪趣味とか鬼畜系ブームのムーブかなあ。"],
 ]],
 // index: 457
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[458]},[
@@ -2628,17 +2628,17 @@ if(ctx.game.visitedCredits)return 425;
 ]],
 // index: 461
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[462]},[
-["じゃあ、","『望郷戦士』","のはなし？"],
+["じゃあ、","『",["望郷戦士","ティアフルソルジャー"],"』","のはなし？"],
 ]],
 // index: 462
 [{speaker:"alice",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[463]},[
-["豪速球だな、軍曹。"],
+["豪速球だな。"],
 ["僕はまだおぼえている。"],
 ["あのころのジュブナイル小説賞の講評でさ。"],
 ]],
 // index: 463
 [{speaker:"danu",music:"sgt03",place:"壁にかこまれた横濱",background:"モノクローム",adjacencies:[464]},[
-["ききあきたよ。"],
+["聞き厭きたよ。"],
 ["壁にかこまれた世界から脱出しすぎ","ワロタ","ってはなしっしょ。"],
 ]],
 // index: 464
