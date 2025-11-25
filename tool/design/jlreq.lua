@@ -317,14 +317,17 @@ if options.nrs_mode then
   handle:write [[
 /* jshint esversion: 11 */
 (() => {
+
 if (!globalThis.nrs) {
   globalThis.nrs = {};
 }
+
 const nrs = globalThis.nrs;
 if (nrs.includeGuard_jlreq) {
   return;
 }
 nrs.includeGuard_jlreq = true;
+
 if (!nrs.jlreq) {
   nrs.jlreq = {};
 }
