@@ -1,4 +1,4 @@
--- Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
+-- Copyright (C) 2023,2025 煙人計画 <moyu@vaporoid.com>
 --
 -- This file is part of 昭和横濱物語.
 --
@@ -123,7 +123,18 @@ local can_ruby_overhang_ids = { 1, 2, 5, 6, 7, 8, 10, 11, 15, 16 }
 local source_filename, result_filename = ...
 local options = {}
 for i = 3, #arg do
-  options[arg[i]] = true
+  local a = arg[i]
+  local k, v = a:match "(.-)=(.*)"
+  if k then
+    options[k] = v
+  else
+    options[a] = true
+  end
+end
+
+local root = "D"
+if options.nrs_mode then
+  root = "nrs"
 end
 
 local handle = assert(io.open(source_filename))
@@ -281,7 +292,7 @@ local function generate_test(handle, ranges, name)
   let n = 0;
   ranges.forEach(range => {
     for (let code = range.i; code <= range.j; ++code) {
-      const v = D.jlreq.%s(code)
+      const v = %s.jlreq.%s(code)
       console.assert(v === range.v, range, code, v);
       ++n;
     }
@@ -289,7 +300,7 @@ local function generate_test(handle, ranges, name)
   console.log(n);
   console.assert(n === 0x110000, ranges);
   console.log("end");
-]]):format(name));
+]]):format(root, name));
 end
 
 -- for _, rule in ipairs(rules) do
@@ -302,7 +313,27 @@ end
 
 local handle = assert(io.open(result_filename, "w"))
 
-handle:write [[
+if options.nrs_mode then
+  handle:write [[
+/* jshint esversion: 11 */
+(() => {
+
+if (!globalThis.nrs) {
+  globalThis.nrs = {};
+}
+
+const nrs = globalThis.nrs;
+if (nrs.includeGuard_jlreq) {
+  return;
+}
+nrs.includeGuard_jlreq = true;
+
+if (!nrs.jlreq) {
+  nrs.jlreq = {};
+}
+]]
+else
+  handle:write [[
 /* jshint esversion: 8 */
 /* globals globalThis */
 (() => {
@@ -317,18 +348,19 @@ if (D.jlreq) {
 }
 D.jlreq = {};
 ]]
+end
 
 for _, rule in ipairs(rules) do
   local ranges = make_ranges(rule)
   local tree = make_tree(ranges)
 
-  handle:write(("\nD.jlreq.%s = c => {\n"):format(rule.name))
+  handle:write(("\n%s.jlreq.%s = c => {\n"):format(root, rule.name))
   generate_code(handle, tree, 1)
   handle:write "};\n"
 
   if options.enable_test then
     local name = rule.name:gsub("^(.)", function (s) return "test"..s:upper() end)
-    handle:write(("\nD.jlreq.%s = () => {\n"):format(name))
+    handle:write(("\n%s.jlreq.%s = () => {\n"):format(root, name))
     generate_test(handle, ranges, rule.name)
     handle:write "};\n"
   end
