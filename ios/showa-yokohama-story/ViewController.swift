@@ -1,4 +1,4 @@
-// Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
+// Copyright (C) 2023,2026 煙人計画 <moyu@vaporoid.com>
 //
 // This file is part of 昭和横濱物語.
 //
@@ -15,22 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
-import AppTrackingTransparency
-import GoogleMobileAds
 import UIKit
+import WebKit
 
 class ViewController: UIViewController {
   @IBOutlet weak var mainView: UIView!
-  @IBOutlet weak var bannerView: GADBannerView!
   var webView: WKWebView!
-  var waitForTrackingAuthorization: Bool = false
   var documentInteractionController: UIDocumentInteractionController?
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(authorizationTrackingDetermined),
-      name: .demeterAuthorizationTrackingDetermined, object: nil)
     NotificationCenter.default.addObserver(
       self, selector: #selector(restoreBackup), name: .demeterRestoreBackup, object: nil)
 
@@ -75,23 +69,6 @@ class ViewController: UIViewController {
     webView.uiDelegate = self
 
     loadGame()
-
-    if let adUnitId = Bundle.main.object(forInfoDictionaryKey: "GADBannerUnitIdentifier") as? String
-    {
-      bannerView.adUnitID = adUnitId
-    }
-    bannerView.rootViewController = self
-  }
-
-  override func viewDidAppear(_ animated: Bool) {
-    loadBanner()
-  }
-
-  override func viewWillTransition(
-    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
-  ) {
-    super.viewWillTransition(to: size, with: coordinator)
-    coordinator.animate { _ in self.loadBanner() }
   }
 }
 
@@ -100,29 +77,6 @@ extension ViewController {
     if let url = Bundle.main.url(forResource: "sys/game", withExtension: "html") {
       webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
     }
-  }
-
-  @objc func authorizationTrackingDetermined() {
-    if waitForTrackingAuthorization {
-      waitForTrackingAuthorization = false
-      DispatchQueue.main.async {
-        self.loadBanner()
-      }
-    }
-  }
-
-  func loadBanner() {
-    if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
-      waitForTrackingAuthorization = true
-      return
-    }
-
-    let frame = view.frame.inset(by: view.safeAreaInsets)
-    bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(frame.width)
-
-    let request = GADRequest()
-    request.scene = bannerView.window?.windowScene
-    bannerView.load(request)
   }
 }
 

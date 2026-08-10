@@ -1,4 +1,4 @@
-// Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
+// Copyright (C) 2023,2026 煙人計画 <moyu@vaporoid.com>
 //
 // This file is part of 昭和横濱物語.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with 昭和横濱物語. If not, see <https://www.gnu.org/licenses/>.
 
-import GoogleMobileAds
 import UIKit
 
 @main
@@ -24,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GADMobileAds.sharedInstance().start(completionHandler: nil)
     return true
   }
 
