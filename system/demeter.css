@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 煙人計画 <moyu@vaporoid.com>
+ * Copyright (C) 2023,2026 煙人計画 <moyu@vaporoid.com>
  *
  * This file is part of 昭和横濱物語.
  *
@@ -34,6 +34,7 @@
   --font-family-title-ja: 'Yuji Syuku', serif;
   --font-family-title-en: 'Averia Serif Libre', serif;
   --font-family-console: 'Share Tech', 'BIZ UDPGothic', sans-serif;
+  --font-family-choice: 'Share Tech', 'Yuji Syuku', serif;
   --font-family-logging: 'Share Tech Mono', 'BIZ UDGothic', monospace;
   --font-family-barcode: 'Libre Barcode 128';
   --font-family-kcode: 'PromptFont';
@@ -361,7 +362,7 @@ body.demeter {
   height: calc(var(--font-size) * 2);
   left: calc(var(--font-size) * 2);
   top: var(--font-size);
-  font-family: var(--font-family-console);
+  font-family: var(--font-family-choice);
   font-size: var(--font-size);
   line-height: calc(var(--font-size) * 2);
   text-align: center;

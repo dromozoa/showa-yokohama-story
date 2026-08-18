@@ -14,7 +14,6 @@
 		A7539CB529E5523800021055 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7539CB329E5523800021055 /* Main.storyboard */; };
 		A7539CB729E5523900021055 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A7539CB629E5523900021055 /* Assets.xcassets */; };
 		A7539CBA29E5523900021055 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7539CB829E5523900021055 /* LaunchScreen.storyboard */; };
-		A7E8B1E329E555090083EFD9 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = A7E8B1E229E555090083EFD9 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,7 +33,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7E8B1E329E555090083EFD9 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,7 +87,6 @@
 			);
 			name = "showa-yokohama-story";
 			packageProductDependencies = (
-				A7E8B1E229E555090083EFD9 /* GoogleMobileAds */,
 			);
 			productName = "showa-yokohama-story";
 			productReference = A7539CAA29E5523800021055 /* showa-yokohama-story.app */;
@@ -120,7 +117,6 @@
 			);
 			mainGroup = A7539CA129E5523800021055;
 			packageReferences = (
-				A7E8B1E129E555090083EFD9 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = A7539CAB29E5523800021055 /* Products */;
 			projectDirPath = "";
@@ -298,15 +294,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = TM32UNGP3P;
-				GADApplicationIdentifier = "ca-app-pub-3940256099942544~1458002511";
-				GADBannerUnitIdentifier = "ca-app-pub-3940256099942544/2934735716";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
-				INFOPLIST_KEY_NSUserTrackingUsageDescription = "「許可」すると、キミのあれこれが追跡され、キミに最適化された広告が表示されるかもしれないし、されないかもしれない。";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -318,7 +313,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vaporoid.sys;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -334,15 +329,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = TM32UNGP3P;
-				GADApplicationIdentifier = "ca-app-pub-5304779376991561~3376181148";
-				GADBannerUnitIdentifier = "ca-app-pub-5304779376991561/5467992010";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "showa-yokohama-story/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "昭和横濱物語";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
-				INFOPLIST_KEY_NSUserTrackingUsageDescription = "「許可」すると、キミのあれこれが追跡され、キミに最適化された広告が表示されるかもしれないし、されないかもしれない。";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -354,7 +348,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.8;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vaporoid.sys;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -386,25 +380,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A7E8B1E129E555090083EFD9 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A7E8B1E229E555090083EFD9 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A7E8B1E129E555090083EFD9 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A7539CA229E5523800021055 /* Project object */;
 }
